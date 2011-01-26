@@ -53,9 +53,15 @@ Scala (http://www.scala-lang.org/) data types.
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
       <!-- For now, assume module interface stable enough to support 1.x since 1.7 -->
-      <version>1.7.0</version>
+      <version>1.7.1</version>
     </dependency>
     <!-- what core Scala runtime libs do we need? -->
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+
 
      <!-- and for testing, JUnit (or TestNG?) is needed -->
     <dependency>
@@ -63,6 +69,14 @@ Scala (http://www.scala-lang.org/) data types.
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+	<!-- http://www.scalatest.org/download -->
+      <groupId>scalatest</groupId>
+      <artifactId>org.scala-tools.testing</artifactId>
+      <version>1.2.0</version>
+      <!-- <scope>test</scope> -->
     </dependency>
   </dependencies>
 
@@ -94,6 +108,28 @@ Scala (http://www.scala-lang.org/) data types.
               </goals>
             </execution>
           </executions>
+        </plugin>
+		<plugin>
+		  <groupId>org.scala-tools</groupId>
+          <artifactId>maven-scala-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>scala-compile-first</id>
+						<phase>process-resources</phase>
+						<goals>
+						    <goal>add-source</goal>
+							<goal>compile</goal>
+						</goals>
+					</execution>	
+					<execution>
+						<id>scala-test-compile</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+		  <version>2.9.1</version>
         </plugin>
         <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -169,5 +205,21 @@ com.fasterxml.jackson.module.scala
             </build>
         </profile>
   </profiles>
+  <repositories>
+    <repository>
+       <id>scala-tools.org</id>
+       <name>Scala-tools Maven2 Repository</name>
+       <url>http://scala-tools.org/repo-releases</url>
+     </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+  	<id>scala-tools.org</id>
+  	<name>Scala-tools Maven2 Repository</name>
+  	<url>http://scala-tools.org/repo-releases</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <!-- NOTE: repositories from parent POM -->
+
 </project>
