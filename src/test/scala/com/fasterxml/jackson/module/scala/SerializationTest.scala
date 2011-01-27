@@ -21,6 +21,11 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 		serializeWithModule(list) should be === "[1,2,3,4,5,6]"
 	}
 
+	it should "serialize a mutable Map" in {
+		val map = collection.mutable.HashMap("key1" -> "value1", "key2" -> "value2")
+		serializeWithModule(map) should be === """{"key1":"value1","key2":"value2"}"""
+	}
+
 	it should "serialize a Map" in {
 		val map = Map("key1" -> "value1", "key2" -> "value2")
 		serializeWithModule(map) should be === """{"key1":"value1","key2":"value2"}"""

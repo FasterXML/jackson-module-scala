@@ -7,7 +7,8 @@ import org.codehaus.jackson.`type`.JavaType
 class ScalaSerializers extends CustomSerializerFactory with Serializers {
 
 	addGenericMapping(classOf[Iterable[Any]], new ScalaIterableSerializer)
-	addGenericMapping(classOf[Map[String,Any]], new ScalaImmutableMapSerializer)
+	addGenericMapping(classOf[collection.mutable.Map[String,Any]], new ScalaMapSerializer)
+	addGenericMapping(classOf[collection.immutable.Map[String,Any]], new ScalaMapSerializer)
 	addGenericMapping(classOf[Option[Any]], new ScalaOptionSerializer)
 	addGenericMapping(classOf[scala.Enumeration$Val], (new ScalaEnumerationSerializer).asInstanceOf[JsonSerializer[Object]])
 

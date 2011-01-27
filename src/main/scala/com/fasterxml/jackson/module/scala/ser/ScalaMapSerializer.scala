@@ -3,8 +3,9 @@ package com.fasterxml.jackson.module.scala.ser
 import org.codehaus.jackson.map._
 import org.codehaus.jackson._
 import ser.{ContainerSerializerBase, CustomSerializerFactory}
+import collection.Map
 
-class ScalaImmutableMapSerializer extends ContainerSerializerBase[Map[String,Any]](classOf[Map[String,Any]]) {
+class ScalaMapSerializer extends ContainerSerializerBase[Map[String,Any]](classOf[Map[String,Any]]) {
 	override def serialize(value:Map[String,Any], jgen:JsonGenerator, provider:SerializerProvider) {
 		jgen.writeStartObject();
 		if( value.size > 0 ) {
