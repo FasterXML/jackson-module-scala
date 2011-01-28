@@ -73,9 +73,9 @@ Scala (http://www.scala-lang.org/) data types.
 
     <dependency>
 	<!-- http://www.scalatest.org/download -->
-      <groupId>scalatest</groupId>
-      <artifactId>org.scala-tools.testing</artifactId>
-      <version>1.2.0</version>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest</artifactId>
+      <version>1.2</version>
       <!-- <scope>test</scope> -->
     </dependency>
   </dependencies>
