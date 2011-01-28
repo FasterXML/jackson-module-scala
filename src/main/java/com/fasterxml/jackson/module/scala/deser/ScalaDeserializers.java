@@ -20,6 +20,7 @@ import org.codehaus.jackson.map.type.MapType;
 import org.codehaus.jackson.map.util.ClassUtil;
 import org.codehaus.jackson.type.JavaType;
 
+import javax.security.auth.spi.LoginModule;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.EnumSet;
