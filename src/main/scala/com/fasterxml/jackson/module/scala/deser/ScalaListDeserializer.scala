@@ -8,33 +8,21 @@ import java.util.Collection
 import collection.JavaConversions._
 import collection.mutable.ListBuffer
 import org.codehaus.jackson._
+import collection.JavaConversions
 
 class ScalaListDeserializer(val collectionType: JavaType,
 		val valueDeser: JsonDeserializer[Object],
 		val valueTypeDeser: TypeDeserializer,
-		val constructor: Constructor[Collection[Object]]) extends JsonDeserializer[ListBuffer[Any]] {
+		val constructor: Constructor[Collection[Object]]) extends JsonDeserializer[ListBuffer[Object]] {
+
+	val javaCollectionDeserializer = new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, constructor)
 
 
 	override def deserialize(jp: JsonParser, ctxt: DeserializationContext) = {
 
-		val list = new ListBuffer[Any]()
-		// Ok: must point to START_ARRAY (or equivalent)
-		if (!jp.isExpectedStartArrayToken()) {
-			throw ctxt.mappingException(classOf[ListBuffer[Any]]);
-		}
-
-		var t = jp.nextToken()
-		while (t != JsonToken.END_ARRAY) {
-			var value : Object = null
-
-			if (t == JsonToken.VALUE_NULL) {
-				value = null;
-			} else {
-				value = valueDeser.deserialize(jp, ctxt);
-			}
-			list += value
-			t = jp.nextToken()
-		}
+		val list = new ListBuffer[Object]()
+		val collection = asJavaList(list)
+		javaCollectionDeserializer.deserialize(jp, ctxt, collection)
 
 		list
 	}

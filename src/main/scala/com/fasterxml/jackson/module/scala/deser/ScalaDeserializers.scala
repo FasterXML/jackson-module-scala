@@ -32,10 +32,7 @@ class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
 			val sig = javaType.getGenericSignature
 			val contentType = javaType.containedType(0)
 			val contentDeser = provider.findValueDeserializer(config, contentType, property);
-
-
 			deserializer = new ScalaListDeserializer(javaType, contentDeser, null, null)
-
 		} else if (classOf[Option[Any]].isAssignableFrom(clazz)) {
 		} else if (classOf[scala.Enumeration$Val].isAssignableFrom(clazz)) {
 		}
