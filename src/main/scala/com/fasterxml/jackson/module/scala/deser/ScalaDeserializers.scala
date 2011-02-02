@@ -24,6 +24,7 @@ class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
 
 	def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, provider: DeserializerProvider, beanDesc: BeanDescription, property: BeanProperty) = {
 		val clazz = javaType.getRawClass
+		var deserializer : JsonDeserializer[_] = null;
 
 		if (classOf[collection.Map[String, Any]].isAssignableFrom(clazz)) {
 			//val javaDeserializer = close.createMapDeserializer(config, javaType.asInstanceOf[MapType], provider)
@@ -33,11 +34,13 @@ class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
 			val contentDeser = provider.findValueDeserializer(config, contentType, property);
 
 
+			deserializer = new ScalaListDeserializer(javaType, contentDeser, null, null)
 
 		} else if (classOf[Option[Any]].isAssignableFrom(clazz)) {
 		} else if (classOf[scala.Enumeration$Val].isAssignableFrom(clazz)) {
 		}
-		null
+
+		deserializer
 	}
 
 	def findTreeNodeDeserializer(nodeType: Class[_ <: JsonNode], config: DeserializationConfig, property: BeanProperty) = {
