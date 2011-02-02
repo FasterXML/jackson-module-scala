@@ -6,9 +6,10 @@ import org.codehaus.jackson.{JsonToken,JsonParser}
 import java.lang.reflect.Constructor
 import scala.collection.mutable.MutableList
 
-class ScalaOptionDeserializer[_](config:DeserializationConfig, `type`:JavaType, deser:JsonDeserializer[Object], beanDesc:BeanDescription) extends JsonDeserializer[Option[_]]
+class ScalaOptionDeserializer[_] extends JsonDeserializer[Option[_]]
 {
 	override def deserialize(jp:JsonParser, ctxt:DeserializationContext) = {
+		/*
 		if (jp.getCurrentToken() != JsonToken.START_OBJECT) 
 			throw ctxt.mappingException(`type`.getRawClass)
 		jp.nextToken
@@ -25,5 +26,7 @@ class ScalaOptionDeserializer[_](config:DeserializationConfig, `type`:JavaType, 
 			jp.nextToken
 			opt
 		}
+		*/
+		null
     }
 }

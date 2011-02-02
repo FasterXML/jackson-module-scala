@@ -5,10 +5,10 @@ import org.scalatest.FlatSpec
 import org.codehaus.jackson.map.ObjectMapper
 import java.io.StringWriter
 import reflect.BeanProperty
+import org.scalatest.junit.JUnitRunner
+import org.junit.runner.RunWith
 
-/**
- */
-
+@RunWith(classOf[JUnitRunner])
 class SerializationTest extends FlatSpec with ShouldMatchers {
 
 	"An ObjectMapper without the ScalaModule" should "fail to serialize a List" in {

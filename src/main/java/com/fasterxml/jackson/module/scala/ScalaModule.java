@@ -60,12 +60,13 @@ public class ScalaModule extends Module
 
     @Override public String getModuleName() { return NAME; }
     @Override public Version version() { return VERSION; }
-    
+
     @Override
     public void setupModule(Module.SetupContext context)
     {
-        context.addDeserializers(new ScalaDeserializers(context));
+        context.addDeserializers(new ScalaDeserializers());
         context.addSerializers(new ScalaSerializers());
+		//CollectionType.construct(scala.collection.mutable.ListBuffer.class, new JavaType())
     }
 
     /*
