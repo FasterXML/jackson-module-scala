@@ -12,9 +12,9 @@ import collection.JavaConversions
 
 class ScalaListDeserializer(val collectionType: JavaType,
 		val valueDeser: JsonDeserializer[Object],
-		val valueTypeDeser: TypeDeserializer,
-		val constructor: Constructor[Collection[Object]]) extends JsonDeserializer[ListBuffer[Object]] {
+		val valueTypeDeser: TypeDeserializer) extends JsonDeserializer[ListBuffer[Object]] {
 
+	val constructor: Constructor[Collection[Object]]  = null;
 	val javaCollectionDeserializer = new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, constructor)
 
 

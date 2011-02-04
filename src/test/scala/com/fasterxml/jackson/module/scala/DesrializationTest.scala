@@ -8,6 +8,7 @@ import reflect.BeanProperty
 import org.codehaus.jackson.`type`.TypeReference
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
+import collection.mutable.HashMap
 
 @RunWith(classOf[JUnitRunner])
 class DesrializationTest extends FlatSpec with ShouldMatchers {
@@ -16,6 +17,14 @@ class DesrializationTest extends FlatSpec with ShouldMatchers {
 			val expectedList = (1 to 6).toList
 			val hrm = deserializeWithModule(listJson, listBufferType)
 			hrm should be === expectedList
+	}
+
+	it should "deserialize a Map" in {
+		val expectedMap = new HashMap[String, String]()
+		expectedMap += ("key1" -> "value")
+		expectedMap += ("key2" -> "3")
+		val hrm = deserializeWithModule(mapJson, mapType)
+		hrm should be === expectedMap
 	}
 
 	it should "deserialize into a java ArrayList" in {
@@ -29,6 +38,8 @@ class DesrializationTest extends FlatSpec with ShouldMatchers {
 	}
 
 	val listJson =  "[1,2,3,4,5,6]"
+	val mapJson = """{"key1":"value","key2":"3"}"""
+	val mapType = new TypeReference[collection.mutable.Map[String, String]]() {}
 	val listBufferType = new TypeReference[collection.mutable.ListBuffer[Int]]() {}
 	val arrayListType = new TypeReference[java.util.ArrayList[Int]]() {}
 

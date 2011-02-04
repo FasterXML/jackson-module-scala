@@ -27,12 +27,19 @@ class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
 		var deserializer : JsonDeserializer[_] = null;
 
 		if (classOf[collection.Map[String, Any]].isAssignableFrom(clazz)) {
-			//val javaDeserializer = close.createMapDeserializer(config, javaType.asInstanceOf[MapType], provider)
+			val sig = javaType.getGenericSignature
+			val keyType = javaType.containedType(0)
+			val valueType = javaType.containedType(1)
+			val keyDeser = provider.findKeyDeserializer(config, keyType, property)
+			val valueDeser = provider.findValueDeserializer(config, valueType, property)
+			val valueTypeDeser = null // TODO: will this be a problem?
+			deserializer = new ScalaMapDeserializer(javaType, keyDeser, valueDeser, valueTypeDeser)
 		} else if (classOf[Iterable[Any]].isAssignableFrom(clazz)) {
 			val sig = javaType.getGenericSignature
 			val contentType = javaType.containedType(0)
-			val contentDeser = provider.findValueDeserializer(config, contentType, property);
-			deserializer = new ScalaListDeserializer(javaType, contentDeser, null, null)
+			val contentDeser = provider.findValueDeserializer(config, contentType, property)
+			val valueTypeDeser: TypeDeserializer = null
+			deserializer = new ScalaListDeserializer(javaType, contentDeser, valueTypeDeser)
 		} else if (classOf[Option[Any]].isAssignableFrom(clazz)) {
 		} else if (classOf[scala.Enumeration$Val].isAssignableFrom(clazz)) {
 		}
