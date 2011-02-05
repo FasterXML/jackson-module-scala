@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala;
 
+import com.fasterxml.jackson.module.scala.deser.ScalaDeserializers;
+import com.fasterxml.jackson.module.scala.ser.ScalaSerializers;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.*;
 
@@ -58,12 +60,13 @@ public class ScalaModule extends Module
 
     @Override public String getModuleName() { return NAME; }
     @Override public Version version() { return VERSION; }
-    
+
     @Override
-    public void setupModule(SetupContext context)
+    public void setupModule(Module.SetupContext context)
     {
-//        context.addDeserializers(new ScalaDeserializers());
-//        context.addSerializers(new ScalaSerializers());
+        context.addDeserializers(new ScalaDeserializers());
+        context.addSerializers(new ScalaSerializers());
+		//CollectionType.construct(scala.collection.mutable.ListBuffer.class, new JavaType())
     }
 
     /*
