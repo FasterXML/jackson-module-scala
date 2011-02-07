@@ -70,25 +70,4 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 		mapper.writeValue(writer, value)
 		writer.toString
 	}
-
-	class Bean {
-
-		@BeanProperty
-		var name: String = "Dave"
-
-		@BeanProperty
-		var age: Integer = 23
-	}
-
-	class ComplexBean {
-
-		@BeanProperty
-		var bean: Bean = new Bean
-
-		@BeanProperty
-		var map: Map[String, String] = Map("key" -> "value")
-
-		@BeanProperty
-		var favoriteNumbers: List[Int] = (1 to 3).toList
-	}
 }

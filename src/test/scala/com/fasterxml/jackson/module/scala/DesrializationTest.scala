@@ -23,7 +23,7 @@ class DesrializationTest extends FlatSpec with ShouldMatchers {
 		val expectedMap = new HashMap[String, String]()
 		expectedMap += ("key1" -> "value")
 		expectedMap += ("key2" -> "3")
-		val hrm = deserializeWithModule(mapJson, mapType)
+		val hrm = deserializeWithModule(mapJson, stringToStringMapType)
 		hrm should be === expectedMap
 	}
 
@@ -37,69 +37,30 @@ class DesrializationTest extends FlatSpec with ShouldMatchers {
 		hrm should be === expectedArrayList
 	}
 
+	it should "deserialize a complex bean" in {
+		val expected = new ComplexBean
+		val json = """{"map":{"key":"value"},"favoriteNumbers":[1,2,3],"bean":{"name":"Dave","age":23}}"""
+		val hrm = deserializeBeanWithModule(json, classOf[ComplexBean])
+		hrm should be === expected
+	}
+
 	val listJson =  "[1,2,3,4,5,6]"
 	val mapJson = """{"key1":"value","key2":"3"}"""
-	val mapType = new TypeReference[collection.mutable.Map[String, String]]() {}
+	val stringToObjectMapJson = """{"key1":"value","key2":"3"}"""
+	val complexBeanType = new TypeReference[ComplexBean]() {}
+	val stringToStringMapType = new TypeReference[collection.mutable.Map[String, String]]() {}
 	val listBufferType = new TypeReference[collection.mutable.ListBuffer[Int]]() {}
 	val arrayListType = new TypeReference[java.util.ArrayList[Int]]() {}
 
-	/*
-
-	it should "serialize an Enumeration" in {
-		object Weekday extends Enumeration {
-			type Weekday = Value
-			val Mon, Tue, Wed, Thu, Fri, Sat, Sun = Value
-		}
-
-		val day = Weekday.Fri
-		deserializeWithModule(day) should be === """{"enumClass":"com.fasterxml.jackson.module.scala.SerializationTest$$anonfun$3$Weekday$2","value":"Fri"}"""
+	def deserializeBeanWithModule(json: String, clazz: Class[_]) : Any = {
+		val mapper = new ObjectMapper()
+		mapper.registerModule(new ScalaModule())
+		mapper.readValue(json, clazz)
 	}
-
-	it should "serialize a mutable Map" in {
-		val map = collection.mutable.HashMap("key1" -> "value1", "key2" -> "value2")
-		deserializeWithModule(map) should be === """{"key1":"value1","key2":"value2"}"""
-	}
-
-	it should "serialize a Map" in {
-		val map = Map("key1" -> "value1", "key2" -> "value2")
-		deserializeWithModule(map) should be === """{"key1":"value1","key2":"value2"}"""
-	}
-
-	it should "serialize a bean" in {
-		val bean = new Bean()
-		deserializeWithModule(bean) should be === """{"name":"Dave","age":23}"""
-	}
-
-	it should "serialize lists, maps, and beans" in {
-		val bean = new ComplexBean
-		deserializeWithModule(bean) should be === """{"map":{"key":"value"},"favoriteNumbers":[1,2,3],"bean":{"name":"Dave","age":23}}"""
-	}
-	*/
 
 	def deserializeWithModule(value: String, valueType: TypeReference[_]) : Any = {
 		val mapper = new ObjectMapper()
 		mapper.registerModule(new ScalaModule())
 		mapper.readValue(value, valueType)
-	}
-
-	class Bean {
-
-		@BeanProperty
-		var name: String = "Dave"
-
-		@BeanProperty
-		var age: Integer = 23
-	}
-
-	class ComplexBean {
-
-		@BeanProperty
-		var bean: Bean = new Bean
-
-		@BeanProperty
-		var map: Map[String, String] = Map("key" -> "value")
-
-		@BeanProperty
-		var favoriteNumbers: List[Int] = (1 to 3).toList
 	}
 }

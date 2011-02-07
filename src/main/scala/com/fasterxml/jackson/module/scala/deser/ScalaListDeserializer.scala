@@ -12,18 +12,26 @@ import collection.JavaConversions
 
 class ScalaListDeserializer(val collectionType: JavaType,
 		val valueDeser: JsonDeserializer[Object],
-		val valueTypeDeser: TypeDeserializer) extends JsonDeserializer[ListBuffer[Object]] {
+		val valueTypeDeser: TypeDeserializer) extends JsonDeserializer[collection.Iterable[Object]] {
 
 	val constructor: Constructor[Collection[Object]]  = null;
 	val javaCollectionDeserializer = new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, constructor)
 
 
-	override def deserialize(jp: JsonParser, ctxt: DeserializationContext) = {
+	override def deserialize(jp: JsonParser, ctxt: DeserializationContext) : collection.Iterable[Object] = {
 
 		val list = new ListBuffer[Object]()
 		val collection = asJavaList(list)
 		javaCollectionDeserializer.deserialize(jp, ctxt, collection)
 
-		list
+		if (isImmutableTypeRequested) {
+			list.toList
+		} else {
+			list
+		}
+	}
+
+	private def isImmutableTypeRequested = {
+		classOf[collection.immutable.List[Object]].isAssignableFrom(collectionType.getRawClass)
 	}
 }
