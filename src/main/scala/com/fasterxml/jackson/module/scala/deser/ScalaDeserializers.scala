@@ -50,6 +50,7 @@ class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
 									beanDesc: BeanDescription,
 									property: BeanProperty) = {
 		val sig = javaType.getGenericSignature
+		// Todo: Hacking parameter indicies, should probably introspect further
 		val keyType = javaType.containedType(0)
 		val valueType = javaType.containedType(1)
 		val keyDeser = provider.findKeyDeserializer(config, keyType, property)
@@ -64,6 +65,7 @@ class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
 										 beanDesc: BeanDescription,
 										 property: BeanProperty) = {
 		val sig = javaType.getGenericSignature
+		// Todo: Hacking parameter indicies, make sure they are there.
 		val contentType = javaType.containedType(0)
 		val contentDeser = provider.findValueDeserializer(config, contentType, property)
 		val valueTypeDeser = null // TODO: will this be a problem?

@@ -11,24 +11,24 @@ import org.codehaus.jackson.map.ObjectMapper
 @RunWith(classOf[JUnitRunner])
 class DesrializationTest extends FlatSpec with ShouldMatchers {
 
-	"An ObjectMapper with the ScalaModule" should "deserialize a List into a ListBuffer" in {
-			val expectedList = (1 to 6).toList
-			deserializeWithModule(listJson, listBufferType) should be === expectedList
+	"An ObjectMapper with the ScalaModule" should "deserialize a list into a ListBuffer" in {
+		val expectedList = (1 to 6).toList
+		deserializeWithModule(listJson, listBufferType) should be === expectedList
 	}
 
-	it should "deserialize a scala Enumeration as a bean property" in {
+	it should "deserialize a value into a scala Enumeration as a bean property" in {
 		val expectedDay = Weekday.Fri
 		deserializeBeanWithModule(fridayEnumJson, classOf[EnumContainer]).asInstanceOf[EnumContainer].day should be === expectedDay
 	}
 
-	it should "deserialize a mutable HashMap" in {
+	it should "deserialize a json map into a mutable HashMap" in {
 		val expectedMap = new HashMap[String, String]()
 		expectedMap += ("key1" -> "value")
 		expectedMap += ("key2" -> "3")
 		deserializeWithModule(mapJson, stringToStringMapType) should be === expectedMap
 	}
 
-	it should "deserialize a list into a java ArrayList" in {
+	it should "deserialize a json list into a java ArrayList" in {
 		val expectedArrayList = new java.util.ArrayList[Int]()
 		(1 to 6).foreach(i => {
 			expectedArrayList.add(i)
