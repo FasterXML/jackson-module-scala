@@ -2,28 +2,39 @@ package com.fasterxml.jackson.module.scala.deser
 
 import org.codehaus.jackson.`type`.JavaType
 import org.codehaus.jackson.map._
-import deser.{CollectionDeserializer, StdDeserializer}
+import deser.CollectionDeserializer
 import java.lang.reflect.Constructor
 import java.util.Collection
 import collection.JavaConversions._
 import collection.mutable.ListBuffer
 import org.codehaus.jackson._
-import collection.JavaConversions
 
+/**
+ * The ScalaListDeserializer deserializes json arrays into Scala Iterables.
+ */
 class ScalaListDeserializer(val collectionType: JavaType,
-		val valueDeser: JsonDeserializer[Object],
-		val valueTypeDeser: TypeDeserializer) extends JsonDeserializer[collection.Iterable[Object]] {
+							val valueDeser: JsonDeserializer[Object],
+							val valueTypeDeser: TypeDeserializer) extends JsonDeserializer[collection.Iterable[Object]] {
 
+	// Note/Todo: I'm making an assumption here: I know the implementation of the CollectionDeserializer doesn't use the
+	// Constructor if I don't call the main deserialize() method, but instead call the one where I can pass in a Collection.
 	val constructor: Constructor[Collection[Object]]  = null;
-	val javaCollectionDeserializer = new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, constructor)
 
+	// The wrapped deserializer. I'll just use it, rather than copy-and-paste. Keep it DRY.
+	val javaCollectionDeserializer = new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, constructor)
 
 	override def deserialize(jp: JsonParser, ctxt: DeserializationContext) : collection.Iterable[Object] = {
 
+		// Todo: Here we're just creating our own Iterable implementation. The JavaType is available, if we wanted to do
+		// more fine-tuned introspection to determine what specific type of Iterable to instantiate. There are several
+		// Java-Scala conversions available; we just want a thin facade implementation of the Java interface that simply
+		// calls the associated Scala collection methods. Shouldn't really be any speed degradation here.
 		val list = new ListBuffer[Object]()
 		val collection = asJavaList(list)
 		javaCollectionDeserializer.deserialize(jp, ctxt, collection)
 
+		// mutable.List and immutable.List are not compatible; if the requested type is immutable, just return the
+		// mutable ListBuffer as a immutable Iterable List.
 		if (isImmutableTypeRequested) {
 			list.toList
 		} else {

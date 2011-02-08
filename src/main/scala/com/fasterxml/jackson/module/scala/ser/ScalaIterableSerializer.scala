@@ -2,8 +2,12 @@ package com.fasterxml.jackson.module.scala.ser
 
 import org.codehaus.jackson.map._
 import org.codehaus.jackson._
-import ser.{ContainerSerializerBase, CustomSerializerFactory}
+import ser.ContainerSerializerBase
 
+/**
+ * The implementation is taken from the code written by Greg Zoller, found here:
+ * http://jira.codehaus.org/browse/JACKSON-211
+ */
 class ScalaIterableSerializer extends ContainerSerializerBase[Iterable[Any]](classOf[Iterable[Any]]) {
 	override def serialize(value:Iterable[Any], jgen:JsonGenerator, provider:SerializerProvider) {
 		jgen.writeStartArray();

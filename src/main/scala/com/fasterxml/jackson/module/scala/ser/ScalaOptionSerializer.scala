@@ -2,8 +2,11 @@ package com.fasterxml.jackson.module.scala.ser
 
 import org.codehaus.jackson.map._
 import org.codehaus.jackson._
-import ser.{ContainerSerializerBase, CustomSerializerFactory}
 
+/**
+ * The implementation is taken from the code written by Greg Zoller, found here:
+ * http://jira.codehaus.org/browse/JACKSON-211
+ */
 class ScalaOptionSerializer extends JsonSerializer[Option[Any]] {
 	override def serialize(value:Option[Any], jgen:JsonGenerator, provider:SerializerProvider) {
 		jgen.writeStartObject();

@@ -4,7 +4,6 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import org.codehaus.jackson.map.ObjectMapper
 import java.io.StringWriter
-import reflect.BeanProperty
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 
