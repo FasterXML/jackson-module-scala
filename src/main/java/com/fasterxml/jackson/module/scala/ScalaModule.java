@@ -66,7 +66,6 @@ public class ScalaModule extends Module
     {
         context.addDeserializers(new ScalaDeserializers());
         context.addSerializers(new ScalaSerializers());
-		//CollectionType.construct(scala.collection.mutable.ListBuffer.class, new JavaType())
     }
 
     /*

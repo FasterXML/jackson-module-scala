@@ -37,8 +37,8 @@ class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
 			deserializer = findIterableDeserializer(javaType, config, provider, beanDesc, property)
 		} else if (classOf[Option[Any]].isAssignableFrom(clazz)) {
 			// Todo:
-		} else if (classOf[scala.Enumeration$Val].isAssignableFrom(clazz)) {
-			// Todo:
+		} else if (classOf[scala.Enumeration$Value].isAssignableFrom(clazz)) {
+			deserializer = new ScalaEnumerationDeserializer(javaType)
 		}
 
 		deserializer

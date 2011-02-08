@@ -21,13 +21,8 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 	}
 
 	it should "serialize an Enumeration" in {
-		object Weekday extends Enumeration {
-			type Weekday = Value
-			val Mon, Tue, Wed, Thu, Fri, Sat, Sun = Value
-		}
-
 		val day = Weekday.Fri
-		serializeWithModule(day) should be === """{"enumClass":"com.fasterxml.jackson.module.scala.SerializationTest$$anonfun$3$Weekday$2","value":"Fri"}"""
+		serializeWithModule(day) should be === """{"enumClass":"com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}"""
 	}
 
 	it should "serialize a mutable Map" in {
