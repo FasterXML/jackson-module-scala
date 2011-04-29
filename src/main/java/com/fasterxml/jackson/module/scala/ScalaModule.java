@@ -64,7 +64,7 @@ public class ScalaModule extends Module
     @Override
     public void setupModule(Module.SetupContext context)
     {
-        context.addDeserializers(new ScalaDeserializers());
+        //context.addDeserializers(new ScalaDeserializers());
         context.addSerializers(new ScalaSerializers());
     }
 

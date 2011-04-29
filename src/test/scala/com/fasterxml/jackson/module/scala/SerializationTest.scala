@@ -45,6 +45,11 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 		serializeWithModule(bean) should be === """{"map":{"key":"value"},"favoriteNumbers":[1,2,3],"bean":{"name":"Dave","age":23}}"""
 	}
 
+	it should "serializer the keys from a map" in {
+		val map = collection.mutable.HashMap("key1" -> "value1", "key2" -> "value2")
+		serializeWithModule(map.keys) should be === """["key1","key2"]""";
+	}
+
 	def serializeWithoutModule(value: AnyRef) = {
 		write(value, false)
 	}

@@ -53,7 +53,7 @@ Scala (http://www.scala-lang.org/) data types.
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
       <!-- For now, assume module interface stable enough to support 1.x since 1.7 -->
-      <version>1.7.1</version>
+      <version>1.8.0</version>
     </dependency>
     <!-- what core Scala runtime libs do we need? -->
 		<dependency>

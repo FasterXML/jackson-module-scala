@@ -2,25 +2,53 @@ package com.fasterxml.jackson.module.scala.deser
 
 import java.lang.Class
 import org.codehaus.jackson.JsonNode
-import org.codehaus.jackson.map._
-import `type`.{ArrayType, CollectionType, MapType}
-import deser.{CustomDeserializerFactory}
+import org.codehaus.jackson.map.`type`.{ArrayType, CollectionType, MapType}
 import org.codehaus.jackson.`type`.JavaType
+import org.codehaus.jackson.map._
 
 /**
  * The ScalaDeserialziers finds implementations of JsonDeserializer that can be used to parse JSON into Scala
  * collections, specifically json to Map and json to Iterable.
  */
-class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
+class ScalaDeserializers  { //extends Deserializers {
 
+	/*
+	public JsonDeserializer<?> findArrayDeserializer(ArrayType type, DeserializationConfig config,
+	DeserializerProvider provider,
+	BeanProperty property,
+	TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
+	throws JsonMappingException;
 
-	/**
-	 * findBeanDeserializer is called when the ObjectMapper determines the type is not recognized. Since the Scala
-	 * collections types do not inherent from the base Java collections API, Jackson will just default to this method.
-	 *
-	 * This method determines what particular Scala type is being requested for deserialization, then finds its own
-	 * Scala-based deserializer.
-	 */
+	public JsonDeserializer<?> findCollectionDeserializer(CollectionType type, DeserializationConfig config,
+	DeserializerProvider provider, BeanDescription beanDesc, BeanProperty property,
+	TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
+	throws JsonMappingException;
+
+	public JsonDeserializer<?> findCollectionLikeDeserializer(CollectionLikeType type, DeserializationConfig config,
+	DeserializerProvider provider, BeanDescription beanDesc, BeanProperty property,
+	TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
+	throws JsonMappingException;
+
+	public JsonDeserializer<?> findEnumDeserializer(Class<?> type, DeserializationConfig config,
+	BeanDescription beanDesc, BeanProperty property)
+	throws JsonMappingException;
+
+	public JsonDeserializer<?> findMapDeserializer(MapType type, DeserializationConfig config,
+	DeserializerProvider provider, BeanDescription beanDesc, BeanProperty property,
+	KeyDeserializer keyDeserializer,
+	TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
+	throws JsonMappingException;
+
+	public JsonDeserializer<?> findMapLikeDeserializer(MapLikeType type, DeserializationConfig config,
+	DeserializerProvider provider, BeanDescription beanDesc, BeanProperty property,
+	KeyDeserializer keyDeserializer,
+	TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
+	throws JsonMappingException;
+
+	public JsonDeserializer<?> findTreeNodeDeserializer(Class<? extends JsonNode> nodeType, DeserializationConfig config,
+	BeanProperty property)
+	throws JsonMappingException;
+
 	def findBeanDeserializer(javaType: JavaType,
 							 config: DeserializationConfig,
 							 provider: DeserializerProvider,
@@ -92,4 +120,5 @@ class ScalaDeserializers extends CustomDeserializerFactory with Deserializers {
 							  elementTypeDeserializer: TypeDeserializer, elementDeserializer: JsonDeserializer[_]) = {
 		null
 	}
+	*/
 }
