@@ -4,10 +4,10 @@ import org.codehaus.jackson.`type`.JavaType
 import org.codehaus.jackson.map._
 import deser.CollectionDeserializer
 import java.lang.reflect.Constructor
-import java.util.Collection
 import collection.JavaConversions._
 import collection.mutable.ListBuffer
 import org.codehaus.jackson._
+import java.util.{ArrayList, Collection}
 
 /**
  * The ScalaListDeserializer deserializes json arrays into Scala Iterables.
@@ -18,7 +18,9 @@ class ScalaListDeserializer(val collectionType: JavaType,
 
 	// Note/Todo: I'm making an assumption here: I know the implementation of the CollectionDeserializer doesn't use the
 	// Constructor if I don't call the main deserialize() method, but instead call the one where I can pass in a Collection.
-	val constructor: Constructor[Collection[Object]]  = null;
+	val clazz = classOf[ArrayList[Object]];
+	val constructors = clazz.getConstructors.iterator
+	val constructor: Constructor[Collection[Object]] = constructors.next.asInstanceOf[Constructor[Collection[Object]]]
 
 	// The wrapped deserializer. I'll just use it, rather than copy-and-paste. Keep it DRY.
 	val javaCollectionDeserializer = new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, constructor)
