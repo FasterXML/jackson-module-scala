@@ -27,12 +27,14 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 
 	it should "serialize a mutable Map" in {
 		val map = collection.mutable.HashMap("key1" -> "value1", "key2" -> "value2")
-		serializeWithModule(map) should be === """{"key1":"value1","key2":"value2"}"""
+		// one cannot rely on map iteration order
+		serializeWithModule(map) should (be === """{"key1":"value1","key2":"value2"}""" or be === """{"key2":"value2","key1":"value1"}""")
 	}
 
 	it should "serialize a Map" in {
 		val map = Map("key1" -> "value1", "key2" -> "value2")
-		serializeWithModule(map) should be === """{"key1":"value1","key2":"value2"}"""
+		// one cannot rely on map iteration order
+		serializeWithModule(map) should (be === """{"key1":"value1","key2":"value2"}""" or be === """{"key2":"value2","key1":"value1"}""")
 	}
 
 	it should "serialize a bean" in {
@@ -47,7 +49,8 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 
 	it should "serializer the keys from a map" in {
 		val map = collection.mutable.HashMap("key1" -> "value1", "key2" -> "value2")
-		serializeWithModule(map.keys) should be === """["key1","key2"]""";
+		// one cannot rely on map iteration order
+		serializeWithModule(map.keys) should (be === """["key1","key2"]""" or be === """["key2","key1"]""")
 	}
 
 	def serializeWithoutModule(value: AnyRef) = {
