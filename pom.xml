@@ -8,7 +8,7 @@
   <groupId>com.fasterxml</groupId>
   <artifactId>jackson-module-scala</artifactId>
   <name>Jackson-module-Scala</name>
-  <version>0.5.0-arnauld-SNAPSHOT</version>
+  <version>0.5.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Add-on module for Jackson (http://jackson.codehaus.org) to support
 Scala (http://www.scala-lang.org/) data types.
