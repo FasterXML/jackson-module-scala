@@ -50,7 +50,28 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 
 	it should "serialize lists, maps, and beans" in {
 		val bean = new ComplexBean
-		serializeWithModule(bean) should be === """{"map":{"key":"value"},"favoriteNumbers":[1,2,3],"bean":{"name":"Dave","age":23}}"""
+    // one cannot rely on bean iteration order, so we have to be creative
+    val ser = serializeWithModule(bean)
+    // This might be overkill, but I couldn't come up with anything simpler for now
+    val keyPattern = """"([a-zA-Z]+)""""
+    val objectValuePattern = """\{[^\}]*\}"""
+    val listValuePattern = """\[[^\]]*\]"""
+    val valuePattern = String.format("(%s|%s)", objectValuePattern, listValuePattern)
+    val keyValuePattern = String.format("%s:%s", keyPattern, valuePattern)
+    val FullPattern = String.format("""\{%1$s,%1$s,%1$s\}""", keyValuePattern).r
+
+    ser should fullyMatch regex(FullPattern)
+    ser match {
+      case FullPattern(key1,value1,key2,value2,key3,value3) => {
+        val patternMap = Map(key1 -> value1, key2 -> value2, key3 -> value3)
+        patternMap should contain key ("bean")
+        patternMap("bean") should (be === """{"name":"Dave","age":23}""" or be === """{"age":23,"name":"Dave"}""")
+        patternMap should contain key ("map")
+        patternMap("map") should be === """{"key":"value"}"""
+        patternMap should contain key("favoriteNumbers")
+        patternMap("favoriteNumbers") should be === "[1,2,3]"
+      }
+    }
 	}
 
 	it should "serializer the keys from a map" in {
