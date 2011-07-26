@@ -37,6 +37,11 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 		serializeWithModule(map) should (be === """{"key1":"value1","key2":"value2"}""" or be === """{"key2":"value2","key1":"value1"}""")
 	}
 
+  it should "serialize a SortedMap" in {
+    val map = collection.immutable.TreeMap("key1" -> "value1", "key2" -> "value2")
+    serializeWithModule(map) should (be === """{"key1":"value1","key2":"value2"}""")
+  }
+
 	it should "serialize a bean" in {
 		val bean = new Bean()
 		serializeWithModule(bean) should be === """{"name":"Dave","age":23}"""
