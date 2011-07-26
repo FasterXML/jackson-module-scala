@@ -44,7 +44,8 @@ class SerializationTest extends FlatSpec with ShouldMatchers {
 
 	it should "serialize a bean" in {
 		val bean = new Bean()
-		serializeWithModule(bean) should be === """{"name":"Dave","age":23}"""
+		// one cannot rely on bean iteration order
+		serializeWithModule(bean) should (be === """{"name":"Dave","age":23}""" or be === """{"age":23,"name":"Dave"}""")
 	}
 
 	it should "serialize lists, maps, and beans" in {
