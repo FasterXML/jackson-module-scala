@@ -38,8 +38,10 @@ class ScalaDeserializers extends Deserializers {
 									   property: BeanProperty,
 									   elementTypeDeserializer: TypeDeserializer,
 									   elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-		null
-	}
+    val resolvedDeserializer =
+      Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,collectionType.containedType(0),property))
+    new SeqDeserializer(collectionType, config, resolvedDeserializer, elementTypeDeserializer)
+  }
 
 	def findEnumDeserializer(beanType: Class[_],
 							 config: DeserializationConfig,
@@ -124,6 +126,6 @@ class ScalaDeserializers extends Deserializers {
 		val contentType = javaType.containedType(0)
 		val contentDeser = provider.findValueDeserializer(config, contentType, property)
 		val valueTypeDeser = null // TODO: will this be a problem?
-		new ScalaListDeserializer(javaType, contentDeser, valueTypeDeser)
+		null //new ScalaListDeserializer(javaType, contentDeser, valueTypeDeser)
 	}
 }
