@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala;
 
 import com.fasterxml.jackson.module.scala.deser.ScalaDeserializers;
+import com.fasterxml.jackson.module.scala.deser.SeqTypeModifier;
 import com.fasterxml.jackson.module.scala.ser.ScalaSerializers;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.*;
@@ -66,6 +67,7 @@ public class ScalaModule extends Module
     {
         context.addDeserializers(new ScalaDeserializers());
         context.addSerializers(new ScalaSerializers());
+        context.addTypeModifier(new SeqTypeModifier());
     }
 
     /*
