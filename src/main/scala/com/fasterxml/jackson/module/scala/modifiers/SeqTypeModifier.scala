@@ -1,10 +1,10 @@
-package com.fasterxml.jackson.module.scala.deser
+package com.fasterxml.jackson.module.scala.modifiers
 
 import org.codehaus.jackson.`type`.JavaType
 import java.lang.reflect.{Type, ParameterizedType}
 import org.codehaus.jackson.map.`type`.{TypeFactory, TypeBindings, SimpleType, TypeModifier}
 
-private [scala] class SeqTypeModifier extends TypeModifier {
+class SeqTypeModifier extends TypeModifier {
   private val BASE = classOf[Seq[_]]
   // Workaround for http://jira.codehaus.org/browse/JACKSON-638
   private def UNKNOWN = SimpleType.construct(classOf[AnyRef])

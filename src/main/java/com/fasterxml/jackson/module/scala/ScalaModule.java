@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala;
 
 import com.fasterxml.jackson.module.scala.deser.ScalaDeserializers;
-import com.fasterxml.jackson.module.scala.deser.SeqTypeModifier;
+import com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifier;
 import com.fasterxml.jackson.module.scala.ser.ScalaSerializers;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.*;

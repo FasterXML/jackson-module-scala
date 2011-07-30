@@ -54,8 +54,8 @@ class ScalaSerializers extends Serializers {
 									 beanProperty: BeanProperty,
 									 elementTypeSerializer: TypeSerializer,
 									 elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
-
-		null
+    if (!classOf[collection.Seq[Any]].isAssignableFrom(collectionType.getRawClass)) null else
+    new SeqSerializer(collectionType.containedType(0), false, Option(elementTypeSerializer), beanProperty, Option(elementSerializer))
 	}
 
 	def findMapSerializer(config: SerializationConfig,
