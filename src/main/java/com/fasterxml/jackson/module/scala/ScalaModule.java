@@ -1,18 +1,13 @@
 package com.fasterxml.jackson.module.scala;
 
 import com.fasterxml.jackson.module.scala.deser.ScalaDeserializers;
-import com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifier;
 import com.fasterxml.jackson.module.scala.ser.ScalaSerializers;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.*;
+import org.codehaus.jackson.map.Module;
 
-public class ScalaModule extends Module
+public class ScalaModule extends DefaultScalaModule
 {
     private final String NAME = "ScalaModule";
-    
-    // Should externalize this somehow
-    private final static Version VERSION = new Version(0, 1, 0, null); // 0.1.0
-    
+
     /**
      * Enumeration that defines all togglable features this module -- none yet
      */
@@ -60,14 +55,13 @@ public class ScalaModule extends Module
     public ScalaModule() { }
 
     @Override public String getModuleName() { return NAME; }
-    @Override public Version version() { return VERSION; }
 
     @Override
     public void setupModule(Module.SetupContext context)
     {
+        super.setupModule(context);
         context.addDeserializers(new ScalaDeserializers());
         context.addSerializers(new ScalaSerializers());
-        context.addTypeModifier(new SeqTypeModifier());
     }
 
     /*
