@@ -5,7 +5,7 @@ import org.codehaus.jackson.`type`.JavaType
 import org.codehaus.jackson.map.`type`.{TypeFactory, TypeBindings, SimpleType, TypeModifier}
 import java.lang.reflect.{ParameterizedType, Type}
 
-object SeqTypeModifier extends TypeModifier {
+private object SeqTypeModifier extends TypeModifier with GenTypeModifier {
   private val BASE = classOf[Seq[_]]
   // Workaround for http://jira.codehaus.org/browse/JACKSON-638
   private def UNKNOWN = SimpleType.construct(classOf[AnyRef])
@@ -20,14 +20,6 @@ object SeqTypeModifier extends TypeModifier {
         originalType
     } getOrElse originalType
 
-  private def classObjectFor(jdkType: Type) = jdkType match {
-    case cls: Class[_] => Some(cls)
-    case pt: ParameterizedType => pt.getRawType match {
-      case cls: Class[_] => Some(cls)
-      case _ => None
-    }
-    case _ => None
-  }
 }
 
 trait SeqTypeModifierModule {
