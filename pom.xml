@@ -55,8 +55,8 @@
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <!-- For now, assume module interface stable enough to support 1.x since 1.7 -->
-      <version>1.8.0</version>
+      <!-- all 1.8.x versions might work; but this is the latest -->
+      <version>1.8.5</version>
     </dependency>
     <!-- what core Scala runtime libs do we need? -->
     <dependency>
@@ -64,7 +64,6 @@
       <artifactId>scala-library</artifactId>
       <version>${scala-lib.version}</version>
     </dependency>
-
 
     <!-- and for testing, JUnit (or TestNG?) is needed -->
     <dependency>
