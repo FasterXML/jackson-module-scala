@@ -4,7 +4,9 @@ import org.codehaus.jackson.map.Module.SetupContext
 
 class DefaultScalaModule
   extends JacksonModule
+     with OptionModule
      with SeqModule
+     with TupleModule
 {
   override def getModuleName = "DefaultScalaModule"
 

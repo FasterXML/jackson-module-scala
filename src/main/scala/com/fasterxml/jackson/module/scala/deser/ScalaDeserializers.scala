@@ -20,8 +20,6 @@ class ScalaDeserializers extends Deserializers.None {
 
 		if (classOf[collection.Map[String, Any]].isAssignableFrom(clazz)) {
 			deserializer = findMapDeserializer(javaType, config, provider, beanDesc, property)
-		} else if (classOf[Option[Any]].isAssignableFrom(clazz)) {
-			// Todo:
 		} else if (classOf[scala.Enumeration$Value].isAssignableFrom(clazz)) {
 			deserializer = new ScalaEnumerationDeserializer(javaType)
 		}

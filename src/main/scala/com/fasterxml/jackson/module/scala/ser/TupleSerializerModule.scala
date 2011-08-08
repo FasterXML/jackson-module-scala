@@ -48,7 +48,11 @@ private object TupleSerializerResolver extends Serializers.None {
   private val PRODUCT = classOf[Product]
 
   override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription, beanProperty: BeanProperty) = {
-    if (!PRODUCT.isAssignableFrom(javaType.getRawClass)) null else
+    val cls = javaType.getRawClass
+    if (!PRODUCT.isAssignableFrom(cls)) null else
+    // If it's not *actually* a tuple, it's either a case class or a custom Product
+    // which either way we shouldn't handle here.
+    if (!cls.getName.startsWith("scala.Tuple")) null else
     new TupleSerializer(javaType, beanProperty)
   }
 

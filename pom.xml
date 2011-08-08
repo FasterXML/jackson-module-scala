@@ -55,13 +55,17 @@
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <!-- For now, assume module interface stable enough to support 1.x since 1.7 -->
-      <version>1.8.0</version>
+      <version>1.9.0-SNAPSHOT</version>
     </dependency>
     <!-- what core Scala runtime libs do we need? -->
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
+      <version>${scala-lib.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scalap</artifactId>
       <version>${scala-lib.version}</version>
     </dependency>
 
@@ -215,6 +219,17 @@
       <id>scala-tools.org</id>
       <name>Scala-tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
+    </repository>
+    <repository>
+      <id>codehaus-snapshots</id>
+      <name>Codehaus Snapshots repository</name>
+      <url>http://snapshots.repository.codehaus.org</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
   <pluginRepositories>

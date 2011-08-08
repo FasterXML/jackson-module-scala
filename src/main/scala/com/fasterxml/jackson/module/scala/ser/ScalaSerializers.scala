@@ -15,8 +15,6 @@ class ScalaSerializers extends Serializers.None {
 			new ScalaMapSerializer
 		} else if (classOf[Iterable[Any]].isAssignableFrom(clazz)) {
 			new ScalaIterableSerializer
-		} else if (classOf[Option[Any]].isAssignableFrom(clazz)) {
-			new ScalaOptionSerializer
 		} else if (classOf[scala.Enumeration$Val].isAssignableFrom(clazz)) {
 			new ScalaEnumerationSerializer
 		} else {
