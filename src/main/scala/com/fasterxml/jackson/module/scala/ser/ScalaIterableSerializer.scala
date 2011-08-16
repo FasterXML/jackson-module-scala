@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.ser
 
 import org.codehaus.jackson.map._
 import org.codehaus.jackson._
-import ser.ContainerSerializerBase
+import ser.std.ContainerSerializerBase
 
 /**
  * The implementation is taken from the code written by Greg Zoller, found here:

@@ -5,12 +5,12 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule
 import org.codehaus.jackson.JsonGenerator
 import org.codehaus.jackson.`type`.JavaType
+import org.codehaus.jackson.map.{BeanDescription, SerializationConfig, Serializers, SerializerProvider, JsonSerializer, BeanProperty, TypeSerializer}
 import org.codehaus.jackson.map.`type`.CollectionLikeType
-import org.codehaus.jackson.map.ser.ContainerSerializers.{CollectionSerializer, AsArraySerializer}
-import org.codehaus.jackson.map._
+import org.codehaus.jackson.map.ser.std.{CollectionSerializer, AsArraySerializerBase}
 
 private class SeqSerializer(seqType: Class[_], elemType: JavaType, staticTyping: Boolean, vts: Option[TypeSerializer], property: BeanProperty, valueSerializer: Option[JsonSerializer[AnyRef]])
-  extends AsArraySerializer[collection.Seq[Any]](seqType, elemType, staticTyping, vts.orNull, property, valueSerializer.orNull) {
+  extends AsArraySerializerBase[collection.Seq[Any]](seqType, elemType, staticTyping, vts.orNull, property, valueSerializer.orNull) {
 
   val collectionSerializer =
     new CollectionSerializer(elemType, staticTyping, vts.orNull, property, valueSerializer.orNull)

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 import org.codehaus.jackson.`type`.JavaType
 import org.codehaus.jackson.JsonGenerator
 import org.codehaus.jackson.map.{BeanProperty, SerializerProvider, TypeSerializer, BeanDescription, SerializationConfig, Serializers}
-import org.codehaus.jackson.map.ser.ContainerSerializerBase
+import org.codehaus.jackson.map.ser.std.ContainerSerializerBase
 import org.codehaus.jackson.schema.SchemaAware
 
 import java.lang.reflect.Type
@@ -25,7 +25,7 @@ private class TupleSerializer(javaType: JavaType, property: BeanProperty)
     jgen.writeEndArray()
   }
 
-  def getSchema(provider: SerializerProvider, typeHint: Type) = {
+  override def getSchema(provider: SerializerProvider, typeHint: Type) = {
     val o = createSchemaNode("array")
     val a = o.putArray("items")
 
