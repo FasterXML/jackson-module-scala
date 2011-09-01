@@ -14,7 +14,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 @RunWith(classOf[JUnitRunner])
 class SeqDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
 
-  def module = new JacksonModule with SeqDeserializerModule
+  lazy val module = new JacksonModule with SeqDeserializerModule
 
   "An ObjectMapper with the SeqDeserializer" should "deserialize a list into an IndexedSeq" in {
     // The temporary object is necessary to force the cast back to the concrete type.

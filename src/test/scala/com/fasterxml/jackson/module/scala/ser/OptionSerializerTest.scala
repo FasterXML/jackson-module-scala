@@ -12,7 +12,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 @RunWith(classOf[JUnitRunner])
 class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
 
-  def module = new JacksonModule with OptionSerializerModule
+  lazy val module = new JacksonModule with OptionSerializerModule
 
   "An ObjectMapper with OptionSerializer" should "serialize an Option[Int]" in {
     val noneOption: Option[Int] = None

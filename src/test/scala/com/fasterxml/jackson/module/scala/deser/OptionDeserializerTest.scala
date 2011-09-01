@@ -9,7 +9,7 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class OptionDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
-  def module = new JacksonModule with OptionDeserializerModule
+  lazy val module = new JacksonModule with OptionDeserializerModule
 
   "An ObjectMapper with OptionDeserializer" should "deserialize an Option[Int]" in {
     deserialize("1", new TypeReference[Option[Int]]{}) should be (Some(1))
