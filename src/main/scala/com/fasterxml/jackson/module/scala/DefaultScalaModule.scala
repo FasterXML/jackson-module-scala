@@ -19,6 +19,7 @@ sealed class DefaultScalaModule
      with SeqModule
      with IterableModule
      with TupleModule
+     with CaseClassModule
 {
   override def getModuleName = "DefaultScalaModule"
 }

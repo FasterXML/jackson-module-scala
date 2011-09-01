@@ -1,0 +1,58 @@
+package com.fasterxml.jackson.module.scala.ser
+
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.FlatSpec
+import org.scalatest.matchers.ShouldMatchers
+import com.fasterxml.jackson.module.scala.JacksonModule
+
+case class CaseClassConstructorTest(intValue: Int, stringValue: String) { }
+
+case class CaseClassValTest() {
+  val intVal: Int = 1
+  val strVal: String = "foo"
+}
+
+case class CaseClassVarTest() {
+  var intVar: Int = 1
+  var strVar: String = "foo"
+}
+
+case class CaseClassMixedTest(intValue: Int) {
+  val strVal: String = "foo"
+}
+
+@RunWith(classOf[JUnitRunner])
+class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
+
+  def module = new JacksonModule with CaseClassSerializerModule {}
+
+  "An ObjectMapper with the CaseClassModule" should "serialize a case class as a bean" in {
+    serialize(CaseClassConstructorTest(1,"A")) should (
+       equal ("""{"intValue":1,"stringValue":"A"}""") or
+       equal ("""{"stringValue":"A","intValue":1}""")
+    )
+  }
+
+  it should "serialize a class class with val members" in {
+    serialize(CaseClassValTest()) should (
+      equal ("""{"intVal":1,"strVal":"foo"}""") or
+      equal ("""{"strVal":"foo","intVal":1}""")
+    )
+  }
+
+  it should "serialize a class class with var members" in {
+    serialize(CaseClassVarTest()) should (
+      equal ("""{"intVar":1,"strVar":"foo"}""") or
+      equal ("""{"strVar":"foo","intVar":1}""")
+    )
+  }
+
+  it should "serialize a class class with both constructor and member properties" in {
+    serialize(CaseClassMixedTest(99)) should (
+      equal ("""{"intValue":99,"strVal":"foo"}""") or
+      equal ("""{"strVal":"foo","intValue":99}""")
+    )
+  }
+
+}

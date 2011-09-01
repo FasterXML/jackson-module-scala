@@ -63,9 +63,9 @@
       <version>${scala-lib.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scalap</artifactId>
-      <version>${scala-lib.version}</version>
+      <groupId>org.scalastuff</groupId>
+      <artifactId>scalabeans</artifactId>
+      <version>0.2</version>
     </dependency>
 
 
