@@ -6,14 +6,15 @@ import com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule
 import org.codehaus.jackson.`type`.JavaType
 import org.codehaus.jackson.JsonParser
 import org.codehaus.jackson.map.`type`.CollectionLikeType
-import org.codehaus.jackson.map.deser.{CollectionDeserializer, ContainerDeserializer}
 import org.codehaus.jackson.map.{DeserializationContext, JsonDeserializer, TypeDeserializer, BeanProperty, BeanDescription, DeserializerProvider, DeserializationConfig, Deserializers}
 
 import collection.mutable
 import collection.generic.GenericCompanion
 import collection.immutable.Queue
 
-import java.util.{ArrayList, AbstractCollection}
+import java.util.AbstractCollection
+import org.codehaus.jackson.map.deser.std.{CollectionDeserializer, ContainerDeserializerBase}
+import org.codehaus.jackson.map.deser.ValueInstantiator
 
 private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: Seq[E]]) extends AbstractCollection[E] {
 
@@ -54,30 +55,32 @@ private class SeqDeserializer(
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
 
-  extends ContainerDeserializer[Seq[AnyRef]](classOf[SeqDeserializer]) {
+  extends ContainerDeserializerBase[Seq[AnyRef]](classOf[SeqDeserializer]) {
 
-  // This type is never used because we never let the collection deserializer construct an instance
-  // TODO: Rework BuilderWrapper so it can serve in its place
-  private val dummyCollectionClass =
-    classOf[ArrayList[Object]].asInstanceOf[Class[java.util.Collection[Object]]]
+  private val javaContainerType = config.constructType(classOf[BuilderWrapper[AnyRef]])
 
-  private val javaContainerType = config.constructType(dummyCollectionClass)
-  private val javaCtor = dummyCollectionClass.getConstructor()
+  private val instantiator = new ValueInstantiator {
+    def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
+
+    override def canCreateUsingDefault = true
+
+    override def createUsingDefault =
+      new BuilderWrapper[AnyRef](SeqDeserializer.builderFor[AnyRef](collectionType.getRawClass))
+  }
   private val containerDeserializer =
-    new CollectionDeserializer(javaContainerType,valueDeser.asInstanceOf[JsonDeserializer[AnyRef]],valueTypeDeser,javaCtor)
+    new CollectionDeserializer(javaContainerType,valueDeser.asInstanceOf[JsonDeserializer[AnyRef]],valueTypeDeser,instantiator)
 
   override def getContentType = containerDeserializer.getContentType
 
   override def getContentDeserializer = containerDeserializer.getContentDeserializer
 
-  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Seq[AnyRef] = {
-    val builder = SeqDeserializer.builderFor[AnyRef](collectionType.getRawClass)
-    containerDeserializer.deserialize(jp, ctxt, new BuilderWrapper[AnyRef](builder))
-    builder.result()
-  }
+  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Seq[AnyRef] =
+    containerDeserializer.deserialize(jp, ctxt) match {
+      case wrapper: BuilderWrapper[AnyRef] => wrapper.builder.result()
+    }
 }
 
-private object SeqDeserializerResolver extends Deserializers.None {
+private object SeqDeserializerResolver extends Deserializers.Base {
 
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                      config: DeserializationConfig,
