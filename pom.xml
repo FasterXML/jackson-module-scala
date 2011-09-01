@@ -33,8 +33,8 @@
   </prerequisites>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <scala.version>2.9.0</scala.version>
-    <scala-lib.version>2.9.0-1</scala-lib.version>
+    <scala.version>2.9.1</scala.version>
+    <scala-lib.version>2.9.1</scala-lib.version>
   </properties>
 
   <!-- Licensing -->
