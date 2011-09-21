@@ -4,7 +4,7 @@ import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 import com.fasterxml.jackson.module.scala.JacksonModule
 import org.codehaus.jackson.map.`type`.CollectionLikeType
 import org.codehaus.jackson.map.{DeserializationContext, JsonDeserializer, TypeDeserializer, BeanProperty, BeanDescription, DeserializerProvider, DeserializationConfig, Deserializers}
-import org.codehaus.jackson.{JsonToken, JsonParser}
+import org.codehaus.jackson.JsonParser
 import org.codehaus.jackson.`type`.JavaType
 
 private class OptionDeserializer(elementType: JavaType, config: DeserializationConfig, provider: DeserializerProvider, property: BeanProperty, deser: JsonDeserializer[_])
@@ -17,7 +17,7 @@ private class OptionDeserializer(elementType: JavaType, config: DeserializationC
   override def getNullValue = None
 }
 
-private object OptionDeserializerResolver extends Deserializers.None {
+private object OptionDeserializerResolver extends Deserializers.Base {
 
   private val OPTION = classOf[Option[AnyRef]]
 

@@ -54,7 +54,7 @@ private class SeqDeserializer(
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
 
-  extends ContainerDeserializerBase[Seq[AnyRef]](classOf[SeqDeserializer]) {
+  extends ContainerDeserializerBase[Seq[_]](classOf[SeqDeserializer]) {
 
   private val javaContainerType = config.constructType(classOf[BuilderWrapper[AnyRef]])
 
@@ -73,9 +73,9 @@ private class SeqDeserializer(
 
   override def getContentDeserializer = containerDeserializer.getContentDeserializer
 
-  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Seq[AnyRef] =
+  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Seq[_] =
     containerDeserializer.deserialize(jp, ctxt) match {
-      case wrapper: BuilderWrapper[AnyRef] => wrapper.builder.result()
+      case wrapper: BuilderWrapper[_] => wrapper.builder.result()
     }
 }
 

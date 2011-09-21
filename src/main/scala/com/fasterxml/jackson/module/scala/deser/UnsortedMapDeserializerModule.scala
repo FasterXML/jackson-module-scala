@@ -4,7 +4,6 @@ import scala.collection.{GenMap, mutable}
 import java.util.AbstractMap
 import java.util.Map.Entry
 import scala.collection.immutable.HashMap
-import org.codehaus.jackson.`type`.JavaType
 import org.codehaus.jackson.map.deser.std.{MapDeserializer, ContainerDeserializerBase}
 import org.codehaus.jackson.JsonParser
 import org.codehaus.jackson.map.`type`.MapLikeType
@@ -34,7 +33,7 @@ private [deser] class UnsortedMapDeserializer(
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
 
-  extends ContainerDeserializerBase[GenMap[AnyRef,AnyRef]](classOf[UnsortedMapDeserializer]) {
+  extends ContainerDeserializerBase[GenMap[_,_]](classOf[UnsortedMapDeserializer]) {
 
   private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
 
@@ -53,12 +52,9 @@ private [deser] class UnsortedMapDeserializer(
 
   override def getContentDeserializer = containerDeserializer.getContentDeserializer
 
-  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): GenMap[AnyRef,AnyRef] = {
-//    val builder = UnsortedMapDeserializer.builderFor(collectionType.getRawClass)
-//    containerDeserializer.deserialize(jp, ctxt, new MapBuilderWrapper[AnyRef,AnyRef](builder))
-//    builder.result()
+  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): GenMap[_,_] = {
     containerDeserializer.deserialize(jp,ctxt) match {
-      case wrapper: MapBuilderWrapper[AnyRef, AnyRef] => wrapper.builder.result()
+      case wrapper: MapBuilderWrapper[_,_] => wrapper.builder.result()
     }
   }
 }

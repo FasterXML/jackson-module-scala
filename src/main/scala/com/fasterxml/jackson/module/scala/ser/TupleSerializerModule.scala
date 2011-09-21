@@ -43,7 +43,7 @@ private class TupleSerializer(javaType: JavaType, property: BeanProperty)
   def _withValueTypeSerializer(newVts: TypeSerializer) = this
 }
 
-private object TupleSerializerResolver extends Serializers.None {
+private object TupleSerializerResolver extends Serializers.Base {
 
   private val PRODUCT = classOf[Product]
 

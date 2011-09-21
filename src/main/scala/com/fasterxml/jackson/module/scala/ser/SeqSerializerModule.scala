@@ -24,7 +24,7 @@ private class SeqSerializer(seqType: Class[_], elemType: JavaType, staticTyping:
     new SeqSerializer(seqType, elemType, staticTyping, Option(newVts), property, valueSerializer)
 }
 
-private object SeqSerializerResolver extends Serializers.None {
+private object SeqSerializerResolver extends Serializers.Base {
 
   override def findCollectionLikeSerializer(config: SerializationConfig,
                    collectionType: CollectionLikeType,
