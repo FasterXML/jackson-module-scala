@@ -5,8 +5,6 @@ import org.codehaus.jackson.map.Module.SetupContext
 import org.codehaus.jackson.map.{Deserializers, Serializers, Module}
 import org.codehaus.jackson.map.`type`.TypeModifier
 import org.codehaus.jackson.map.ser.BeanSerializerModifier
-import org.codehaus.jackson.map.deser.BeanDeserializerModifier
-
 trait JacksonModule extends Module {
 
   private val serializers = Seq.newBuilder[Serializers]
@@ -17,7 +15,7 @@ trait JacksonModule extends Module {
   def getModuleName = "JacksonModule"
 
   // TODO: Keep in sync with POM
-  val version = new Version(0,5,0,"SNAPSHOT")
+  val version = new Version(1,9,0,"SNAPSHOT")
 
   def setupModule(context: SetupContext)
   {
