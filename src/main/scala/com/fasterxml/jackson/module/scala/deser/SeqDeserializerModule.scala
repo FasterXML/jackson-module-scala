@@ -89,9 +89,11 @@ private object SeqDeserializerResolver extends Deserializers.Base {
                      property: BeanProperty,
                      elementTypeDeserializer: TypeDeserializer,
                      elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    val resolvedDeserializer =
-      Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,collectionType.containedType(0),property))
-    new SeqDeserializer(collectionType, config, resolvedDeserializer, elementTypeDeserializer)
+    if (classOf[Seq[_]].isAssignableFrom(collectionType.getRawClass)) {
+      val resolvedDeserializer =
+        Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,collectionType.containedType(0),property))
+      new SeqDeserializer(collectionType, config, resolvedDeserializer, elementTypeDeserializer)
+    } else null
   }
 
 }
