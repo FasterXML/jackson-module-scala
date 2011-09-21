@@ -6,8 +6,6 @@ private object SeqTypeModifier extends CollectionLikeTypeModifier {
   val BASE = classOf[Seq[Any]]
 }
 
-trait SeqTypeModifierModule {
-  self: JacksonModule =>
-
+trait SeqTypeModifierModule extends JacksonModule {
   this += SeqTypeModifier
 }

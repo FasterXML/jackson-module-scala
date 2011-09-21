@@ -8,7 +8,6 @@ import org.codehaus.jackson.`type`.TypeReference
 import collection.LinearSeq
 import collection.mutable
 import collection.immutable.Queue
-import org.codehaus.jackson.map.ObjectMapper
 import com.fasterxml.jackson.module.scala.JacksonModule
 
 @RunWith(classOf[JUnitRunner])
@@ -16,10 +15,15 @@ class SeqDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatc
 
   lazy val module = new JacksonModule with SeqDeserializerModule
 
-  "An ObjectMapper with the SeqDeserializer" should "deserialize a list into an IndexedSeq" in {
+  "An ObjectMapper with the SeqDeserializer" should "deserialize a list into a Seq" in {
     // The temporary object is necessary to force the cast back to the concrete type.
     // Otherwise the value is elided directly to ShouldMatcher, which will take any Seq
     // TODO: Would the JVM ever elide this anyway?
+    val result = deserialize(listJson, new TypeReference[collection.Seq[Int]] {})
+    result should equal (listScala)
+  }
+
+  it should "deserialize a list into an IndexedSeq" in {
     val result = deserialize(listJson, new TypeReference[IndexedSeq[Int]] {})
     result should equal (listScala)
   }

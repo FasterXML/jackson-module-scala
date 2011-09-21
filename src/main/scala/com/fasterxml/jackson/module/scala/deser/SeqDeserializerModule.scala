@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule
 
 import org.codehaus.jackson.`type`.JavaType
@@ -89,7 +88,9 @@ private object SeqDeserializerResolver extends Deserializers.Base {
                      property: BeanProperty,
                      elementTypeDeserializer: TypeDeserializer,
                      elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    if (classOf[Seq[_]].isAssignableFrom(collectionType.getRawClass)) {
+    val rawClass = collectionType.getRawClass
+
+    if (classOf[Seq[_]].isAssignableFrom(rawClass)) {
       val resolvedDeserializer =
         Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,collectionType.containedType(0),property))
       new SeqDeserializer(collectionType, config, resolvedDeserializer, elementTypeDeserializer)
@@ -99,7 +100,5 @@ private object SeqDeserializerResolver extends Deserializers.Base {
 }
 
 trait SeqDeserializerModule extends SeqTypeModifierModule {
-  self: JacksonModule =>
-
   this += SeqDeserializerResolver
 }

@@ -1,9 +1,9 @@
 package com.fasterxml.jackson.module.scala;
 
-import com.fasterxml.jackson.module.scala.deser.ScalaDeserializers;
-import com.fasterxml.jackson.module.scala.ser.ScalaSerializers;
-import org.codehaus.jackson.map.Module;
-
+/**
+ * @deprecated Use {@link DefaultScalaModule}
+ */
+@Deprecated
 public class ScalaModule extends DefaultScalaModule
 {
     private final String NAME = "ScalaModule";
@@ -55,14 +55,6 @@ public class ScalaModule extends DefaultScalaModule
     public ScalaModule() { }
 
     @Override public String getModuleName() { return NAME; }
-
-    @Override
-    public void setupModule(Module.SetupContext context)
-    {
-        super.setupModule(context);
-        context.addDeserializers(new ScalaDeserializers());
-        context.addSerializers(new ScalaSerializers());
-    }
 
     /*
     /**********************************************************

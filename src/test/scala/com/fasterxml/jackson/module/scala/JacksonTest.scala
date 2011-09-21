@@ -4,7 +4,7 @@ import org.codehaus.jackson.map.{Module, ObjectMapper}
 
 trait JacksonTest {
 
-  val module: Module
+  def module: Module
 
   val mapper = {
     val result = new ObjectMapper
