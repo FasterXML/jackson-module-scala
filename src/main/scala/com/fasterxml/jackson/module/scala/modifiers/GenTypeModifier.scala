@@ -6,7 +6,7 @@ import org.codehaus.jackson.map.`type`.SimpleType
 private [modifiers] trait GenTypeModifier {
 
   // Workaround for http://jira.codehaus.org/browse/JACKSON-638
-  protected  def UNKNOWN = SimpleType.construct(classOf[AnyRef])
+  protected def UNKNOWN = SimpleType.construct(classOf[AnyRef])
 
   protected def classObjectFor(jdkType: Type) = jdkType match {
     case cls: Class[_] => Some(cls)
