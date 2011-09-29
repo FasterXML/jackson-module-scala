@@ -14,3 +14,8 @@ project/boot
 project/target
 target
 logs
+
+# IDEA
+*.iml
+*.ipr
+*.iws
