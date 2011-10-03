@@ -1,8 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
-import deser.SeqDeserializerModule
-import ser.SeqSerializerModule
+import ser.{IterableSerializerModule}
 
-trait IterableModule extends SeqSerializerModule with SeqDeserializerModule {
+trait IterableModule extends IterableSerializerModule {
   self: JacksonModule =>
 }

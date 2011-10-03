@@ -2,10 +2,10 @@ package com.fasterxml.jackson.module.scala.modifiers
 
 import com.fasterxml.jackson.module.scala.JacksonModule
 
-private object SeqTypeModifier extends CollectionLikeTypeModifier {
-  val BASE = classOf[Seq[Any]]
+private object IterableTypeModifier extends CollectionLikeTypeModifier {
+  val BASE = classOf[Iterable[Any]]
 }
 
-trait SeqTypeModifierModule extends JacksonModule {
-  this += SeqTypeModifier
+trait IterableTypeModifierModule extends JacksonModule {
+  this += IterableTypeModifier
 }
