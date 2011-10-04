@@ -34,6 +34,7 @@ private object IterableSerializerResolver extends Serializers.Base {
                    elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
     val rawClass = collectionType.getRawClass
     if (!classOf[collection.Iterable[Any]].isAssignableFrom(rawClass)) null else
+    if (classOf[collection.Map[Any,Any]].isAssignableFrom(rawClass)) null else
     new IterableSerializer(rawClass, collectionType.containedType(0), false, Option(elementTypeSerializer), beanProperty,
       Option(elementSerializer))
   }

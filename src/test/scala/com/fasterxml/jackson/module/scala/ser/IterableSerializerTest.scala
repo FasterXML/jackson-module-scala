@@ -6,6 +6,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.JacksonModule
 import collection.Iterator
+import org.codehaus.jackson.map.JsonMappingException
 
 /**
  * Undocumented class.
@@ -21,6 +22,16 @@ class IterableSerializerTest extends SerializerTest with FlatSpec with ShouldMat
       }
 
     serialize(iterable) should be ("[1,2,3]")
+  }
+
+  it should "serialize a Seq[Int]" in {
+    serialize(Seq(1,2,3)) should be ("[1,2,3]")
+  }
+
+  it should "not serialize a Map[Int]" in {
+    intercept[JsonMappingException] {
+      serialize(Map(1->2,3->4))
+    }
   }
 
 }
