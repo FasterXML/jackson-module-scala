@@ -45,3 +45,4 @@ Consult the Scaladoc for further details.
 [JAXB]: http://jaxb.java.net/
 [Jersey]: http://jersey.java.net/
 [Java Bean]: http://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
+[Scala]: http://www.scala-lang.org/
