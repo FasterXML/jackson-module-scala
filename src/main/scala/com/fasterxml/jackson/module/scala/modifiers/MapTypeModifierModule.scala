@@ -5,7 +5,7 @@ import java.lang.reflect.Type
 import org.codehaus.jackson.map.`type`.{TypeFactory, TypeBindings, TypeModifier}
 import com.fasterxml.jackson.module.scala.JacksonModule
 
-object MapTypeModifer extends TypeModifier with GenTypeModifier {
+private object MapTypeModifer extends TypeModifier with GenTypeModifier {
 
   val BASE = classOf[collection.Map[_,_]]
 

@@ -59,7 +59,7 @@ private [deser] class UnsortedMapDeserializer(
   }
 }
 
-object UnsortedMapDeserializerResolver extends Deserializers.Base {
+private object UnsortedMapDeserializerResolver extends Deserializers.Base {
 
   override def findMapLikeDeserializer(theType: MapLikeType,
                               config: DeserializationConfig,

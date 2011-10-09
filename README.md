@@ -1,19 +1,47 @@
 # Overview
 
-Project to build Jackson (http://jackson.codehaus.org) module (jar) that supports Scala (http://www.scala-lang.org/) data types.
+[Jackson][] is a fast JSON processor for Java that supports three models:
+streaming, node, and object mapping (akin to the three independent models
+[SAX][], [DOM][], and [JAXB][] in XML).
 
-The Scala Module supports serialization and limited deserialization of Scala Lists, Maps, and other immutable and mutable collection types. Scala's collection API does not inheret from Java's collection API; therefore this module is necessary to support Scala.
+The object mapping model is a high-level processing model that allows the
+user to project JSON data onto a domain-specific data model appropriate
+for their application, without having to deal with the low-level mechanics
+of JSON parsing. It is the standard object mapping parser implementaton
+in [Jersey][], the reference implementation for JSR-311 (Java API for
+Restful Web Services).
+
+[Scala][] is a functional programming language for the JVM that supports
+Java interoperability. Its standard library is quite distinct from Java,
+and does not fulfill the expectations of Jacksons default mappings.
+Notably, Scala collections do not derive from `java.util.Collection` or
+its subclasses, and Scala properties do not (by default) look like [Java
+Bean][] properites.
+
+The Scala Module supports serialization and limited deserialization of
+Scala Sequences, Maps, Tuples, Options, and Enumerations.
 
 # Usage
 
-To use the Scala Module in Jackson, simply register it with the ObjectMapper instance:
+To use the Scala Module in Jackson, simply register it with the
+ObjectMapper instance:
 
     val mapper = new ObjectMapper()
-    mapper.registerModule(new ScalaModule())
+    mapper.registerModule(DefaultScalaModule)
 
-ObjectMapper methods readValue and writeValue will use the ScalaModule's ScalaDeserializers and ScalaSerializers to implement the Scala collection conversions. 
+`DefaultScalaModule` is a Scala object that includes support for all
+currently supported Scala data types. If only partial support is desired,
+the component traits can be included individually:
 
-For more documentation on usage, please refer to the scala test cases:
+    val module = new OptionModule with TupleModule {}
+    val mapper = new ObjectMapper()
+    mapper.registerModule(module)
 
-* src/test/scala/com/fasterxml/jackson/module/scala/SerializationTest.scala
-* src/test/scala/com/fasterxml/jackson/module/scala/DeserializationTest.scala
+Consult the Scaladoc for further details.
+
+[Jackson]: http://jackson.codehaus.org/
+[SAX]: http://www.saxproject.org/
+[DOM]: http://www.w3.org/TR/DOM-Level-3-Core/
+[JAXB]: http://jaxb.java.net/
+[Jersey]: http://jersey.java.net/
+[Java Bean]: http://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html

@@ -128,6 +128,9 @@
             <arg>-deprecation</arg>
             <arg>-unchecked</arg>
           </args>
+          <charset>UTF-8</charset>
+          <doctitle>Jackson Scala Module ${project.version}</doctitle>
+          <windowtitle>Jackson Scala Module ${project.version}</windowtitle>
         </configuration>
         <executions>
           <execution>

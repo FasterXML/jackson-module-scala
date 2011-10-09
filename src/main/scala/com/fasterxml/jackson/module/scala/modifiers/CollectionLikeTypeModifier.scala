@@ -4,7 +4,7 @@ import org.codehaus.jackson.`type`.JavaType
 import java.lang.reflect.Type
 import org.codehaus.jackson.map.`type`.{TypeFactory, TypeBindings, TypeModifier}
 
-trait CollectionLikeTypeModifier extends TypeModifier with GenTypeModifier {
+private [modifiers] trait CollectionLikeTypeModifier extends TypeModifier with GenTypeModifier {
 
   def BASE: Class[_]
 
