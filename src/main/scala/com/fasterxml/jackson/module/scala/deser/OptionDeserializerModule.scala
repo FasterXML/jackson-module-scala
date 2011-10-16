@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
-import com.fasterxml.jackson.module.scala.JacksonModule
 import org.codehaus.jackson.map.`type`.CollectionLikeType
 import org.codehaus.jackson.map.{DeserializationContext, JsonDeserializer, TypeDeserializer, BeanProperty, BeanDescription, DeserializerProvider, DeserializationConfig, Deserializers}
 import org.codehaus.jackson.JsonParser
@@ -30,7 +29,5 @@ private object OptionDeserializerResolver extends Deserializers.Base {
 }
 
 trait OptionDeserializerModule extends OptionTypeModifierModule {
-  self: JacksonModule =>
-
   this += OptionDeserializerResolver
 }

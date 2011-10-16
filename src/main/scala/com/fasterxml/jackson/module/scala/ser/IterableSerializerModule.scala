@@ -1,13 +1,12 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import collection.JavaConverters._
-import com.fasterxml.jackson.module.scala.JacksonModule
 import org.codehaus.jackson.JsonGenerator
 import org.codehaus.jackson.`type`.JavaType
 import org.codehaus.jackson.map.{BeanDescription, SerializationConfig, Serializers, SerializerProvider, JsonSerializer, BeanProperty, TypeSerializer}
 import org.codehaus.jackson.map.`type`.CollectionLikeType
 import org.codehaus.jackson.map.ser.std.{CollectionSerializer, AsArraySerializerBase}
-import com.fasterxml.jackson.module.scala.modifiers.{IterableTypeModifierModule}
+import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
 
 private class IterableSerializer(seqType: Class[_], elemType: JavaType, staticTyping: Boolean, vts: Option[TypeSerializer], property: BeanProperty, valueSerializer: Option[JsonSerializer[AnyRef]])
   extends AsArraySerializerBase[collection.Iterable[Any]](seqType, elemType, staticTyping, vts.orNull, property, valueSerializer.orNull) {
@@ -42,7 +41,5 @@ private object IterableSerializerResolver extends Serializers.Base {
 }
 
 trait IterableSerializerModule extends IterableTypeModifierModule {
-  self: JacksonModule =>
-
   this += IterableSerializerResolver
 }

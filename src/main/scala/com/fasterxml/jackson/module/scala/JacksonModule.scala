@@ -17,13 +17,10 @@ trait JacksonModule extends Module {
 
   def setupModule(context: SetupContext) { initializers result() foreach (_ apply context) }
 
-  protected def +=(ser: Serializers): this.type = { initializers += (_ addSerializers ser); this }
-  protected def +=(deser: Deserializers): this.type = { initializers += (_ addDeserializers deser); this }
-  protected def +=(typeMod: TypeModifier): this.type = { initializers += (_ addTypeModifier typeMod); this }
-
-  protected def +=(beanSerMod: BeanSerializerModifier): this.type = {
-    initializers += (_ addBeanSerializerModifier beanSerMod)
-    this
-  }
+  protected def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
+  protected def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
+  protected def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
+  protected def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
+  protected def +=(beanSerMod: BeanSerializerModifier): this.type = this += (_ addBeanSerializerModifier beanSerMod)
 
 }

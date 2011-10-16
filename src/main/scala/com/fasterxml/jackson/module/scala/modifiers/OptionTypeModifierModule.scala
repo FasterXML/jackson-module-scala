@@ -6,8 +6,6 @@ private object OptionTypeModifier extends CollectionLikeTypeModifier {
   def BASE = classOf[Option[Any]]
 }
 
-trait OptionTypeModifierModule {
-  self: JacksonModule =>
-
+trait OptionTypeModifierModule extends JacksonModule {
   this += OptionTypeModifier
 }

@@ -1,8 +1,6 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.module.scala.JacksonModule
 import org.codehaus.jackson.map.`type`.CollectionLikeType
-import java.lang.reflect.Type
 import org.codehaus.jackson.JsonGenerator
 import org.codehaus.jackson.map.{JsonSerializer, SerializerProvider, TypeSerializer, BeanProperty, BeanDescription, SerializationConfig, Serializers}
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
@@ -31,7 +29,5 @@ private object OptionSerializerResolver extends Serializers.Base {
 }
 
 trait OptionSerializerModule extends OptionTypeModifierModule {
-  self: JacksonModule =>
-
   this += OptionSerializerResolver
 }
