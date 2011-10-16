@@ -58,8 +58,6 @@ private object TupleSerializerResolver extends Serializers.Base {
 
 }
 
-trait TupleSerializerModule {
-  self: JacksonModule =>
-
+trait TupleSerializerModule extends JacksonModule {
   this += TupleSerializerResolver
 }
