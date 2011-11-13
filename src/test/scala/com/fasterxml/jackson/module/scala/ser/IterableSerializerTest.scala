@@ -28,6 +28,10 @@ class IterableSerializerTest extends SerializerTest with FlatSpec with ShouldMat
     serialize(Seq(1,2,3)) should be ("[1,2,3]")
   }
 
+  it should "serialize a Set[Int]" in {
+    serialize(Set(1,2,3)) should be ("[1,2,3]")
+  }
+
   it should "not serialize a Map[Int]" in {
     intercept[JsonMappingException] {
       serialize(Map(1->2,3->4))
