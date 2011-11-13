@@ -44,4 +44,9 @@ class TupleDeserializerTest extends DeserializerTest with FlatSpec with ShouldMa
     result should be ((1,"foo"))
   }
 
+  it should "deserialize a Tuple3[Double,String,Int]" in {
+    val result = deserialize("""[3.0,"A",1]""", new TypeReference[(Double,String,Int)]{})
+    result should be ((3.0,"A",1))
+  }
+
 }

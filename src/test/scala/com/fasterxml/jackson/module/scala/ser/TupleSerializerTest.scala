@@ -15,4 +15,9 @@ class TupleSerializerTest extends SerializerTest with FlatSpec with ShouldMatche
     result should be ("""["A",1]""")
   }
 
+  it should "serialize a Tuple3" in {
+    val result = serialize((3.0, "A", 1))
+    result should be ("""[3.0,"A",1]""")
+  }
+
 }
