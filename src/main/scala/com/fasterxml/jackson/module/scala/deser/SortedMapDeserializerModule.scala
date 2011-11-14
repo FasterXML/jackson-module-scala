@@ -1,40 +1,40 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import scala.collection.{GenMap, mutable}
+import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+import org.codehaus.jackson.map.`type`.MapLikeType
+import org.codehaus.jackson.JsonParser
+import org.codehaus.jackson.map.{DeserializationContext, JsonDeserializer, TypeDeserializer, KeyDeserializer, BeanProperty, BeanDescription, DeserializerProvider, DeserializationConfig, Deserializers}
+import scala.collection.{mutable, SortedMap}
 import java.util.AbstractMap
 import java.util.Map.Entry
-import scala.collection.immutable.HashMap
-import org.codehaus.jackson.map.deser.std.{MapDeserializer, ContainerDeserializerBase}
-import org.codehaus.jackson.JsonParser
-import org.codehaus.jackson.map.`type`.MapLikeType
-import org.codehaus.jackson.map.{BeanProperty, BeanDescription, DeserializerProvider, DeserializationContext, TypeDeserializer, JsonDeserializer, KeyDeserializer, DeserializationConfig, Deserializers}
 import org.codehaus.jackson.map.deser.ValueInstantiator
-import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+import org.codehaus.jackson.map.deser.std.{MapDeserializer, ContainerDeserializerBase}
+import scala.collection.immutable.TreeMap
 
-private class MapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), GenMap[K,V]]) extends AbstractMap[K,V] {
+private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), SortedMap[K,V]]) extends AbstractMap[K,V] {
   override def put(k: K, v: V) = { builder += ((k,v)); v }
 
   // Isn't used by the deserializer
   def entrySet(): java.util.Set[Entry[K, V]] = throw new UnsupportedOperationException
 }
 
-private object UnsortedMapDeserializer {
-  def builderFor(cls: Class[_]): mutable.Builder[(AnyRef,AnyRef), GenMap[AnyRef,AnyRef]] =
-    if (classOf[HashMap[_,_]].isAssignableFrom(cls)) HashMap.newBuilder[AnyRef,AnyRef] else
-    if (classOf[mutable.HashMap[_,_]].isAssignableFrom(cls)) mutable.HashMap.newBuilder[AnyRef,AnyRef] else
-    if (classOf[mutable.LinkedHashMap[_,_]].isAssignableFrom(cls)) mutable.LinkedHashMap.newBuilder[AnyRef,AnyRef] else
-    Map.newBuilder[AnyRef,AnyRef]
+private object SortedMapDeserializer {
+  def orderingFor(cls: Class[_]): Ordering[AnyRef] =
+    (if (classOf[String].isAssignableFrom(cls)) Ordering.String else
+    throw new IllegalArgumentException("Unsupported key type: " + cls.getCanonicalName)).asInstanceOf[Ordering[AnyRef]]
+
+  def builderFor(cls: Class[_], keyCls: Class[_]): mutable.Builder[(AnyRef,AnyRef), SortedMap[AnyRef,AnyRef]] =
+    if (classOf[TreeMap[_,_]].isAssignableFrom(cls)) TreeMap.newBuilder[AnyRef,AnyRef](orderingFor(keyCls)) else
+    SortedMap.newBuilder[AnyRef,AnyRef](orderingFor(keyCls))
 }
 
-private class UnsortedMapDeserializer(
+private class SortedMapDeserializer(
     collectionType: MapLikeType,
     config: DeserializationConfig,
     keyDeser: KeyDeserializer,
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
-
-  extends ContainerDeserializerBase[GenMap[_,_]](classOf[UnsortedMapDeserializer]) {
-
+  extends ContainerDeserializerBase[SortedMap[_,_]](classOf[SortedMapDeserializer]) {
   private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
 
   private val instantiator =
@@ -42,7 +42,7 @@ private class UnsortedMapDeserializer(
       def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
       override def canCreateUsingDefault = true
       override def createUsingDefault =
-        new MapBuilderWrapper[AnyRef,AnyRef](UnsortedMapDeserializer.builderFor(collectionType.getRawClass))
+        new SortedMapBuilderWrapper[AnyRef,AnyRef](SortedMapDeserializer.builderFor(collectionType.getRawClass, collectionType.containedType(0).getRawClass))
     }
 
   private val containerDeserializer =
@@ -52,15 +52,14 @@ private class UnsortedMapDeserializer(
 
   override def getContentDeserializer = containerDeserializer.getContentDeserializer
 
-  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): GenMap[_,_] = {
+  def deserialize(jp: JsonParser, ctxt: DeserializationContext): SortedMap[_,_] = {
     containerDeserializer.deserialize(jp,ctxt) match {
-      case wrapper: MapBuilderWrapper[_,_] => wrapper.builder.result()
+      case wrapper: SortedMapBuilderWrapper[_,_] => wrapper.builder.result()
     }
   }
 }
 
-private object UnsortedMapDeserializerResolver extends Deserializers.Base {
-
+private object SortedMapDeserializerResolver extends Deserializers.Base {
   override def findMapLikeDeserializer(theType: MapLikeType,
                               config: DeserializationConfig,
                               provider: DeserializerProvider,
@@ -70,23 +69,22 @@ private object UnsortedMapDeserializerResolver extends Deserializers.Base {
                               elementTypeDeserializer: TypeDeserializer,
                               elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
     val rawClass = theType.getRawClass
-    if (classOf[collection.Map[_,_]].isAssignableFrom(rawClass) &&
-        !classOf[collection.SortedMap[_,_]].isAssignableFrom(rawClass)) {
+    if (classOf[collection.SortedMap[_,_]].isAssignableFrom(rawClass)) {
       val keyType = theType.containedType(0)
       val valueType = theType.containedType(1)
       val resolvedKeyDeser =
         Option(keyDeserializer).getOrElse(provider.findKeyDeserializer(config,keyType,property))
       val resolvedValueDeser =
         Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,valueType,property))
-      new UnsortedMapDeserializer(theType,config,resolvedKeyDeser,resolvedValueDeser,elementTypeDeserializer)
+      new SortedMapDeserializer(theType,config,resolvedKeyDeser,resolvedValueDeser,elementTypeDeserializer)
     } else null
   }
 
 }
 
 /**
- * @author Christopher Currie <ccurrie@impresys.com>
+ * @author Christopher Currie <christopher@currie.com>
  */
-trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
-  this += { _.addDeserializers(UnsortedMapDeserializerResolver) }
+trait SortedMapDeserializerModule extends MapTypeModifierModule {
+  this += { _.addDeserializers(SortedMapDeserializerResolver) }
 }

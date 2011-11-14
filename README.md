@@ -19,7 +19,7 @@ its subclasses, and Scala properties do not (by default) look like [Java
 Bean][] properites.
 
 The Scala Module supports serialization and limited deserialization of
-Scala Sequences, Maps, Tuples, Options, and Enumerations.
+Scala Case Classes, Sequences, Maps, Tuples, Options, and Enumerations.
 
 # Usage
 
