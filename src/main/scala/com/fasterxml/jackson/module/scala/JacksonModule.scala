@@ -5,6 +5,29 @@ import org.codehaus.jackson.map.Module.SetupContext
 import org.codehaus.jackson.map.{Deserializers, Serializers, Module}
 import org.codehaus.jackson.map.`type`.TypeModifier
 import org.codehaus.jackson.map.ser.BeanSerializerModifier
+import java.util.Properties
+
+object JacksonModule {
+  private val VersionRegex = """(\d+)\.(\d+)(?:\.(\d+)(?:\-(.*))?)?""".r
+  private val cls = classOf[JacksonModule]
+  private val buildPropsFilename = cls.getPackage.getName.replace('.','/') + "/build.properties"
+  lazy val buildProps: Properties = {
+    val props = new Properties
+    val stream = cls.getClassLoader.getResourceAsStream(buildPropsFilename)
+    if (stream ne null) props.load(stream)
+
+    props
+  }
+  lazy val version: Version = {
+    buildProps.getProperty("version") match {
+      case VersionRegex(major,minor,patchOpt,snapOpt) => {
+        val patch = Option(patchOpt) map (_.toInt) getOrElse 0
+        new Version(major.toInt,minor.toInt,patch,snapOpt)
+      }
+      case _ => Version.unknownVersion()
+    }
+  }
+}
 
 trait JacksonModule extends Module {
 
@@ -12,8 +35,7 @@ trait JacksonModule extends Module {
 
   def getModuleName = "JacksonModule"
 
-  // TODO: Keep in sync with POM
-  val version = new Version(1,9,0,"SNAPSHOT")
+  def version = JacksonModule.version
 
   def setupModule(context: SetupContext) { initializers result() foreach (_ apply context) }
 
