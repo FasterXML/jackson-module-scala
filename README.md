@@ -39,6 +39,10 @@ the component traits can be included individually:
 
 Consult the Scaladoc for further details.
 
+# Download, docs
+
+Check out [Wiki].
+
 [Jackson]: http://jackson.codehaus.org/
 [SAX]: http://www.saxproject.org/
 [DOM]: http://www.w3.org/TR/DOM-Level-3-Core/
@@ -46,3 +50,4 @@ Consult the Scaladoc for further details.
 [Jersey]: http://jersey.java.net/
 [Java Bean]: http://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
 [Scala]: http://www.scala-lang.org/
+[Wiki]: https://github.com/FasterXML/jackson-module-scala/wiki
