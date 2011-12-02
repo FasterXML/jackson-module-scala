@@ -37,7 +37,7 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
   }
 
   it should "honor Jackson annotations" in {
-    val result = CaseClassJacksonAnnotationTest("foo","bar  ")
+    val result = CaseClassJacksonAnnotationTest("foo","bar")
     deserialize("""{"foo":"foo","bar":"bar"}""", classOf[CaseClassJacksonAnnotationTest]) should be (result)
   }
 }
