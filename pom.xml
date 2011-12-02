@@ -54,7 +54,8 @@
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.0</version>
+      <!-- 1.9 works; 1.9.2 latest available -->
+      <version>1.9.2</version>
     </dependency>
     <!-- what core Scala runtime libs do we need? -->
     <dependency>
