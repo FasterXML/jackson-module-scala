@@ -52,5 +52,5 @@ private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector
 }
 
 trait CaseClassDeserializerModule extends JacksonModule {
-  this += { _.insertAnnotationIntrospector(CaseClassAnnotationIntrospector) }
+  this += { _.appendAnnotationIntrospector(CaseClassAnnotationIntrospector) }
 }
