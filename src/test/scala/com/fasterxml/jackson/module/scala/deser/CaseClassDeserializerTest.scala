@@ -5,6 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.fasterxml.jackson.module.scala.JacksonModule
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
+import org.codehaus.jackson.annotate.JsonProperty
 
 case class CaseClassConstructorTest(intValue: Int, stringValue: String) {
 
@@ -13,6 +14,10 @@ case class CaseClassConstructorTest(intValue: Int, stringValue: String) {
 case class CaseClassPropertiesTest() {
   var intProperty: Int = 0
   var stringProperty: String = null
+}
+
+case class CaseClassJacksonAnnotationTest(@JsonProperty("foo") oof:String, bar: String) {
+
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -31,4 +36,8 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
     deserialize("""{"intProperty":1,"stringProperty":"foo"}""", classOf[CaseClassPropertiesTest]) should be (result)
   }
 
+  it should "honor Jackson annotations" in {
+    val result = CaseClassJacksonAnnotationTest("foo","bar  ")
+    deserialize("""{"foo":"foo","bar":"bar"}""", classOf[CaseClassJacksonAnnotationTest]) should be (result)
+  }
 }
