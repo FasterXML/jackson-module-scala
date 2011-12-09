@@ -16,7 +16,7 @@ Java interoperability. Its standard library is quite distinct from Java,
 and does not fulfill the expectations of Jacksons default mappings.
 Notably, Scala collections do not derive from `java.util.Collection` or
 its subclasses, and Scala properties do not (by default) look like [Java
-Bean][] properites.
+Bean][] properties.
 
 The Scala Module supports serialization and limited deserialization of
 Scala Case Classes, Sequences, Maps, Tuples, Options, and Enumerations.
