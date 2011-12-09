@@ -19,3 +19,8 @@ logs
 *.iml
 *.ipr
 *.iws
+
+# ECLIPSE
+.classpath
+.project
+.settings
