@@ -6,8 +6,12 @@ import org.codehaus.jackson.map.introspect.{AnnotatedField, AnnotatedConstructor
 import org.scalastuff.scalabeans.{DeserializablePropertyDescriptor, ConstructorParameter}
 
 private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector {
+  lazy val PRODUCT = classOf[Product]
+  lazy val OPTION = classOf[Option[_]]
+
   private def maybeIsCaseClass(cls: Class[_]): Boolean = {
-    if (!classOf[Product].isAssignableFrom(cls)) false
+    if (!PRODUCT.isAssignableFrom(cls)) false
+    else if (OPTION.isAssignableFrom(cls)) false
     else if (cls.getName.startsWith("scala.Tuple")) false
     else true
   }
