@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import org.codehaus.jackson.annotate.JsonProperty
+import org.codehaus.jackson.map.JsonMappingException
 
 case class CaseClassConstructorTest(intValue: Int, stringValue: String) {
 
@@ -39,5 +40,11 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
   it should "honor Jackson annotations" in {
     val result = CaseClassJacksonAnnotationTest("foo","bar")
     deserialize("""{"foo":"foo","bar":"bar"}""", classOf[CaseClassJacksonAnnotationTest]) should be (result)
+  }
+  
+  it should "not try to deserialize a List" in {
+    intercept[JsonMappingException] {
+      deserialize("""{"foo":"foo","bar":"bar"}""", classOf[List[_]])
+    }
   }
 }

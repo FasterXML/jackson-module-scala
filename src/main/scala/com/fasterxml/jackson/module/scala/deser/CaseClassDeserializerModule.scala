@@ -8,10 +8,12 @@ import org.scalastuff.scalabeans.{DeserializablePropertyDescriptor, ConstructorP
 private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector {
   lazy val PRODUCT = classOf[Product]
   lazy val OPTION = classOf[Option[_]]
+  lazy val LIST = classOf[List[_]]
 
   private def maybeIsCaseClass(cls: Class[_]): Boolean = {
     if (!PRODUCT.isAssignableFrom(cls)) false
     else if (OPTION.isAssignableFrom(cls)) false
+    else if (LIST.isAssignableFrom(cls)) false
     else if (cls.getName.startsWith("scala.Tuple")) false
     else true
   }
