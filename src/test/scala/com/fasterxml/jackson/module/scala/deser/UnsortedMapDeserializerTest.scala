@@ -4,7 +4,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import org.codehaus.jackson.`type`.TypeReference
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
 
@@ -17,27 +16,27 @@ class UnsortedMapDeserializerTest extends DeserializerTest with FlatSpec with Sh
   lazy val module = new UnsortedMapDeserializerModule {}
 
   "An ObjectMapper with the UnsortedMapDeserializerModule" should "deserialize an object into an Map" in {
-    val result = deserialize(mapJson, new TypeReference[Map[String,String]] {})
+    val result = deserialize[Map[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an HashMap" in {
-    val result = deserialize(mapJson, new TypeReference[HashMap[String,String]] {})
+    val result = deserialize[HashMap[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable HashMap" in {
-    val result = deserialize(mapJson, new TypeReference[mutable.HashMap[String,String]] {})
+    val result = deserialize[mutable.HashMap[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a LinkedHashMap" in {
-    val result = deserialize(mapJson, new TypeReference[mutable.LinkedHashMap[String,String]] {})
+    val result = deserialize[mutable.LinkedHashMap[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object with variable value types into a variable UnsortedMap" in {
-    val result = deserialize(variantMapJson, new TypeReference[Map[String,Any]]{})
+    val result = deserialize[Map[String,Any]](variantMapJson)
     result should equal (variantMapScala)
   }
 

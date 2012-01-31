@@ -27,24 +27,24 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
   def module = new JacksonModule with CaseClassDeserializerModule
 
   "An ObjectMapper with CaseClassDeserializer" should "deserialize a case class with a single constructor" in {
-    deserialize("""{"intValue":1,"stringValue":"foo"}""", classOf[CaseClassConstructorTest]) should be (CaseClassConstructorTest(1,"foo"))
+    deserialize[CaseClassConstructorTest]("""{"intValue":1,"stringValue":"foo"}""") should be (CaseClassConstructorTest(1,"foo"))
   }
 
   it should "deserialize a case class with var properties" in {
     val result = CaseClassPropertiesTest()
     result.intProperty = 1
     result.stringProperty = "foo"
-    deserialize("""{"intProperty":1,"stringProperty":"foo"}""", classOf[CaseClassPropertiesTest]) should be (result)
+    deserialize[CaseClassPropertiesTest]("""{"intProperty":1,"stringProperty":"foo"}""") should be (result)
   }
 
   it should "honor Jackson annotations" in {
     val result = CaseClassJacksonAnnotationTest("foo","bar")
-    deserialize("""{"foo":"foo","bar":"bar"}""", classOf[CaseClassJacksonAnnotationTest]) should be (result)
+    deserialize[CaseClassJacksonAnnotationTest]("""{"foo":"foo","bar":"bar"}""") should be (result)
   }
-  
+
   it should "not try to deserialize a List" in {
     intercept[JsonMappingException] {
-      deserialize("""{"foo":"foo","bar":"bar"}""", classOf[List[_]])
+      deserialize[List[_]]("""{"foo":"foo","bar":"bar"}""")
     }
   }
 }
