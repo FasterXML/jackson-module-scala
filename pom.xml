@@ -54,8 +54,9 @@
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <!-- 1.9 works; 1.9.2 latest available -->
-      <version>1.9.2</version>
+      <!-- 1.9 works; 1.9.6 will fix bug in PropertyBasedCreator's needed by Options nested in CaseClasses. -->
+      <!-- See: http://jira.codehaus.org/browse/JACKSON-774 -->
+      <version>1.9.6</version>
     </dependency>
     <!-- what core Scala runtime libs do we need? -->
     <dependency>
