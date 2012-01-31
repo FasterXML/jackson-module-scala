@@ -2,7 +2,6 @@ package com.fasterxml.jackson.module.scala.deser
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
-import org.codehaus.jackson.`type`.TypeReference
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -15,37 +14,37 @@ class TupleDeserializerTest extends DeserializerTest with FlatSpec with ShouldMa
   lazy val module = new TupleDeserializerModule {}
 
   "ObjectMapper with TupleDeserialzier" should "deserialize a Tuple[Int]" in {
-    val result = deserialize("[1]", new TypeReference[Tuple1[Int]]{})
+    val result = deserialize[Tuple1[Int]]("[1]")
     result should be (Tuple1(1))
   }
 
   it should "deserialize a Tuple[Double]" in {
-    val result = deserialize("[1.0]", new TypeReference[Tuple1[Double]]{})
+    val result = deserialize[Tuple1[Double]]("[1.0]")
     result should be (Tuple1(1.0))
   }
 
   it should "deserialize a Tuple[String]" in {
-    val result = deserialize("[\"foo\"]", new TypeReference[Tuple1[String]]{})
+    val result = deserialize[Tuple1[String]]("[\"foo\"]")
     result should be (Tuple1("foo"))
   }
 
   it should "deserialize a Tuple[Int,Int]" in {
-    val result = deserialize("[1,2]", new TypeReference[(Int, Int)]{})
+    val result = deserialize[(Int, Int)]("[1,2]")
     result should be ((1,2))
   }
 
   it should "deserialize a Tuple[Int,Double]" in {
-    val result = deserialize("[1,2.0]", new TypeReference[(Int, Double)]{})
+    val result = deserialize[(Int, Double)]("[1,2.0]")
     result should be ((1,2.0))
   }
 
   it should "deserialize a Tuple[Int,String]" in {
-    val result = deserialize("[1,\"foo\"]", new TypeReference[(Int, String)]{})
+    val result = deserialize[(Int, String)]("[1,\"foo\"]")
     result should be ((1,"foo"))
   }
 
   it should "deserialize a Tuple3[Double,String,Int]" in {
-    val result = deserialize("""[3.0,"A",1]""", new TypeReference[(Double,String,Int)]{})
+    val result = deserialize[(Double,String,Int)]("""[3.0,"A",1]""")
     result should be ((3.0,"A",1))
   }
 

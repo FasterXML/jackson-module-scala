@@ -20,7 +20,7 @@ class EnumerationDeserializerTest extends DeserializerTest with FlatSpec with Sh
 
 	"An ObjectMapper with EnumDeserializerModule" should "deserialize a value into a scala Enumeration as a bean property" in {
 		val expectedDay = Weekday.Fri
-    val result = deserialize(fridayEnumJson, classOf[EnumContainer])
+    val result = deserialize[EnumContainer](fridayEnumJson)
     result.day should be (expectedDay)
 	}
 
