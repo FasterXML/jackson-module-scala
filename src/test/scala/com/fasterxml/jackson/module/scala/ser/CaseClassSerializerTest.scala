@@ -5,6 +5,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import com.fasterxml.jackson.module.scala.JacksonModule
+import org.codehaus.jackson.annotate.JsonProperty
 
 case class CaseClassConstructorTest(intValue: Int, stringValue: String) { }
 
@@ -20,6 +21,10 @@ case class CaseClassVarTest() {
 
 case class CaseClassMixedTest(intValue: Int) {
   val strVal: String = "foo"
+}
+
+case class CaseClassJacksonAnnotationTest(@JsonProperty("foo") oof:String, bar: String) {
+
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -55,4 +60,9 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
     )
   }
 
+  it should "honor Jackson annotations" in {
+    serialize(CaseClassJacksonAnnotationTest("foo","bar")) should (
+      equal("""{"foo":"foo","bar":"bar"}""")
+      )
+  }
 }
