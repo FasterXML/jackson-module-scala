@@ -4,7 +4,6 @@ import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.junit.JUnitRunner
-import org.codehaus.jackson.`type`.TypeReference
 import collection.LinearSeq
 import collection.mutable
 import collection.immutable.Queue
@@ -19,82 +18,82 @@ class SeqDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatc
     // The temporary object is necessary to force the cast back to the concrete type.
     // Otherwise the value is elided directly to ShouldMatcher, which will take any Seq
     // TODO: Would the JVM ever elide this anyway?
-    val result = deserialize(listJson, new TypeReference[collection.Seq[Int]] {})
+    val result = deserialize[collection.Seq[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into an IndexedSeq" in {
-    val result = deserialize(listJson, new TypeReference[IndexedSeq[Int]] {})
+    val result = deserialize[IndexedSeq[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable IndexedSeq" in {
-    val result = deserialize(listJson, new TypeReference[mutable.IndexedSeq[Int]] {})
+    val result = deserialize[mutable.IndexedSeq[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a Vector" in {
-    val result = deserialize(listJson, new TypeReference[Vector[Int]] {})
+    val result = deserialize[Vector[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a ResizableArray" in {
-    val result = deserialize(listJson, new TypeReference[mutable.ResizableArray[Int]] {})
+    val result = deserialize[mutable.ResizableArray[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into an ArraySeq" in {
-    val result = deserialize(listJson, new TypeReference[mutable.ArraySeq[Int]] {})
+    val result = deserialize[mutable.ArraySeq[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a LinearSeq" in {
-    val result = deserialize(listJson, new TypeReference[LinearSeq[Int]] {})
+    val result = deserialize[LinearSeq[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable LinearSeq" in {
-    val result = deserialize(listJson, new TypeReference[mutable.LinearSeq[Int]] {})
+    val result = deserialize[mutable.LinearSeq[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a List" in {
-    val result = deserialize(listJson, new TypeReference[List[Int]] {})
+    val result = deserialize[List[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a Stream" in {
-    val result = deserialize(listJson, new TypeReference[Stream[Int]] {})
+    val result = deserialize[Stream[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a MutableList" in {
-    val result = deserialize(listJson, new TypeReference[mutable.MutableList[Int]] {})
+    val result = deserialize[mutable.MutableList[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable Queue" in {
-    val result = deserialize(listJson, new TypeReference[Queue[Int]] {})
+    val result = deserialize[Queue[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable Queue" in {
-    val result = deserialize(listJson, new TypeReference[mutable.Queue[Int]] {})
+    val result = deserialize[mutable.Queue[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable Buffer" in {
-    val result = deserialize(listJson, new TypeReference[mutable.Buffer[Int]] {})
+    val result = deserialize[mutable.Buffer[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable ArrayBuffer" in {
-    val result = deserialize(listJson, new TypeReference[mutable.ArrayBuffer[Int]] {})
+    val result = deserialize[mutable.ArrayBuffer[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable ListBuffer" in {
-    val result = deserialize(listJson, new TypeReference[mutable.ListBuffer[Int]] {})
+    val result = deserialize[mutable.ListBuffer[Int]](listJson)
     result should equal (listScala)
   }
 
