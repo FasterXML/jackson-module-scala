@@ -6,23 +6,24 @@ import scala.collection.JavaConverters._
 import com.fasterxml.jackson.core.JsonGenerator;
 
 import com.fasterxml.jackson.databind.{BeanDescription, BeanProperty, JavaType, JsonSerializer, SerializationConfig, SerializerProvider};
-import com.fasterxml.jackson.databind.`type`.{MapLikeType, TypeSerializer};
-import com.fasterxml.jackson.databind.ser.{ContainerSerializer, ResolvableSerializer, Serializers};
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.{ContainerSerializer, ContextualSerializer, ResolvableSerializer, Serializers};
+import com.fasterxml.jackson.databind.`type`.MapLikeType;
+import com.fasterxml.jackson.databind.ser.std.{MapSerializer => JacksonMapSerializer}
 
-import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule;
 
 private class MapSerializer(mapClass: Class[collection.Map[_,_]],
                             mapLikeType: MapLikeType,
                             vts: TypeSerializer,
-                            property: BeanProperty,
                             var keySer: JsonSerializer[AnyRef],
                             valueSer: JsonSerializer[AnyRef])
-  extends ContainerSerializerBase[collection.Map[_,_]](mapClass) with ResolvableSerializer {
+  extends ContainerSerializer[collection.Map[_,_]](mapClass) with ResolvableSerializer with ContextualSerializer {
 
-  var mapSerializer = JacksonMapSerializer.construct(null, mapLikeType, false, vts, property, keySer, valueSer);
+  var mapSerializer = JacksonMapSerializer.construct(null, mapLikeType, false, vts, keySer, valueSer);
 
-  def _withValueTypeSerializer(newVts: TypeSerializer): ContainerSerializerBase[_] =
-    new MapSerializer(mapClass, mapLikeType, newVts, property, keySer, valueSer)
+  def _withValueTypeSerializer(newVts: TypeSerializer): ContainerSerializer[_] =
+    new MapSerializer(mapClass, mapLikeType, newVts, keySer, valueSer)
 
   def serialize(value: Map[_, _], jgen: JsonGenerator, provider: SerializerProvider) {
     mapSerializer.serialize(value.asJava, jgen, provider)
@@ -31,8 +32,9 @@ private class MapSerializer(mapClass: Class[collection.Map[_,_]],
   // MapSerializer can't be internally immutable because of this API
   def resolve(provider: SerializerProvider) {
     if (keySer == null) {
-      keySer = provider.findKeySerializer(mapLikeType.getKeyType, property)
-      mapSerializer = JacksonMapSerializer.construct(null, mapLikeType, false, vts, property, keySer, valueSer);
+      // !!! 18-Feb-2012, tatu: Can not yet properly resolve KeySerializer here: should do in 'createContextual!'
+      keySer = provider.findKeySerializer(mapLikeType.getKeyType, null);
+      mapSerializer = JacksonMapSerializer.construct(null, mapLikeType, false, vts, keySer, valueSer);
     }
   }
 }
@@ -54,7 +56,7 @@ private object MapSerializerResolver extends Serializers.Base {
 
     if (BASE.isAssignableFrom(rawClass))
       new MapSerializer(rawClass.asInstanceOf[Class[collection.Map[_,_]]], mapLikeType,
-        elementTypeSerializer, property, keySerializer, elementValueSerializer)
+        elementTypeSerializer, keySerializer, elementValueSerializer)
     else null
   }
 

@@ -3,15 +3,15 @@ package com.fasterxml.jackson.module.scala.deser
 import java.util.AbstractMap
 import java.util.Map.Entry
 
-import scala.collection.{mutable, SortedMap, TreeMap};
+import scala.collection.{mutable, SortedMap}
+import scala.collection.immutable.TreeMap
 
-import com.fasterxml.jackson.core.JsonParser;
-
-import com.fasterxml.jackson.databind._;
-import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
-import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
-import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializer};
-
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator}
+import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializerBase}
+import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer}
+import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
 private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), SortedMap[K,V]]) extends AbstractMap[K,V] {
@@ -37,7 +37,7 @@ private class SortedMapDeserializer(
     keyDeser: KeyDeserializer,
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
-  extends ContainerDeserializer[SortedMap[_,_]](classOf[SortedMapDeserializer]) {
+  extends ContainerDeserializerBase[SortedMap[_,_]](classOf[SortedMapDeserializer]) {
   private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
 
   private val instantiator =
@@ -65,9 +65,7 @@ private class SortedMapDeserializer(
 private object SortedMapDeserializerResolver extends Deserializers.Base {
   override def findMapLikeDeserializer(theType: MapLikeType,
                               config: DeserializationConfig,
-                              provider: DeserializerProvider,
                               beanDesc: BeanDescription,
-                              property: BeanProperty,
                               keyDeserializer: KeyDeserializer,
                               elementTypeDeserializer: TypeDeserializer,
                               elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {

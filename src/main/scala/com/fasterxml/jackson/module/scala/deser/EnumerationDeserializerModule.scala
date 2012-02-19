@@ -1,8 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.JsonParser.{JsonToken, JsonParser};
+import com.fasterxml.jackson.core.{JsonToken, JsonParser};
 
 import com.fasterxml.jackson.databind._;
+import com.fasterxml.jackson.databind.deser.Deserializers;
 
 import com.fasterxml.jackson.module.scala.JacksonModule
 
@@ -26,10 +27,8 @@ private class EnumerationDeserializer(`type`:JavaType) extends JsonDeserializer[
 private object EnumerationDeserializerResolver extends Deserializers.Base {
 
   override def findBeanDeserializer(javaType: JavaType,
-							 config: DeserializationConfig,
-							 provider: DeserializerProvider,
-							 beanDesc: BeanDescription,
-							 property: BeanProperty) = {
+          config: DeserializationConfig,
+          beanDesc: BeanDescription) = {
 
 		val clazz = javaType.getRawClass
 		var deserializer : JsonDeserializer[_] = null;

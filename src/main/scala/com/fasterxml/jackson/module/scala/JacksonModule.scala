@@ -2,8 +2,8 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.Version
 
-import com.fasterxml.jackson.databind.module.SetupContext;
 import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.Module.SetupContext;
 import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.ser.{Serializers, BeanSerializerModifier};
 import com.fasterxml.jackson.databind.`type`.TypeModifier;

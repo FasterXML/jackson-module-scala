@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import java.lang.reflect.Type
+
 import com.fasterxml.jackson.core.JsonGenerator;
 
 import com.fasterxml.jackson.databind._;
@@ -7,7 +9,7 @@ import com.fasterxml.jackson.databind.jsontype.{TypeSerializer};
 import com.fasterxml.jackson.databind.jsonschema.SchemaAware;
 import com.fasterxml.jackson.databind.ser.{ContainerSerializer, Serializers};
 
-import java.lang.reflect.Type
+import com.fasterxml.jackson.module.scala.JacksonModule;
 
 private class TupleSerializer(javaType: JavaType, property: BeanProperty)
   extends ContainerSerializer[Product](classOf[Product]) {

@@ -11,7 +11,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind._;
 import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
-import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializer};
+import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializerBase};
+import com.fasterxml.jackson.databind.`type`.MapLikeType;
 
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule;
 
@@ -37,7 +38,7 @@ private class UnsortedMapDeserializer(
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
 
-  extends ContainerDeserializer[GenMap[_,_]](classOf[UnsortedMapDeserializer]) {
+  extends ContainerDeserializerBase[GenMap[_,_]](classOf[UnsortedMapDeserializer]) {
 
   private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
 
@@ -67,9 +68,7 @@ private object UnsortedMapDeserializerResolver extends Deserializers.Base {
 
   override def findMapLikeDeserializer(theType: MapLikeType,
                               config: DeserializationConfig,
-                              provider: DeserializerProvider,
                               beanDesc: BeanDescription,
-                              property: BeanProperty,
                               keyDeserializer: KeyDeserializer,
                               elementTypeDeserializer: TypeDeserializer,
                               elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
@@ -78,6 +77,8 @@ private object UnsortedMapDeserializerResolver extends Deserializers.Base {
         !classOf[collection.SortedMap[_,_]].isAssignableFrom(rawClass)) {
       val keyType = theType.containedType(0)
       val valueType = theType.containedType(1)
+      
+      // TODO: can not resolve key, content deserializers yet; must implement ContextualDeserializer
       val resolvedKeyDeser =
         Option(keyDeserializer).getOrElse(provider.findKeyDeserializer(config,keyType,property))
       val resolvedValueDeser =

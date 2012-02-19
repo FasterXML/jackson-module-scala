@@ -2,11 +2,11 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule
 
-import com.fasterxml.jackson.core.JsonParser.{JsonToken, JsonParser};
+import com.fasterxml.jackson.core.{JsonToken, JsonParser};
 
 import com.fasterxml.jackson.databind._;
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
-import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializer};
+import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer,ContainerDeserializerBase};
 import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType;
 
@@ -55,7 +55,7 @@ private class SeqDeserializer(
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
 
-  extends ContainerDeserializer[Seq[_]](classOf[SeqDeserializer]) {
+  extends ContainerDeserializerBase[Seq[_]](classOf[SeqDeserializer]) {
 
   private val javaContainerType = config.constructType(classOf[BuilderWrapper[AnyRef]])
 
@@ -84,16 +84,15 @@ private object SeqDeserializerResolver extends Deserializers.Base {
 
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                      config: DeserializationConfig,
-                     provider: DeserializerProvider,
                      beanDesc: BeanDescription,
-                     property: BeanProperty,
                      elementTypeDeserializer: TypeDeserializer,
                      elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
     val rawClass = collectionType.getRawClass
 
     if (classOf[Seq[_]].isAssignableFrom(rawClass)) {
-      val resolvedDeserializer =
-        Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,collectionType.containedType(0),property))
+      // !!! TODO: 18-Feb-2010, tatu: Can not resolve element deserializer here: MUST resolve in 'createContextual()'
+      val resolvedDeserializer = elementDeserializer;
+//        Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,collectionType.containedType(0),property))
       new SeqDeserializer(collectionType, config, resolvedDeserializer, elementTypeDeserializer)
     } else null
   }

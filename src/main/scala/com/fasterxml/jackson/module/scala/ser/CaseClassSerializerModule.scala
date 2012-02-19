@@ -15,11 +15,11 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 
 private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
   private val PRODUCT = classOf[Product]
-  private val jacksonIntrospector = new JacksonAnnotationIntrospector()
 
   override def changeProperties(config: SerializationConfig,
                                 beanDesc: BeanDescription,
                                 beanProperties: juList[BeanPropertyWriter]): juList[BeanPropertyWriter] = {
+    val jacksonIntrospector = config.getAnnotationIntrospector;
     val list = for {
       cls <- Option(beanDesc.getBeanClass).toSeq if (PRODUCT.isAssignableFrom(cls))
       prop <- descriptorOf(cls).properties
@@ -31,7 +31,7 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
     } yield prop match {
       case cp: ConstructorParameter =>
         val param = beanDesc.getConstructors.get(0).getParameter(cp.index)
-        asWriter(config, beanDesc, method, Option(jacksonIntrospector.findPropertyNameForParam(param)))
+        asWriter(config, beanDesc, method, Option(jacksonIntrospector.findDeserializationName(param)))
       case _ => asWriter(config, beanDesc, method)
     }
 
