@@ -1,10 +1,13 @@
 package com.fasterxml.jackson.module.scala
 
-import org.codehaus.jackson.Version
-import org.codehaus.jackson.map.Module.SetupContext
-import org.codehaus.jackson.map.{Deserializers, Serializers, Module}
-import org.codehaus.jackson.map.`type`.TypeModifier
-import org.codehaus.jackson.map.ser.BeanSerializerModifier
+import com.fasterxml.jackson.core.Version
+
+import com.fasterxml.jackson.databind.module.SetupContext;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.deser.Deserializers;
+import com.fasterxml.jackson.databind.ser.{Serializers, BeanSerializerModifier};
+import com.fasterxml.jackson.databind.`type`.TypeModifier;
+
 import java.util.Properties
 
 object JacksonModule {

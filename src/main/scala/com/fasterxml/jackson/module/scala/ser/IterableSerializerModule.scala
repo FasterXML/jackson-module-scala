@@ -1,11 +1,13 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import collection.JavaConverters._
-import org.codehaus.jackson.JsonGenerator
-import org.codehaus.jackson.`type`.JavaType
-import org.codehaus.jackson.map.{BeanDescription, SerializationConfig, Serializers, SerializerProvider, JsonSerializer, BeanProperty, TypeSerializer}
-import org.codehaus.jackson.map.`type`.CollectionLikeType
-import org.codehaus.jackson.map.ser.std.{CollectionSerializer, AsArraySerializerBase}
+
+import com.fasterxml.jackson.core.JsonGenerator;
+
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.`type`.{CollectionLikeType, TypeSerializer};
+import com.fasterxml.jackson.databind.ser.std.{CollectionSerializer, AsArraySerializerBase}
+
 import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
 
 private class IterableSerializer(seqType: Class[_], elemType: JavaType, staticTyping: Boolean, vts: Option[TypeSerializer], property: BeanProperty, valueSerializer: Option[JsonSerializer[AnyRef]])

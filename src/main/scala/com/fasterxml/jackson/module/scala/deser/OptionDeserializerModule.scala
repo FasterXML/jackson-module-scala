@@ -1,10 +1,13 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.core.JsonParser;
+
+import com.fasterxml.jackson.databind._;
+import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
+import com.fasterxml.jackson.databind.deser.Deserializers;
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType;
+
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
-import org.codehaus.jackson.map.`type`.CollectionLikeType
-import org.codehaus.jackson.map.{DeserializationContext, JsonDeserializer, TypeDeserializer, BeanProperty, BeanDescription, DeserializerProvider, DeserializationConfig, Deserializers}
-import org.codehaus.jackson.JsonParser
-import org.codehaus.jackson.`type`.JavaType
 
 private class OptionDeserializer(elementType: JavaType, config: DeserializationConfig, provider: DeserializerProvider, property: BeanProperty, deser: JsonDeserializer[_])
   extends JsonDeserializer[Option[AnyRef]] {

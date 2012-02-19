@@ -1,8 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.JacksonModule
+
+import com.fasterxml.jackson.databind.introspect.{AnnotatedField, AnnotatedConstructor, AnnotatedParameter, NopAnnotationIntrospector}l
+
 import org.scalastuff.scalabeans.Preamble._
-import org.codehaus.jackson.map.introspect.{AnnotatedField, AnnotatedConstructor, AnnotatedParameter, NopAnnotationIntrospector}
 import org.scalastuff.scalabeans.{DeserializablePropertyDescriptor, ConstructorParameter}
 
 private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector {

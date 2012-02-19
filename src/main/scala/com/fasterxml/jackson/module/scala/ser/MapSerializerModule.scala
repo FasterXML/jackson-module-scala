@@ -1,12 +1,15 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import org.codehaus.jackson.map.`type`.MapLikeType
-import org.codehaus.jackson.map.ser.std.{ContainerSerializerBase, MapSerializer => JacksonMapSerializer}
 import scala.collection.Map
-import org.codehaus.jackson.JsonGenerator
 import scala.collection.JavaConverters._
+
+import com.fasterxml.jackson.core.JsonGenerator;
+
+import com.fasterxml.jackson.databind.{BeanDescription, BeanProperty, JavaType, JsonSerializer, SerializationConfig, SerializerProvider};
+import com.fasterxml.jackson.databind.`type`.{MapLikeType, TypeSerializer};
+import com.fasterxml.jackson.databind.ser.{ContainerSerializer, ResolvableSerializer, Serializers};
+
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
-import org.codehaus.jackson.map.{ResolvableSerializer, SerializerProvider, TypeSerializer, JsonSerializer, BeanProperty, BeanDescription, SerializationConfig, Serializers}
 
 private class MapSerializer(mapClass: Class[collection.Map[_,_]],
                             mapLikeType: MapLikeType,

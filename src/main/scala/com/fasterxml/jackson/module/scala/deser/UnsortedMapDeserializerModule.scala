@@ -1,14 +1,18 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import scala.collection.{GenMap, mutable}
 import java.util.AbstractMap
 import java.util.Map.Entry
+
+import scala.collection.{GenMap, mutable}
 import scala.collection.immutable.HashMap
-import org.codehaus.jackson.map.deser.std.{MapDeserializer, ContainerDeserializerBase}
-import org.codehaus.jackson.JsonParser
-import org.codehaus.jackson.map.`type`.MapLikeType
-import org.codehaus.jackson.map.{BeanProperty, BeanDescription, DeserializerProvider, DeserializationContext, TypeDeserializer, JsonDeserializer, KeyDeserializer, DeserializationConfig, Deserializers}
-import org.codehaus.jackson.map.deser.ValueInstantiator
+
+import com.fasterxml.jackson.core.JsonParser;
+
+import com.fasterxml.jackson.databind._;
+import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
+import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
+import com.fasterxml.jackson.databind.deser.std,{MapDeserializer, ContainerDeserializer};
+
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
 private class MapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), GenMap[K,V]]) extends AbstractMap[K,V] {
@@ -33,7 +37,7 @@ private class UnsortedMapDeserializer(
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
 
-  extends ContainerDeserializerBase[GenMap[_,_]](classOf[UnsortedMapDeserializer]) {
+  extends ContainerDeserializer[GenMap[_,_]](classOf[UnsortedMapDeserializer]) {
 
   private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
 

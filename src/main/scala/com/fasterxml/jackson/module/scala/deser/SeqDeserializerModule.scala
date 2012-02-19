@@ -2,18 +2,19 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule
 
-import org.codehaus.jackson.`type`.JavaType
-import org.codehaus.jackson.JsonParser
-import org.codehaus.jackson.map.`type`.CollectionLikeType
-import org.codehaus.jackson.map.{DeserializationContext, JsonDeserializer, TypeDeserializer, BeanProperty, BeanDescription, DeserializerProvider, DeserializationConfig, Deserializers}
+import com.fasterxml.jackson.core.JsonParser.{JsonToken, JsonParser};
+
+import com.fasterxml.jackson.databind._;
+import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
+import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializer};
+import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType;
 
 import collection.mutable
 import collection.generic.GenericCompanion
 import collection.immutable.Queue
 
 import java.util.AbstractCollection
-import org.codehaus.jackson.map.deser.std.{CollectionDeserializer, ContainerDeserializerBase}
-import org.codehaus.jackson.map.deser.ValueInstantiator
 
 private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: Seq[E]]) extends AbstractCollection[E] {
 
@@ -54,7 +55,7 @@ private class SeqDeserializer(
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
 
-  extends ContainerDeserializerBase[Seq[_]](classOf[SeqDeserializer]) {
+  extends ContainerDeserializer[Seq[_]](classOf[SeqDeserializer]) {
 
   private val javaContainerType = config.constructType(classOf[BuilderWrapper[AnyRef]])
 

@@ -1,17 +1,16 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.core.JsonGenerator;
 
-import org.codehaus.jackson.`type`.JavaType
-import org.codehaus.jackson.JsonGenerator
-import org.codehaus.jackson.map.{BeanProperty, SerializerProvider, TypeSerializer, BeanDescription, SerializationConfig, Serializers}
-import org.codehaus.jackson.map.ser.std.ContainerSerializerBase
-import org.codehaus.jackson.schema.SchemaAware
+import com.fasterxml.jackson.databind._;
+import com.fasterxml.jackson.databind.jsontype.{TypeSerializer};
+import com.fasterxml.jackson.databind.jsonschema.SchemaAware;
+import com.fasterxml.jackson.databind.ser.{ContainerSerializer, Serializers};
 
 import java.lang.reflect.Type
 
 private class TupleSerializer(javaType: JavaType, property: BeanProperty)
-  extends ContainerSerializerBase[Product](classOf[Product]) {
+  extends ContainerSerializer[Product](classOf[Product]) {
 
   def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider)
   {

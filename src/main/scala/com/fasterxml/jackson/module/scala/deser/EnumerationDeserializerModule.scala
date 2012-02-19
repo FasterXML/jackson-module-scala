@@ -1,9 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.codehaus.jackson.`type`.JavaType
-import org.codehaus.jackson.map._
+import com.fasterxml.jackson.core.JsonParser.{JsonToken, JsonParser};
+
+import com.fasterxml.jackson.databind._;
+
 import com.fasterxml.jackson.module.scala.JacksonModule
-import org.codehaus.jackson.{JsonToken, JsonParser}
 
 private class EnumerationDeserializer(`type`:JavaType) extends JsonDeserializer[Object] {
 	override def deserialize(jp:JsonParser, ctxt:DeserializationContext) = {

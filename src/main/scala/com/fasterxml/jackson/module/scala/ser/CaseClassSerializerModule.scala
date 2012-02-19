@@ -1,20 +1,24 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import collection.JavaConverters._
-import com.fasterxml.jackson.module.scala.JacksonModule
-import org.codehaus.jackson.map.SerializationConfig
-import org.codehaus.jackson.map.ser.{BeanSerializerModifier, BeanPropertyWriter}
+
 import java.util.{List => juList}
+
 import org.scalastuff.scalabeans.Preamble._
 import org.scalastuff.scalabeans.ConstructorParameter
-import org.codehaus.jackson.map.introspect.{JacksonAnnotationIntrospector, AnnotatedMethod, BasicBeanDescription}
+
+import com.fasterxml.jackson.databind.{BeanDescription, SerializationConfig};
+import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier];
+import com.fasterxml.jackson.databind.introspect.{AnnotatedMethod, JacksonAnnotationIntrospector};
+
+import com.fasterxml.jackson.module.scala.JacksonModule
 
 private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
   private val PRODUCT = classOf[Product]
   private val jacksonIntrospector = new JacksonAnnotationIntrospector()
 
   override def changeProperties(config: SerializationConfig,
-                                beanDesc: BasicBeanDescription,
+                                beanDesc: BeanDescription,
                                 beanProperties: juList[BeanPropertyWriter]): juList[BeanPropertyWriter] = {
     val list = for {
       cls <- Option(beanDesc.getBeanClass).toSeq if (PRODUCT.isAssignableFrom(cls))
@@ -34,7 +38,7 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
     if (list.isEmpty) beanProperties else list.toList.asJava
   }
 
-  private def asWriter(config: SerializationConfig, beanDesc: BasicBeanDescription, member: AnnotatedMethod, primaryName: Option[String] = None) = {
+  private def asWriter(config: SerializationConfig, beanDesc: BeanDescription, member: AnnotatedMethod, primaryName: Option[String] = None) = {
     val javaType = config.getTypeFactory.constructType(member.getGenericType)
     new BeanPropertyWriter(member, null, primaryName.getOrElse(member.getName), javaType, null, null, null, member.getAnnotated, null, false, null)
   }

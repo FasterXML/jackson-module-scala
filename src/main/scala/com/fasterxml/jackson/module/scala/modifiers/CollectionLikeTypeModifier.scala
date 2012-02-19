@@ -1,8 +1,9 @@
 package com.fasterxml.jackson.module.scala.modifiers
 
-import org.codehaus.jackson.`type`.JavaType
 import java.lang.reflect.Type
-import org.codehaus.jackson.map.`type`.{TypeFactory, TypeBindings, TypeModifier}
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.{TypeBindings, TypeFactory, TypeModifier};
 
 private [modifiers] trait CollectionLikeTypeModifier extends TypeModifier with GenTypeModifier {
 

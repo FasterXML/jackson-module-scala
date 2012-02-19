@@ -1,8 +1,12 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import org.codehaus.jackson.map.`type`.CollectionLikeType
-import org.codehaus.jackson.JsonGenerator
-import org.codehaus.jackson.map.{JsonSerializer, SerializerProvider, TypeSerializer, BeanProperty, BeanDescription, SerializationConfig, Serializers}
+import com.fasterxml.jackson.core.JsonGenerator;
+
+import com.fasterxml.jackson.databind.{BeanDescription, BeanProperty, JavaType, JsonSerializer, Module, SerializationConfig, SerializerProvider};
+import com.fasterxml.jackson.databind.jsontype.{TypeSerializer};
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType;
+
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 private class OptionSerializer(property: BeanProperty) extends JsonSerializer[Option[AnyRef]] {

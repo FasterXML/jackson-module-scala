@@ -1,15 +1,18 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
-import org.codehaus.jackson.map.`type`.MapLikeType
-import org.codehaus.jackson.JsonParser
-import org.codehaus.jackson.map.{DeserializationContext, JsonDeserializer, TypeDeserializer, KeyDeserializer, BeanProperty, BeanDescription, DeserializerProvider, DeserializationConfig, Deserializers}
-import scala.collection.{mutable, SortedMap}
 import java.util.AbstractMap
 import java.util.Map.Entry
-import org.codehaus.jackson.map.deser.ValueInstantiator
-import org.codehaus.jackson.map.deser.std.{MapDeserializer, ContainerDeserializerBase}
-import scala.collection.immutable.TreeMap
+
+import scala.collection.{mutable, SortedMap, TreeMap};
+
+import com.fasterxml.jackson.core.JsonParser;
+
+import com.fasterxml.jackson.databind._;
+import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
+import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
+import com.fasterxml.jackson.databind.deser.std,{MapDeserializer, ContainerDeserializer};
+
+import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
 private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), SortedMap[K,V]]) extends AbstractMap[K,V] {
   override def put(k: K, v: V) = { builder += ((k,v)); v }
@@ -34,7 +37,7 @@ private class SortedMapDeserializer(
     keyDeser: KeyDeserializer,
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
-  extends ContainerDeserializerBase[SortedMap[_,_]](classOf[SortedMapDeserializer]) {
+  extends ContainerDeserializer[SortedMap[_,_]](classOf[SortedMapDeserializer]) {
   private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
 
   private val instantiator =

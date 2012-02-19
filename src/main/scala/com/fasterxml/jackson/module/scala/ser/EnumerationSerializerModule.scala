@@ -1,9 +1,10 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import org.codehaus.jackson.map._
-import org.codehaus.jackson.`type`.JavaType
+import com.fasterxml.jackson.core.JsonGenerator;
+
+import com.fasterxml.jackson.databind._
+
 import com.fasterxml.jackson.module.scala.JacksonModule
-import org.codehaus.jackson.JsonGenerator
 
 /**
  * The implementation is taken from the code written by Greg Zoller, found here:
