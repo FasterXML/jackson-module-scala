@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.modifiers
 import java.lang.reflect.Type
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.{TypeBindings, TypeFactory, TypeModifier};
+import com.fasterxml.jackson.databind.`type`.{TypeBindings, TypeFactory, TypeModifier};
 
 private [modifiers] trait CollectionLikeTypeModifier extends TypeModifier with GenTypeModifier {
 

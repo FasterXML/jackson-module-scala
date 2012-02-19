@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind._;
 import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
-import com.fasterxml.jackson.databind.deser.std,{MapDeserializer, ContainerDeserializer};
+import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializer};
 
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 

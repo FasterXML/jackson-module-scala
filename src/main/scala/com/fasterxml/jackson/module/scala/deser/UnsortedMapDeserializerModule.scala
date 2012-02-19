@@ -11,9 +11,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind._;
 import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
-import com.fasterxml.jackson.databind.deser.std,{MapDeserializer, ContainerDeserializer};
+import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializer};
 
-import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule;
 
 private class MapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), GenMap[K,V]]) extends AbstractMap[K,V] {
   override def put(k: K, v: V) = { builder += ((k,v)); v }

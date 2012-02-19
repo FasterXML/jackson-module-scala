@@ -8,7 +8,7 @@ import org.scalastuff.scalabeans.Preamble._
 import org.scalastuff.scalabeans.ConstructorParameter
 
 import com.fasterxml.jackson.databind.{BeanDescription, SerializationConfig};
-import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier];
+import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier};
 import com.fasterxml.jackson.databind.introspect.{AnnotatedMethod, JacksonAnnotationIntrospector};
 
 import com.fasterxml.jackson.module.scala.JacksonModule

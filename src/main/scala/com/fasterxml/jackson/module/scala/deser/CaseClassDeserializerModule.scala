@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.JacksonModule
 
-import com.fasterxml.jackson.databind.introspect.{AnnotatedField, AnnotatedConstructor, AnnotatedParameter, NopAnnotationIntrospector}l
+import com.fasterxml.jackson.databind.introspect.{AnnotatedField, AnnotatedConstructor, AnnotatedParameter, NopAnnotationIntrospector};
 
 import org.scalastuff.scalabeans.Preamble._
 import org.scalastuff.scalabeans.{DeserializablePropertyDescriptor, ConstructorParameter}
