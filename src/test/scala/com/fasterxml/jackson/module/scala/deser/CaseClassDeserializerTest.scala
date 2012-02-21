@@ -5,8 +5,10 @@ import org.scalatest.matchers.ShouldMatchers
 import com.fasterxml.jackson.module.scala.JacksonModule
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
-import org.codehaus.jackson.annotate.JsonProperty
-import org.codehaus.jackson.map.JsonMappingException
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.databind.JsonMappingException
 
 case class CaseClassConstructorTest(intValue: Int, stringValue: String) {
 

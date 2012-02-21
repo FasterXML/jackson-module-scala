@@ -1,8 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.module.scala.JacksonTest
-import org.codehaus.jackson.`type`.TypeReference
 import java.lang.reflect.{Type, ParameterizedType}
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.`type`.TypeReference;
+
+import com.fasterxml.jackson.module.scala.JacksonTest
 
 /**
  * Undocumented class.

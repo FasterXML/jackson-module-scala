@@ -6,7 +6,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.JacksonModule
 import collection.Iterator
-import org.codehaus.jackson.map.JsonMappingException
+
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * Undocumented class.

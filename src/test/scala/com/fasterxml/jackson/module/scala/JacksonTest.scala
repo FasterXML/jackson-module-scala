@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
-import org.codehaus.jackson.map.{Module, ObjectMapper}
+import com.fasterxml.jackson.databind.{Module, ObjectMapper}
 
 trait JacksonTest {
 
