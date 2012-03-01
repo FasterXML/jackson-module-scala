@@ -6,6 +6,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 
 import scala.collection._
+import immutable.ListMap
 
 @RunWith(classOf[JUnitRunner])
 class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
@@ -34,6 +35,12 @@ class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers
       be ("""{"c":false,"a":1,"b":"two"}""") or
       be ("""{"c":false,"b":"two","a":1}""")
     )
+  }
+
+  it should "serialize order-specified Maps in the correc order" in {
+    val m = ListMap(Map((5, 1), (2, 33), (7, 22), (8, 333)).toList.sortBy(-_._2):_*)
+    val result = serialize(m)
+    result should be ("""{"8":333,"2":33,"7":22,"5":1}""")
   }
 
 }
