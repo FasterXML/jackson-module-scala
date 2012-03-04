@@ -12,19 +12,26 @@ import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, Collection
 
 import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
 
-private class IterableSerializer(seqType: Class[_], elemType: JavaType, staticTyping: Boolean, vts: Option[TypeSerializer], property: BeanProperty, valueSerializer: Option[JsonSerializer[AnyRef]])
+private class IterableSerializer(seqType: Class[_],
+                                 elemType: JavaType,
+                                 staticTyping: Boolean,
+                                 vts: Option[TypeSerializer],
+                                 property: BeanProperty,
+                                 valueSerializer: Option[JsonSerializer[AnyRef]])
   extends AsArraySerializerBase[collection.Iterable[Any]](seqType, elemType, staticTyping, vts.orNull, property, valueSerializer.orNull) {
 
   val collectionSerializer =
     new CollectionSerializer(elemType, staticTyping, vts.orNull, property, valueSerializer.orNull)
 
-  def serializeContents(value: Iterable[Any], jgen: JsonGenerator, provider: SerializerProvider)
-  {
+  def serializeContents(value: Iterable[Any], jgen: JsonGenerator, provider: SerializerProvider) {
     collectionSerializer.serializeContents(value.asJavaCollection, jgen, provider)
   }
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
-    new IterableSerializer(seqType, elemType, staticTyping, Option(newVts), property, valueSerializer)
+    withResolved(property, newVts, valueSerializer.asInstanceOf[JsonSerializer[_]])
+
+  override def withResolved(newProperty: BeanProperty, newVts: TypeSerializer, elementSerializer: JsonSerializer[_]) =
+    new IterableSerializer(seqType, elemType, staticTyping, Option(newVts), newProperty, Option(elementSerializer.asInstanceOf[JsonSerializer[AnyRef]]))
 }
 
 private object IterableSerializerResolver extends Serializers.Base {
@@ -32,14 +39,12 @@ private object IterableSerializerResolver extends Serializers.Base {
   override def findCollectionLikeSerializer(config: SerializationConfig,
                    collectionType: CollectionLikeType,
                    beanDescription: BeanDescription,
-                   beanProperty: BeanProperty,
                    elementTypeSerializer: TypeSerializer,
                    elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
     val rawClass = collectionType.getRawClass
     if (!classOf[collection.Iterable[Any]].isAssignableFrom(rawClass)) null else
     if (classOf[collection.Map[Any,Any]].isAssignableFrom(rawClass)) null else
-    new IterableSerializer(rawClass, collectionType.containedType(0), false, Option(elementTypeSerializer), beanProperty,
-      Option(elementSerializer))
+    new IterableSerializer(rawClass, collectionType.containedType(0), false, Option(elementTypeSerializer), null, Option(elementSerializer))
   }
 
 }

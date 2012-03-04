@@ -8,11 +8,11 @@ import scala.collection.immutable.TreeMap
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator}
 import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializerBase}
 import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer}
 import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+import deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
 
 private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), SortedMap[K,V]]) extends AbstractMap[K,V] {
   override def put(k: K, v: V) = { builder += ((k,v)); v }
@@ -37,14 +37,16 @@ private class SortedMapDeserializer(
     keyDeser: KeyDeserializer,
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
-  extends ContainerDeserializerBase[SortedMap[_,_]](classOf[SortedMapDeserializer]) {
+  extends ContainerDeserializerBase[SortedMap[_,_]](classOf[SortedMapDeserializer])
+  with ContextualDeserializer {
+  
   private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
 
   private val instantiator =
     new ValueInstantiator {
       def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
       override def canCreateUsingDefault = true
-      override def createUsingDefault =
+      override def createUsingDefault(ctx: DeserializationContext) =
         new SortedMapBuilderWrapper[AnyRef,AnyRef](SortedMapDeserializer.builderFor(collectionType.getRawClass, collectionType.containedType(0).getRawClass))
     }
 
@@ -55,7 +57,15 @@ private class SortedMapDeserializer(
 
   override def getContentDeserializer = containerDeserializer.getContentDeserializer
 
-  def deserialize(jp: JsonParser, ctxt: DeserializationContext): SortedMap[_,_] = {
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty) =
+    if (keyDeser != null && valueDeser != null) this
+    else {
+      val newKeyDeser = Option(keyDeser).getOrElse(ctxt.findKeyDeserializer(collectionType.getKeyType, property))
+      val newValDeser = Option(valueDeser).getOrElse(ctxt.findContextualValueDeserializer(collectionType.getContentType, property))
+      new SortedMapDeserializer(collectionType, config, newKeyDeser, newValDeser, valueTypeDeser)
+    }
+  
+  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): SortedMap[_,_] = {
     containerDeserializer.deserialize(jp,ctxt) match {
       case wrapper: SortedMapBuilderWrapper[_,_] => wrapper.builder.result()
     }
@@ -63,23 +73,17 @@ private class SortedMapDeserializer(
 }
 
 private object SortedMapDeserializerResolver extends Deserializers.Base {
+  
+  private val SORTED_MAP = classOf[collection.SortedMap[_,_]]
+
   override def findMapLikeDeserializer(theType: MapLikeType,
                               config: DeserializationConfig,
                               beanDesc: BeanDescription,
                               keyDeserializer: KeyDeserializer,
                               elementTypeDeserializer: TypeDeserializer,
-                              elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    val rawClass = theType.getRawClass
-    if (classOf[collection.SortedMap[_,_]].isAssignableFrom(rawClass)) {
-      val keyType = theType.containedType(0)
-      val valueType = theType.containedType(1)
-      val resolvedKeyDeser =
-        Option(keyDeserializer).getOrElse(provider.findKeyDeserializer(config,keyType,property))
-      val resolvedValueDeser =
-        Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,valueType,property))
-      new SortedMapDeserializer(theType,config,resolvedKeyDeser,resolvedValueDeser,elementTypeDeserializer)
-    } else null
-  }
+                              elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] =
+    if (!SORTED_MAP.isAssignableFrom(theType.getRawClass)) null
+    else new SortedMapDeserializer(theType,config,keyDeserializer,elementDeserializer,elementTypeDeserializer)
 
 }
 
@@ -87,5 +91,5 @@ private object SortedMapDeserializerResolver extends Deserializers.Base {
  * @author Christopher Currie <christopher@currie.com>
  */
 trait SortedMapDeserializerModule extends MapTypeModifierModule {
-  this += { _.addDeserializers(SortedMapDeserializerResolver) }
+  this += (_ addDeserializers SortedMapDeserializerResolver)
 }

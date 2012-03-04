@@ -9,23 +9,27 @@ import com.fasterxml.jackson.databind.ser.{Serializers, BeanSerializerModifier};
 import com.fasterxml.jackson.databind.`type`.TypeModifier;
 
 import java.util.Properties
+import collection.JavaConverters._
+import collection.mutable.Map
 
 object JacksonModule {
   private val VersionRegex = """(\d+)\.(\d+)(?:\.(\d+)(?:\-(.*))?)?""".r
   private val cls = classOf[JacksonModule]
   private val buildPropsFilename = cls.getPackage.getName.replace('.','/') + "/build.properties"
-  lazy val buildProps: Properties = {
+  lazy val buildProps: Map[String, String] = {
     val props = new Properties
     val stream = cls.getClassLoader.getResourceAsStream(buildPropsFilename)
     if (stream ne null) props.load(stream)
 
-    props
+    props.asScala
   }
   lazy val version: Version = {
-    buildProps.getProperty("version") match {
+    val groupId = buildProps("groupId")
+    val artifactId = buildProps("artifactId")
+    buildProps("version") match {
       case VersionRegex(major,minor,patchOpt,snapOpt) => {
         val patch = Option(patchOpt) map (_.toInt) getOrElse 0
-        new Version(major.toInt,minor.toInt,patch,snapOpt)
+        new Version(major.toInt,minor.toInt,patch,snapOpt,groupId,artifactId)
       }
       case _ => Version.unknownVersion()
     }

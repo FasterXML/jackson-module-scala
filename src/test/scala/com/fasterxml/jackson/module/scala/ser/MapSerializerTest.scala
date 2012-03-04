@@ -6,6 +6,14 @@ import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 
 import scala.collection._
+import scala.reflect.BeanProperty
+import com.fasterxml.jackson.annotation.JsonProperty
+
+class BeanieWeenie(@BeanProperty @JsonProperty("a") var a: Int,
+                   @BeanProperty @JsonProperty("b") var b: String, 
+                   @BeanProperty @JsonProperty("c") var c: Boolean) {
+  
+}
 
 @RunWith(classOf[JUnitRunner])
 class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
@@ -33,6 +41,13 @@ class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers
       be ("""{"b":"two","c":false,"a":1}""") or
       be ("""{"c":false,"a":1,"b":"two"}""") or
       be ("""{"c":false,"b":"two","a":1}""")
+    )
+  }
+  
+  it should "serialize a map of beans-like objects" in {
+    val result = serialize(Map("bean" -> new BeanieWeenie(1,"two",false)))
+    result should (
+      be ("""{"bean":{"a":1,"b":"two","c":false}}""")
     )
   }
 

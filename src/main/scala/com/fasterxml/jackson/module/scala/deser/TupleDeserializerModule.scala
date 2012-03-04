@@ -5,25 +5,33 @@ import java.lang.IllegalStateException
 import com.fasterxml.jackson.core.{JsonParser, JsonToken};
 
 import com.fasterxml.jackson.databind._;
-import com.fasterxml.jackson.databind.deser.Deserializers;
+
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import com.fasterxml.jackson.module.scala.JacksonModule
+import deser.{ContextualDeserializer, Deserializers}
 
 private class TupleDeserializer(javaType: JavaType,
-                                config: DeserializationConfig)
-  extends StdDeserializer[Product](classOf[Product]) {
+                                config: DeserializationConfig,
+                                valueDeserializers: Seq[JsonDeserializer[Object]])
+  extends StdDeserializer[Product](classOf[Product]) with ContextualDeserializer {
 
   val cls = javaType.getRawClass
   val ctors = cls.getConstructors
   if (ctors.length > 1) throw new IllegalStateException("Tuple should have only one constructor")
   val ctor = ctors.head
-  val paramTypes = for (i <- 0 until javaType.containedTypeCount()) yield javaType.containedType(i)
 
-  // !!! TODO: 18-Feb-2012, tatu: must resolve this ContextualDeserializer
-  val paramDesers = paramTypes map { paramType =>
-    provider.findValueDeserializer(config, paramType, property)
+  def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
+    // For now, the dumb and simple route of assuming we don't have the right deserializers.
+    // This will probably result in duplicate deserializers, but it's safer than assuming
+    // a current non-empty seqeunce of valueDeserializers is correct.
+    val paramTypes = for (i <- 0 until javaType.containedTypeCount()) yield javaType.containedType(i)
+
+    val paramDesers = paramTypes map (ctxt.findContextualValueDeserializer(_, property))
+
+    new TupleDeserializer(javaType, config, paramDesers)
   }
+
 
   def deserialize(jp: JsonParser, ctxt: DeserializationContext) = {
     // Ok: must point to START_ARRAY (or equivalent)
@@ -31,7 +39,7 @@ private class TupleDeserializer(javaType: JavaType,
       throw ctxt.mappingException(javaType.getRawClass)
     }
 
-    val params = paramDesers map { deser =>
+    val params = valueDeserializers map { deser =>
       jp.nextToken()
       deser.deserialize(jp, ctxt)
     }
@@ -53,7 +61,7 @@ private object TupleDeserializerResolver extends Deserializers.Base {
     // If it's not *actually* a tuple, it's either a case class or a custom Product
     // which either way we shouldn't handle here.
     if (!cls.getName.startsWith("scala.Tuple")) null else
-    new TupleDeserializer(javaType, config)
+    new TupleDeserializer(javaType, config, Seq.empty)
   }
 }
 

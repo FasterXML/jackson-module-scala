@@ -20,7 +20,7 @@ private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector
     else true
   }
 
-  override def findDeserializablePropertyName(af: AnnotatedField): String = {
+  override def findDeserializationName(af: AnnotatedField): String = {
     val cls = af.getDeclaringClass
     if (!maybeIsCaseClass(cls)) null
     else {
@@ -33,7 +33,7 @@ private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector
     }
   }
 
-  override def findPropertyNameForParam(param: AnnotatedParameter): String = {
+  override def findDeserializationName(param: AnnotatedParameter): String = {
     val cls = param.getDeclaringClass
     if (!maybeIsCaseClass(cls)) null
     else {

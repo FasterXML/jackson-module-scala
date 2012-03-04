@@ -2,13 +2,13 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule
 
-import com.fasterxml.jackson.core.{JsonToken, JsonParser};
+import com.fasterxml.jackson.core.JsonParser
 
-import com.fasterxml.jackson.databind._;
-import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator};
-import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer,ContainerDeserializerBase};
-import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
-import com.fasterxml.jackson.databind.`type`.CollectionLikeType;
+import com.fasterxml.jackson.databind.{BeanDescription, BeanProperty, JsonDeserializer, JavaType, DeserializationContext, DeserializationConfig}
+import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, CollectionDeserializer, StdValueInstantiator}
+import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator, ContextualDeserializer}
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 
 import collection.mutable
 import collection.generic.GenericCompanion
@@ -49,26 +49,26 @@ private object SeqDeserializer {
   def builderFor[A](cls: Class[_]): mutable.Builder[A,Seq[A]] = companionFor(cls).newBuilder[A]
 }
 
-private class SeqDeserializer(
-    collectionType: JavaType,
-    config: DeserializationConfig,
-    valueDeser: JsonDeserializer[_],
-    valueTypeDeser: TypeDeserializer)
+private class SeqInstantiator(config: DeserializationConfig, valueType: Class[_])
+  extends StdValueInstantiator(config, valueType) {
 
-  extends ContainerDeserializerBase[Seq[_]](classOf[SeqDeserializer]) {
+  override def canCreateUsingDefault = true
 
-  private val javaContainerType = config.constructType(classOf[BuilderWrapper[AnyRef]])
+  override def createUsingDefault(ctxt: DeserializationContext) =
+    new BuilderWrapper[AnyRef](SeqDeserializer.builderFor[AnyRef](valueType))  
+}
 
-  private val instantiator = new ValueInstantiator {
-    def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
+private class SeqDeserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)
+  extends ContainerDeserializerBase[Seq[_]](collectionType.getRawClass)
+  with ContextualDeserializer {
 
-    override def canCreateUsingDefault = true
+  def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) =
+    this(collectionType, new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, valueInstantiator))
 
-    override def createUsingDefault =
-      new BuilderWrapper[AnyRef](SeqDeserializer.builderFor[AnyRef](collectionType.getRawClass))
+  def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
+    val newDelegate = containerDeserializer.createContextual(ctxt, property).asInstanceOf[CollectionDeserializer]
+    new SeqDeserializer(collectionType, newDelegate)
   }
-  private val containerDeserializer =
-    new CollectionDeserializer(javaContainerType,valueDeser.asInstanceOf[JsonDeserializer[AnyRef]],valueTypeDeser,instantiator)
 
   override def getContentType = containerDeserializer.getContentType
 
@@ -82,6 +82,8 @@ private class SeqDeserializer(
 
 private object SeqDeserializerResolver extends Deserializers.Base {
 
+  lazy final val SEQ = classOf[Seq[_]]
+  
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                      config: DeserializationConfig,
                      beanDesc: BeanDescription,
@@ -89,16 +91,16 @@ private object SeqDeserializerResolver extends Deserializers.Base {
                      elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
     val rawClass = collectionType.getRawClass
 
-    if (classOf[Seq[_]].isAssignableFrom(rawClass)) {
-      // !!! TODO: 18-Feb-2010, tatu: Can not resolve element deserializer here: MUST resolve in 'createContextual()'
-      val resolvedDeserializer = elementDeserializer;
-//        Option(elementDeserializer).getOrElse(provider.findValueDeserializer(config,collectionType.containedType(0),property))
-      new SeqDeserializer(collectionType, config, resolvedDeserializer, elementTypeDeserializer)
-    } else null
+    if (!SEQ.isAssignableFrom(rawClass)) null
+    else {
+      val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
+      val instantiator = new SeqInstantiator(config, rawClass)
+      new SeqDeserializer(collectionType, deser, elementTypeDeserializer, instantiator)
+    }
   }
 
 }
 
 trait SeqDeserializerModule extends SeqTypeModifierModule {
-  this += SeqDeserializerResolver
+  this += (_ addDeserializers SeqDeserializerResolver)
 }

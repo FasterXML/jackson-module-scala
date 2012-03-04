@@ -58,6 +58,11 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.0.0-RC1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.0.0-RC1</version>
     </dependency>
@@ -88,13 +93,6 @@
       <artifactId>scalatest_${scala.version}</artifactId>
       <version>1.6.1</version>
       <!-- <scope>test</scope> -->
-    </dependency>
-    <!-- also, annotations used for some tests -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.0.0-RC1</version>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -248,6 +246,7 @@
       <name>Scala-tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
     </repository>
+    <!--
     <repository>
       <id>codehaus-snapshots</id>
       <name>Codehaus Snapshots repository</name>
@@ -259,6 +258,7 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    -->
   </repositories>
   <pluginRepositories>
     <pluginRepository>

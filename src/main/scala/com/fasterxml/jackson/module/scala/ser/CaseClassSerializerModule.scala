@@ -9,8 +9,8 @@ import org.scalastuff.scalabeans.ConstructorParameter
 
 import com.fasterxml.jackson.databind.{BeanDescription, SerializationConfig};
 import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier};
-import com.fasterxml.jackson.databind.introspect.{AnnotatedMethod, JacksonAnnotationIntrospector};
-
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
+import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition
 import com.fasterxml.jackson.module.scala.JacksonModule
 
 private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
@@ -40,7 +40,9 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
 
   private def asWriter(config: SerializationConfig, beanDesc: BeanDescription, member: AnnotatedMethod, primaryName: Option[String] = None) = {
     val javaType = config.getTypeFactory.constructType(member.getGenericType)
-    new BeanPropertyWriter(member, null, primaryName.getOrElse(member.getName), javaType, null, null, null, member.getAnnotated, null, false, null)
+    val name = primaryName.getOrElse(member.getName)
+    val propDef = new SimpleBeanPropertyDefinition(member, name)
+    new BeanPropertyWriter(propDef, member, null, javaType, null, null, null, false, null)
   }
 
 }

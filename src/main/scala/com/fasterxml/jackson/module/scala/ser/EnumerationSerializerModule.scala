@@ -11,8 +11,8 @@ import com.fasterxml.jackson.module.scala.JacksonModule
  * The implementation is taken from the code written by Greg Zoller, found here:
  * http://jira.codehaus.org/browse/JACKSON-211
  */
-private class EnumerationSerializer extends JsonSerializer[scala.Enumeration$Val] {
-	override def serialize(value: scala.Enumeration$Val, jgen: JsonGenerator, provider: SerializerProvider) = {
+private class EnumerationSerializer extends JsonSerializer[scala.Enumeration#Value] {
+	override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider) = {
 		val parentEnum = value.asInstanceOf[AnyRef].getClass.getSuperclass.getDeclaredFields.find( f => f.getName == "$outer" ).get
 		val enumClass = parentEnum.get(value).getClass.getName stripSuffix "$"
 		jgen.writeStartObject();
@@ -25,12 +25,11 @@ private class EnumerationSerializer extends JsonSerializer[scala.Enumeration$Val
 private object EnumerationSerializerResolver extends Serializers.Base {
 
   override def findSerializer(config: SerializationConfig,
-					   javaType: JavaType,
-					   beanDescription: BeanDescription,
-					   beanProperty: BeanProperty): JsonSerializer[_] = {
+                              javaType: JavaType,
+                              beanDescription: BeanDescription): JsonSerializer[_] = {
 		val clazz = javaType.getRawClass
 
-    if (classOf[scala.Enumeration$Val].isAssignableFrom(clazz)) {
+    if (classOf[scala.Enumeration#Value].isAssignableFrom(clazz)) {
         new EnumerationSerializer
     } else {
       null
