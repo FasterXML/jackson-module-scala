@@ -21,6 +21,7 @@ sealed class DefaultScalaModule
      with TupleModule
      with MapModule
      with CaseClassModule
+     with SetModule
 {
   override def getModuleName = "DefaultScalaModule"
 }
