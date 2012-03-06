@@ -7,13 +7,13 @@ import org.codehaus.jackson.JsonParser
 import org.codehaus.jackson.map.`type`.CollectionLikeType
 import org.codehaus.jackson.map.{DeserializationContext, JsonDeserializer, TypeDeserializer, BeanProperty, BeanDescription, DeserializerProvider, DeserializationConfig, Deserializers}
 
-import collection.mutable
 import collection.generic.GenericCompanion
 import collection.immutable.Queue
 
 import java.util.AbstractCollection
 import org.codehaus.jackson.map.deser.std.{CollectionDeserializer, ContainerDeserializerBase}
 import org.codehaus.jackson.map.deser.ValueInstantiator
+import scala.collection.{immutable, mutable}
 
 private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: Seq[E]]) extends AbstractCollection[E] {
 
