@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
+import com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializerModule
+
 /**
  * Complete module with support for all features.
  *
@@ -22,6 +24,7 @@ sealed class DefaultScalaModule
      with MapModule
      with CaseClassModule
      with SetModule
+     with UntypedObjectDeserializerModule
 {
   override def getModuleName = "DefaultScalaModule"
 }
