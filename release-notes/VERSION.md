@@ -12,3 +12,5 @@ Release Date: XX-Mar-2012
 * [[gh-18](https://github.com/FasterXML/jackson-module-scala/pull/18)]:
   Support @JsonIgnoreProperty annotations
 
+* [[gh-22](https://github.com/FasterXML/jackson-module-scala/pull/2)]:
+  Unsorted Set deserialization support, from Nathaniel Bauernfeind
