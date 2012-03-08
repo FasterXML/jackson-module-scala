@@ -10,11 +10,11 @@ import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator, C
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 
-import collection.mutable
 import collection.generic.GenericCompanion
 import collection.immutable.Queue
 
 import java.util.AbstractCollection
+import scala.collection.mutable
 
 private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: Seq[E]]) extends AbstractCollection[E] {
 
@@ -83,7 +83,7 @@ private class SeqDeserializer(collectionType: JavaType, containerDeserializer: C
 private object SeqDeserializerResolver extends Deserializers.Base {
 
   lazy final val SEQ = classOf[Seq[_]]
-  
+
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                      config: DeserializationConfig,
                      beanDesc: BeanDescription,

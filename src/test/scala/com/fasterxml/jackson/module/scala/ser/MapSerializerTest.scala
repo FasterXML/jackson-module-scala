@@ -8,6 +8,7 @@ import org.scalatest.junit.JUnitRunner
 import scala.collection._
 import scala.reflect.BeanProperty
 import com.fasterxml.jackson.annotation.JsonProperty
+import scala.collection.immutable.ListMap
 
 class BeanieWeenie(@BeanProperty @JsonProperty("a") var a: Int,
                    @BeanProperty @JsonProperty("b") var b: String, 
@@ -49,6 +50,12 @@ class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers
     result should (
       be ("""{"bean":{"a":1,"b":"two","c":false}}""")
     )
+  }
+
+  it should "serialize order-specified Maps in the correc order" in {
+    val m = ListMap(Map((5, 1), (2, 33), (7, 22), (8, 333)).toList.sortBy(-_._2):_*)
+    val result = serialize(m)
+    result should be ("""{"8":333,"2":33,"7":22,"5":1}""")
   }
 
 }
