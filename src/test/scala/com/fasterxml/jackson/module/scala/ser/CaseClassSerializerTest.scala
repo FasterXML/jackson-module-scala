@@ -7,7 +7,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.fasterxml.jackson.module.scala.JacksonModule
 import org.codehaus.jackson.annotate.{JsonIgnoreProperties, JsonProperty}
 
-case class CaseClassConstructorTest(intValue: Int, stringValue: String) { }
+case class CaseClassConstructorTest(intValue: Int, stringValue: String)
 
 case class CaseClassValTest() {
   val intVal: Int = 1
@@ -23,9 +23,9 @@ case class CaseClassMixedTest(intValue: Int) {
   val strVal: String = "foo"
 }
 
-case class CaseClassJacksonAnnotationTest(@JsonProperty("foo") oof:String, bar: String) {
+case class CaseClassJacksonAnnotationTest(@JsonProperty("foo") oof:String, bar: String)
 
-}
+case class GenericCaseClassTest[T](data: T)
 
 @JsonIgnoreProperties(Array("ignore"))
 case class CaseClassJacksonIgnorePropertyTest(ignore:String, test:String)
@@ -72,6 +72,12 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
   it should "serialize a case class with ignore property annotations" in {
     serialize(CaseClassJacksonIgnorePropertyTest("ignore", "test")) should (
       equal("""{"test":"test"}""")
+      )
+  }
+
+  it should "seralize a generic case class" in {
+    serialize(GenericCaseClassTest(42)) should (
+      equal("""{"data":42}""")
       )
   }
 }
