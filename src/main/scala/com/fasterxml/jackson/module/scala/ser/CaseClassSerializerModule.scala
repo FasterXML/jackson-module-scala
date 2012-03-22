@@ -4,7 +4,6 @@ import collection.JavaConverters._
 
 import java.{util => ju}
 
-import org.scalastuff.scalabeans.Preamble._
 import org.scalastuff.scalabeans.ConstructorParameter
 
 import com.fasterxml.jackson.databind.{BeanDescription, SerializationConfig};
@@ -12,6 +11,7 @@ import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerMod
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition
 import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.util.ScalaBeansUtil
 
 private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
   private val PRODUCT = classOf[Product]
@@ -22,7 +22,7 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
     val jacksonIntrospector = config.getAnnotationIntrospector;
     val list = for {
       cls <- Option(beanDesc.getBeanClass).toSeq if (PRODUCT.isAssignableFrom(cls))
-      prop <- descriptorOf(cls).properties
+      prop <- ScalaBeansUtil.propertiesOf(cls)
       // Not completely happy with this test. I'd rather check the PropertyDescription
       // to see if it's a field or a method, but ScalaBeans doesn't expose that as yet.
       // I'm not sure if it truly matters as Scala generates method accessors for fields.
