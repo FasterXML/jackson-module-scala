@@ -12,7 +12,7 @@ object ScalaBeansUtil {
     val anyType = scalaTypeOf(classOf[Any])
     val scalaType = scalaTypeOf(cls)
 
-    val extracted = for {
+    val typeWithFakeParamTypes = for {
       top <- ClassDeclExtractor.extract(scalaType.erasure)
       classDecl <- top.headOption
       if classDecl.isInstanceOf[Mirror.ClassDecl]
@@ -21,6 +21,7 @@ object ScalaBeansUtil {
       new ScalaTypeImpl(cls, args: _*) {}
     }
 
-    descriptorOf(extracted.get).properties
+    val typ = typeWithFakeParamTypes.getOrElse(scalaType)
+    descriptorOf(typ).properties
   }
 }
