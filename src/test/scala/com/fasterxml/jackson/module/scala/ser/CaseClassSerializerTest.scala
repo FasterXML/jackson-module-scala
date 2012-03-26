@@ -30,6 +30,11 @@ case class CaseClassJacksonAnnotationTest(@JsonProperty("foo") oof:String, bar: 
 
 case class GenericCaseClassTest[T](data: T)
 
+object CaseClassWithCompanion {
+}
+
+case class CaseClassWithCompanion(intValue: Int)
+
 @JsonIgnoreProperties(Array("ignore"))
 case class CaseClassJacksonIgnorePropertyTest(ignore:String, test:String)
 
@@ -81,6 +86,12 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
   it should "seralize a generic case class" in {
     serialize(GenericCaseClassTest(42)) should (
       equal("""{"data":42}""")
+      )
+  }
+
+  it should "serialize a case class with a companion object" in {
+    serialize(CaseClassWithCompanion(42)) should (
+      equal("""{"intValue":42}""")
       )
   }
 }
