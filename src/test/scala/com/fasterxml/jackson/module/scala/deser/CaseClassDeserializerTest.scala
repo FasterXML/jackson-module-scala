@@ -10,18 +10,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.databind.JsonMappingException
 
-case class CaseClassConstructorTest(intValue: Int, stringValue: String) {
-
-}
+case class CaseClassConstructorTest(intValue: Int, stringValue: String)
 
 case class CaseClassPropertiesTest() {
   var intProperty: Int = 0
   var stringProperty: String = null
 }
 
-case class CaseClassJacksonAnnotationTest(@JsonProperty("foo") oof:String, bar: String) {
+case class CaseClassJacksonAnnotationTest(@JsonProperty("foo") oof:String, bar: String)
 
-}
+case class GenericCaseClassTest[T](data: T)
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
@@ -48,5 +46,10 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
     intercept[JsonMappingException] {
       deserialize[List[_]]("""{"foo":"foo","bar":"bar"}""")
     }
+  }
+
+  it should "deserialize a generic case class" in {
+    val result = GenericCaseClassTest(42)
+    deserialize[GenericCaseClassTest[Int]]("""{"data":42}""") should be (result)
   }
 }
