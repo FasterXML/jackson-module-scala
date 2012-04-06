@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, CollectionSerializer};
 
 import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
+import collection.Iterable
 
 private class IterableSerializer(seqType: Class[_],
                                  elemType: JavaType,
@@ -19,6 +20,8 @@ private class IterableSerializer(seqType: Class[_],
                                  property: BeanProperty,
                                  valueSerializer: Option[JsonSerializer[AnyRef]])
   extends AsArraySerializerBase[collection.Iterable[Any]](seqType, elemType, staticTyping, vts.orNull, property, valueSerializer.orNull) {
+
+  def hasSingleElement(p1: Iterable[Any]) = (p1.take(2).size == 1)
 
   val collectionSerializer =
     new CollectionSerializer(elemType, staticTyping, vts.orNull, property, valueSerializer.orNull)
