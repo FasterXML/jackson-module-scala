@@ -10,16 +10,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.databind.JsonMappingException
 
-case class CaseClassConstructorTest(intValue: Int, stringValue: String)
+case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
-case class CaseClassPropertiesTest() {
+case class PropertiesTestCaseClass() {
   var intProperty: Int = 0
   var stringProperty: String = null
 }
 
-case class CaseClassJacksonAnnotationTest(@JsonProperty("foo") oof:String, bar: String)
+case class JacksonAnnotationTestCaseClass(@JsonProperty("foo") oof:String, bar: String)
 
-case class GenericCaseClassTest[T](data: T)
+case class GenericTestCaseClass[T](data: T)
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
@@ -27,19 +27,19 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
   def module = new JacksonModule with CaseClassDeserializerModule
 
   "An ObjectMapper with CaseClassDeserializer" should "deserialize a case class with a single constructor" in {
-    deserialize[CaseClassConstructorTest]("""{"intValue":1,"stringValue":"foo"}""") should be (CaseClassConstructorTest(1,"foo"))
+    deserialize[ConstructorTestCaseClass]("""{"intValue":1,"stringValue":"foo"}""") should be (ConstructorTestCaseClass(1,"foo"))
   }
 
   it should "deserialize a case class with var properties" in {
-    val result = CaseClassPropertiesTest()
+    val result = PropertiesTestCaseClass()
     result.intProperty = 1
     result.stringProperty = "foo"
-    deserialize[CaseClassPropertiesTest]("""{"intProperty":1,"stringProperty":"foo"}""") should be (result)
+    deserialize[PropertiesTestCaseClass]("""{"intProperty":1,"stringProperty":"foo"}""") should be (result)
   }
 
   it should "honor Jackson annotations" in {
-    val result = CaseClassJacksonAnnotationTest("foo","bar")
-    deserialize[CaseClassJacksonAnnotationTest]("""{"foo":"foo","bar":"bar"}""") should be (result)
+    val result = JacksonAnnotationTestCaseClass("foo","bar")
+    deserialize[JacksonAnnotationTestCaseClass]("""{"foo":"foo","bar":"bar"}""") should be (result)
   }
 
   it should "not try to deserialize a List" in {
@@ -49,7 +49,7 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
   }
 
   it should "deserialize a generic case class" in {
-    val result = GenericCaseClassTest(42)
-    deserialize[GenericCaseClassTest[Int]]("""{"data":42}""") should be (result)
+    val result = GenericTestCaseClass(42)
+    deserialize[GenericTestCaseClass[Int]]("""{"data":42}""") should be (result)
   }
 }
