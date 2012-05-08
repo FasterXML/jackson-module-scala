@@ -1,3 +1,11 @@
+# Version: 2.0.1
+
+This release is a bugfix release for the Jackson 2.x series.
+
+## Miscelaneous
+
+* Updated the release notes, which were out of date in the 2.0.0 release.
+
 # Version: 2.0.0
 
 This release is the first release for the Jackson 2.x series. There is one
