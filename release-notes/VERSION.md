@@ -14,7 +14,7 @@ the 1.9 series.
 
 ## Fixes
 
-* [[gh-25](https://github.com/FasterXML/jackson-module-scala/pull/25):
+* [[gh-25]](https://github.com/FasterXML/jackson-module-scala/pull/25):
   Support parameterized case classes
 
 # Version: 1.9.3
