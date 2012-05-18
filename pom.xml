@@ -8,7 +8,7 @@
   <groupId>com.fasterxml.jackson.module</groupId>
   <artifactId>jackson-module-scala</artifactId>
   <name>Jackson-module-Scala</name>
-  <version>2.0.1-SNAPSHOT</version>
+  <version>2.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Add-on module for Jackson (http://jackson.codehaus.org) to support
     Scala (http://www.scala-lang.org/) data types.
@@ -54,17 +54,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.0.0</version>
+      <version>2.0.2</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.0.0</version>
+      <version>2.0.2</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.0.0</version>
+      <version>2.0.2</version>
     </dependency>
     <!-- what core Scala runtime libs do we need? -->
     <dependency>
@@ -194,7 +194,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.5</version>
+        <version>2.3.7</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>

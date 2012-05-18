@@ -1,8 +1,10 @@
-# Version: 2.0.1
+# Version: 2.0.2
 
-This release is a bugfix release for the Jackson 2.x series.
+This release is a bugfix release for the Jackson 2.x series:
+no changes to this module, but updated to depend on 2.0.2 versions
+of core components which have fixes.
 
-## Miscelaneous
+## Miscellaneous
 
 * Updated the release notes, which were out of date in the 2.0.0 release.
 
