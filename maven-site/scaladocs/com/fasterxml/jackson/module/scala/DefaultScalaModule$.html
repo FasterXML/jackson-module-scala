@@ -1,0 +1,479 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>com.fasterxml.jackson.module.scala.DefaultScalaModule</title>
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link type="text/css" media="screen" rel="stylesheet" href="../../../../../lib/template.css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <a title="Go to companion" href="DefaultScalaModule.html"><img src="../../../../../lib/object_to_class_big.png" /></a>
+        <p id="owner"><a name="com" class="extype" href="../../../../package.html">com</a>.<a name="com.fasterxml" class="extype" href="../../../package.html">fasterxml</a>.<a name="com.fasterxml.jackson" class="extype" href="../../package.html">jackson</a>.<a name="com.fasterxml.jackson.module" class="extype" href="../package.html">module</a>.<a name="com.fasterxml.jackson.module.scala" class="extype" href="package.html">scala</a></p>
+        <h1><a title="Go to companion" href="DefaultScalaModule.html">DefaultScalaModule</a></h1>
+      </div>
+
+      <h4 class="signature" id="signature">
+      <span class="kind">object</span>
+      <span class="symbol"> 
+        <span class="name">DefaultScalaModule</span>
+        
+        <span class="result"> extends <a name="com.fasterxml.jackson.module.scala.DefaultScalaModule" class="extype" href="DefaultScalaModule.html">DefaultScalaModule</a></span>
+      </span>
+      </h4>
+      
+          <div class="fullcommenttop" id="comment"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><a name="com.fasterxml.jackson.module.scala.DefaultScalaModule" class="extype" href="DefaultScalaModule.html">DefaultScalaModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializerModule" class="extype" href="deser/UntypedObjectDeserializerModule.html">UntypedObjectDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.SetModule" class="extype" href="SetModule.html">SetModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.UnsortedSetDeserializerModule" class="extype" href="deser/UnsortedSetDeserializerModule.html">UnsortedSetDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.modifiers.SetTypeModifierModule" class="extype" href="modifiers/SetTypeModifierModule.html">SetTypeModifierModule</a>, <a name="com.fasterxml.jackson.module.scala.CaseClassModule" class="extype" href="CaseClassModule.html">CaseClassModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerModule" class="extype" href="deser/CaseClassDeserializerModule.html">CaseClassDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.ser.CaseClassSerializerModule" class="extype" href="ser/CaseClassSerializerModule.html">CaseClassSerializerModule</a>, <a name="com.fasterxml.jackson.module.scala.MapModule" class="extype" href="MapModule.html">MapModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.UnsortedMapDeserializerModule" class="extype" href="deser/UnsortedMapDeserializerModule.html">UnsortedMapDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.SortedMapDeserializerModule" class="extype" href="deser/SortedMapDeserializerModule.html">SortedMapDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.ser.MapSerializerModule" class="extype" href="ser/MapSerializerModule.html">MapSerializerModule</a>, <a name="com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule" class="extype" href="modifiers/MapTypeModifierModule.html">MapTypeModifierModule</a>, <a name="com.fasterxml.jackson.module.scala.TupleModule" class="extype" href="TupleModule.html">TupleModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.TupleDeserializerModule" class="extype" href="deser/TupleDeserializerModule.html">TupleDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.ser.TupleSerializerModule" class="extype" href="ser/TupleSerializerModule.html">TupleSerializerModule</a>, <a name="com.fasterxml.jackson.module.scala.IterableModule" class="extype" href="IterableModule.html">IterableModule</a>, <a name="com.fasterxml.jackson.module.scala.SeqModule" class="extype" href="SeqModule.html">SeqModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.SeqDeserializerModule" class="extype" href="deser/SeqDeserializerModule.html">SeqDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule" class="extype" href="modifiers/SeqTypeModifierModule.html">SeqTypeModifierModule</a>, <a name="com.fasterxml.jackson.module.scala.ser.IterableSerializerModule" class="extype" href="ser/IterableSerializerModule.html">IterableSerializerModule</a>, <a name="com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule" class="extype" href="modifiers/IterableTypeModifierModule.html">IterableTypeModifierModule</a>, <a name="com.fasterxml.jackson.module.scala.OptionModule" class="extype" href="OptionModule.html">OptionModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.OptionDeserializerModule" class="extype" href="deser/OptionDeserializerModule.html">OptionDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.ser.OptionSerializerModule" class="extype" href="ser/OptionSerializerModule.html">OptionSerializerModule</a>, <a name="com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule" class="extype" href="modifiers/OptionTypeModifierModule.html">OptionTypeModifierModule</a>, <a name="com.fasterxml.jackson.module.scala.EnumerationModule" class="extype" href="EnumerationModule.html">EnumerationModule</a>, <a name="com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerModule" class="extype" href="deser/EnumerationDeserializerModule.html">EnumerationDeserializerModule</a>, <a name="com.fasterxml.jackson.module.scala.ser.EnumerationSerializerModule" class="extype" href="ser/EnumerationSerializerModule.html">EnumerationSerializerModule</a>, <a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a>, <span name="com.fasterxml.jackson.databind.Module" class="extype">Module</span>, <span name="com.fasterxml.jackson.core.Versioned" class="extype">Versioned</span>, AnyRef, <span name="scala.Any" class="extype">Any</span></div>
+        </div></div>
+        
+
+      <div id="template">
+
+        <div id="mbrsel">
+          <div id="textfilter"><span class="pre"></span><span class="input"><input accesskey="/" type="text" /></span><span class="post"></span></div>
+          <div id="order">
+                <span class="filtertype">Ordering</span>
+                <ol><li class="alpha in"><span>Alphabetic</span></li><li class="inherit out"><span>By inheritance</span></li></ol>
+              </div>
+          <div id="ancestors">
+                <span class="filtertype">Inherited</span>
+                <ol><li class="hideall out"><span>Hide All</span></li>
+                <li class="showall in"><span>Show all</span></li></ol>
+                <ol id="linearization"><li name="com.fasterxml.jackson.module.scala.DefaultScalaModule" class="in"><span>DefaultScalaModule</span></li><li name="com.fasterxml.jackson.module.scala.DefaultScalaModule" class="in"><span>DefaultScalaModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializerModule" class="in"><span>UntypedObjectDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.SetModule" class="in"><span>SetModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.UnsortedSetDeserializerModule" class="in"><span>UnsortedSetDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.modifiers.SetTypeModifierModule" class="in"><span>SetTypeModifierModule</span></li><li name="com.fasterxml.jackson.module.scala.CaseClassModule" class="in"><span>CaseClassModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerModule" class="in"><span>CaseClassDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.ser.CaseClassSerializerModule" class="in"><span>CaseClassSerializerModule</span></li><li name="com.fasterxml.jackson.module.scala.MapModule" class="in"><span>MapModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.UnsortedMapDeserializerModule" class="in"><span>UnsortedMapDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.SortedMapDeserializerModule" class="in"><span>SortedMapDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.ser.MapSerializerModule" class="in"><span>MapSerializerModule</span></li><li name="com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule" class="in"><span>MapTypeModifierModule</span></li><li name="com.fasterxml.jackson.module.scala.TupleModule" class="in"><span>TupleModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.TupleDeserializerModule" class="in"><span>TupleDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.ser.TupleSerializerModule" class="in"><span>TupleSerializerModule</span></li><li name="com.fasterxml.jackson.module.scala.IterableModule" class="in"><span>IterableModule</span></li><li name="com.fasterxml.jackson.module.scala.SeqModule" class="in"><span>SeqModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.SeqDeserializerModule" class="in"><span>SeqDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule" class="in"><span>SeqTypeModifierModule</span></li><li name="com.fasterxml.jackson.module.scala.ser.IterableSerializerModule" class="in"><span>IterableSerializerModule</span></li><li name="com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule" class="in"><span>IterableTypeModifierModule</span></li><li name="com.fasterxml.jackson.module.scala.OptionModule" class="in"><span>OptionModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.OptionDeserializerModule" class="in"><span>OptionDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.ser.OptionSerializerModule" class="in"><span>OptionSerializerModule</span></li><li name="com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule" class="in"><span>OptionTypeModifierModule</span></li><li name="com.fasterxml.jackson.module.scala.EnumerationModule" class="in"><span>EnumerationModule</span></li><li name="com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerModule" class="in"><span>EnumerationDeserializerModule</span></li><li name="com.fasterxml.jackson.module.scala.ser.EnumerationSerializerModule" class="in"><span>EnumerationSerializerModule</span></li><li name="com.fasterxml.jackson.module.scala.JacksonModule" class="in"><span>JacksonModule</span></li><li name="com.fasterxml.jackson.databind.Module" class="in"><span>Module</span></li><li name="com.fasterxml.jackson.core.Versioned" class="in"><span>Versioned</span></li><li name="scala.AnyRef" class="in"><span>AnyRef</span></li><li name="scala.Any" class="in"><span>Any</span></li></ol>
+              </div>
+          <div id="visbl">
+              <span class="filtertype">Visibility</span>
+              <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+            </div>
+        </div>
+
+        
+
+        
+        
+        
+
+        <div class="values members" id="values">
+              <h3>Value Members</h3>
+              <ol><li visbl="pub" name="scala.AnyRef#!=" data-isabs="false">
+      <a id="!=(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">!=</span>
+        
+        <span class="params">(<span name="arg0">arg0: AnyRef</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.Any#!=" data-isabs="false">
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">!=</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef###" data-isabs="false">
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">##</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Int" class="extype">Int</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="prt" name="com.fasterxml.jackson.module.scala.JacksonModule#+=" data-isabs="false">
+      <a id="+=(BeanSerializerModifier):com.fasterxml.jackson.module.scala.DefaultScalaModule.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">+=</span>
+        
+        <span class="params">(<span name="beanSerMod">beanSerMod: <span name="com.fasterxml.jackson.databind.ser.BeanSerializerModifier" class="extype">BeanSerializerModifier</span></span>)</span><span class="result">: com.fasterxml.jackson.module.scala.DefaultScalaModule.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a></dd></dl></div>
+    </li><li visbl="prt" name="com.fasterxml.jackson.module.scala.JacksonModule#+=" data-isabs="false">
+      <a id="+=(TypeModifier):com.fasterxml.jackson.module.scala.DefaultScalaModule.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">+=</span>
+        
+        <span class="params">(<span name="typeMod">typeMod: <span name="com.fasterxml.jackson.databind.type.TypeModifier" class="extype">TypeModifier</span></span>)</span><span class="result">: com.fasterxml.jackson.module.scala.DefaultScalaModule.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a></dd></dl></div>
+    </li><li visbl="prt" name="com.fasterxml.jackson.module.scala.JacksonModule#+=" data-isabs="false">
+      <a id="+=(Deserializers):com.fasterxml.jackson.module.scala.DefaultScalaModule.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">+=</span>
+        
+        <span class="params">(<span name="deser">deser: <span name="com.fasterxml.jackson.databind.deser.Deserializers" class="extype">Deserializers</span></span>)</span><span class="result">: com.fasterxml.jackson.module.scala.DefaultScalaModule.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a></dd></dl></div>
+    </li><li visbl="prt" name="com.fasterxml.jackson.module.scala.JacksonModule#+=" data-isabs="false">
+      <a id="+=(Serializers):com.fasterxml.jackson.module.scala.DefaultScalaModule.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">+=</span>
+        
+        <span class="params">(<span name="ser">ser: <span name="com.fasterxml.jackson.databind.ser.Serializers" class="extype">Serializers</span></span>)</span><span class="result">: com.fasterxml.jackson.module.scala.DefaultScalaModule.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a></dd></dl></div>
+    </li><li visbl="prt" name="com.fasterxml.jackson.module.scala.JacksonModule#+=" data-isabs="false">
+      <a id="+=((SetupContext) ⇒ Unit):com.fasterxml.jackson.module.scala.DefaultScalaModule.type"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">+=</span>
+        
+        <span class="params">(<span name="init">init: (<span name="com.fasterxml.jackson.databind.Module.SetupContext" class="extype">SetupContext</span>) ⇒ <span name="scala.Unit" class="extype">Unit</span></span>)</span><span class="result">: com.fasterxml.jackson.module.scala.DefaultScalaModule.type</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a></dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#==" data-isabs="false">
+      <a id="==(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">==</span>
+        
+        <span class="params">(<span name="arg0">arg0: AnyRef</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.Any#==" data-isabs="false">
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">==</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="scala.Any#asInstanceOf" data-isabs="false">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">asInstanceOf</span>
+        <span class="tparams">[<span name="T0">T0</span>]</span>
+        <span class="result">: T0</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="prt" name="scala.AnyRef#clone" data-isabs="false">
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">clone</span>
+        
+        <span class="params">()</span><span class="result">: AnyRef</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a name="java.lang" class="extype" href="../../../../../java/lang/package.html">lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#eq" data-isabs="false">
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">eq</span>
+        
+        <span class="params">(<span name="arg0">arg0: AnyRef</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#equals" data-isabs="false">
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">equals</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Any" class="extype">Any</span></span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="prt" name="scala.AnyRef#finalize" data-isabs="false">
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">finalize</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a name="java.lang" class="extype" href="../../../../../java/lang/package.html">lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#getClass" data-isabs="false">
+      <a id="getClass():java.lang.Class[_]"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">getClass</span>
+        
+        <span class="params">()</span><span class="result">: java.lang.Class[_]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="com.fasterxml.jackson.module.scala.DefaultScalaModule#getModuleName" data-isabs="false">
+      <a id="getModuleName():String"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">getModuleName</span>
+        
+        <span class="params">()</span><span class="result">: <span name="java.lang.String" class="extype">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="com.fasterxml.jackson.module.scala.DefaultScalaModule" class="extype" href="DefaultScalaModule.html">DefaultScalaModule</a> → <a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a> → Module</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#hashCode" data-isabs="false">
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">hashCode</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Int" class="extype">Int</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="scala.Any#isInstanceOf" data-isabs="false">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">isInstanceOf</span>
+        <span class="tparams">[<span name="T0">T0</span>]</span>
+        <span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#ne" data-isabs="false">
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">ne</span>
+        
+        <span class="params">(<span name="arg0">arg0: AnyRef</span>)</span><span class="result">: <span name="scala.Boolean" class="extype">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#notify" data-isabs="false">
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">notify</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#notifyAll" data-isabs="false">
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">notifyAll</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="com.fasterxml.jackson.module.scala.JacksonModule#setupModule" data-isabs="false">
+      <a id="setupModule(SetupContext):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">setupModule</span>
+        
+        <span class="params">(<span name="context">context: <span name="com.fasterxml.jackson.databind.Module.SetupContext" class="extype">SetupContext</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a> → Module</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#synchronized" data-isabs="false">
+      <a id="synchronized[T0](⇒ T0):T0"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">synchronized</span>
+        <span class="tparams">[<span name="T0">T0</span>]</span>
+        <span class="params">(<span name="arg0">arg0: ⇒ T0</span>)</span><span class="result">: T0</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#toString" data-isabs="false">
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">toString</span>
+        
+        <span class="params">()</span><span class="result">: <span name="java.lang.String" class="extype">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li visbl="pub" name="com.fasterxml.jackson.module.scala.JacksonModule#version" data-isabs="false">
+      <a id="version():Version"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">version</span>
+        
+        <span class="params">()</span><span class="result">: <span name="com.fasterxml.jackson.core.Version" class="extype">Version</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a> → Module → Versioned</dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#wait" data-isabs="false">
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">wait</span>
+        
+        <span class="params">()</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#wait" data-isabs="false">
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">wait</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Long" class="extype">Long</span></span>, <span name="arg1">arg1: <span name="scala.Int" class="extype">Int</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li visbl="pub" name="scala.AnyRef#wait" data-isabs="false">
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="kind">def</span>
+      <span class="symbol"> 
+        <span class="name">wait</span>
+        
+        <span class="params">(<span name="arg0">arg0: <span name="scala.Long" class="extype">Long</span></span>)</span><span class="result">: <span name="scala.Unit" class="extype">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>final </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        <div name="com.fasterxml.jackson.module.scala.DefaultScalaModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.DefaultScalaModule" class="extype" href="DefaultScalaModule.html">DefaultScalaModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializerModule" class="extype" href="deser/UntypedObjectDeserializerModule.html">UntypedObjectDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.SetModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.SetModule" class="extype" href="SetModule.html">SetModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.UnsortedSetDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.UnsortedSetDeserializerModule" class="extype" href="deser/UnsortedSetDeserializerModule.html">UnsortedSetDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.modifiers.SetTypeModifierModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.modifiers.SetTypeModifierModule" class="extype" href="modifiers/SetTypeModifierModule.html">SetTypeModifierModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.CaseClassModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.CaseClassModule" class="extype" href="CaseClassModule.html">CaseClassModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerModule" class="extype" href="deser/CaseClassDeserializerModule.html">CaseClassDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.ser.CaseClassSerializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.ser.CaseClassSerializerModule" class="extype" href="ser/CaseClassSerializerModule.html">CaseClassSerializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.MapModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.MapModule" class="extype" href="MapModule.html">MapModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.UnsortedMapDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.UnsortedMapDeserializerModule" class="extype" href="deser/UnsortedMapDeserializerModule.html">UnsortedMapDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.SortedMapDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.SortedMapDeserializerModule" class="extype" href="deser/SortedMapDeserializerModule.html">SortedMapDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.ser.MapSerializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.ser.MapSerializerModule" class="extype" href="ser/MapSerializerModule.html">MapSerializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule" class="extype" href="modifiers/MapTypeModifierModule.html">MapTypeModifierModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.TupleModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.TupleModule" class="extype" href="TupleModule.html">TupleModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.TupleDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.TupleDeserializerModule" class="extype" href="deser/TupleDeserializerModule.html">TupleDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.ser.TupleSerializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.ser.TupleSerializerModule" class="extype" href="ser/TupleSerializerModule.html">TupleSerializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.IterableModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.IterableModule" class="extype" href="IterableModule.html">IterableModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.SeqModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.SeqModule" class="extype" href="SeqModule.html">SeqModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.SeqDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.SeqDeserializerModule" class="extype" href="deser/SeqDeserializerModule.html">SeqDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.modifiers.SeqTypeModifierModule" class="extype" href="modifiers/SeqTypeModifierModule.html">SeqTypeModifierModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.ser.IterableSerializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.ser.IterableSerializerModule" class="extype" href="ser/IterableSerializerModule.html">IterableSerializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule" class="extype" href="modifiers/IterableTypeModifierModule.html">IterableTypeModifierModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.OptionModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.OptionModule" class="extype" href="OptionModule.html">OptionModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.OptionDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.OptionDeserializerModule" class="extype" href="deser/OptionDeserializerModule.html">OptionDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.ser.OptionSerializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.ser.OptionSerializerModule" class="extype" href="ser/OptionSerializerModule.html">OptionSerializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule" class="extype" href="modifiers/OptionTypeModifierModule.html">OptionTypeModifierModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.EnumerationModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.EnumerationModule" class="extype" href="EnumerationModule.html">EnumerationModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerModule" class="extype" href="deser/EnumerationDeserializerModule.html">EnumerationDeserializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.ser.EnumerationSerializerModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.ser.EnumerationSerializerModule" class="extype" href="ser/EnumerationSerializerModule.html">EnumerationSerializerModule</a></h3>
+            </div><div name="com.fasterxml.jackson.module.scala.JacksonModule" class="parent">
+              <h3>Inherited from <a name="com.fasterxml.jackson.module.scala.JacksonModule" class="extype" href="JacksonModule.html">JacksonModule</a></h3>
+            </div><div name="com.fasterxml.jackson.databind.Module" class="parent">
+              <h3>Inherited from <span name="com.fasterxml.jackson.databind.Module" class="extype">Module</span></h3>
+            </div><div name="com.fasterxml.jackson.core.Versioned" class="parent">
+              <h3>Inherited from <span name="com.fasterxml.jackson.core.Versioned" class="extype">Versioned</span></h3>
+            </div><div name="scala.AnyRef" class="parent">
+              <h3>Inherited from AnyRef</h3>
+            </div><div name="scala.Any" class="parent">
+              <h3>Inherited from <span name="scala.Any" class="extype">Any</span></h3>
+            </div>
+
+      </div>
+      
+      <div id="tooltip"></div>
+      
+    </body>
+      </html>
