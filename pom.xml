@@ -34,6 +34,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <scala.version>2.9.1</scala.version>
     <scala-lib.version>2.9.1</scala-lib.version>
+    <scala-plugin.version>3.0.1</scala-plugin.version>
   </properties>
 
   <!-- Licensing -->
@@ -137,9 +138,9 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.scala-tools</groupId>
-        <artifactId>maven-scala-plugin</artifactId>
-        <version>2.15.2</version>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>${scala-plugin.version}</version>
         <configuration>
           <args>
             <arg>-deprecation</arg>
@@ -188,6 +189,30 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <reportPlugins>
+            <plugin>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+              <version>2.4</version>
+            </plugin>
+            <plugin>
+              <groupId>net.alchim31.maven</groupId>
+              <artifactId>scala-maven-plugin</artifactId>
+              <version>${scala-plugin.version}</version>
+              <configuration>
+                <jvmArgs>
+                  <jvmArg>-Xms64m</jvmArg>
+                  <jvmArg>-Xmx1024m</jvmArg>
+                </jvmArgs>
+              </configuration>
+            </plugin>
+          </reportPlugins>
+        </configuration>
       </plugin>
 
       <!-- Plus, let's make jars OSGi bundles as well  -->
