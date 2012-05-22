@@ -25,7 +25,20 @@
       <name>Tatu Saloranta</name>
       <email>tatu@fasterxml.com</email>
     </developer>
+    <developer>
+      <id>christopher</id>
+      <name>Christopher Currie</name>
+      <email>christopher@currie.com</email>
+    </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Nathaniel Bauernfeind</name>
+    </contributor>
+    <contributor>
+      <name>Anton Panasenko</name>
+    </contributor>
+  </contributors>
 
   <prerequisites>
     <maven>2.2.1</maven>
