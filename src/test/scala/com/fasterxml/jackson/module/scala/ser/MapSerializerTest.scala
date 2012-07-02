@@ -7,13 +7,25 @@ import org.scalatest.junit.JUnitRunner
 
 import scala.collection._
 import scala.reflect.BeanProperty
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty}
 import scala.collection.immutable.ListMap
 
 class BeanieWeenie(@BeanProperty @JsonProperty("a") var a: Int,
                    @BeanProperty @JsonProperty("b") var b: String, 
                    @BeanProperty @JsonProperty("c") var c: Boolean) {
   
+}
+
+class NonEmptyMaps {
+
+  @JsonProperty
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  def emptyMap = Map.empty[String,Int]
+
+  @JsonProperty
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  def nonEmptyMap = Map("x"->1)
+
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -58,4 +70,7 @@ class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers
     result should be ("""{"8":333,"2":33,"7":22,"5":1}""")
   }
 
+  it should "honor JsonInclude(NON_EMPTY)" in {
+    serialize(new NonEmptyMaps) should be ("""{"nonEmptyMap":{"x":1}}""")
+  }
 }

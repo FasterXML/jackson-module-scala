@@ -20,6 +20,8 @@ private class MapSerializer
     value.foreach { case (k,v) => jgen.writeObjectField(k.toString,v) }
     jgen.writeEndObject()
   }
+
+  override def isEmpty(value: Map[_,_]) = value.isEmpty
 }
 
 private object MapSerializerResolver extends Serializers.Base {
