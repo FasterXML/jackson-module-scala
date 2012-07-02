@@ -14,6 +14,7 @@ private class OptionSerializer extends JsonSerializer[Option[_]] {
     }
   }
 
+  override def isEmpty(value: Option[_]): Boolean = value.isEmpty
 }
 
 private object OptionSerializerResolver extends Serializers.Base {

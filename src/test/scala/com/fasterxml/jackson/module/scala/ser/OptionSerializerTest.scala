@@ -4,8 +4,20 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import java.lang.Integer
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
+
+class NonEmptyOptions {
+
+  @JsonProperty
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  def none = None
+
+  @JsonProperty
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  def some = Some(1)
+
+}
 
 /**
  * Undocumented class.
@@ -44,6 +56,10 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
     def score2 = Option(r2) map { _.score }
     serialize(score1) should be ("null")
     serialize(score2) should be ("1")
+  }
+
+  it should "honor JsonInclude(NON_EMPTY)" in {
+    serialize(new NonEmptyOptions) should be ("""{"some":1}""")
   }
 
 }
