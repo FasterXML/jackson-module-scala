@@ -1,3 +1,13 @@
+# Version: 2.0.3
+
+This release is a bugfix release for the jackson 2.x series:
+
+## Fixes
+
+* [[gh-9]](https://github.com/FasterXML/jackson-module-scala/issues/9)
+  [[gh-23]](https://github.com/FasterXML/jackson-module-scala/issues/32)
+  Support the `JsonInclude.Include.NON_EMPTY` annotation parameter
+
 # Version: 2.0.2
 
 This release is a bugfix release for the Jackson 2.x series:
