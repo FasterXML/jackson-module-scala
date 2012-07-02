@@ -35,6 +35,8 @@ private class IterableSerializer(seqType: Class[_],
 
   override def withResolved(newProperty: BeanProperty, newVts: TypeSerializer, elementSerializer: JsonSerializer[_]) =
     new IterableSerializer(seqType, elemType, staticTyping, Option(newVts), newProperty, Option(elementSerializer.asInstanceOf[JsonSerializer[AnyRef]]))
+
+  override def isEmpty(value: collection.Iterable[Any]): Boolean = value.isEmpty
 }
 
 private object IterableSerializerResolver extends Serializers.Base {

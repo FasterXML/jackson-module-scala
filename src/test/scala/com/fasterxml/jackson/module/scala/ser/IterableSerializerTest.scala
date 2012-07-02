@@ -8,6 +8,19 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 
 import com.fasterxml.jackson.databind.JsonMappingException
 import scala.collection.{mutable, immutable, Iterator}
+import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
+
+class NonEmptyCollections {
+
+  @JsonProperty
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  def emptyIterable = Iterable.empty[Int]
+
+  @JsonProperty
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  def nonEmptyIterable = Iterable(1,2,3)
+
+}
 
 /**
  * Undocumented class.
@@ -57,6 +70,10 @@ class IterableSerializerTest extends SerializerTest with FlatSpec with ShouldMat
     intercept[JsonMappingException] {
       serialize(Map(1->2,3->4))
     }
+  }
+
+  it should "honor the JsonInclude(NON_EMPTY) annotation" in {
+    serialize(new NonEmptyCollections) should be ("""{"nonEmptyIterable":[1,2,3]}""")
   }
 
   val matchUnorderedSet = {
