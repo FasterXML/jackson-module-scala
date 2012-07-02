@@ -7,8 +7,9 @@ import org.scalatest.matchers.ShouldMatchers
 
 
 
-import com.fasterxml.jackson.module.scala.JacksonModule
-import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import com.fasterxml.jackson.annotation.{JsonInclude, JsonIgnoreProperties, JsonProperty}
+import com.fasterxml.jackson.databind.ObjectMapper
 
 case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
@@ -37,6 +38,12 @@ case class CaseClassWithCompanion(intValue: Int)
 
 @JsonIgnoreProperties(Array("ignore"))
 case class JacksonIgnorePropertyTestCaseClass(ignore:String, test:String)
+
+
+case class NonNullCaseClass1(@JsonInclude(JsonInclude.Include.NON_NULL) foo: Option[String])
+
+case class NonNullCaseClass2(foo: Option[String])
+
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
@@ -93,5 +100,19 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
     serialize(CaseClassWithCompanion(42)) should (
       equal("""{"intValue":42}""")
       )
+  }
+
+  def withOptionModule = new JacksonModule with CaseClassSerializerModule with OptionSerializerModule {}
+  def nonNullMapper: ObjectMapper =
+    new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
+
+  it should "not write a null value" in {
+    val o = NonNullCaseClass1(None)
+    nonNullMapper.writeValueAsString(o) should be ("{}")
+  }
+
+  it should "not also write a null value" in {
+    val o = NonNullCaseClass2(None)
+    nonNullMapper.writeValueAsString(o) should be ("{}")
   }
 }
