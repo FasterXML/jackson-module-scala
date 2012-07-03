@@ -89,7 +89,7 @@
     <dependency>
       <groupId>org.scalastuff</groupId>
       <artifactId>scalabeans</artifactId>
-      <version>0.2</version>
+      <version>0.3</version>
     </dependency>
 
 
