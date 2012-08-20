@@ -40,8 +40,13 @@ private class TupleDeserializer(javaType: JavaType,
     }
 
     val params = valueDeserializers map { deser =>
-      jp.nextToken()
+      jp.nextToken
       deser.deserialize(jp, ctxt)
+    }
+
+    val t = jp.nextToken
+    if (t != JsonToken.END_ARRAY) {
+      throw ctxt.mappingException(javaType.getRawClass)
     }
 
     ctor.newInstance(params: _*).asInstanceOf[Product]

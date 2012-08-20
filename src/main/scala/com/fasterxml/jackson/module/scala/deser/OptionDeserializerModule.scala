@@ -18,7 +18,7 @@ private class OptionDeserializer(elementType: JavaType, var deser: JsonDeseriali
     else new OptionDeserializer(elementType, ctxt.findContextualValueDeserializer(elementType, property))
 
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext) =
-    Some(deser.deserialize(jp, ctxt)).asInstanceOf[Option[AnyRef]]
+    Option(deser.deserialize(jp, ctxt)).asInstanceOf[Option[AnyRef]]
 
   override def getNullValue = None
 }

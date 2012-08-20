@@ -4,6 +4,8 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.core.`type`.TypeReference
 
 /**
  * @author Christopher Currie <ccurrie@impresys.com>
@@ -11,7 +13,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class TupleDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
 
-  lazy val module = new TupleDeserializerModule {}
+  lazy val module = DefaultScalaModule
 
   "ObjectMapper with TupleDeserialzier" should "deserialize a Tuple[Int]" in {
     val result = deserialize[Tuple1[Int]]("[1]")
@@ -48,4 +50,13 @@ class TupleDeserializerTest extends DeserializerTest with FlatSpec with ShouldMa
     result should be ((3.0,"A",1))
   }
 
+  it should "deserialize a list of tuples " in {
+    val result = deserialize[List[(String,Double)]]("""[["foo",1.0],["bar",10.0],["baz",100.0]]""")
+    result should be (List(("foo",1.0), ("bar",10.0), ("baz",100.0)))
+  }
+
+  it should "deserialize an option list of tuples " in {
+    val result = deserialize[Option[List[(String,Double)]]]("""[["foo",1.0],["bar",10.0],["baz",100.0]]""")
+    result should be (Some(List(("foo",1.0), ("bar",10.0), ("baz",100.0))))
+  }
 }
