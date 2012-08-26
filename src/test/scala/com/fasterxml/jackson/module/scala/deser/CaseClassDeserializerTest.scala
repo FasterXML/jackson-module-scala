@@ -21,6 +21,8 @@ case class JacksonAnnotationTestCaseClass(@JsonProperty("foo") oof:String, bar: 
 
 case class GenericTestCaseClass[T](data: T)
 
+case class UnicodeNameCaseClass(`winning-id`: Int, name: String)
+
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
 
@@ -46,6 +48,11 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
     intercept[JsonMappingException] {
       deserialize[List[_]]("""{"foo":"foo","bar":"bar"}""")
     }
+  }
+
+  it should "deserialize a class with unicode property names" in {
+    val result = UnicodeNameCaseClass(23, "the name of this")
+    deserialize[UnicodeNameCaseClass]("""{"winning-id":23,"name":"the name of this"}""") should be (result)
   }
 
   it should "deserialize a generic case class" in {
