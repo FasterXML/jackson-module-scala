@@ -5,6 +5,7 @@
       <configuration>
         <option name="compilerLibraryLevel" value="Global" />
         <option name="compilerLibraryName" value="scala-2.10.0-M7-compiler" />
+        <option name="fsc" value="true" />
       </configuration>
     </facet>
   </component>
@@ -19,10 +20,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="scala-2.10.0-M7-library" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="jackson-2.0.6" level="project" />
     <orderEntry type="library" scope="TEST" name="junit" level="project" />
     <orderEntry type="library" scope="TEST" name="scalatest" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="scala-2.10.0-M7-library" level="application" />
   </component>
 </module>
 
