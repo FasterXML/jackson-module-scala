@@ -45,8 +45,8 @@
   </prerequisites>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <scala.version>2.9.1</scala.version>
-    <scala-lib.version>2.9.1</scala-lib.version>
+    <scala.version>2.10.0-M7</scala.version>
+    <scala-lib.version>2.10.0-M7</scala-lib.version>
     <scala-plugin.version>3.0.1</scala-plugin.version>
   </properties>
 
@@ -86,12 +86,6 @@
       <artifactId>scala-library</artifactId>
       <version>${scala-lib.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.scalastuff</groupId>
-      <artifactId>scalabeans</artifactId>
-      <version>0.3</version>
-    </dependency>
-
 
     <!-- and for testing, JUnit (or TestNG?) is needed -->
     <dependency>
@@ -105,7 +99,7 @@
       <!-- http://www.scalatest.org/download -->
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_${scala.version}</artifactId>
-      <version>1.6.1</version>
+      <version>1.9-2.10.0-M7-B1</version>
       <scope>test</scope>
     </dependency>
 

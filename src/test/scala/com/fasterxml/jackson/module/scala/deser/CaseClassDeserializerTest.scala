@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty
 
 import com.fasterxml.jackson.databind.JsonMappingException
 

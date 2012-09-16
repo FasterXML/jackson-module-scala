@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
-import reflect.BeanProperty
+import _root_.scala.reflect.BeanProperty
 
 /**
  */
