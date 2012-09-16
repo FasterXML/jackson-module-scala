@@ -14,6 +14,7 @@
     <content url="file://$MODULE_DIR$/src/main">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/scala" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/src/test">
       <sourceFolder url="file://$MODULE_DIR$/src/test/scala" isTestSource="true" />
