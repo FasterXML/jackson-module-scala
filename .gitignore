@@ -1,26 +1,5 @@
-# use glob syntax.
-syntax: glob
-*.ser
-*.class
-*~
-*.bak
-*.off
-*.old
-.DS_Store
-
-# building
-lib_managed
-project/boot
-project/target
-target
-logs
-
-# IDEA
-*.iml
-*.ipr
-*.iws
-
-# ECLIPSE
-.classpath
-.project
-.settings
+# IntelliJ specific
+.idea/workspace.xml
+atlassian-ide-plugin.xml
+dist/*
+out

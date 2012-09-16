@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="jackson-module-scala:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/jackson_module_scala_jar</output-path>
+    <root id="archive" name="jackson-module-scala.jar">
+      <element id="module-output" name="Main" />
+    </root>
+  </artifact>
+</component>
