@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="scala" name="Scala">
+      <configuration>
+        <option name="compilerLibraryLevel" value="Global" />
+        <option name="compilerLibraryName" value="scala-2.10.0-M7-compiler" />
+        <option name="fsc" value="true" />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/scala" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/src/test">
+      <sourceFolder url="file://$MODULE_DIR$/src/test/scala" isTestSource="true" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="jackson-2.0.6" level="project" />
+    <orderEntry type="library" scope="TEST" name="junit" level="project" />
+    <orderEntry type="library" scope="TEST" name="scalatest" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="scala-2.10.0-M7-library" level="application" />
+  </component>
+</module>
+
