@@ -17,7 +17,9 @@ private class MapSerializer
 {
   def serialize(value: Map[_, _], jgen: JsonGenerator, provider: SerializerProvider) {
     jgen.writeStartObject()
-    value.foreach { case (k,v) => jgen.writeObjectField(k.toString,v) }
+    value.foreach { (entry: (Any, Any)) => entry match {
+		case (k,v) => jgen.writeObjectField(k.toString,v) 
+	}}
     jgen.writeEndObject()
   }
 
