@@ -47,7 +47,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <scala.version>2.9.1</scala.version>
     <scala-lib.version>2.9.1</scala-lib.version>
-    <scala-plugin.version>3.0.1</scala-plugin.version>
+    <scala-plugin.version>3.1.0</scala-plugin.version>
   </properties>
 
   <!-- Licensing -->

@@ -19,7 +19,7 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
   override def changeProperties(config: SerializationConfig,
                                 beanDesc: BeanDescription,
                                 beanProperties: ju.List[BeanPropertyWriter]): ju.List[BeanPropertyWriter] = {
-    val jacksonIntrospector = config.getAnnotationIntrospector;
+    val jacksonIntrospector = config.getAnnotationIntrospector
     val list = for {
       cls <- Option(beanDesc.getBeanClass).toSeq if (PRODUCT.isAssignableFrom(cls))
       prop <- ScalaBeansUtil.propertiesOf(cls)
@@ -41,7 +41,7 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
   private def asWriter(config: SerializationConfig, beanDesc: BeanDescription, member: AnnotatedMethod, primaryName: Option[String] = None) = {
     val javaType = config.getTypeFactory.constructType(member.getGenericType)
     val name = primaryName.getOrElse(member.getName)
-    val propDef = new SimpleBeanPropertyDefinition(member, name)
+    val propDef = new SimpleBeanPropertyDefinition(member, scala.reflect.NameTransformer.decode(name))
     new BeanPropertyWriter(propDef, member, null, javaType, null, null, null, false, null)
   }
 
