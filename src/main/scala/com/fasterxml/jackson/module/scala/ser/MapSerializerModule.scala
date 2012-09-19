@@ -10,14 +10,24 @@ import com.fasterxml.jackson.databind.ser.Serializers
 ;
 import com.fasterxml.jackson.databind.`type`.MapLikeType;
 
-import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule;
+import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+import java.io.StringWriter
+;
 
-private class MapSerializer
+private class MapSerializer(val keySerializer: Option[JsonSerializer[AnyRef]])
   extends JsonSerializer[Map[_,_]]
 {
-  def serialize(value: Map[_, _], jgen: JsonGenerator, provider: SerializerProvider) {
+  override def serialize(value: Map[_, _], jgen: JsonGenerator, provider: SerializerProvider) {
     jgen.writeStartObject()
-    value.foreach { case (k,v) => jgen.writeObjectField(k.toString,v) }
+    value.foreach { case (k,v) => {
+
+      (keySerializer, k) match {
+        case (Some(ks), a: AnyRef) => ks.serialize(a, jgen, provider)
+        case (_, _) => jgen.writeFieldName(k.toString)
+      }
+
+      jgen.writeObject(v)
+    }}
     jgen.writeEndObject()
   }
 
@@ -39,7 +49,7 @@ private object MapSerializerResolver extends Serializers.Base {
     val rawClass = mapLikeType.getRawClass
 
     if (!BASE.isAssignableFrom(rawClass)) null
-    else new MapSerializer
+    else new MapSerializer(Option(keySerializer))
   }
 
 }
