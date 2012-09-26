@@ -10,6 +10,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import com.fasterxml.jackson.annotation.{JsonInclude, JsonIgnoreProperties, JsonProperty}
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 
 case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
@@ -44,6 +45,7 @@ case class NonNullCaseClass1(@JsonInclude(JsonInclude.Include.NON_NULL) foo: Opt
 
 case class NonNullCaseClass2(foo: Option[String])
 
+case class MixedPropertyNameStyleCaseClass(camelCase: Int, snake_case: Int, alllower: Int, ALLUPPER: Int, anID: Int)
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
@@ -115,4 +117,15 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
     val o = NonNullCaseClass2(None)
     nonNullMapper.writeValueAsString(o) should be ("{}")
   }
+
+  def propertyNamingStrategyMapper = new ObjectMapper() {
+    registerModule(module)
+    setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
+  }
+
+  it should "honor the property naming strategy" in {
+    val o = MixedPropertyNameStyleCaseClass(42, 42, 42, 42, 42)
+    propertyNamingStrategyMapper.writeValueAsString(o) should be("""{"camel_case":42,"snake_case":42,"alllower":42,"allupper":42,"an_id":42}""")
+  }
+
 }
