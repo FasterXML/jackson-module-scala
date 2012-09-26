@@ -6,7 +6,7 @@ import java.{util => ju}
 
 import org.scalastuff.scalabeans.ConstructorParameter
 
-import com.fasterxml.jackson.databind.{BeanDescription, SerializationConfig};
+import com.fasterxml.jackson.databind.{BeanDescription, PropertyNamingStrategy, SerializationConfig};
 import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier};
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition
@@ -40,9 +40,13 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
 
   private def asWriter(config: SerializationConfig, beanDesc: BeanDescription, member: AnnotatedMethod, primaryName: Option[String] = None) = {
     val javaType = config.getTypeFactory.constructType(member.getGenericType)
-    val name = primaryName.getOrElse(member.getName)
+    val name = maybeTranslateName(config, member, primaryName.getOrElse(member.getName))
     val propDef = new SimpleBeanPropertyDefinition(member, name)
     new BeanPropertyWriter(propDef, member, null, javaType, null, null, null, false, null)
+  }
+
+  private def maybeTranslateName(config: SerializationConfig, member: AnnotatedMethod, name: String) = {
+    Option(config.getPropertyNamingStrategy).map(_.nameForGetterMethod(config, member, name)).getOrElse(name)
   }
 
 }
