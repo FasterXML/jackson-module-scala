@@ -16,6 +16,7 @@ import com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializerModule
  */
 sealed class DefaultScalaModule
   extends JacksonModule
+     with IteratorModule
      with EnumerationModule
      with OptionModule
      with SeqModule
