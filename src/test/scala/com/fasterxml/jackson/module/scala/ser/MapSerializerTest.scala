@@ -44,7 +44,6 @@ class TupleKeySerializer extends JsonSerializer[Product] {
 }
 
 case class KeySerializerMap(
-  @(JsonProperty @getter)
   @(JsonSerialize @getter)(keyUsing = classOf[TupleKeySerializer])
   keySerializerMap: Map[(String,String),Int] )
 
