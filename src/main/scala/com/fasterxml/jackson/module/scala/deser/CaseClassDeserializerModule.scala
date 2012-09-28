@@ -26,10 +26,10 @@ private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector
     else {
       val properties = ScalaBeansUtil.propertiesOf(cls)
 
-      properties.find {
+      (properties.find {
         case dp: DeserializablePropertyDescriptor => af.getName.equals(dp.name)
         case _ => false
-      } map (_.name) getOrElse null
+      }).map(s => scala.reflect.NameTransformer.decode(s.name)) getOrElse null
     }
   }
 
@@ -53,7 +53,7 @@ private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector
       properties.find {
         case cp: ConstructorParameter => cp.index == param.getIndex
         case _ => false
-      }.map(_.name) getOrElse null
+      }.map(s => scala.reflect.NameTransformer.decode(s.name)) getOrElse null
     }
   }
 

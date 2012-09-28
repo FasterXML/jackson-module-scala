@@ -32,6 +32,8 @@ case class JacksonAnnotationTestCaseClass(@JsonProperty("foo") oof:String, bar: 
 
 case class GenericTestCaseClass[T](data: T)
 
+case class UnicodeNameCaseClass(`winning-id`: Int, name: String)
+
 object CaseClassWithCompanion {
 }
 
@@ -90,6 +92,12 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
     serialize(JacksonIgnorePropertyTestCaseClass("ignore", "test")) should (
       equal("""{"test":"test"}""")
       )
+  }
+
+  it should "serialize a case class with unicode name properties" in {
+    serialize(UnicodeNameCaseClass(23, "the name of this")) should (
+      equal("""{"winning-id":23,"name":"the name of this"}""")
+    )
   }
 
   it should "seralize a generic case class" in {
