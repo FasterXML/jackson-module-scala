@@ -6,7 +6,7 @@ trait JacksonTest {
 
   def module: Module
 
-  val mapper = {
+  def mapper = {
     val result = new ObjectMapper
     result.registerModule(module)
     result

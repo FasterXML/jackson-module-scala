@@ -6,6 +6,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
+import annotation.target.getter
 
 class NonEmptyOptions {
 
@@ -62,4 +63,15 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
     serialize(new NonEmptyOptions) should be ("""{"some":1}""")
   }
 
+  it should "honor JsonInclude.Include.NON_NULL" in {
+    val nonNullMapper = mapper
+    nonNullMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    nonNullMapper.writeValueAsString(new NonNullOption()) should be ("{}")
+  }
+
 }
+
+class NonNullOption {
+  @JsonProperty var foo: Option[String] = None
+}
+
