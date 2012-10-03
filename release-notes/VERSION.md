@@ -1,8 +1,24 @@
 # Version: 2.0.3
 
-This release is a bugfix release for the jackson 2.x series:
+This release is a bugfix release for the Jackson 2.x series. It addresses the
+following issues:
 
 ## Fixes
+
+* [[gh-32]](https://github.com/FasterXML/jackson-module-scala/issues/32)
+  `NON_NULL` for Option
+
+* [[gh-41]](https://github.com/FasterXML/jackson-module-scala/issues/40)
+  Symbol property name support, from Ivan Porto Carrero
+
+* [[gh-43]](https://github.com/FasterXML/jackson-module-scala/pull/43)
+  Scala Iterator support, from Heikki Vesalainen
+
+* [[gh-38]](https://github.com/FasterXML/jackson-module-scala/issues/38)
+  Honor property naming stratey, from Bill Crook
+
+* [[gh-36]](https://github.com/FasterXML/jackson-module-scala/issues/36)
+  Deserialization issue with Tuple in containers
 
 * [[gh-26]](https://github.com/FasterXML/jackson-module-scala/issues/26)
   ScalaBeans memory leak
