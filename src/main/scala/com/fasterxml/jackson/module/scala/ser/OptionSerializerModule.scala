@@ -6,13 +6,16 @@ import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerMod
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 import scala.collection.JavaConverters._
 import java.{util => ju}
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 
-private class OptionSerializer extends JsonSerializer[Option[_]] {
+private class OptionSerializer(valueSerializer: Option[JsonSerializer[AnyRef]]) extends JsonSerializer[Option[_]] {
 
   def serialize(value: Option[_], jgen: JsonGenerator, provider: SerializerProvider) {
-    value match {
-      case Some(v) => provider.defaultSerializeValue(v, jgen)
-      case None => provider.defaultSerializeNull(jgen)
+    (value, valueSerializer) match {
+      case (Some(v: AnyRef), Some(vs)) => vs.serialize(v, jgen, provider)
+      case (Some(v: AnyRef), _) => provider.defaultSerializeValue(v, jgen)
+      case (None, _) => provider.defaultSerializeNull(jgen)
     }
   }
 
@@ -52,10 +55,15 @@ private object OptionSerializerResolver extends Serializers.Base {
 
   private val OPTION = classOf[Option[_]]
 
-  override def findSerializer(config: SerializationConfig, theType: JavaType, beanDesc: BeanDescription) =
-    if (!OPTION.isAssignableFrom(theType.getRawClass)) null
-    else new OptionSerializer
+  override def findCollectionLikeSerializer(confg: SerializationConfig,
+                                            `type`: CollectionLikeType,
+                                            beanDesc: BeanDescription,
+                                            elementTypeSerializer: TypeSerializer ,
+                                            elementValueSerializer: JsonSerializer[AnyRef]
+                                           ): JsonSerializer[_] =
 
+    if (!OPTION.isAssignableFrom(`type`.getRawClass)) null
+    else new OptionSerializer(Option(elementValueSerializer))
 }
 
 

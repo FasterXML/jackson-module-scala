@@ -6,12 +6,14 @@ import java.{util => ju}
 
 import org.scalastuff.scalabeans.ConstructorParameter
 
-import com.fasterxml.jackson.databind.{BeanDescription, PropertyNamingStrategy, SerializationConfig};
+import com.fasterxml.jackson.databind.{PropertyName, BeanDescription, PropertyNamingStrategy, SerializationConfig}
+;
 import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier};
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.ScalaBeansUtil
+import reflect.NameTransformer
 
 private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
   private val PRODUCT = classOf[Product]
@@ -31,17 +33,18 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
     } yield prop match {
       case cp: ConstructorParameter =>
         val param = beanDesc.getConstructors.get(0).getParameter(cp.index)
-        asWriter(config, beanDesc, method, Option(jacksonIntrospector.findDeserializationName(param)))
+        asWriter(config, beanDesc, method, Option(jacksonIntrospector.findNameForDeserialization(param)))
       case _ => asWriter(config, beanDesc, method)
     }
 
     if (list.isEmpty) beanProperties else new ju.ArrayList[BeanPropertyWriter](list.toList.asJava)
   }
 
-  private def asWriter(config: SerializationConfig, beanDesc: BeanDescription, member: AnnotatedMethod, primaryName: Option[String] = None) = {
+  private def asWriter(config: SerializationConfig, beanDesc: BeanDescription, member: AnnotatedMethod, primaryName: Option[PropertyName] = None) = {
     val javaType = config.getTypeFactory.constructType(member.getGenericType)
-    val name = maybeTranslateName(config, member, primaryName.getOrElse(member.getName))
-    val propDef = new SimpleBeanPropertyDefinition(member, scala.reflect.NameTransformer.decode(name))
+    val defaultName = NameTransformer.decode(member.getName)
+    val name = maybeTranslateName(config, member, primaryName.map(_.toString).getOrElse(defaultName))
+    val propDef = new SimpleBeanPropertyDefinition(member, name)
     new BeanPropertyWriter(propDef, member, null, javaType, null, null, null, false, null)
   }
 
