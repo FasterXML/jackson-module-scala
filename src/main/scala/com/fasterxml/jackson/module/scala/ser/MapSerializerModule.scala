@@ -1,37 +1,20 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import scala.collection.Map
-
-import com.fasterxml.jackson.core.JsonGenerator;
-
-import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, SerializationConfig, SerializerProvider};
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.{BeanDescription, SerializationConfig, JavaType, JsonSerializer}
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
-;
-import com.fasterxml.jackson.databind.`type`.MapLikeType;
+import com.fasterxml.jackson.databind.`type`.MapLikeType
+import com.fasterxml.jackson.databind.util.Converter
 
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
-import java.io.StringWriter
-;
 
-private class MapSerializer(val keySerializer: Option[JsonSerializer[AnyRef]])
-  extends JsonSerializer[Map[_,_]]
+import scala.collection.JavaConverters._
+import scala.collection.Map
+
+private object MapConverter extends Converter[Map[_,_],java.util.Map[_,_]]
 {
-  override def serialize(value: Map[_, _], jgen: JsonGenerator, provider: SerializerProvider) {
-    jgen.writeStartObject()
-    value.foreach { case (k,v) => {
-
-      (keySerializer, k) match {
-        case (Some(ks), a: AnyRef) => ks.serialize(a, jgen, provider)
-        case (_, _) => jgen.writeFieldName(k.toString)
-      }
-
-      jgen.writeObject(v)
-    }}
-    jgen.writeEndObject()
-  }
-
-  override def isEmpty(value: Map[_,_]) = value.isEmpty
+  def convert(value: Map[_,_]) = value.asJava
 }
 
 private object MapSerializerResolver extends Serializers.Base {
@@ -49,7 +32,7 @@ private object MapSerializerResolver extends Serializers.Base {
     val rawClass = mapLikeType.getRawClass
 
     if (!BASE.isAssignableFrom(rawClass)) null
-    else new MapSerializer(Option(keySerializer))
+    else new StdDelegatingSerializer(MapConverter)
   }
 
 }

@@ -66,7 +66,7 @@ class IterableSerializerTest extends SerializerTest with FlatSpec with ShouldMat
     serialize(mutable.LinkedHashSet(1,2,3)) should matchUnorderedSet
   }
 
-  it should "not serialize a Map[Int]" in {
+  it should "not serialize a Map[Int]" ignore {
     intercept[JsonMappingException] {
       serialize(Map(1->2,3->4))
     }
