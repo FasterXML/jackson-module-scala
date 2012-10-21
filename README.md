@@ -21,6 +21,8 @@ Bean][] properties.
 The Scala Module supports serialization and limited deserialization of
 Scala Case Classes, Sequences, Maps, Tuples, Options, and Enumerations.
 
+[![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master/)
+
 # Usage
 
 To use the Scala Module in Jackson, simply register it with the
