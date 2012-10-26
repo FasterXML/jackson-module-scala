@@ -1,4 +1,4 @@
-# Version: 2.0.4
+# Version: 2.1.1, 2.0.4
 
 ## Fixes
 
@@ -7,6 +7,11 @@
   `NON_NULL` for case classes. This was erroneously reported as having been
   fixed in 2.0.3, because of an incorrect focus on `Option`.
 
+# Version: 2.1.0
+
+This release is a new minor version release to go along with the Jackson 2.1
+series, and fixes some minor incompatibilies with that release. It is
+functionally identical to version 2.0.3.
 
 # Version: 2.0.3
 
