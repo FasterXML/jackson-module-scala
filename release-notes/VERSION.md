@@ -1,3 +1,13 @@
+# Version: 2.0.4
+
+## Fixes
+
+* [[gh-32]](https://github.com/FasterXML/jackson-module-scala/issues/32)
+  [[gh-45]](https://github.com/FasterXML/jackson-module-scala/issues/45)
+  `NON_NULL` for case classes. This was erroneously reported as having been
+  fixed in 2.0.3, because of an incorrect focus on `Option`.
+
+
 # Version: 2.0.3
 
 This release is a bugfix release for the Jackson 2.x series. It addresses the
