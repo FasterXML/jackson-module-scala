@@ -43,9 +43,9 @@ case class CaseClassWithCompanion(intValue: Int)
 case class JacksonIgnorePropertyTestCaseClass(ignore:String, test:String)
 
 
-case class NonNullCaseClass1(@JsonInclude(JsonInclude.Include.NON_NULL) foo: Option[String])
+case class NonNullCaseClass1(@JsonInclude(JsonInclude.Include.NON_NULL) foo: String)
 
-case class NonNullCaseClass2(foo: Option[String])
+case class NonNullCaseClass2(foo: String)
 
 case class MixedPropertyNameStyleCaseClass(camelCase: Int, snake_case: Int, alllower: Int, ALLUPPER: Int, anID: Int)
 
@@ -112,17 +112,18 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
       )
   }
 
-  def withOptionModule = new JacksonModule with CaseClassSerializerModule with OptionSerializerModule {}
   def nonNullMapper: ObjectMapper =
-    new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    new ObjectMapper()
+      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      .registerModule(DefaultScalaModule)
 
   it should "not write a null value" in {
-    val o = NonNullCaseClass1(None)
+    val o = NonNullCaseClass1(null)
     nonNullMapper.writeValueAsString(o) should be ("{}")
   }
 
   it should "not also write a null value" in {
-    val o = NonNullCaseClass2(None)
+    val o = NonNullCaseClass2(null)
     nonNullMapper.writeValueAsString(o) should be ("{}")
   }
 
