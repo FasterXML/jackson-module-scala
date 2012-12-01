@@ -63,6 +63,21 @@
     <url>http://fasterxml.com</url>
   </organization>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.thoughtworks.paranamer</groupId>
+        <artifactId>paranamer</artifactId>
+        <!--
+          We need at least 2.5.2 for a bugfix, but we want to keep things
+          flexible in case scalabeans updates in their next revision
+        -->
+        <version>[2.5.2,)</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+
   <dependencies>
     <!-- Extends Jackson; supports Scala datatypes, so: -->
     <dependency>
