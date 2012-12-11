@@ -8,7 +8,7 @@ import org.scalatest.matchers.ShouldMatchers
 
 
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import com.fasterxml.jackson.annotation.{JsonInclude, JsonIgnoreProperties, JsonProperty}
+import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonInclude, JsonIgnoreProperties, JsonProperty}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 
@@ -42,6 +42,10 @@ case class CaseClassWithCompanion(intValue: Int)
 @JsonIgnoreProperties(Array("ignore"))
 case class JacksonIgnorePropertyTestCaseClass(ignore:String, test:String)
 
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="class")
+case class JsonTypeInfoCaseClass(intValue: Int)
+
+case class CaseClassContainingJsonTypeInfoCaseClass(c: JsonTypeInfoCaseClass)
 
 case class NonNullCaseClass1(@JsonInclude(JsonInclude.Include.NON_NULL) foo: String)
 
@@ -135,6 +139,18 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
   it should "honor the property naming strategy" in {
     val o = MixedPropertyNameStyleCaseClass(42, 42, 42, 42, 42)
     propertyNamingStrategyMapper.writeValueAsString(o) should be("""{"camel_case":42,"snake_case":42,"alllower":42,"allupper":42,"an_id":42}""")
+  }
+
+  it should "serialize a case class with JsonTypeInfo" in {
+    serialize(JsonTypeInfoCaseClass(1)) should (
+      equal("""{"class":"com.fasterxml.jackson.module.scala.ser.JsonTypeInfoCaseClass","intValue":1}""")
+    )
+  }
+
+  it should "serialize a case class containing a case class with JsonTypeInfo" in {
+    serialize(CaseClassContainingJsonTypeInfoCaseClass(JsonTypeInfoCaseClass(1))) should (
+      equal("""{"c":{"class":"com.fasterxml.jackson.module.scala.ser.JsonTypeInfoCaseClass","intValue":1}}""")
+    )
   }
 
 }
