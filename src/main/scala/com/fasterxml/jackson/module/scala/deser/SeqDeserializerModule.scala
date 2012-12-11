@@ -15,6 +15,7 @@ import collection.immutable.Queue
 
 import java.util.AbstractCollection
 import scala.collection.mutable
+import com.fasterxml.jackson.module.scala.util.CompanionSorter
 
 private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: Seq[E]]) extends AbstractCollection[E] {
 
@@ -26,22 +27,19 @@ private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: Seq[E]]) ex
 }
 
 private object SeqDeserializer {
-  // This hurts my eyes, but it's the key component of making the type matching work.
-  // Also, order matters, as derived classes must come before base classes.
-  // TODO: try and make this lookup less painful-looking
-  val COMPANIONS = List[(Class[_],GenericCompanion[collection.Seq])](
-    classOf[mutable.ResizableArray[_]] -> mutable.ResizableArray,
-    classOf[mutable.ArraySeq[_]] -> mutable.ArraySeq,
-    classOf[mutable.IndexedSeq[_]] -> mutable.IndexedSeq,
-    classOf[IndexedSeq[_]] -> IndexedSeq,
-    classOf[Stream[_]] -> Stream,
-    classOf[Queue[_]] -> Queue,
-    classOf[mutable.Queue[_]] -> mutable.Queue,
-    classOf[mutable.MutableList[_]] -> mutable.MutableList,
-    classOf[mutable.LinearSeq[_]] -> mutable.LinearSeq,
-    classOf[mutable.ListBuffer[_]] -> mutable.ListBuffer,
-    classOf[mutable.Buffer[_]] -> mutable.Buffer
-  )
+  val COMPANIONS = new CompanionSorter[collection.Seq]()
+    .add(IndexedSeq)
+    .add(mutable.ArraySeq)
+    .add(mutable.Buffer)
+    .add(mutable.IndexedSeq)
+    .add(mutable.LinearSeq)
+    .add(mutable.ListBuffer)
+    .add(mutable.MutableList)
+    .add(mutable.Queue)
+    .add(mutable.ResizableArray)
+    .add(Queue)
+    .add(Stream)
+    .toList
 
   def companionFor(cls: Class[_]): GenericCompanion[collection.Seq] =
     COMPANIONS find { _._1.isAssignableFrom(cls) } map { _._2 } getOrElse(Seq)
