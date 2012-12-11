@@ -9,7 +9,7 @@ import org.scalastuff.scalabeans.ConstructorParameter
 import com.fasterxml.jackson.annotation.{JsonInclude, JsonIgnore}
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.databind.{PropertyName, BeanDescription, SerializationConfig}
-import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier}
+import com.fasterxml.jackson.databind.ser.{BeanSerializerFactory, BeanPropertyWriter, BeanSerializerModifier}
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod
 import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition
 import com.fasterxml.jackson.module.scala.JacksonModule
@@ -52,7 +52,11 @@ private object CaseClassBeanSerializerModifier extends BeanSerializerModifier {
     val defaultName = NameTransformer.decode(member.getName)
     val name = maybeTranslateName(config, member, primaryName.map(_.toString).getOrElse(defaultName))
     val propDef = new SimpleBeanPropertyDefinition(member, name)
-    new BeanPropertyWriter(propDef, member, null, javaType, null, null, null, suppressNulls, null)
+
+    val jsf = BeanSerializerFactory.instance
+    val typeSer = jsf.findPropertyTypeSerializer(javaType, config, member)
+
+    new BeanPropertyWriter(propDef, member, null, javaType, null, typeSer, null, suppressNulls, null)
   }
 
   private def maybeTranslateName(config: SerializationConfig, member: AnnotatedMethod, name: String) = {
