@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.deser.std.{StdValueInstantiator, CollectionDeserializer, ContainerDeserializerBase}
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
 import com.fasterxml.jackson.databind.{BeanProperty, JavaType, BeanDescription, DeserializationContext, JsonDeserializer, DeserializationConfig}
+import com.fasterxml.jackson.module.scala.util.CompanionSorter
 
 private class SetBuilderWrapper[E](val builder: mutable.Builder[E, _ <: collection.Set[E]]) extends AbstractCollection[E] {
 
@@ -21,17 +22,14 @@ private class SetBuilderWrapper[E](val builder: mutable.Builder[E, _ <: collecti
 }
 
 private object UnsortedSetDeserializer {
-  // This is a key component of making the type matching work.
-  // Order matters, as derived classes must come before base classes.
-  // TODO: try and make this lookup less painful-looking
-  val COMPANIONS = List[(Class[_], GenericCompanion[collection.Set])](
-    classOf[mutable.LinkedHashSet[_]] -> mutable.LinkedHashSet,
-    classOf[mutable.HashSet[_]] -> mutable.HashSet,
-    classOf[mutable.Set[_]] -> mutable.Set,
-    classOf[immutable.ListSet[_]] -> immutable.ListSet,
-    classOf[immutable.HashSet[_]] -> immutable.HashSet,
-    classOf[immutable.Set[_]] -> immutable.Set
-  )
+  val COMPANIONS = new CompanionSorter[collection.Set]()
+    .add(immutable.HashSet)
+    .add(immutable.ListSet)
+    .add(immutable.Set)
+    .add(mutable.HashSet)
+    .add(mutable.LinkedHashSet)
+    .add(mutable.Set)
+    .toList
 
   def companionFor(cls: Class[_]): GenericCompanion[collection.Set] =
     COMPANIONS find { _._1.isAssignableFrom(cls) } map { _._2 } getOrElse (Set)
