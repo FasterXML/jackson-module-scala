@@ -28,16 +28,28 @@ Scala Case Classes, Sequences, Maps, Tuples, Options, and Enumerations.
 To use the Scala Module in Jackson, simply register it with the
 ObjectMapper instance:
 
+```scala
     val mapper = new ObjectMapper()
     mapper.registerModule(DefaultScalaModule)
+```
 
 `DefaultScalaModule` is a Scala object that includes support for all
 currently supported Scala data types. If only partial support is desired,
 the component traits can be included individually:
 
+```scala
     val module = new OptionModule with TupleModule {}
     val mapper = new ObjectMapper()
     mapper.registerModule(module)
+```
+
+You can also mixin `ScalaObjectMapper` to get rich wrappers that automatically
+convert scala manifests directly into TypeReferences for Jackson to use:
+```scala
+    val mapper = new ObjectMapper() with ScalaObjectMapper
+    mapper.registerModule(DefaultScalaModule)
+    val myMap = mapper.readValue[Map[String,Tuple2[Int,Int]]](src)
+```
 
 Consult the Scaladoc for further details.
 
