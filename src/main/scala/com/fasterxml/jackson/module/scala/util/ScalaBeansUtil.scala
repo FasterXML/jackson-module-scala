@@ -141,7 +141,7 @@ object SmarterBeanIntrospector {
       println(prefix + "    " + f.getName + static(f.getModifiers))
     }
     println(prefix + "  Enum Values: ")
-    for (f <- c.getMethods filter (m => m.getParameterTypes.isEmpty && classOf[Enumeration$Value].isAssignableFrom(m.getReturnType))) {
+    for (f <- c.getMethods filter (m => m.getParameterTypes.isEmpty && classOf[Enumeration#Value].isAssignableFrom(m.getReturnType))) {
       val instance = new Enumeration{}
       println(prefix + "    a" )
     }
