@@ -19,8 +19,12 @@ logs
 *.iml
 *.ipr
 *.iws
+/.idea/
 
 # ECLIPSE
 .classpath
 .project
 .settings
+
+# SBT
+/.history

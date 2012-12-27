@@ -1,14 +1,14 @@
 import AssemblyKeys._
+import PgpKeys._
 
+// Basic facts
 name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
 version := "2.1.3-SNAPSHOT"
 
-resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
-
-crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0-RC5")
+crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0")
 
 libraryDependencies ++= Seq(
     // These are "provided" so that sbt-assembly doesn't include them (we'll fix the pom later)
@@ -21,9 +21,8 @@ libraryDependencies ++= Seq(
     "com.thoughtworks.paranamer" % "paranamer" % "2.3" % "provided",
     "com.google.guava" % "guava" % "13.0.1" % "provided",
     // test dependencies
-    "org.scalatest" %% "scalatest" % "2.0.M6-SNAP4" % "test" cross CrossVersion.binaryMapped {
-        case "2.9.2" => "2.9.1"
-        case "2.10.0-RC5" => "2.10.0-RC2"
+    "org.scalatest" %% "scalatest" % "2.0.M5" % "test" cross CrossVersion.binaryMapped {
+        case "2.10" => "2.10.0"
         case x => x
     },
     "junit" % "junit" % "4.11" % "test",
@@ -69,6 +68,19 @@ artifact in (Compile, assembly) ~= { (art: Artifact) =>
 // add the assembly as an artifact
 addArtifact(artifact in (Compile, assembly), assembly)
 
+// add the assembly signature as an artifact
+packagedArtifacts <<= (packagedArtifacts, pgpSigner, skip in pgpSigner, streams) map { (artifacts,r,skipZ,s) =>
+  if (!skipZ) {
+    artifacts flatMap {
+      // This works because the assembly has already been declared with no classifer
+      case (art @ Artifact(_,"jar","jar",None,_,_,_), file) =>
+        Seq(art                                          -> file,
+            art.copy(extension = art.extension + ".asc") -> r.sign(file, new File(file.getAbsolutePath + ".asc"), s))
+      case (art, file) => Seq(art -> file)
+    }
+  } else artifacts
+}
+
 // pom re-writing:
 //   * remove the scalabeans dependency, as it's included
 //   * remove the 'provided' annotation on others, as they're not
@@ -94,6 +106,48 @@ publishTo <<= version { v =>
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
+publishArtifact in Test := false
+
+pomIncludeRepository := { _ => false }
+
+pomExtra := {
+  <url>http://wiki.fasterxml.com/JacksonModuleScala</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git@github.com:FasterXML/jackson-module-scala.git</connection>
+    <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-scala.git</developerConnection>
+    <url>http://github.com/FasterXML/jackson-module-scala</url>
+  </scm>
+  <developers>
+    <developer>
+      <id>tatu</id>
+      <name>Tatu Saloranta</name>
+      <email>tatu@fasterxml.com</email>
+    </developer>
+    <developer>
+      <id>christopher</id>
+      <name>Christopher Currie</name>
+      <email>christopher@currie.com</email>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Nathaniel Bauernfeind</name>
+    </contributor>
+    <contributor>
+      <name>Anton Panasenko</name>
+    </contributor>
+  </contributors>
+}
+
 // credentials
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
+// release
+releaseSettings
