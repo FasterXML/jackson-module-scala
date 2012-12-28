@@ -1,12 +1,13 @@
 import AssemblyKeys._
 import PgpKeys._
+import ReleaseKeys._
+import sbtrelease._
+import ReleaseStateTransformations._
 
 // Basic facts
 name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
-
-version := "2.1.3-SNAPSHOT"
 
 crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0")
 
@@ -151,3 +152,24 @@ credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 // release
 releaseSettings
+
+// bump bugfix on release
+nextVersion := { ver => Version(ver).map(_.bumpBugfix.asSnapshot.string).getOrElse(versionFormatError) }
+
+// use maven style tag name
+tagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
+
+// don't publish on release, it doesn't work with cross version publishing
+// TODO: see about defining multiple release processes, to do prepare/perform
+// split processes similar to the Maven release plugin
+releaseProcess := Seq(
+  // TODO remove when scalabeans isn't a custom build
+  // checkSnapshotDependencies,
+  inquireVersions,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  setNextVersion,
+  commitNextVersion
+)
