@@ -1,3 +1,22 @@
+# Version: 2.1.3
+
+This release is the first to support multiple Scala versions. For Maven
+users, note that the artifact id has changed to include the Scala version.
+Scala 2.9.1, 2.9.2, and 2.10.0 are currently supported.
+
+## Fixes
+
+* [[gh-51]](https://github.com/FasterXML/jackson-module-scala/issues/51)
+  Pick up JsonTypeInfo on class parameters, from Rintcius Blok
+
+# Version: 2.1.2
+
+## Fixes
+
+* [[gh-48]](https://github.com/FasterXML/jackson-module-scala/issues/48)
+  Serialization for byte arrays. This was due to an outdated transitive
+  dependency that has been updated.
+
 # Version: 2.1.1, 2.0.4
 
 ## Fixes
