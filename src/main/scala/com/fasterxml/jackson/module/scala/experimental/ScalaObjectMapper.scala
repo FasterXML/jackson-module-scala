@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala
+package com.fasterxml.jackson.module.scala.experimental
 
 import java.io._
 import java.lang.reflect.{Type, ParameterizedType}
