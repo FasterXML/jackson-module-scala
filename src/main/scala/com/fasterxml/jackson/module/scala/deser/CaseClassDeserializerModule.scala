@@ -1,11 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.JacksonModule
-import com.fasterxml.jackson.module.scala.util.ScalaBeansUtil
 
-import com.fasterxml.jackson.databind.introspect.{AnnotatedField, AnnotatedConstructor, AnnotatedParameter, NopAnnotationIntrospector};
-
-import org.scalastuff.scalabeans.{DeserializablePropertyDescriptor, ConstructorParameter}
+import com.fasterxml.jackson.databind.introspect.{AnnotatedField, AnnotatedConstructor, AnnotatedParameter, NopAnnotationIntrospector}
+import com.fasterxml.jackson.module.scala.introspect.{PropertyDescriptor, BeanIntrospector}
+;
 
 private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector {
   lazy val PRODUCT = classOf[Product]
@@ -24,12 +23,10 @@ private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector
     val cls = af.getDeclaringClass
     if (!maybeIsCaseClass(cls)) null
     else {
-      val properties = ScalaBeansUtil.propertiesOf(cls)
-
-      (properties.find {
-        case dp: DeserializablePropertyDescriptor => af.getName.equals(dp.name)
-        case _ => false
-      }).map(s => scala.reflect.NameTransformer.decode(s.name)) getOrElse null
+      val properties = BeanIntrospector(cls).properties
+      (properties.collect {
+        case PropertyDescriptor(name, _, Some(f), _, _) if f equals af.getAnnotated => name
+      }).headOption.orNull
     }
   }
 
@@ -48,12 +45,12 @@ private object CaseClassAnnotationIntrospector extends NopAnnotationIntrospector
     val cls = param.getDeclaringClass
     if (!maybeIsCaseClass(cls)) null
     else {
-      val properties = ScalaBeansUtil.propertiesOf(cls)
-
-      properties.find {
-        case cp: ConstructorParameter => cp.index == param.getIndex
-        case _ => false
-      }.map(s => scala.reflect.NameTransformer.decode(s.name)) getOrElse null
+      val properties = BeanIntrospector(cls).properties
+      (properties.collect {
+        case PropertyDescriptor(name, Some(p), _, _, _)
+          if (p.constructor equals param.getOwner.getAnnotated) && (p.index equals param.getIndex)
+          => name
+      }).headOption.orNull
     }
   }
 
