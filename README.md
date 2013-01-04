@@ -21,6 +21,16 @@ Bean][] properties.
 The Scala Module supports serialization and limited deserialization of
 Scala Case Classes, Sequences, Maps, Tuples, Options, and Enumerations.
 
+## Caveats
+
+Support for class constructor arguments currently depends upon [Paranamer]
+(http://paranamer.codehaus.org/), specifically an implementation that
+depends upon constructor parameter names being present in the class debug
+information. Since this is the default in Scala, it is usually not an
+issue, but since it's possible to turn this off, be aware that the current
+version will throw an exception if it cannot find the constructor parameter
+names. Future versions may permit configuration to suppress this exception.
+
 [![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master/)
 
 # Usage
