@@ -18,6 +18,12 @@ case class ValCaseBean(`field-name`: Int)
 class VarCtorBean(var `field-name`: Int)
 case class VarCaseBean(var `field-name`: Int)
 
+class MethodBean
+{
+  def `field-name` = 0
+  def `field-name_=`(v: Int) { }
+}
+
 @RunWith(classOf[JUnitRunner])
 class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
 
@@ -188,6 +194,23 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
         name should be === ("field-name")
         p.index should be === (0)
         NameTransformer.decode(f.getName) should be === ("field-name")
+        NameTransformer.decode(g.getName) should be === ("field-name")
+        NameTransformer.decode(s.getName) should be === ("field-name_=")
+      case _ => assert(false, "Property does not have the correct format")
+    }
+
+  }
+
+  it should "recognize a method-only property" in {
+    type Bean = MethodBean
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    props should have size (1)
+    props.head match {
+      case PropertyDescriptor(name, None, None, Some(g), Some(s)) =>
+        name should be === ("field-name")
         NameTransformer.decode(g.getName) should be === ("field-name")
         NameTransformer.decode(s.getName) should be === ("field-name_=")
       case _ => assert(false, "Property does not have the correct format")

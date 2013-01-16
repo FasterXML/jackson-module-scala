@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 
@@ -26,7 +26,7 @@ case class UnicodeNameCaseClass(`winning-id`: Int, name: String)
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
 
-  def module = new JacksonModule with CaseClassDeserializerModule
+  def module = DefaultScalaModule
 
   "An ObjectMapper with CaseClassDeserializer" should "deserialize a case class with a single constructor" in {
     deserialize[ConstructorTestCaseClass]("""{"intValue":1,"stringValue":"foo"}""") should be (ConstructorTestCaseClass(1,"foo"))

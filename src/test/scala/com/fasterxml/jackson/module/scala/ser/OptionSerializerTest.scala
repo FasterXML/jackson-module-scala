@@ -10,13 +10,13 @@ import annotation.target.getter
 
 class NonEmptyOptions {
 
-  @JsonProperty
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  def none = None
+  //@JsonProperty
+  @(JsonInclude)(JsonInclude.Include.NON_EMPTY)
+  val none = None
 
-  @JsonProperty
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  def some = Some(1)
+  //@JsonProperty
+  @(JsonInclude @getter)(JsonInclude.Include.NON_EMPTY)
+  val some = Some(1)
 
 }
 

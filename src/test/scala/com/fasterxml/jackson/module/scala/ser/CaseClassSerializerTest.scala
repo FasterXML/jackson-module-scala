@@ -5,8 +5,6 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 
-
-
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonInclude, JsonIgnoreProperties, JsonProperty}
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -56,7 +54,7 @@ case class MixedPropertyNameStyleCaseClass(camelCase: Int, snake_case: Int, alll
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
 
-  def module = new JacksonModule with CaseClassSerializerModule {}
+  def module = DefaultScalaModule
 
   "An ObjectMapper with the CaseClassModule" should "serialize a case class as a bean" in {
     serialize(ConstructorTestCaseClass(1,"A")) should (

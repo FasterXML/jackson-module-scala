@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializerModule
+import com.fasterxml.jackson.module.scala.deser.{ScalaValueInstantiatorsModule, UntypedObjectDeserializerModule}
+import com.fasterxml.jackson.module.scala.introspect.ScalaClassIntrospectorModule
 
 /**
  * Complete module with support for all features.
@@ -23,8 +24,9 @@ sealed class DefaultScalaModule
      with IterableModule
      with TupleModule
      with MapModule
-     with CaseClassModule
      with SetModule
+     with ScalaClassIntrospectorModule
+     with ScalaValueInstantiatorsModule
      with UntypedObjectDeserializerModule
 {
   override def getModuleName = "DefaultScalaModule"

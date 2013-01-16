@@ -18,7 +18,7 @@ class OptionWithJodaTimeDeserializerTest extends DeserializerTest with FlatSpec 
     deserialize[OptionalInt](stringValue) should be (OptionalInt(Some(123)))
   }
 
-  it should "deserialize a case clas with Option with JodaModule" in {
+  it should "deserialize a case class with Option with JodaModule" in {
     mapper.registerModule(new JodaModule)
     deserialize[OptionalInt](stringValue) should be (OptionalInt(Some(123)))
   }

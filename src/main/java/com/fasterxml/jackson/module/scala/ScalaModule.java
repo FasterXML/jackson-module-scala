@@ -6,7 +6,7 @@ package com.fasterxml.jackson.module.scala;
 @Deprecated
 public class ScalaModule extends DefaultScalaModule
 {
-    private final String NAME = "ScalaModule";
+    private static final String NAME = "ScalaModule";
     
     /*
     /**********************************************************
