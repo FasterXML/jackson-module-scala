@@ -10,6 +10,9 @@ organization := "com.fasterxml.jackson.module"
 
 crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0")
 
+// For Jackson snapshots
+resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
+
 libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % "2.2.0-SNAPSHOT",
     "com.fasterxml.jackson.core" % "jackson-annotations" % "2.1.2",
