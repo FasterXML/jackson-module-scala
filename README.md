@@ -31,7 +31,7 @@ issue, but since it's possible to turn this off, be aware that the current
 version will throw an exception if it cannot find the constructor parameter
 names. Future versions may permit configuration to suppress this exception.
 
-[![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master/)
+[![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master-sbt/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master-sbt/)
 
 # Usage
 
