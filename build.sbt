@@ -15,7 +15,7 @@ resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositori
 
 libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % "2.2.0-SNAPSHOT",
-    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.1.2",
+    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.2.0-SNAPSHOT",
     "com.fasterxml.jackson.core" % "jackson-databind" % "2.2.0-SNAPSHOT",
     "com.thoughtworks.paranamer" % "paranamer" % "2.3",
     "com.google.guava" % "guava" % "13.0.1",
