@@ -9,6 +9,8 @@ import org.junit.runner.RunWith
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 
 case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
@@ -22,6 +24,8 @@ case class JacksonAnnotationTestCaseClass(@JsonProperty("foo") oof:String, bar: 
 case class GenericTestCaseClass[T](data: T)
 
 case class UnicodeNameCaseClass(`winning-id`: Int, name: String)
+
+case class MixedPropertyNameStyleCaseClass(camelCase: Int, snake_case: Int, alllower: Int, ALLUPPER: Int, anID: Int)
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
@@ -59,4 +63,15 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
     val result = GenericTestCaseClass(42)
     deserialize[GenericTestCaseClass[Int]]("""{"data":42}""") should be (result)
   }
+
+  def propertyNamingStrategyMapper = new ObjectMapper() {
+    registerModule(module)
+    setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
+  }
+
+  it should "honor the property naming strategy" in {
+    val result = MixedPropertyNameStyleCaseClass(42, 42, 42, 42, 42)
+    propertyNamingStrategyMapper.readValue("""{"camel_case":42,"snake_case":42,"alllower":42,"allupper":42,"an_id":42}""", classOf[MixedPropertyNameStyleCaseClass]) should be (result)
+  }
+
 }
