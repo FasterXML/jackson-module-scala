@@ -27,6 +27,8 @@ case class UnicodeNameCaseClass(`winning-id`: Int, name: String)
 
 case class MixedPropertyNameStyleCaseClass(camelCase: Int, snake_case: Int, alllower: Int, ALLUPPER: Int, anID: Int)
 
+case class LongValueCaseClass(id: Long, big: Option[Long], small: Option[Long])
+
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
 
@@ -62,6 +64,23 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
   it should "deserialize a generic case class" in {
     val result = GenericTestCaseClass(42)
     deserialize[GenericTestCaseClass[Int]]("""{"data":42}""") should be (result)
+  }
+
+  it should "deserialize Longs properly" in {
+    val expected = LongValueCaseClass(1234L, Some(123456789012345678L), Some(5678L))
+    val result = deserialize[LongValueCaseClass]("""{"id":1234,"big":123456789012345678,"small":5678}""")
+
+    result should be (expected)
+
+    result.id.getClass should be (classOf[Long])
+    java.lang.Long.valueOf(result.id) should be (1234L)
+
+    result.big.get.getClass should be (classOf[Long])
+    result.big.map(java.lang.Long.valueOf(_)) should be (Some(123456789012345678L))
+
+    result.small.get.getClass should be (classOf[Long])
+    // this throws a ClassCastException if you comment out the previous line:
+    result.small.map(java.lang.Long.valueOf(_)) should be (Some(5678L))
   }
 
   def propertyNamingStrategyMapper = new ObjectMapper() {
