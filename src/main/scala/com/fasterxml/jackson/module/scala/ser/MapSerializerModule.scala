@@ -1,18 +1,16 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.databind.{BeanDescription, SerializationConfig, JavaType, JsonSerializer}
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
-import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.`type`.MapLikeType
-import com.fasterxml.jackson.databind.util.Converter
-
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import com.fasterxml.jackson.databind.ser.Serializers
+import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
+import com.fasterxml.jackson.databind.util.StdConverter
+import com.fasterxml.jackson.databind.{BeanDescription, SerializationConfig, JsonSerializer}
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
-
 import scala.collection.JavaConverters._
 import scala.collection.Map
 
-private object MapConverter extends Converter[Map[_,_],java.util.Map[_,_]]
+private object MapConverter extends StdConverter[Map[_,_],java.util.Map[_,_]]
 {
   def convert(value: Map[_,_]) = value.asJava
 }
