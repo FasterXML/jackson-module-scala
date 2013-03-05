@@ -24,6 +24,17 @@ class OptionDeserializerTest extends DeserializerTest with FlatSpec with ShouldM
     deserialize[Option[String]]("null") should be (None)
   }
 
+  it should "deserialize an Option[Long] to a long" in {
+    deserialize[Option[Long]]("123456789012345678") should be (Some(123456789012345678L))
+    deserialize[Option[Long]]("123456789012345678").map(java.lang.Long.valueOf(_)) should be (Some(123456789012345678L))
+    deserialize[Option[Long]]("123456789012345678").get.getClass should be (classOf[Long])
+
+    deserialize[Option[Long]]("1") should be (Some(1L))
+    deserialize[Option[Long]]("1").map(java.lang.Long.valueOf(_)) should be (Some(1L))
+    deserialize[Option[Long]]("1").get.getClass should be (classOf[Long])
+
+  }
+
   it should "sythensize None for optional fields that are non-existent" in {
     deserialize[UnavailableField]("{}") should be(UnavailableField(None))
   }
