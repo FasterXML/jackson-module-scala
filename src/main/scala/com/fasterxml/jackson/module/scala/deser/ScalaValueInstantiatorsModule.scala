@@ -15,12 +15,13 @@ private class ScalaValueInstantiator(config: DeserializationConfig, beanDesc: Be
   private [this] lazy val _typeBindings = new TypeBindings(config.getTypeFactory, beanDesc.getType)
   private [this] lazy val _ctorProps = for {
     prop <- beanDesc.findProperties().asScala
-    name = prop.getName
     param <- Option(prop.getConstructorParameter)
+    name = prop.getName
+    wrap = prop.getWrapperName
     idx = param.getIndex
     typ = param.getType(_typeBindings)
   } yield {
-    new CreatorProperty(name, typ, null, null, param, idx, null, true)
+    new CreatorProperty(name, typ, wrap, null, null, param, idx, null, true)
   }
 
   val creator = beanDesc.getConstructors.asScala.headOption
