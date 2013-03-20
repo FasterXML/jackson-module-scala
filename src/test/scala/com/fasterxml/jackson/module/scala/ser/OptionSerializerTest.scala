@@ -7,6 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
 import annotation.target.getter
+import com.fasterxml.jackson.databind.annotation.{JsonSerialize, JsonDeserialize}
 
 class NonEmptyOptions {
 
@@ -19,6 +20,8 @@ class NonEmptyOptions {
   val some = Some(1)
 
 }
+
+case class OptionSchema(stringValue: Option[String])
 
 /**
  * Undocumented class.
@@ -69,6 +72,11 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
     nonNullMapper.writeValueAsString(new NonNullOption()) should be ("{}")
   }
 
+  it should "generate correct schema for options" in {
+    val schema = mapper.generateJsonSchema(classOf[OptionSchema])
+    val schemaString = mapper.writeValueAsString(schema)
+    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string","required":false}}}""")
+  }
 }
 
 class NonNullOption {

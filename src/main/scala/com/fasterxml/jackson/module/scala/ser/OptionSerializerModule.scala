@@ -1,15 +1,22 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.{BeanDescription, JavaType, JsonSerializer, SerializationConfig, SerializerProvider}
+import com.fasterxml.jackson.databind.{JsonNode, BeanDescription, JavaType, JsonSerializer, SerializationConfig, SerializerProvider}
 import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier, Serializers}
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 import scala.collection.JavaConverters._
 import java.{util => ju}
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import com.fasterxml.jackson.databind.jsonschema.SchemaAware
+import java.lang.reflect.Type
+import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import com.fasterxml.jackson.databind.node.ObjectNode
 
-private class OptionSerializer(valueSerializer: Option[JsonSerializer[AnyRef]]) extends JsonSerializer[Option[_]] {
+private class OptionSerializer(valueSerializer: Option[JsonSerializer[AnyRef]])
+  extends StdSerializer[Option[_]](classOf[Option[_]])
+  with SchemaAware
+{
 
   def serialize(value: Option[_], jgen: JsonGenerator, provider: SerializerProvider) {
     (value, valueSerializer) match {
@@ -20,6 +27,22 @@ private class OptionSerializer(valueSerializer: Option[JsonSerializer[AnyRef]]) 
   }
 
   override def isEmpty(value: Option[_]): Boolean = value.isEmpty
+
+  override def getSchema(provider: SerializerProvider, typeHint: Type): JsonNode =
+    getSchema(provider, typeHint, isOptional = true)
+
+  override def getSchema(provider: SerializerProvider, typeHint: Type, isOptional: Boolean): JsonNode = {
+    val javaType = provider.constructType(typeHint)
+    val componentType = javaType.containedType(0)
+    val contentSerializer = provider.findValueSerializer(componentType, null)
+    val schema = contentSerializer match {
+      case cs: SchemaAware => cs.getSchema(provider, componentType.getRawClass, isOptional)
+      case _ => null
+    }
+    val result = if (schema == null) createSchemaNode("any") else schema.asInstanceOf[ObjectNode]
+    result.put("required", false)
+    result
+  }
 }
 
 private class OptionPropertyWriter(delegate: BeanPropertyWriter) extends BeanPropertyWriter(delegate)
