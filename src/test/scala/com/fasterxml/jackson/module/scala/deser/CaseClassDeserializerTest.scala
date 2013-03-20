@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
@@ -27,7 +28,18 @@ case class UnicodeNameCaseClass(`winning-id`: Int, name: String)
 
 case class MixedPropertyNameStyleCaseClass(camelCase: Int, snake_case: Int, alllower: Int, ALLUPPER: Int, anID: Int)
 
-case class LongValueCaseClass(id: Long, big: Option[Long], small: Option[Long])
+case class LongValueCaseClass(id: Long,
+                              big: Option[Long],
+                              @JsonDeserialize(contentAs = classOf[java.lang.Long])
+                              small: Option[Long])
+{
+}
+
+class LongValueClass
+{
+  @JsonDeserialize(contentAs = classOf[java.lang.Long])
+  var small: Option[Long] = None
+}
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
@@ -70,7 +82,7 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
     val expected = LongValueCaseClass(1234L, Some(123456789012345678L), Some(5678L))
     val result = deserialize[LongValueCaseClass]("""{"id":1234,"big":123456789012345678,"small":5678}""")
 
-    result should be (expected)
+    result should be === (expected)
 
     result.id.getClass should be (classOf[Long])
     java.lang.Long.valueOf(result.id) should be (1234L)
@@ -81,6 +93,11 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
     result.small.get.getClass should be (classOf[Long])
     // this throws a ClassCastException if you comment out the previous line:
     result.small.map(java.lang.Long.valueOf(_)) should be (Some(5678L))
+  }
+
+  it should "deserialize Longs in POSOs" in {
+    val result = deserialize[LongValueClass]("""{"small":1}""")
+    result.small.get.getClass should be (classOf[Long])
   }
 
   def propertyNamingStrategyMapper = new ObjectMapper() {

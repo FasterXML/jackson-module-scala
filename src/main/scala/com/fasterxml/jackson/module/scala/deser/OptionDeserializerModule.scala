@@ -13,9 +13,11 @@ import deser.{ResolvableDeserializer, ContextualDeserializer, Deserializers}
 private class OptionDeserializer(elementType: JavaType, var deser: JsonDeserializer[_])
   extends JsonDeserializer[Option[AnyRef]] with ContextualDeserializer {
   
-  override def createContextual(ctxt: DeserializationContext, property: BeanProperty) =
-    if (deser != null) this
-    else new OptionDeserializer(elementType, ctxt.findContextualValueDeserializer(elementType, property))
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
+    val cd = ctxt.findContextualValueDeserializer(elementType, property)
+    if (cd != null) new OptionDeserializer(elementType, cd)
+    else this
+  }
 
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext) =
     Option(deser.deserialize(jp, ctxt)).asInstanceOf[Option[AnyRef]]
