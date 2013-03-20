@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
         case x => x
     },
     "junit" % "junit" % "4.11" % "test",
+    "com.novocode" % "junit-interface" % "0.10-M3" % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.1.2" % "test"
 )
 
