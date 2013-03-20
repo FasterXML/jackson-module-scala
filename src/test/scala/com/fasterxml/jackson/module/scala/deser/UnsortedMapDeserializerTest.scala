@@ -25,6 +25,11 @@ class UnsortedMapDeserializerTest extends DeserializerTest with FlatSpec with Sh
     result should equal (mapScala)
   }
 
+  it should "deserialize an object into a mutable Map" in {
+    val result = deserialize[mutable.Map[String,String]](mapJson)
+    result should equal (mapScala)
+  }
+
   it should "deserialize an object into a mutable HashMap" in {
     val result = deserialize[mutable.HashMap[String,String]](mapJson)
     result should equal (mapScala)

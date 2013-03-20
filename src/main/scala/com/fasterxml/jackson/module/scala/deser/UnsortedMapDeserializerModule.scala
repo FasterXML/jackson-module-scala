@@ -31,6 +31,7 @@ private object UnsortedMapDeserializer {
     if (classOf[mutable.HashMap[_,_]].isAssignableFrom(cls)) mutable.HashMap.newBuilder[AnyRef,AnyRef] else
     if (classOf[mutable.ListMap[_,_]].isAssignableFrom(cls)) mutable.ListMap.newBuilder[AnyRef,AnyRef] else
     if (classOf[mutable.LinkedHashMap[_,_]].isAssignableFrom(cls)) mutable.LinkedHashMap.newBuilder[AnyRef,AnyRef] else
+    if (classOf[mutable.Map[_,_]].isAssignableFrom(cls)) mutable.Map.newBuilder[AnyRef,AnyRef] else
     Map.newBuilder[AnyRef,AnyRef]
 }
 
