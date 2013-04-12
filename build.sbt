@@ -8,7 +8,7 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0")
+crossScalaVersions := Seq("2.9.1", "2.9.2", "2.9.3", "2.10.0")
 
 // For Jackson snapshots
 resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
@@ -21,10 +21,7 @@ libraryDependencies ++= Seq(
     "com.google.guava" % "guava" % "13.0.1",
     "com.google.code.findbugs" % "jsr305" % "2.0.1",
     // test dependencies
-    "org.scalatest" %% "scalatest" % "2.0.M5" % "test" cross CrossVersion.binaryMapped {
-        case "2.10" => "2.10.0"
-        case x => x
-    },
+    "org.scalatest" %% "scalatest" % "2.0.M5b" % "test",
     "junit" % "junit" % "4.11" % "test",
     "com.novocode" % "junit-interface" % "0.10-M3" % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.1.2" % "test"
