@@ -78,9 +78,6 @@ pomExtra := {
   </contributors>
 }
 
-// credentials
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-
 // release
 releaseSettings
 
