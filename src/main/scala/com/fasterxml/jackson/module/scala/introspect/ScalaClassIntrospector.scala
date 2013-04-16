@@ -8,16 +8,11 @@ import com.fasterxml.jackson.module.scala.util.Implicts._
 
 object ScalaClassIntrospector extends BasicClassIntrospector {
 
-  private def isMaybeScalaBeanType(cls: Class[_]) = {
+  private def isScalaPackage(pkg: Option[Package]): Boolean =
+    pkg flatMap { _.getName.split("\\.").headOption } map { _ == "scala" } getOrElse false
 
-    if (!cls.hasSignature)
-      false
-    else if (cls.getPackage.getName.startsWith("scala"))
-      false
-    else
-      true
-
-  }
+  private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
+    cls.hasSignature && !isScalaPackage(Option(cls.getPackage))
 
   protected override def constructPropertyCollector(config: MapperConfig[_],
                                                     ac: AnnotatedClass,
