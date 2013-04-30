@@ -100,8 +100,23 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
   }
 
   private def _isPropertyHandled(m: AnnotatedMethod): Boolean = {
+    def _findNameForSerialization(a: Annotated) =
+      Option(_annotationIntrospector).optMap { ai =>
+        if (forSerialization) ai.findNameForSerialization(a) else ai.findNameForDeserialization(a)
+      }
+
+    def _okNameForSerialization(m: AnnotatedMethod) =
+      if (forSerialization) {
+        Option(BeanUtil.okNameForRegularGetter(m, m.getName)).orElse(Option(BeanUtil.okNameForIsGetter(m, m.getName)))
+      }
+      else {
+        Option(BeanUtil.okNameForMutator(m, m.getName))
+      }
+
+    val name = _findNameForSerialization(m).map(_.getSimpleName).orElse(_okNameForSerialization(m))
+
     _properties.asScala.exists {
-      case (_, p) => m.equals(p.getGetter) || m.equals(p.getSetter) || m.equals(p.getMutator)
+      case (n, p) => (name.map { _ == n } getOrElse false) || m.equals(p.getGetter) || m.equals(p.getSetter) || m.equals(p.getMutator)
     }
   }
 
