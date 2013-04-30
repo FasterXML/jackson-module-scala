@@ -1,0 +1,19 @@
+Property detection has been completely rewritten in 2.2. In many common cases,
+`@JsonProperty` annotations will be unnecessary, as the property names will
+be read from debugging information contained in the jar file.
+
+New users should be careful not to remove 'vars' debugging information from
+their jar files. `javac` includes it by default, so this will not affect
+most users, but for size-sensitive projects it is often omitted in not-debug
+scenarios. Doing so will break the Scala module which relies on the
+presence of constructor parameter name debugging information to correctly
+detect Scala property names.
+
+## Known issues
+
+[|#73| "Conflicting getter definitions" with @BeanProperty](https://github.com/FasterXML/jackson-module-scala/issues/73):
+
+In cases where `@BeanProperty` annotations are used, the annotations conflict
+with the default properties detected from the class. The current workaround
+is to create a custom `JacksonModule` that does not include the `ScalaClassIntrospectorModule`.
+
