@@ -9,6 +9,7 @@ import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonInclude, JsonIgnoreProperties, JsonProperty}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import scala.reflect.BeanProperty
 
 case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
@@ -50,6 +51,11 @@ case class NonNullCaseClass1(@JsonInclude(JsonInclude.Include.NON_NULL) foo: Str
 case class NonNullCaseClass2(foo: String)
 
 case class MixedPropertyNameStyleCaseClass(camelCase: Int, snake_case: Int, alllower: Int, ALLUPPER: Int, anID: Int)
+
+class NonCaseWithBeanProperty {
+  @BeanProperty var id: Int = _
+  @BeanProperty var bar: String = _
+}
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
@@ -151,4 +157,10 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
     )
   }
 
+  it should "serialize a non-case class with @BeanProperty annotations" in {
+    val bean = new NonCaseWithBeanProperty
+    bean.id = 1
+    bean.bar = "foo"
+    serialize(bean) should (equal ("""{"id":1,"bar":"foo"}"""))
+  }
 }
