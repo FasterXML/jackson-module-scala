@@ -33,8 +33,7 @@ case class GenericTestCaseClass[T](data: T)
 
 case class UnicodeNameCaseClass(`winning-id`: Int, name: String)
 
-object CaseClassWithCompanion {
-}
+object CaseClassWithCompanion
 
 case class CaseClassWithCompanion(intValue: Int)
 
@@ -56,6 +55,8 @@ class NonCaseWithBeanProperty {
   @BeanProperty var id: Int = _
   @BeanProperty var bar: String = _
 }
+
+case class InnerJavaEnum(fieldType: Field.Type)
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
@@ -169,6 +170,11 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
   it should "serialize a nested case class" in {
     val bean = NestedClass("nested")
     serialize(bean) should (equal ("""{"field":"nested"}"""))
+  }
+
+  it should "serialize a case class containing an inner Java enum" in {
+    val result = serialize(InnerJavaEnum(Field.Type.TYPEA))
+    result should be ("""{"fieldType":"TYPEA"}""")
   }
 
 }
