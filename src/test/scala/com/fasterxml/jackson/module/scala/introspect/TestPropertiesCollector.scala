@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.Module.SetupContext
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.deser.ScalaValueInstantiatorsModule
+import scala.volatile
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 
 class Fields {
   @JsonProperty // make it "visible" for Jackson
@@ -27,6 +29,12 @@ class Methods {
 }
 
 case class Constructors(plainField: Int = 0)
+
+@SerialVersionUID(uid = 8675309)
+case class SerialID(firstField: String, secondField: Int) {
+  @transient var excluded = 10
+  @volatile var alsoExcluded = "no"
+}
 
 @RunWith(classOf[JUnitRunner])
 class TestPropertiesCollector extends FlatSpec with ShouldMatchers {
@@ -67,4 +75,15 @@ class TestPropertiesCollector extends FlatSpec with ShouldMatchers {
   it should "detect constructor properties" in { mapper: FixtureParam =>
     mapper.readValue("""{"plainField":-1}""", classOf[Constructors]) should be (Constructors(-1))
   }
+
+  it should "not serialize static, volatile or transient fields" in { mapper: FixtureParam =>
+    mapper.writeValueAsString(SerialID("Hi", 0)) should be ("""{"firstField":"Hi","secondField":0}""")
+  }
+
+  it should "not deserialize static, volatile or transient fields" in { mapper: FixtureParam =>
+    evaluating {
+      mapper.readValue("""{"firstField":"Hi","secondField":0,"excluded":15}""", classOf[SerialID])
+    } should produce[UnrecognizedPropertyException]
+  }
+
 }

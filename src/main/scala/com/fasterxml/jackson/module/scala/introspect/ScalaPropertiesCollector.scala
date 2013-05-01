@@ -10,9 +10,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 import java.util
-import reflect.NameTransformer
 import com.fasterxml.jackson.databind.util.BeanUtil
-import java.lang.reflect.Field
 
 class ScalaPropertiesCollector(config: MapperConfig[_],
                                forSerialization: Boolean,
@@ -64,37 +62,46 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     _creatorProperties.asScala
   }
 
-  override def _addFields() {
-    val fields = classDef.fields().asScala
+
+  override def _addCreators() {
     lazy val ctors = classDef.getConstructors.asScala
-    lazy val methods = classDef.memberMethods().asScala
+    _descriptor.properties.view.filter(_.param.isDefined).foreach { pd =>
+      val name = pd.name
+      val pn = _getPropertyName(pd)
+      val explName = pn.optMap(_.getSimpleName).map(_.orIfEmpty(name))
 
-    _descriptor.properties collect {
-      case pd @ PropertyDescriptor(name, optParam, Some(f), optGetter, optSetter) => {
-        val pn = _getPropertyName(pd)
-        val explName = pn.optMap(_.getSimpleName).map(_.orIfEmpty(name))
-
-        val annotatedParam = optParam.map { cp =>
-          ctors.find(_.getAnnotated == cp.constructor).get.getParameter(cp.index)
-        }
-        val annotatedField = fields.find(_.getMember == f).get
-        val prop = _addField(name, explName, annotatedField)
-        optParam.foreach { cp => _addFieldCtor(prop, annotatedParam.get, explName) }
-        optGetter.foreach { g => _addGetterMethod(prop, explName, methods.find(_.getMember == g).get) }
-        optSetter.foreach { s => _addSetterMethod(prop, explName, methods.find(_.getMember == s).get) }
+      //add the constructor param (if present)
+      //call to pd.param.get is safe due to filter above
+      val cp =  pd.param.get
+      ctors.find(_.getAnnotated == cp.constructor).foreach { annotatedConstructor =>
+        _addFieldCtor(name, annotatedConstructor.getParameter(cp.index), explName)
       }
     }
   }
 
-  private def _addField(implName: String, explName: Option[String], field: AnnotatedField) = {
+  override def _addFields() {
+    val fields = classDef.fields().asScala
+    _descriptor.properties.view.filter(_.field.isDefined).foreach { pd =>
+      val name = pd.name
+      val explName = _getPropertyName(pd).optMap(_.getSimpleName).map(_.orIfEmpty(name))
+
+      //add the field
+      //call to pd.field.get is safe because of the above filter
+      fields.find(_.getMember == pd.field.get).foreach { af =>
+        _addField(name, explName, af)
+      }
+    }
+  }
+
+  private def _addField(implName: String, explName: Option[String], field: AnnotatedField) {
     val visible = explName.isDefined || _visibilityChecker.isFieldVisible(field)
     val ignored = _hasIgnoreMarker(field)
     val prop = _property(implName)
     prop.addField(field, explName.orNull, visible, ignored)
-    prop
   }
 
-  private def _addFieldCtor(prop: POJOPropertyBuilder, param: AnnotatedParameter, explName: Option[String]) {
+  private def _addFieldCtor(implName: String, param: AnnotatedParameter, explName: Option[String]) {
+    val prop = _property(implName)
     prop.addCtor(param, explName.orNull, true, false)
     creatorProperties += prop
   }
@@ -124,18 +131,25 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     val ai = Option(_annotationIntrospector)
     val methods = classDef.memberMethods().asScala
 
-    _descriptor.properties collect {
-      case pd @ PropertyDescriptor(name, _, None, Some(g), optSetter) =>
-        val pn = _getPropertyName(pd)
-        val explName = pn.optMap(_.getSimpleName).map(_.orIfEmpty(name))
-        val prop = _property(name)
-        _addGetterMethod(prop, explName, methods.find(_.getMember == g).get)
-        optSetter.foreach(s => _addSetterMethod(prop, explName, methods.find(_.getMember == s).get))
+    _descriptor.properties.view.filter(_.getter.isDefined).foreach { pd =>
+      val name = pd.name
+      val explName = _getPropertyName(pd).optMap(_.getSimpleName).map(_.orIfEmpty(name))
+      //call to pd.getter.get is safe because of the above filter
+      methods.find(_.getMember == pd.getter.get).foreach { am =>
+        _addGetterMethod(name, explName, am)
+      }
+      pd.setter.foreach { setter =>
+        methods.find(_.getMember == setter).foreach { am =>
+          _addSetterMethod(name, explName, am)
+        }
+      }
     }
 
     // Any method we haven't dealt with yet, handle as the base class would
     // This should filter out any @BeanProperty generated methods for fields
     // we've already detected. TODO: Maybe fold those into PropertyDescriptor?
+    // This additionally picks up any 'stray' methods that were not gathered up by the BeanIntrospector
+    // which may have annotations on them which make them suitable accessing/setting properties
     methods.filterNot(_isPropertyHandled).foreach { m =>
       m.getParameterCount match {
         case 0 => _addGetterMethod(m, ai.orNull)
@@ -146,32 +160,34 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     }
   }
 
+
+
   /*
    * This is essentially the base class function, except that we don't check
    * BeanUtils to see if the name is permissible as a setter method (Scala
    * has different rules there and ScalaBeans has already vetted the method).
    */
-  private def _addGetterMethod(prop: POJOPropertyBuilder, explName: Option[String], m: AnnotatedMethod) {
-    Option(_annotationIntrospector) match {
-      case Some(ai) => {
-        if (ai.hasAnyGetterAnnotation(m)) {
-          anyGetters += m
-          return
-        }
-        if (ai.hasAsValueAnnotation(m)) {
-          jsonValueGetters += m
-          return
-        }
+  private def _addGetterMethod(implName: String, explName: Option[String], m: AnnotatedMethod) {
+    val ai = _annotationIntrospector
+    if (ai != null) {
+      if (ai.hasAnyGetterAnnotation(m)) {
+        anyGetters += m
+        return
       }
-      case None =>
+      if (ai.hasAsValueAnnotation(m)) {
+        jsonValueGetters += m
+        return
+      }
     }
 
+    val prop = _property(implName)
     val visible = explName.isDefined ||  _visibilityChecker.isGetterVisible(m)
     val ignore = _hasIgnoreMarker(m)
     prop.addGetter(m, explName.orNull, visible, ignore)
   }
 
-  private def _addSetterMethod(prop: POJOPropertyBuilder, explName: Option[String], m: AnnotatedMethod) {
+  private def _addSetterMethod(implName: String, explName: Option[String], m: AnnotatedMethod) {
+    val prop = _property(implName)
     val visible = explName.isDefined || _visibilityChecker.isSetterVisible(m)
     val ignore = _hasIgnoreMarker(m)
     prop.addSetter(m, explName.orNull, visible, ignore)
