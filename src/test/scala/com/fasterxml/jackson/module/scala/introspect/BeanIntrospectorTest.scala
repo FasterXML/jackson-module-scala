@@ -5,6 +5,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import reflect.NameTransformer
+import java.lang.reflect.Modifier
 
 class PlainCtorBean(`field-name`: Int)
 {
@@ -23,6 +24,27 @@ class MethodBean
   def `field-name` = 0
   def `field-name_=`(v: Int) { }
 }
+
+//adding @SerialVersionUID puts a public static final int field on the generated class
+//this field should be ignored
+@SerialVersionUID(uid = 8675309)
+case class SerialIDBean(field: String) {
+  @transient val shouldBeExluded = 10
+  @volatile var alsoExcluded = 20
+}
+
+class StaticMethodBean extends JavaStaticMethods {
+  val included = "included"
+}
+
+class Parent {
+  var parentValue = "parentValue"
+}
+
+class Child extends Parent {
+  var childValue = "childValue"
+}
+
 
 @RunWith(classOf[JUnitRunner])
 class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
@@ -218,4 +240,47 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
 
   }
 
+  it should "ignore static, synthetic, volatile and transient fields" in {
+    type Bean = SerialIDBean
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    props should have size (1)
+    props.head match {
+      case PropertyDescriptor(name, Some(cp), Some(f), Some(g), None) =>
+        name should be === ("field")
+        f.getName should be === ("field")
+        NameTransformer.decode(g.getName) should be === ("field")
+      case _ => assert(false, "Property does not have the correct format")
+    }
+  }
+
+  it should "ignore static and synthetic methods" in {
+    type Bean = StaticMethodBean
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    props should have size (1)
+    props.head match {
+      case PropertyDescriptor(name, None, Some(f), Some(g), None) =>
+        name should be === ("included")
+        f.getName should be === ("included")
+        NameTransformer.decode(g.getName) should be === ("included")
+      case _ => assert(false, "Property does not have the correct format")
+    }
+  }
+
+  it should "properly introspect properties from a class hierarchy" in {
+    type Bean = Child
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    props should have size (2)
+    props.map(_.name) should be === List("parentValue", "childValue")
+  }
 }
+
+
