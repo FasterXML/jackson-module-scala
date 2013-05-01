@@ -60,6 +60,8 @@ class NonCaseWithBeanProperty {
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
 
+  case class NestedClass(field: String)
+
   def module = DefaultScalaModule
 
   "An ObjectMapper with the CaseClassModule" should "serialize a case class as a bean" in {
@@ -163,4 +165,10 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
     bean.bar = "foo"
     serialize(bean) should (equal ("""{"id":1,"bar":"foo"}"""))
   }
+
+  it should "serialize a nested case class" in {
+    val bean = NestedClass("nested")
+    serialize(bean) should (equal ("""{"field":"nested"}"""))
+  }
+
 }

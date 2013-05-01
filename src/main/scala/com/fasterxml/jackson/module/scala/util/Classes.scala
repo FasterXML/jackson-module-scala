@@ -4,9 +4,21 @@ import scala.reflect.{ScalaLongSignature, ScalaSignature}
 
 trait ClassW extends PimpedType[Class[_]] {
   def hasSignature: Boolean = {
-    val sig = Option(value.getAnnotation(classOf[ScalaSignature]))
-    lazy val longSig = Option(value.getAnnotation(classOf[ScalaLongSignature]))
-    (sig orElse longSig).isDefined
+    def hasSigHelper(clazz: Class[_]): Boolean = {
+      if(clazz == null) {
+        false
+      } else {
+        val sig = Option(clazz.getAnnotation(classOf[ScalaSignature]))
+        lazy val longSig = Option(clazz.getAnnotation(classOf[ScalaLongSignature]))
+        if((sig orElse longSig).isDefined) {
+          true
+        } else {
+          //if the class does not have the signature, check it's enclosing class (if present)
+          hasSigHelper(clazz.getEnclosingClass)
+        }
+      }
+    }
+    hasSigHelper(value)
   }
 }
 
