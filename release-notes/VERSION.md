@@ -1,3 +1,8 @@
+# Version 2.2.0
+
+Version notes for this and future versions can be found in the `notes`
+subdirectory.
+
 # Version: 2.1.3
 
 This release is the first to support multiple Scala versions. For Maven

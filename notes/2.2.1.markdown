@@ -1,0 +1,10 @@
+## Fixes
+
+* [[gh-73]](https://github.com/FasterXML/jackson-module-scala/issues/73)
+  "Conflicting getter definitions" with @BeanProperty
+
+* [[gh-74]](https://github.com/FasterXML/jackson-module-scala/pull/74)
+  Serialization of nested case classes, from [David Pratt](https://github.com/dpratt)
+
+* [[gh-75]](https://github.com/FasterXML/jackson-module-scala/pull/75)
+  General fixes for less-common field types, from [David Pratt](https://github.com/dpratt)
