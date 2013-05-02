@@ -138,8 +138,14 @@ object BeanIntrospector {
     def maybePrivateName(field: Field): String = {
       val definedName = NameTransformer.decode(field.getName)
 
-      Option(field.getDeclaringClass.getCanonicalName).flatMap { canonicalName =>
-        val PrivateName = canonicalName.replace('.','$')
+      val canonicalName = try {
+        Option(field.getDeclaringClass.getCanonicalName)
+      } catch {
+        // This gets thrown in the REPL
+        case e: InternalError => None
+      }
+      canonicalName.flatMap { cn =>
+        val PrivateName = cn.replace('.','$')
         definedName match {
           case privateRegex(PrivateName, rest) => Some(rest)
           case _ => None
