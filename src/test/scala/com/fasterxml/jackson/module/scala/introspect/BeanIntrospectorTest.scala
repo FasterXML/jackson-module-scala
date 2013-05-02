@@ -45,6 +45,7 @@ class Child extends Parent {
   var childValue = "childValue"
 }
 
+case class PrivateDefaultBean(private val privateField: String = "defaultValue")
 
 @RunWith(classOf[JUnitRunner])
 class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
@@ -280,6 +281,20 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
 
     props should have size (2)
     props.map(_.name) should be === List("parentValue", "childValue")
+  }
+
+  it should "correctly name a case class private field in the presence of constructor defaults" in {
+    type Bean = PrivateDefaultBean
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    props should have size (1)
+    props.head match {
+      case PropertyDescriptor(name, _, _, _, _) =>
+        name should be === ("privateField")
+      case _ => assert(false, "Property does not have the correct format")
+    }
   }
 }
 

@@ -6,7 +6,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonInclude, JsonIgnoreProperties, JsonProperty}
+import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import scala.reflect.BeanProperty
@@ -57,6 +57,8 @@ class NonCaseWithBeanProperty {
 }
 
 case class InnerJavaEnum(fieldType: Field.Type)
+
+case class PrivateDefaultFields @JsonCreator() (@JsonProperty("firstName") private val firstName: String, @JsonProperty("lastName") lastName: String = "Freeman")
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
@@ -177,4 +179,8 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
     result should be ("""{"fieldType":"TYPEA"}""")
   }
 
+  it should "serialize private fields annotated with @JsonProperty" in {
+    val result = serialize(PrivateDefaultFields("Gordon", "Biersch"))
+    result should be ("""{"firstName":"Gordon","lastName":"Biersch"}""")
+  }
 }
