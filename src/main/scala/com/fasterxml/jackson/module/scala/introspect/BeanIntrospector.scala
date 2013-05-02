@@ -134,6 +134,20 @@ object BeanIntrospector {
       isAcceptableMethod(m) && m.getParameterTypes.length == 1 && m.getReturnType == Void.TYPE
     }
 
+    val privateRegex = """(.*)\$\$(.*)""".r
+    def maybePrivateName(field: Field): String = {
+      val definedName = NameTransformer.decode(field.getName)
+
+      Option(field.getDeclaringClass.getCanonicalName).flatMap { canonicalName =>
+        val PrivateName = canonicalName.replace('.','$')
+        definedName match {
+          case privateRegex(PrivateName, rest) => Some(rest)
+          case _ => None
+        }
+      }.getOrElse(definedName)
+
+    }
+
     //TODO - as we walk the classes, it would be nice to use a language specific introspector
     //for example, a scala class can inherit from a java class - when we're examining
     //a scala class, we should use the behavior defined here, but if the base class is a Java
@@ -147,7 +161,7 @@ object BeanIntrospector {
     val fields = for {
       cls <- hierarchy
       field <- cls.getDeclaredFields
-      name = NameTransformer.decode(field.getName)
+      name = maybePrivateName(field)
       if !name.contains('$')
       if isAcceptableField(field)
     } yield PropertyDescriptor(name, findConstructorParam(cls, name), Some(field), findGetter(cls, name), findSetter(cls, name))
