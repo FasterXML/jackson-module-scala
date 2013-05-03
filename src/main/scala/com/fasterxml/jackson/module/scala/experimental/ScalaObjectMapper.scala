@@ -1,13 +1,12 @@
 package com.fasterxml.jackson.module.scala.experimental
 
 import java.io._
-import java.lang.reflect.{Type, ParameterizedType}
 import java.net.URL
 import com.fasterxml.jackson.core._
-import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
+import com.google.common.cache.{CacheLoader, CacheBuilder}
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>
@@ -47,9 +46,33 @@ trait ScalaObjectMapper {
    * type (typically <code>java.lang.Class</code>), but without explicit
    * context.
    */
-  def constructType[T: Manifest]: JavaType = {
-    constructType(manifest[T].erasure)
-  }
+  private[this] val typeCache = CacheBuilder.newBuilder().build(new CacheLoader[Manifest[_], JavaType] {
+    def load(m: Manifest[_]): JavaType = {
+      val clazz = m.erasure
+      if(isArray(clazz)) {
+        //It looks like getting the component type is the best we can do, at
+        //least if we also want to support 2.9.x - scala 2.10.x adds full
+        //type info in the typeArguments field of an Array's manifest.
+        getTypeFactory.constructArrayType(m.erasure.getComponentType)
+      } else if(isMapLike(clazz)) {
+        val typeArguments = m.typeArguments.map {m => constructType(m)}.toArray
+        if(typeArguments.length != 2) {
+          throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
+        }
+        getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
+      } else if(isCollectionLike(clazz)) {
+        val typeArguments = m.typeArguments.map {m => constructType(m)}.toArray
+        if(typeArguments.length != 1) {
+          throw new IllegalArgumentException("Need exactly 1 type parameter for iterable like types ("+clazz.getName+")")
+        }
+        getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
+      } else {
+        val typeArguments = m.typeArguments.map {m => constructType(m)}.toArray
+        getTypeFactory.constructParametricType(clazz, typeArguments: _*)
+      }
+    }
+  })
+  def constructType[T](implicit m: Manifest[T]): JavaType = typeCache.get(m)
 
   /*
    **********************************************************
@@ -67,7 +90,7 @@ trait ScalaObjectMapper {
    * parameterized (generic) container type.
    */
   def readValue[T: Manifest](jp: JsonParser): T = {
-    readValue(jp, typeReference[T])
+    readValue(jp, constructType[T])
   }
 
   /**
@@ -83,7 +106,7 @@ trait ScalaObjectMapper {
    * Note that [[com.fasterxml.jackson.databind.ObjectReader]] has more complete set of variants.
    */
   def readValues[T: Manifest](jp: JsonParser): MappingIterator[T] = {
-    readValues(jp, typeReference[T])
+    readValues(jp, constructType[T])
   }
 
   /*
@@ -146,31 +169,31 @@ trait ScalaObjectMapper {
    **********************************************************
    */
   def readValue[T: Manifest](src: File): T = {
-    readValue(src, typeReference[T])
+    readValue(src, constructType[T])
   }
 
   def readValue[T: Manifest](src: URL): T = {
-    readValue(src, typeReference[T])
+    readValue(src, constructType[T])
   }
 
   def readValue[T: Manifest](content: String): T = {
-    readValue(content, typeReference[T])
+    readValue(content, constructType[T])
   }
 
   def readValue[T: Manifest](src: Reader): T = {
-    readValue(src, typeReference[T])
+    readValue(src, constructType[T])
   }
 
   def readValue[T: Manifest](src: InputStream): T = {
-    readValue(src, typeReference[T])
+    readValue(src, constructType[T])
   }
 
   def readValue[T: Manifest](src: Array[Byte]): T = {
-    readValue(src, typeReference[T])
+    readValue(src, constructType[T])
   }
 
   def readValue[T: Manifest](src: Array[Byte], offset: Int, len: Int): T = {
-    readValue(src, offset, len, typeReference[T])
+    readValue(src, offset, len, constructType[T])
   }
 
   /*
@@ -195,7 +218,7 @@ trait ScalaObjectMapper {
    * type.
    */
   def writerWithType[T: Manifest]: ObjectWriter = {
-    writerWithType(typeReference[T])
+    writerWithType(constructType[T])
   }
 
   /*
@@ -210,7 +233,7 @@ trait ScalaObjectMapper {
    * read or update instances of specified type
    */
   def reader[T: Manifest]: ObjectReader = {
-    reader(typeReference[T])
+    reader(constructType[T])
   }
 
   /**
@@ -240,7 +263,7 @@ trait ScalaObjectMapper {
    *                                  functionality threw
    */
   def convertValue[T: Manifest](fromValue: Any): T = {
-    convertValue(fromValue, typeReference[T])
+    convertValue(fromValue, constructType[T])
   }
 
   /*
@@ -275,20 +298,18 @@ trait ScalaObjectMapper {
     acceptJsonFormatVisitor(manifest[T].erasure, visitor)
   }
 
-  private[this] def typeReference[T: Manifest] = new TypeReference[T] {
-    override def getType = typeFromManifest(manifest[T])
+  private def isArray(c: Class[_]): Boolean = {
+    c.isArray
   }
 
-  private[this] def typeFromManifest(m: Manifest[_]): Type = {
-    if (m.typeArguments.isEmpty) {m.erasure}
-    else {
-      new ParameterizedType {
-        def getRawType = m.erasure
-
-        def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
-
-        def getOwnerType = null
-      }
-    }
+  private val MAP = classOf[collection.Map[_,_]]
+  private def isMapLike(c: Class[_]): Boolean = {
+    MAP.isAssignableFrom(c)
   }
+
+  private val ITERABLE = classOf[collection.Iterable[_]]
+  private def isCollectionLike(c: Class[_]): Boolean = {
+    ITERABLE.isAssignableFrom(c)
+  }
+
 }
