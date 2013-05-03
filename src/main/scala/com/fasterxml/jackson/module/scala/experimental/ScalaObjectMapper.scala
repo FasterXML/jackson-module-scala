@@ -55,19 +55,19 @@ trait ScalaObjectMapper {
         //type info in the typeArguments field of an Array's manifest.
         getTypeFactory.constructArrayType(m.erasure.getComponentType)
       } else if(isMapLike(clazz)) {
-        val typeArguments = m.typeArguments.map {m => constructType(m)}.toArray
+        val typeArguments = m.typeArguments.map(constructType(_)).toArray
         if(typeArguments.length != 2) {
           throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
         }
         getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
       } else if(isCollectionLike(clazz)) {
-        val typeArguments = m.typeArguments.map {m => constructType(m)}.toArray
+        val typeArguments = m.typeArguments.map(constructType(_)).toArray
         if(typeArguments.length != 1) {
           throw new IllegalArgumentException("Need exactly 1 type parameter for iterable like types ("+clazz.getName+")")
         }
         getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
       } else {
-        val typeArguments = m.typeArguments.map {m => constructType(m)}.toArray
+        val typeArguments = m.typeArguments.map(constructType(_)).toArray
         getTypeFactory.constructParametricType(clazz, typeArguments: _*)
       }
     }
