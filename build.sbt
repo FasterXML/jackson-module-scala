@@ -11,11 +11,14 @@ organization := "com.fasterxml.jackson.module"
 
 crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0")
 
-libraryDependencies ++= Seq(
+libraryDependencies <++= (version) { (v) => Seq(
     // These are "provided" so that sbt-assembly doesn't include them (we'll fix the pom later)
-    "com.fasterxml.jackson.core" % "jackson-core" % "2.1.2" % "provided",
-    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.1.2" % "provided",
-    "com.fasterxml.jackson.core" % "jackson-databind" % "2.1.2" % "provided",
+    "com.fasterxml.jackson.core" % "jackson-core" % v % "provided",
+    "com.fasterxml.jackson.core" % "jackson-annotations" % v % "provided",
+    "com.fasterxml.jackson.core" % "jackson-databind" % v % "provided"
+) }
+
+libraryDependencies ++= Seq(
     // saying this is intransitive prevents the deps from being included in the jar
     "com.fasterxml.jackson.module" %% "scalabeans" % "0.4-SNAPSHOT" intransitive(),
     // but now we need to add scalabeans deps explicitly (also as "provided")
