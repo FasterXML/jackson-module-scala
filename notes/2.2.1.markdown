@@ -1,4 +1,10 @@
+This release fixes a number of bugs in the 2.2.0 release. Many thanks to
+[David Pratt](https://github.com/dpratt) for significant contributions to this release.
+
 ## Fixes
+
+* [[gh-71]](https://github.com/FasterXML/jackson-module-scala/issues/71)
+  Support private fields in scala classes when default values are present
 
 * [[gh-73]](https://github.com/FasterXML/jackson-module-scala/issues/73)
   "Conflicting getter definitions" with @BeanProperty
@@ -8,3 +14,6 @@
 
 * [[gh-75]](https://github.com/FasterXML/jackson-module-scala/pull/75)
   General fixes for less-common field types, from [David Pratt](https://github.com/dpratt)
+
+* [[gh-76]](https://github.com/FasterXML/jackson-module-scala/pull/76)
+  Improvement to ScalaObjectMapper, from [David Pratt](https://github.com/dpratt)
