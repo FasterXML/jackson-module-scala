@@ -5,10 +5,11 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper}
 import java.io.{ByteArrayInputStream, InputStreamReader}
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.annotation.JsonView
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
 
 private class PublicView
 private class PrivateView extends PublicView
@@ -148,6 +149,53 @@ class ScalaObjectMapperTest extends FlatSpec with ShouldMatchers {
     result should equal(mapper.generateJsonSchema(classOf[Target]))
   }
 
+  it should "read values as Array from a JSON array" in {
+    val result = mapper.readValue[Array[GenericTestClass[Int]]](toplevelArrayJson)
+    result should equal(listGenericInt.toArray)
+  }
+
+  it should "read values as Seq from a JSON array" in {
+    val result = mapper.readValue[Seq[GenericTestClass[Int]]](toplevelArrayJson)
+    result should equal(listGenericInt.toSeq)
+  }
+
+  it should "read values as List from a JSON array" in {
+    val result = mapper.readValue[List[GenericTestClass[Int]]](toplevelArrayJson)
+    result should equal(listGenericInt)
+  }
+
+  it should "read values as Set from a JSON array" in {
+    val result = mapper.readValue[Set[GenericTestClass[Int]]](toplevelArrayJson)
+    result should equal(listGenericInt.toSet)
+  }
+
+  it should "fail to read as List from a non-Array JSON input" in {
+    evaluating {
+      mapper.readValue[List[GenericTestClass[Int]]](genericJson)
+    } should produce[JsonMappingException]
+  }
+
+  it should "read values as Map from a JSON object" in {
+    val result = mapper.readValue[Map[String, String]](genericTwoFieldJson)
+    result should equal(Map("first" -> "firstVal", "second" -> "secondVal"))
+  }
+
+  it should "read values as Map from a heterogeneous JSON object" in {
+    val result = mapper.readValue[Map[String, Any]](genericMixedFieldJson)
+    result should equal(Map("first" -> "firstVal", "second" -> 2))
+  }
+
+  it should "fail to read a Map from JSON with invalid types" in {
+    evaluating {
+      mapper.readValue[Map[String, Int]](genericTwoFieldJson)
+    } should produce[InvalidFormatException]
+  }
+
+  it should "read a generic Object from a JSON object" in {
+    val result = mapper.readValue[Object](genericTwoFieldJson)
+    assert(result.isInstanceOf[collection.Map[_, _]])
+  }
+
   // No tests for the following functions:
   //  def readValue[T: Manifest](src: File): T
   //  def readValue[T: Manifest](src: URL): T
@@ -157,4 +205,8 @@ class ScalaObjectMapperTest extends FlatSpec with ShouldMatchers {
   private val genericInt = GenericTestClass(42)
   private val listGenericJson = """{"t":42}{"t":31}"""
   private val listGenericInt = List(GenericTestClass(42), GenericTestClass(31))
+  private val genericTwoFieldJson = """{"first":"firstVal","second":"secondVal"}"""
+  private val genericMixedFieldJson = """{"first":"firstVal","second":2}"""
+  private val toplevelArrayJson = """[{"t":42},{"t":31}]"""
+
 }
