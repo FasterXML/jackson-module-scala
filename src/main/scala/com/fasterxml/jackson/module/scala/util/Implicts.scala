@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.util
 
 object Implicts
-  extends Classes
+  extends CacheLoaders
+  with    Classes
   with    Options
   with    Strings

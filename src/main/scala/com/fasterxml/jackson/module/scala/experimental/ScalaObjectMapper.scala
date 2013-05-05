@@ -6,7 +6,8 @@ import com.fasterxml.jackson.core._
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
-import com.google.common.cache.{CacheLoader, CacheBuilder}
+import com.fasterxml.jackson.module.scala.util.Implicts._
+import com.google.common.cache.{LoadingCache, CacheLoader, CacheBuilder}
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>
@@ -46,8 +47,8 @@ trait ScalaObjectMapper {
    * type (typically <code>java.lang.Class</code>), but without explicit
    * context.
    */
-  private[this] val typeCache = CacheBuilder.newBuilder().build(new CacheLoader[Manifest[_], JavaType] {
-    def load(m: Manifest[_]): JavaType = {
+  private[this] val typeCache: LoadingCache[Manifest[_], JavaType] =
+    CacheBuilder.newBuilder().maximumSize(DEFAULT_CACHE_SIZE).build { m: Manifest[_] =>
       val clazz = m.erasure
       if(isArray(clazz)) {
         //It looks like getting the component type is the best we can do, at
@@ -71,7 +72,6 @@ trait ScalaObjectMapper {
         getTypeFactory.constructParametricType(clazz, typeArguments: _*)
       }
     }
-  })
   def constructType[T](implicit m: Manifest[T]): JavaType = typeCache.get(m)
 
   /*

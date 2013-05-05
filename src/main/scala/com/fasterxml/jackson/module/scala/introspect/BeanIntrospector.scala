@@ -28,6 +28,7 @@ import scala.reflect.NameTransformer
 import java.lang.reflect.{Modifier, Field, Constructor, Method}
 import com.google.common.cache.{LoadingCache, CacheLoader, CacheBuilder}
 import scala.annotation.tailrec
+import com.fasterxml.jackson.module.scala.util.Implicts._
 
 //TODO: This might be more efficient/type safe if we used Scala reflection here
 //but we have to support 2.9.x and 2.10.x - once the scala reflection APIs
@@ -36,14 +37,10 @@ import scala.annotation.tailrec
 
 object BeanIntrospector {
 
-  implicit def mkCacheLoader[K,V](f: (K) => V) = new CacheLoader[K,V] {
-    def load(key: K) = f(key)
-  }
-
   private [this] val paranamer = new BytecodeReadingParanamer
   private [this] val ctorParamNamesCache: LoadingCache[Constructor[_],Array[String]] =
     // TODO: consider module configuration of the cache
-    CacheBuilder.newBuilder.maximumSize(50).build { ctor: Constructor[_] =>
+    CacheBuilder.newBuilder.maximumSize(DEFAULT_CACHE_SIZE).build { ctor: Constructor[_] =>
       paranamer.lookupParameterNames(ctor).map(NameTransformer.decode(_))
     }
 
