@@ -10,6 +10,18 @@ organization := "com.fasterxml.jackson.module"
 
 crossScalaVersions := Seq("2.9.1", "2.9.2", "2.9.3", "2.10.0")
 
+scalacOptions ++= Seq("-deprecation", "-unchecked")
+
+// Ensure jvm 1.6 for java
+javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
+
+// Try to future-proof scala jvm targets, in case some future
+// scala version makes 1.7 a default
+scalacOptions <+= (scalaBinaryVersion) map { binVer => binVer match {
+  case "2.9.1" | "2.9.2" | "2.9.3" => "-target:jvm-1.5"
+  case _ => "-target:jvm-1.6"
+} }
+
 // For Jackson snapshots
 resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
 
