@@ -27,7 +27,8 @@ libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "2.0.M5b" % "test",
     "junit" % "junit" % "4.11" % "test",
     "com.novocode" % "junit-interface" % "0.10-M3" % "test",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.1.2" % "test"
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.1.2" % "test",
+    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.2.0"
 )
 
 // publishing

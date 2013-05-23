@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
 import annotation.target.getter
 import com.fasterxml.jackson.databind.annotation.{JsonSerialize, JsonDeserialize}
+import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
 
 class NonEmptyOptions {
 
@@ -74,6 +75,15 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
 
   it should "generate correct schema for options" in {
     val schema = mapper.generateJsonSchema(classOf[OptionSchema])
+    val schemaString = mapper.writeValueAsString(schema)
+    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string","required":false}}}""")
+  }
+
+  it should "generate correct schema for options using the new jsonSchema jackson module" in {
+    val visitor = new SchemaFactoryWrapper()
+    mapper.acceptJsonFormatVisitor(mapper.constructType(classOf[OptionSchema]), visitor)
+
+    val schema = visitor.finalSchema()
     val schemaString = mapper.writeValueAsString(schema)
     schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string","required":false}}}""")
   }
