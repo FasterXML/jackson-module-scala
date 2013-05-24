@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
 import annotation.target.getter
 import com.fasterxml.jackson.databind.annotation.{JsonSerialize, JsonDeserialize}
+import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
 
 class NonEmptyOptions {
 
@@ -22,6 +23,8 @@ class NonEmptyOptions {
 }
 
 case class OptionSchema(stringValue: Option[String])
+
+case class MixedOptionSchema(nonOptionValue: String, stringValue: Option[String])
 
 /**
  * Undocumented class.
@@ -76,6 +79,16 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
     val schema = mapper.generateJsonSchema(classOf[OptionSchema])
     val schemaString = mapper.writeValueAsString(schema)
     schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string","required":false}}}""")
+  }
+
+  it should "mark as required the non-Option fields" in {
+    val visitor = new SchemaFactoryWrapper()
+    mapper.acceptJsonFormatVisitor(mapper.constructType(classOf[MixedOptionSchema]), visitor)
+
+    val schema = visitor.finalSchema()
+    val schemaString = mapper.writeValueAsString(schema)
+    println("schemaString = " + schemaString)
+    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"any"},"nonOptionValue":{"type":"string"}},"required":["nonOptionValue"]}""")
   }
 }
 
