@@ -76,7 +76,7 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
   it should "generate correct schema for options" in {
     val schema = mapper.generateJsonSchema(classOf[OptionSchema])
     val schemaString = mapper.writeValueAsString(schema)
-    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string","required":false}}}""")
+    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"}}}""")
   }
 
   it should "generate correct schema for options using the new jsonSchema jackson module" in {
@@ -85,7 +85,7 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
 
     val schema = visitor.finalSchema()
     val schemaString = mapper.writeValueAsString(schema)
-    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string","required":false}}}""")
+    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"}}}""")
   }
 }
 

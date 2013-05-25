@@ -1,20 +1,23 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.{JsonNode, BeanDescription, JavaType, JsonSerializer, SerializationConfig, SerializerProvider}
-import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier, Serializers}
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.ser.{ContextualSerializer, BeanPropertyWriter, BeanSerializerModifier, Serializers}
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 import scala.collection.JavaConverters._
 import java.{util => ju}
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.jsonschema.SchemaAware
+import com.fasterxml.jackson.databind.jsonschema.{JsonSchema, SchemaAware}
 import java.lang.reflect.Type
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.databind.node.ObjectNode
+import scala.Some
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 
-private class OptionSerializer(valueSerializer: Option[JsonSerializer[AnyRef]])
+private class OptionSerializer(valueSerializer: Option[JsonSerializer[AnyRef]], javaType: JavaType, beanProperty: Option[BeanProperty] = None)
   extends StdSerializer[Option[_]](classOf[Option[_]])
+  with ContextualSerializer
   with SchemaAware
 {
 
@@ -26,22 +29,35 @@ private class OptionSerializer(valueSerializer: Option[JsonSerializer[AnyRef]])
     }
   }
 
+  def createContextual(prov: SerializerProvider, property: BeanProperty): JsonSerializer[_] = {
+    val newValueSerializer = valueSerializer.orElse {
+      val containedType = javaType.containedType(0)
+      if (!containedType.getRawClass.equals(classOf[Object]))
+        Option(prov.findValueSerializer(javaType.containedType(0), property))
+      else None
+    }
+    new OptionSerializer(newValueSerializer, javaType, Option(property))
+  }
+
   override def isEmpty(value: Option[_]): Boolean = value.isEmpty
 
   override def getSchema(provider: SerializerProvider, typeHint: Type): JsonNode =
     getSchema(provider, typeHint, isOptional = true)
 
   override def getSchema(provider: SerializerProvider, typeHint: Type, isOptional: Boolean): JsonNode = {
-    val javaType = provider.constructType(typeHint)
-    val componentType = javaType.containedType(0)
-    val contentSerializer = provider.findValueSerializer(componentType, null)
-    val schema = contentSerializer match {
-      case cs: SchemaAware => cs.getSchema(provider, componentType.getRawClass, isOptional)
-      case _ => null
+    val contentSerializer = valueSerializer.getOrElse {
+      val javaType = provider.constructType(typeHint)
+      val componentType = javaType.containedType(0)
+      provider.findValueSerializer(componentType, beanProperty.orNull)
     }
-    val result = if (schema == null) createSchemaNode("any") else schema.asInstanceOf[ObjectNode]
-    result.put("required", false)
-    result
+    contentSerializer match {
+      case cs: SchemaAware => cs.getSchema(provider, contentSerializer.handledType(), isOptional)
+      case _ => JsonSchema.getDefaultSchemaNode
+    }
+  }
+
+  override def acceptJsonFormatVisitor(wrapper: JsonFormatVisitorWrapper, javaType: JavaType) {
+    valueSerializer.map{_.acceptJsonFormatVisitor(wrapper, javaType.containedType(0))}
   }
 }
 
@@ -86,7 +102,7 @@ private object OptionSerializerResolver extends Serializers.Base {
                                            ): JsonSerializer[_] =
 
     if (!OPTION.isAssignableFrom(`type`.getRawClass)) null
-    else new OptionSerializer(Option(elementValueSerializer))
+    else new OptionSerializer(Option(elementValueSerializer), `type`)
 }
 
 
