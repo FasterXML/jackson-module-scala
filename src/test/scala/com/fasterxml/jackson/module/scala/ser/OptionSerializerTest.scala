@@ -24,7 +24,7 @@ class NonEmptyOptions {
 
 case class OptionSchema(stringValue: Option[String])
 
-case class MixedOptionSchema(nonOptionValue: String, stringValue: Option[String])
+case class MixedOptionSchema(@JsonProperty(required=true) nonOptionValue: String, stringValue: Option[String])
 
 /**
  * Undocumented class.
@@ -97,7 +97,7 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
     val schema = visitor.finalSchema()
     val schemaString = mapper.writeValueAsString(schema)
     println("schemaString = " + schemaString)
-    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"any"},"nonOptionValue":{"type":"string"}},"required":["nonOptionValue"]}""")
+    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}""")
   }
 }
 
