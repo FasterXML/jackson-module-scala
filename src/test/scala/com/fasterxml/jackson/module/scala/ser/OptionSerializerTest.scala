@@ -7,8 +7,8 @@ import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
 import annotation.target.getter
-import com.fasterxml.jackson.databind.annotation.{JsonSerialize, JsonDeserialize}
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
+import com.fasterxml.jackson.module.scala.experimental.RequiredPropertiesSchemaModule
 
 class NonEmptyOptions {
 
@@ -96,9 +96,23 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
 
     val schema = visitor.finalSchema()
     val schemaString = mapper.writeValueAsString(schema)
-    println("schemaString = " + schemaString)
     schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}""")
   }
+
+  it should "support reversing the default for required properties in schema" in {
+    case class DefaultOptionSchema(nonOptionValue: String, stringValue: Option[String])
+
+    val m = mapper
+    m.registerModule(new RequiredPropertiesSchemaModule{})
+
+    val visitor = new SchemaFactoryWrapper()
+    m.acceptJsonFormatVisitor(mapper.constructType(classOf[DefaultOptionSchema]), visitor)
+
+    val schema = visitor.finalSchema()
+    val schemaString = mapper.writeValueAsString(schema)
+    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}""")
+  }
+
 }
 
 class NonNullOption {
