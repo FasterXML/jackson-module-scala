@@ -15,7 +15,7 @@ import com.fasterxml.jackson.module.scala.introspect.ScalaClassIntrospectorModul
  * @author Christopher Currie <christopher@currie.com>
  * @since 1.9.0
  */
-sealed class DefaultScalaModule
+class DefaultScalaModule
   extends JacksonModule
      with IteratorModule
      with EnumerationModule
