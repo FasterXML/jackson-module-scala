@@ -28,7 +28,9 @@ resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositori
 libraryDependencies <++= (version) { (v) => Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % v % "provided",
     "com.fasterxml.jackson.core" % "jackson-annotations" % v % "provided",
-    "com.fasterxml.jackson.core" % "jackson-databind" % v % "provided"
+    "com.fasterxml.jackson.core" % "jackson-databind" % v % "provided",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % v % "test",
+    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % v % "test"
 ) }
 
 libraryDependencies ++= Seq(
@@ -38,9 +40,7 @@ libraryDependencies ++= Seq(
     // test dependencies
     "org.scalatest" %% "scalatest" % "2.0.M5b" % "test",
     "junit" % "junit" % "4.11" % "test",
-    "com.novocode" % "junit-interface" % "0.10-M3" % "test",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.1.2" % "test",
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.2.0" % "test"
+    "com.novocode" % "junit-interface" % "0.10-M3" % "test"
 )
 
 // publishing
