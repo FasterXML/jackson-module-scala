@@ -121,9 +121,10 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
       }
 
     val name = _findNameForSerialization(m).map(_.getSimpleName).orElse(_okNameForSerialization(m))
+    val matched = name.flatMap { n => _properties.asScala.get(n) } map { _.anyVisible() } getOrElse false
 
-    _properties.asScala.exists {
-      case (n, p) => (name.map { _ == n } getOrElse false) || m.equals(p.getGetter) || m.equals(p.getSetter) || m.equals(p.getMutator)
+    matched || _properties.values().asScala.exists {
+      case p => m.equals(p.getGetter) || m.equals(p.getSetter) || m.equals(p.getMutator)
     }
   }
 
