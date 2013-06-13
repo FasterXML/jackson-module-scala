@@ -183,4 +183,21 @@ class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMa
     val result = serialize(PrivateDefaultFields("Gordon", "Biersch"))
     result should be ("""{"firstName":"Gordon","lastName":"Biersch"}""")
   }
+
+  it should "serialize java getters" in {
+    class Foo(string: String, boolean: Boolean) {
+      def getString = string
+      def isBoolean = boolean
+    }
+    val foo = new Foo("str", false)
+    serialize(foo) should equal ("""{"string":"str","boolean":false}""")
+  }
+
+  it should "serialize java getters returning java collections" in {
+    class Foo(strings: java.util.List[String]) {
+      def getStrings: java.util.List[String] = strings
+    }
+    val foo = new Foo(java.util.Arrays.asList("foo", "bar"))
+    serialize(foo) should equal ("""{"strings":["foo","bar"]}""")
+  }
 }
