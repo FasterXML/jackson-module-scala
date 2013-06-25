@@ -60,14 +60,14 @@ class ScalaObjectMapperTest extends FlatSpec with ShouldMatchers {
   }
 
   it should "read value from json parser" in {
-    val parser = mapper.getFactory.createJsonParser(genericJson)
+    val parser = mapper.getFactory.createParser(genericJson)
     val result = mapper.readValue[GenericTestClass[Int]](parser)
     result should equal(genericInt)
   }
 
   it should "read values from json parser" in {
     import scala.collection.JavaConversions._
-    val parser = mapper.getFactory.createJsonParser(listGenericJson)
+    val parser = mapper.getFactory.createParser(listGenericJson)
     val result = mapper.readValues[GenericTestClass[Int]](parser).toList
     result should equal(listGenericInt)
   }

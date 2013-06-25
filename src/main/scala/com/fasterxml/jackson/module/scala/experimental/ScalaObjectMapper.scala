@@ -279,6 +279,7 @@ trait ScalaObjectMapper {
    * @tparam T The class to generate schema for
    * @return Constructed JSON schema.
    */
+  @deprecated("JsonSchema is deprecated in favor of JsonFormatVisitor", "2.2.2")
   def generateJsonSchema[T: Manifest]: JsonSchema = {
     generateJsonSchema(manifest[T].erasure)
   }
