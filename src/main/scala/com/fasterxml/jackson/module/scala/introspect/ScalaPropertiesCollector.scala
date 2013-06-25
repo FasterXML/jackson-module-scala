@@ -102,8 +102,14 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
 
   private def _addFieldCtor(implName: String, param: AnnotatedParameter, explName: Option[String]) {
     val prop = _property(implName)
-    prop.addCtor(param, explName.orNull, true, false)
-    creatorProperties += prop
+
+    // GH-83: Having both a setter and a creator causes some issues where Jackson assumes it can't
+    // do certain things it should be able to, such as deserializing to an instance. For now, if the
+    // property already has a setter, then don't add the creator.
+    if (!prop.hasSetter) {
+      prop.addCtor(param, explName.orNull, true, false)
+      creatorProperties += prop
+    }
   }
 
   private def _isPropertyHandled(m: AnnotatedMethod): Boolean = {
@@ -121,7 +127,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
       }
 
     val name = _findNameForSerialization(m).map(_.getSimpleName).orElse(_okNameForSerialization(m))
-    val matched = name.flatMap { n => _properties.asScala.get(n) } map { _.anyVisible() } getOrElse false
+    val matched = name.flatMap { n => _properties.asScala.get(n) } exists { _.anyVisible() }
 
     matched || _properties.values().asScala.exists {
       case p => m.equals(p.getGetter) || m.equals(p.getSetter) || m.equals(p.getMutator)
