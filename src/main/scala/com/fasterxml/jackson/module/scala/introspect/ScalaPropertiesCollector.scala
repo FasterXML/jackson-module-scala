@@ -112,21 +112,22 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     }
   }
 
+  private def _findSerializationName(am: AnnotatedMethod) = {
+    Option(_annotationIntrospector)
+      .optMap { _.findNameForSerialization(am) }
+      .map { _.getSimpleName }
+      .orElse { Option(BeanUtil.okNameForGetter(am)) }
+  }
+
+  private def _findDeserializationName(am: AnnotatedMethod) = {
+    Option(_annotationIntrospector)
+      .optMap { _.findNameForDeserialization(am) }
+      .map { _.getSimpleName }
+      .orElse { Option(BeanUtil.okNameForMutator(am, mutatorPrefix)) }
+  }
+
   private def _isPropertyHandled(m: AnnotatedMethod): Boolean = {
-    def _findNameForSerialization(a: Annotated) =
-      Option(_annotationIntrospector).optMap { ai =>
-        if (forSerialization) ai.findNameForSerialization(a) else ai.findNameForDeserialization(a)
-      }
-
-    def _okNameForSerialization(m: AnnotatedMethod) =
-      if (forSerialization) {
-        Option(BeanUtil.okNameForRegularGetter(m, m.getName)).orElse(Option(BeanUtil.okNameForIsGetter(m, m.getName)))
-      }
-      else {
-        Option(BeanUtil.okNameForMutator(m, m.getName))
-      }
-
-    val name = _findNameForSerialization(m).map(_.getSimpleName).orElse(_okNameForSerialization(m))
+    val name = if (forSerialization) _findSerializationName(m) else _findDeserializationName(m)
     val matched = name.flatMap { n => _properties.asScala.get(n) } exists { _.anyVisible() }
 
     matched || _properties.values().asScala.exists {
@@ -161,7 +162,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
       m.getParameterCount match {
         case 0 => _addGetterMethod(m, ai.orNull)
         case 1 => _addSetterMethod(m, ai.orNull)
-        case 2 if ai.map(_.hasAnySetterAnnotation(m)).getOrElse(false) => anySetters += m
+        case 2 if ai.exists(_.hasAnySetterAnnotation(m)) => anySetters += m
         case _ => // do nothing
       }
     }
