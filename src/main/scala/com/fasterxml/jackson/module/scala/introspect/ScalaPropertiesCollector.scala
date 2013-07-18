@@ -230,9 +230,9 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
         old.addAll(newProp)
       }
       if (newProp != prop) {
-        val idx = _creatorProperties.indexOf(prop)
+        val idx = creatorProperties.indexOf(prop)
         if (idx != -1) {
-          _creatorProperties.set(idx, newProp)
+          creatorProperties.update(idx, newProp)
         }
       }
     }
