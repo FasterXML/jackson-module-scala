@@ -203,11 +203,11 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
 
   /**
    * Similar to the base implementation, but checks for annotations in a different
-   * order due to scalas annotation application rules.
+   * order due to Scala's annotation application rules.
    * @param naming The PropertyNamingStrategy to query for names
    */
   override protected def _renameUsing(naming: PropertyNamingStrategy) {
-    val props = _properties.values().toArray(Array.ofDim[POJOPropertyBuilder](_properties.size()))
+    val props = _properties.asScala.values.toArray
     _properties.clear()
 
     for (prop <- props) {
@@ -230,9 +230,9 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
         old.addAll(newProp)
       }
       if (newProp != prop) {
-        val idx = _creatorProperties.indexOf(prop)
+        val idx = if (_creatorProperties != null) creatorProperties.indexOf(prop) else -1
         if (idx != -1) {
-          _creatorProperties.set(idx, newProp)
+          creatorProperties(idx) = newProp
         }
       }
     }
