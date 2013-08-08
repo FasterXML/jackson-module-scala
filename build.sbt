@@ -43,6 +43,9 @@ libraryDependencies ++= Seq(
     "com.novocode" % "junit-interface" % "0.10-M3" % "test"
 )
 
+// resource filtering
+seq(filterSettings: _*)
+
 // publishing
 publishMavenStyle := true
 

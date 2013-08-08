@@ -102,26 +102,33 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
 
   private def _addFieldCtor(implName: String, param: AnnotatedParameter, explName: Option[String]) {
     val prop = _property(implName)
-    prop.addCtor(param, explName.orNull, true, false)
-    creatorProperties += prop
+
+    // GH-83: Having both a setter and a creator causes some issues where Jackson assumes it can't
+    // do certain things it should be able to, such as deserializing to an instance. For now, if the
+    // property already has a setter, then don't add the creator.
+    if (!prop.hasSetter) {
+      prop.addCtor(param, explName.orNull, true, false)
+      creatorProperties += prop
+    }
+  }
+
+  private def _findSerializationName(am: AnnotatedMethod) = {
+    Option(_annotationIntrospector)
+      .optMap { _.findNameForSerialization(am) }
+      .map { _.getSimpleName }
+      .orElse { Option(BeanUtil.okNameForGetter(am)) }
+  }
+
+  private def _findDeserializationName(am: AnnotatedMethod) = {
+    Option(_annotationIntrospector)
+      .optMap { _.findNameForDeserialization(am) }
+      .map { _.getSimpleName }
+      .orElse { Option(BeanUtil.okNameForMutator(am, mutatorPrefix)) }
   }
 
   private def _isPropertyHandled(m: AnnotatedMethod): Boolean = {
-    def _findNameForSerialization(a: Annotated) =
-      Option(_annotationIntrospector).optMap { ai =>
-        if (forSerialization) ai.findNameForSerialization(a) else ai.findNameForDeserialization(a)
-      }
-
-    def _okNameForSerialization(m: AnnotatedMethod) =
-      if (forSerialization) {
-        Option(BeanUtil.okNameForRegularGetter(m, m.getName)).orElse(Option(BeanUtil.okNameForIsGetter(m, m.getName)))
-      }
-      else {
-        Option(BeanUtil.okNameForMutator(m, m.getName))
-      }
-
-    val name = _findNameForSerialization(m).map(_.getSimpleName).orElse(_okNameForSerialization(m))
-    val matched = name.flatMap { n => _properties.asScala.get(n) } map { _.anyVisible() } getOrElse false
+    val name = if (forSerialization) _findSerializationName(m) else _findDeserializationName(m)
+    val matched = name.flatMap { n => _properties.asScala.get(n) } exists { _.anyVisible() }
 
     matched || _properties.values().asScala.exists {
       case p => m.equals(p.getGetter) || m.equals(p.getSetter) || m.equals(p.getMutator)
@@ -155,7 +162,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
       m.getParameterCount match {
         case 0 => _addGetterMethod(m, ai.orNull)
         case 1 => _addSetterMethod(m, ai.orNull)
-        case 2 if ai.map(_.hasAnySetterAnnotation(m)).getOrElse(false) => anySetters += m
+        case 2 if ai.exists(_.hasAnySetterAnnotation(m)) => anySetters += m
         case _ => // do nothing
       }
     }
@@ -196,11 +203,11 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
 
   /**
    * Similar to the base implementation, but checks for annotations in a different
-   * order due to scalas annotation application rules.
+   * order due to Scala's annotation application rules.
    * @param naming The PropertyNamingStrategy to query for names
    */
   override protected def _renameUsing(naming: PropertyNamingStrategy) {
-    val props = _properties.values().toArray(Array.ofDim[POJOPropertyBuilder](_properties.size()))
+    val props = _properties.asScala.values.toArray
     _properties.clear()
 
     for (prop <- props) {
@@ -223,9 +230,9 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
         old.addAll(newProp)
       }
       if (newProp != prop) {
-        val idx = _creatorProperties.indexOf(prop)
+        val idx = if (_creatorProperties != null) creatorProperties.indexOf(prop) else -1
         if (idx != -1) {
-          _creatorProperties.set(idx, newProp)
+          creatorProperties(idx) = newProp
         }
       }
     }

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.deser.ScalaValueInstantiatorsModule
 import scala.volatile
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
+import scala.reflect.{BeanProperty, BeanInfo}
 
 class Fields {
   @JsonProperty // make it "visible" for Jackson
@@ -36,6 +37,11 @@ case class SerialID(firstField: String, secondField: Int) {
   @volatile var alsoExcluded = "no"
 }
 
+@BeanInfo
+class SearchCriteria {
+  @BeanProperty var mapZoom:Int = 4
+}
+
 @RunWith(classOf[JUnitRunner])
 class TestPropertiesCollector extends FlatSpec with ShouldMatchers {
 
@@ -50,7 +56,7 @@ class TestPropertiesCollector extends FlatSpec with ShouldMatchers {
 
   }
 
-  behavior of "ScalaPropertiesIntrospector"
+  behavior of "ScalaPropertiesCollector"
 
   // Make sure we don't break Java classes. This is done in ScalaClassIntrospector
   // by deferring to the base class if we're not actually operating on Scala generated classes.
@@ -86,4 +92,8 @@ class TestPropertiesCollector extends FlatSpec with ShouldMatchers {
     } should produce[UnrecognizedPropertyException]
   }
 
+  it should "deduplicate @BeanInfo properties" in { mapper: FixtureParam =>
+    val result = mapper.readValue("""{"mapZoom":0}""", classOf[SearchCriteria])
+    result.mapZoom should be === 0
+  }
 }
