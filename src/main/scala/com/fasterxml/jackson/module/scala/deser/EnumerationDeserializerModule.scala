@@ -1,37 +1,33 @@
-package com.fasterxml.jackson.module.scala.deser
+package com.fasterxml.jackson.module.scala
+package deser
 
-import com.fasterxml.jackson.core.{JsonToken, JsonParser}
+import util.EnumResolver
+import util.Implicts._
 
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
+import com.fasterxml.jackson
+import jackson.core
+import core.{JsonToken, JsonParser}
 
-import com.fasterxml.jackson.module.scala.{JsonScalaEnumeration, JacksonModule}
-import com.fasterxml.jackson.module.scala.util.Implicts._
+import jackson.databind
+import databind.{deser, KeyDeserializer, BeanDescription, DeserializationConfig, JavaType, BeanProperty, DeserializationContext, JsonDeserializer}
+import deser.{ContextualKeyDeserializer, KeyDeserializers, ContextualDeserializer, Deserializers}
 
 import java.lang.reflect.ParameterizedType
 
-trait ContextualEnumerationDeserializer extends ContextualDeserializer {
-  self: JsonDeserializer[Object] =>
+private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
+  self: JsonDeserializer[Enumeration#Value] =>
 
-  override def createContextual(ctxt: DeserializationContext, property: BeanProperty) : JsonDeserializer[Object] = {
-    Option(property)
-      .optMap(_.getAnnotation(classOf[JsonScalaEnumeration]))
-      .map(a => new AnnotatedEnumerationDeserializer(enum(a.value())))
-      .getOrElse(this)
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty) : JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer = {
+    EnumResolver(property).map(r => new AnnotatedEnumerationDeserializer(r)).getOrElse(this)
   }
 
-  private [this] def enum(cls: Class[_]): Enumeration = {
-    val typeArgs = typeRef(cls).getActualTypeArguments
-    typeArgs(0).asInstanceOf[Class[_]].getField("MODULE$").get(cls).asInstanceOf[Enumeration]
-  }
-
-  private [this] def typeRef(cls: Class[_]): ParameterizedType = {
-    cls.getGenericSuperclass.asInstanceOf[ParameterizedType]
-  }
 }
 
-private class EnumerationDeserializer(`type`:JavaType) extends JsonDeserializer[Object] with ContextualEnumerationDeserializer {
-	override def deserialize(jp:JsonParser, ctxt:DeserializationContext) = {
+/**
+ * This class is mostly legacy logic to be deprecated/removed in 3.0
+ */
+private class EnumerationDeserializer(`type`:JavaType) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
+	override def deserialize(jp:JsonParser, ctxt:DeserializationContext): Enumeration#Value = {
 		if (jp.getCurrentToken != JsonToken.START_OBJECT)
 			throw ctxt.mappingException(`type`.getRawClass)
 		val (eclass,eclassName) = parsePair(jp)
@@ -41,17 +37,17 @@ private class EnumerationDeserializer(`type`:JavaType) extends JsonDeserializer[
 		if (value != "value")
 			throw ctxt.mappingException(`type`.getRawClass)
 		jp.nextToken()
-		Class.forName(eclassName).getMethod("withName",classOf[String]).invoke(null,valueValue)
+		Class.forName(eclassName).getMethod("withName",classOf[String]).invoke(null,valueValue).asInstanceOf[Enumeration#Value]
 	}
 
 	private def parsePair( jp:JsonParser ) = ({jp.nextToken; jp.getText}, {jp.nextToken; jp.getText})
 }
 
-private class AnnotatedEnumerationDeserializer(enum: Enumeration) extends JsonDeserializer[Object] with ContextualEnumerationDeserializer {
-  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Object = {
+private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
+  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Enumeration#Value = {
     jp.getCurrentToken match {
-      case JsonToken.VALUE_STRING => enum.withName(jp.getValueAsString)
-      case _ => ctxt.mappingException(classOf[enum.type#Value])
+      case JsonToken.VALUE_STRING => r.getEnum(jp.getValueAsString)
+      case _ => throw ctxt.mappingException(r.getEnumClass)
     }
   }
 }
@@ -63,7 +59,7 @@ private object EnumerationDeserializerResolver extends Deserializers.Base {
           beanDesc: BeanDescription) = {
 
 		val clazz = javaType.getRawClass
-		var deserializer : JsonDeserializer[_] = null;
+		var deserializer : JsonDeserializer[_] = null
 
 		if (classOf[scala.Enumeration#Value].isAssignableFrom(clazz)) {
 			deserializer = new EnumerationDeserializer(javaType)
@@ -74,6 +70,35 @@ private object EnumerationDeserializerResolver extends Deserializers.Base {
 
 }
 
+private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDeserializer with ContextualKeyDeserializer {
+
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
+    val newResolver = EnumResolver(property)
+    if (newResolver != r) new EnumerationKeyDeserializer(newResolver) else this
+  }
+
+  def deserializeKey(s: String, ctxt: DeserializationContext): Enumeration#Value = {
+    if (r.isDefined) {
+      return r.get.getEnum(s)
+    }
+
+    throw ctxt.mappingException("Need @JsonScalaEnumeration to determine key type")
+  }
+
+}
+
+private object EnumerationKeyDeserializers extends KeyDeserializers {
+  def findKeyDeserializer(tp: JavaType, cfg: DeserializationConfig, desc: BeanDescription): KeyDeserializer = {
+    if (classOf[scala.Enumeration#Value].isAssignableFrom(tp.getRawClass)) {
+      new EnumerationKeyDeserializer(None)
+    }
+    else null
+  }
+}
+
 trait EnumerationDeserializerModule extends JacksonModule {
-  this += EnumerationDeserializerResolver
+  this += { ctxt => {
+    ctxt.addDeserializers(EnumerationDeserializerResolver)
+    ctxt.addKeyDeserializers(EnumerationKeyDeserializers)
+  } }
 }
