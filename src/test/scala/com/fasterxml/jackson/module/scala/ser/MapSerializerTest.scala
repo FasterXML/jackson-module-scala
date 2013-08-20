@@ -7,13 +7,15 @@ import org.scalatest.junit.JUnitRunner
 
 import scala.collection._
 import scala.reflect.BeanProperty
-import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty}
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo, JsonInclude, JsonProperty}
+import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 import scala.collection.immutable.ListMap
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import annotation.target.getter
 import com.fasterxml.jackson.databind.{SerializerProvider, JsonSerializer}
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.google.common.collect.ImmutableMap
 
 class BeanieWeenie(@BeanProperty @JsonProperty("a") var a: Int,
                    @BeanProperty @JsonProperty("b") var b: String, 
@@ -47,6 +49,16 @@ case class KeySerializerMap(
   @(JsonSerialize @getter)(keyUsing = classOf[TupleKeySerializer])
   keySerializerMap: Map[(String,String),Int] )
 
+@JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
+@JsonSubTypes(Array(
+  new JsonSubTypes.Type(value = classOf[MapValueDouble], name = "MapValueDouble"),
+  new JsonSubTypes.Type(value = classOf[MapValueString], name = "MapValueString")
+))
+abstract class MapValueBase {}
+case class MapValueDouble(value: Double) extends MapValueBase
+case class MapValueString(value: String) extends MapValueBase
+
+
 @RunWith(classOf[JUnitRunner])
 class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
 
@@ -78,12 +90,10 @@ class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers
   
   it should "serialize a map of beans-like objects" in {
     val result = serialize(Map("bean" -> new BeanieWeenie(1,"two",false)))
-    result should (
-      be ("""{"bean":{"a":1,"b":"two","c":false}}""")
-    )
+    result should be ("""{"bean":{"a":1,"b":"two","c":false}}""")
   }
 
-  it should "serialize order-specified Maps in the correc order" in {
+  it should "serialize order-specified Maps in the correct order" in {
     val m = ListMap(Map((5, 1), (2, 33), (7, 22), (8, 333)).toList.sortBy(-_._2):_*)
     val result = serialize(m)
     result should be ("""{"8":333,"2":33,"7":22,"5":1}""")
@@ -95,5 +105,13 @@ class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers
 
   it should "honor KeySerializer annotations" in {
     serialize(new KeySerializerMap(Map(("a","b")->1))) should be ("""{"keySerializerMap":{"[\"a\",\"b\"]":1}}""")
+  }
+
+  it should "correctly serialize type information" in {
+    val wrapper = new {
+      val map = Map.apply[String, MapValueBase]("Double" -> MapValueDouble(1.0), "String" -> MapValueString("word"))
+      //val map = ImmutableMap.of[String, MapValueBase]("Double", MapValueDouble(1.0), "String", MapValueString("word"))
+    }
+    serialize(wrapper) should be ("""{"map":{"Double":{"type":"MapValueDouble","value":1.0},"String":{"type":"MapValueString","value":"word"}}}""")
   }
 }
