@@ -24,6 +24,7 @@ libraryDependencies <++= (version) { (v) => Seq(
     "com.fasterxml.jackson.core" % "jackson-annotations" % v,
     "com.fasterxml.jackson.core" % "jackson-databind" % v,
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % ("[2.2,"+v+"]") % "test",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % ("[2.2,"+v+"]") % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % ("[2.2,"+v+"]") % "test"
 ) }
 
@@ -34,7 +35,7 @@ libraryDependencies ++= Seq(
     // test dependencies
     "org.scalatest" %% "scalatest" % "2.0.M5b" % "test",
     "junit" % "junit" % "4.11" % "test",
-    "com.novocode" % "junit-interface" % "0.10-M3" % "test"
+    "com.novocode" % "junit-interface" % "0.10" % "test"
 )
 
 // resource filtering

@@ -91,7 +91,7 @@ private object UnsortedMapDeserializerResolver extends Deserializers.Base {
     val rawClass = theType.getRawClass
 
     if (!MAP.isAssignableFrom(rawClass)) null
-    if (SORTED_MAP.isAssignableFrom(rawClass)) null
+    else if (SORTED_MAP.isAssignableFrom(rawClass)) null
     else new UnsortedMapDeserializer(theType, config, keyDeserializer, elementDeserializer, elementTypeDeserializer)
   }
 
