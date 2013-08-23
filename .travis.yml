@@ -9,3 +9,4 @@ jdk:
    - oraclejdk7
    - openjdk7
    - openjdk6
+script: sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"' ++$TRAVIS_SCALA_VERSION test

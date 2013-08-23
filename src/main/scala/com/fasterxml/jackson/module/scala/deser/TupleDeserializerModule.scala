@@ -9,11 +9,13 @@ import com.fasterxml.jackson.databind._;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import com.fasterxml.jackson.module.scala.JacksonModule
-import deser.{ContextualDeserializer, Deserializers}
+import deser.{BeanDeserializerFactory, ContextualDeserializer, Deserializers}
+import jsontype.TypeDeserializer
 
 private class TupleDeserializer(javaType: JavaType,
                                 config: DeserializationConfig,
-                                valueDeserializers: Seq[JsonDeserializer[Object]])
+                                valueDeserializers: Seq[JsonDeserializer[Object]] = Nil,
+                                typeDeserializers: Seq[TypeDeserializer] = Nil)
   extends StdDeserializer[Product](classOf[Product]) with ContextualDeserializer {
 
   val cls = javaType.getRawClass
@@ -29,7 +31,14 @@ private class TupleDeserializer(javaType: JavaType,
 
     val paramDesers = paramTypes map (ctxt.findContextualValueDeserializer(_, property))
 
-    new TupleDeserializer(javaType, config, paramDesers)
+    val typeDesers = Option(property).map { p =>
+      val factory = BeanDeserializerFactory.instance
+      paramTypes map { pt =>
+        factory.findPropertyTypeDeserializer(ctxt.getConfig, pt, property.getMember)
+      }
+    } getOrElse Stream.fill(paramTypes.size)(null)
+
+    new TupleDeserializer(javaType, config, paramDesers, typeDesers)
   }
 
 
@@ -39,9 +48,12 @@ private class TupleDeserializer(javaType: JavaType,
       throw ctxt.mappingException(javaType.getRawClass)
     }
 
-    val params = valueDeserializers map { deser =>
+    val params = (valueDeserializers zip typeDeserializers) map { case (deser, typeDeser) =>
       jp.nextToken
-      deser.deserialize(jp, ctxt)
+      if (typeDeser == null)
+        deser.deserialize(jp, ctxt)
+      else
+        deser.deserializeWithType(jp, ctxt, typeDeser)
     }
 
     val t = jp.nextToken
@@ -66,7 +78,7 @@ private object TupleDeserializerResolver extends Deserializers.Base {
     // If it's not *actually* a tuple, it's either a case class or a custom Product
     // which either way we shouldn't handle here.
     if (!cls.getName.startsWith("scala.Tuple")) null else
-    new TupleDeserializer(javaType, config, Seq.empty)
+    new TupleDeserializer(javaType, config)
   }
 }
 
