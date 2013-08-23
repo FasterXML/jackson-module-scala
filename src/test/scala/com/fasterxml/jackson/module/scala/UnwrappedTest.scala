@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.annotation.{JsonProperty, JsonIgnore}
+import com.fasterxml.jackson.annotation.{JsonUnwrapped, JsonProperty, JsonIgnore}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
@@ -9,6 +9,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 
 
 case class Address(address1: Option[String], city: Option[String], state: Option[String])
+
+class NonCreatorPerson
+{
+  var name: String = _
+  @JsonUnwrapped var location: Address = _
+  var alias: Option[String] = _
+}
+
 case class Person(name: String, @JsonIgnore location: Address, alias: Option[String])
 {
   private def this() = this("", Address(None, None, None), None)
@@ -39,7 +47,7 @@ case class Person(name: String, @JsonIgnore location: Address, alias: Option[Str
 @RunWith(classOf[JUnitRunner])
 class UnwrappedTest extends FlatSpec with ShouldMatchers {
 
-  "mapper" should "do stuff" in {
+  "mapper" should "handle ignored fields correctly" in {
     val mapper = new ObjectMapper()
     mapper.registerModule(DefaultScalaModule)
 
@@ -58,4 +66,20 @@ class UnwrappedTest extends FlatSpec with ShouldMatchers {
     p2 should be === p
   }
 
+  it should "handle JsonUnwrapped for non-creators" in {
+    val mapper = new ObjectMapper()
+    mapper.registerModule(DefaultScalaModule)
+
+    val p = new NonCreatorPerson
+    p.name = "Snoopy"
+    p.location = Address(Some("123 Main St"), Some("Anytown"), Some("WA"))
+    p.alias = Some("Joe Cool")
+
+    val json = mapper.writeValueAsString(p)
+    val p2 = mapper.readValue(json, classOf[NonCreatorPerson])
+
+    p2.name should be === p.name
+    p2.location should be === p.location
+    p2.alias should be === p.alias
+  }
 }
