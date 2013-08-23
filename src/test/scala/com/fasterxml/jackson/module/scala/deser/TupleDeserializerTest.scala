@@ -6,10 +6,19 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
+import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 
-/**
- * @author Christopher Currie <ccurrie@impresys.com>
- */
+@JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
+@JsonSubTypes(Array(
+  new JsonSubTypes.Type(value = classOf[TupleValueLong], name = "TupleValueLong"),
+  new JsonSubTypes.Type(value = classOf[TupleValueString], name = "TupleValueString")
+))
+trait TupleValueBase
+case class TupleValueLong(long: Long) extends TupleValueBase
+case class TupleValueString(string: String) extends TupleValueBase
+case class TupleContainer(tuple: (TupleValueBase,TupleValueBase))
+
 @RunWith(classOf[JUnitRunner])
 class TupleDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
 
@@ -58,5 +67,12 @@ class TupleDeserializerTest extends DeserializerTest with FlatSpec with ShouldMa
   it should "deserialize an option list of tuples " in {
     val result = deserialize[Option[List[(String,Double)]]]("""[["foo",1.0],["bar",10.0],["baz",100.0]]""")
     result should be (Some(List(("foo",1.0), ("bar",10.0), ("baz",100.0))))
+  }
+
+  it should "deserialize using type information" in {
+    val value = TupleContainer(TupleValueLong(1), TupleValueString("foo"))
+    val json = mapper.writeValueAsString(value)
+    val result = deserialize[TupleContainer](json)
+    result should be (value)
   }
 }
