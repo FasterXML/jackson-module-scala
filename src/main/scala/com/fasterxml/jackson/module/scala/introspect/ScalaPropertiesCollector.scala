@@ -64,17 +64,26 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
 
 
   override def _addCreators() {
-    lazy val ctors = classDef.getConstructors.asScala
+    val ctors = classDef.getConstructors.asScala
+    val ignoredCtors = ctors.filter { ctor =>
+      Stream.range(0, ctor.getParameterCount).view.map(ctor.getParameter).exists(_hasIgnoreMarker)
+    }
+
     _descriptor.properties.view.filter(_.param.isDefined).foreach { pd =>
       val name = pd.name
       val pn = _getPropertyName(pd)
       val explName = pn.optMap(_.getSimpleName).map(_.orIfEmpty(name))
 
-      //add the constructor param (if present)
       //call to pd.param.get is safe due to filter above
       val cp =  pd.param.get
       ctors.find(_.getAnnotated == cp.constructor).foreach { annotatedConstructor =>
-        _addFieldCtor(name, annotatedConstructor.getParameter(cp.index), explName)
+        val param = annotatedConstructor.getParameter(cp.index)
+        if (_hasIgnoreMarker(param)) {
+          _properties.remove(name)
+        }
+        else if (!ignoredCtors.contains(annotatedConstructor)) {
+          _addFieldCtor(name, annotatedConstructor.getParameter(cp.index), explName)
+        }
       }
     }
   }
@@ -106,8 +115,11 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     // GH-83: Having both a setter and a creator causes some issues where Jackson assumes it can't
     // do certain things it should be able to, such as deserializing to an instance. For now, if the
     // property already has a setter, then don't add the creator.
-    if (!prop.hasSetter) {
-      prop.addCtor(param, explName.orNull, true, false)
+
+    // GH-90: Don't add the creatorProp if it was ignored; Jackson doesn't expect this on creator
+    // properties and won't filter it.
+    if (!prop.hasSetter && !prop.anyIgnorals()) {
+      prop.addCtor(param, explName.orNull, true, _hasIgnoreMarker(param))
       creatorProperties += prop
     }
   }
