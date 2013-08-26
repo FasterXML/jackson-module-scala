@@ -77,17 +77,3 @@ nextVersion := { ver => Version(ver).map(_.bumpBugfix.asSnapshot.string).getOrEl
 // use maven style tag name
 tagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
 
-// don't publish on release, it doesn't work with cross version publishing
-// TODO: see about defining multiple release processes, to do prepare/perform
-// split processes similar to the Maven release plugin
-releaseProcess := Seq(
-  // TODO remove when scalabeans isn't a custom build
-  // checkSnapshotDependencies,
-  inquireVersions,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  setNextVersion,
-  commitNextVersion
-)
