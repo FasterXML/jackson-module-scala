@@ -8,14 +8,8 @@ import ReleaseStateTransformations._
 osgiSettings
 
 OsgiKeys.exportPackage := Seq(
-  "com.fasterxml.jackson.module.scala",
-  "com.fasterxml.jackson.module.scala.experimental",
-  "com.fasterxml.jackson.module.scala.deser",
-  "com.fasterxml.jackson.module.scala.introspect",
-  "com.fasterxml.jackson.module.scala.modifiers",
-  "com.fasterxml.jackson.module.scala.ser"
+  "com.fasterxml.jackson.module.scala.*"
 )
-
 
 // publishing
 publishMavenStyle := true
