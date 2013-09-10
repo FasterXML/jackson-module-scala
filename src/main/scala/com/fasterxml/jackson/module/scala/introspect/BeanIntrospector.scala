@@ -26,7 +26,7 @@ package com.fasterxml.jackson.module.scala.introspect
 import com.thoughtworks.paranamer.BytecodeReadingParanamer
 import scala.reflect.NameTransformer
 import java.lang.reflect.{Modifier, Field, Constructor, Method}
-import com.google.common.cache.{LoadingCache, CacheLoader, CacheBuilder}
+import com.google.common.cache.{LoadingCache, CacheBuilder}
 import scala.annotation.tailrec
 import com.fasterxml.jackson.module.scala.util.Implicts._
 
@@ -40,8 +40,18 @@ object BeanIntrospector {
   private [this] val paranamer = new BytecodeReadingParanamer
   private [this] val ctorParamNamesCache: LoadingCache[Constructor[_],Array[String]] =
     // TODO: consider module configuration of the cache
-    CacheBuilder.newBuilder.maximumSize(DEFAULT_CACHE_SIZE).build { ctor: Constructor[_] =>
-      paranamer.lookupParameterNames(ctor).map(NameTransformer.decode(_))
+    CacheBuilder.newBuilder
+      .maximumSize(DEFAULT_CACHE_SIZE)
+      .build(paranamer.lookupParameterNames(_: Constructor[_]).map(NameTransformer.decode))
+
+  private def getCtorParams(ctor: Constructor[_]): Array[String] =
+    try
+    {
+      ctorParamNamesCache.get(ctor)
+    }
+    catch
+    {
+      case _: Exception => Array.empty
     }
 
   def apply[T <: AnyRef](implicit mf: Manifest[_]): BeanDescriptor = apply[T](mf.erasure)
@@ -56,7 +66,7 @@ object BeanIntrospector {
       //c can be null if we're asked for the superclass of Object or AnyRef
       if (c == null || c == classOf[AnyRef]) return None
       val primaryConstructor = c.getConstructors.headOption
-      val debugCtorParamNames = primaryConstructor.map(ctorParamNamesCache(_)).getOrElse(Array.empty)
+      val debugCtorParamNames = primaryConstructor.toIndexedSeq.flatMap(getCtorParams)
       val index = debugCtorParamNames.indexOf(name)
       if (index >= 0) {
         Some(ConstructorParameter(primaryConstructor.get, index, None))
