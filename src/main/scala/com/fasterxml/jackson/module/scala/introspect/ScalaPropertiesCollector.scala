@@ -115,10 +115,12 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     // GH-83: Having both a setter and a creator causes some issues where Jackson assumes it can't
     // do certain things it should be able to, such as deserializing to an instance. For now, if the
     // property already has a setter, then don't add the creator.
+    // GH-83: Update: Hiding the creator breaks valid constructon scenarios. Trying to work on fixing
+    // the underlying databind issue.
 
     // GH-90: Don't add the creatorProp if it was ignored; Jackson doesn't expect this on creator
     // properties and won't filter it.
-    if (!prop.hasSetter && !prop.anyIgnorals()) {
+    if (/* !prop.hasSetter && */ !prop.anyIgnorals()) {
       prop.addCtor(param, explName.orNull, true, _hasIgnoreMarker(param))
       creatorProperties += prop
     }
