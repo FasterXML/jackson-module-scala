@@ -87,12 +87,20 @@ object BeanIntrospector {
       next(cls, Nil)
     }
 
+    @tailrec
     def findMethod(cls: Class[_], name: String): Option[Method] = cls match {
       case null => None
       case c if c == classOf[AnyRef] => None
-      case c => c.getDeclaredMethods.find(m => NameTransformer.decode(m.getName) == name) orElse findMethod(c.getSuperclass, name)
+      case c => {
+        val methodOpt = c.getDeclaredMethods.find(m => NameTransformer.decode(m.getName) == name)
+        if (methodOpt.isDefined)
+          methodOpt
+        else
+          findMethod(c.getSuperclass, name)
+      }
     }
 
+    @tailrec
     def findField(cls: Class[_], fieldName: String): Option[Field] = cls match {
       case null => None
       case c if c == classOf[AnyRef] => None
@@ -104,7 +112,10 @@ object BeanIntrospector {
             None
           }
         }
-        fieldOpt orElse findField(c.getSuperclass, fieldName)
+        if (fieldOpt.isDefined)
+          fieldOpt
+        else
+          findField(c.getSuperclass, fieldName)
       }
     }
 

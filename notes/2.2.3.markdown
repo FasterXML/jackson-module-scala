@@ -17,25 +17,25 @@ detect Scala property names.
 * [[gh-97]](https://github.com/FasterXML/jackson-module-scala/issues/97)
   Non symmetric serialize/deserialize behavior
 
-* [[gh-80]](https://github.com/FasterXML/jackson-module-scala/issues/95)
+* [[gh-95]](https://github.com/FasterXML/jackson-module-scala/issues/95)
   Error deserializing pojo with multi-map when guava and scala modules are used
 
-* [[gh-80]](https://github.com/FasterXML/jackson-module-scala/issues/93)
+* [[gh-93]](https://github.com/FasterXML/jackson-module-scala/issues/93)
   Enumerations and Java enums deserialize into strings when being used as Scala map keys
 
-* [[gh-80]](https://github.com/FasterXML/jackson-module-scala/issues/91)
+* [[gh-91]](https://github.com/FasterXML/jackson-module-scala/issues/91)
   setPropertyNamingStrategy results in NullPointerException when serializing
 
-* [[gh-80]](https://github.com/FasterXML/jackson-module-scala/issues/89)
+* [[gh-89]](https://github.com/FasterXML/jackson-module-scala/issues/89)
   Customizing untyped object deserialization
 
-* [[gh-80]](https://github.com/FasterXML/jackson-module-scala/issues/88)
+* [[gh-88]](https://github.com/FasterXML/jackson-module-scala/issues/88)
   Conflicting setter definitions for property
 
-* [[gh-80]](https://github.com/FasterXML/jackson-module-scala/issues/85)
+* [[gh-85]](https://github.com/FasterXML/jackson-module-scala/issues/85)
   Java style getters still broken
 
-* [[gh-80]](https://github.com/FasterXML/jackson-module-scala/issues/83)
+* [[gh-83]](https://github.com/FasterXML/jackson-module-scala/issues/83)
   value update problem
 
 ## Fixes in 2.2.2
