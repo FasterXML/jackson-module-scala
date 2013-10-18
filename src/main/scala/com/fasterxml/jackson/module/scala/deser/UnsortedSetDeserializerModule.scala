@@ -32,7 +32,7 @@ private object UnsortedSetDeserializer {
     .toList
 
   def companionFor(cls: Class[_]): GenericCompanion[collection.Set] =
-    COMPANIONS find { _._1.isAssignableFrom(cls) } map { _._2 } getOrElse (Set)
+    COMPANIONS find { _._1.isAssignableFrom(cls) } map { _._2 } getOrElse Set
 
   def builderFor[A](cls: Class[_]): mutable.Builder[A, collection.Set[A]] = companionFor(cls).newBuilder[A]
 }
@@ -48,14 +48,14 @@ private class SetInstantiator(config: DeserializationConfig, valueType: Class[_]
 }
 
 private class UnsortedSetDeserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)
-  extends ContainerDeserializerBase[collection.Set[_]](collectionType.getRawClass)
+  extends ContainerDeserializerBase[collection.Set[_]](collectionType)
   with ContextualDeserializer {
 
   def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) =
     this(collectionType, new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, valueInstantiator))
 
   def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
-    val newDelegate = containerDeserializer.createContextual(ctxt, property).asInstanceOf[CollectionDeserializer]
+    val newDelegate = containerDeserializer.createContextual(ctxt, property)
     new UnsortedSetDeserializer(collectionType, newDelegate)
   }
 
@@ -71,8 +71,9 @@ private class UnsortedSetDeserializer(collectionType: JavaType, containerDeseria
 
 private object UnsortedSetDeserializerResolver extends Deserializers.Base {
 
-  lazy final val SET = classOf[collection.Set[_]]
-  
+  private final val SET = classOf[collection.Set[_]]
+  private final val SORTED_SET = classOf[collection.SortedSet[_]]
+
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                                               config: DeserializationConfig,
                                               beanDesc: BeanDescription,
@@ -81,6 +82,7 @@ private object UnsortedSetDeserializerResolver extends Deserializers.Base {
     val rawClass = collectionType.getRawClass
 
     if (!SET.isAssignableFrom(rawClass)) null
+    else if (SORTED_SET.isAssignableFrom(rawClass)) null
     else {
       val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
       val instantiator = new SetInstantiator(config, rawClass)

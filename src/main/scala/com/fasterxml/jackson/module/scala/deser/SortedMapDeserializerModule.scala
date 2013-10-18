@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer}
 import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 import deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
+import com.fasterxml.jackson.module.scala.introspect.OrderingLocator
 
 private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), SortedMap[K,V]]) extends AbstractMap[K,V] {
   override def put(k: K, v: V) = { builder += ((k,v)); v }
@@ -22,11 +23,9 @@ private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), S
 }
 
 private object SortedMapDeserializer {
-  def orderingFor(cls: Class[_]): Ordering[AnyRef] =
-    (if (classOf[String].isAssignableFrom(cls)) Ordering.String else
-    throw new IllegalArgumentException("Unsupported key type: " + cls.getCanonicalName)).asInstanceOf[Ordering[AnyRef]]
+  def orderingFor = OrderingLocator.locate _
 
-  def builderFor(cls: Class[_], keyCls: Class[_]): mutable.Builder[(AnyRef,AnyRef), SortedMap[AnyRef,AnyRef]] =
+  def builderFor(cls: Class[_], keyCls: JavaType): mutable.Builder[(AnyRef,AnyRef), SortedMap[AnyRef,AnyRef]] =
     if (classOf[TreeMap[_,_]].isAssignableFrom(cls)) TreeMap.newBuilder[AnyRef,AnyRef](orderingFor(keyCls)) else
     SortedMap.newBuilder[AnyRef,AnyRef](orderingFor(keyCls))
 }
@@ -37,17 +36,18 @@ private class SortedMapDeserializer(
     keyDeser: KeyDeserializer,
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
-  extends ContainerDeserializerBase[SortedMap[_,_]](classOf[SortedMapDeserializer])
+  extends ContainerDeserializerBase[SortedMap[_,_]](collectionType)
   with ContextualDeserializer {
   
-  private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
+  private val javaContainerType =
+    config.getTypeFactory.constructMapLikeType(classOf[MapBuilderWrapper[_,_]], collectionType.containedType(0), collectionType.containedType(1))
 
   private val instantiator =
     new ValueInstantiator {
       def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
       override def canCreateUsingDefault = true
       override def createUsingDefault(ctx: DeserializationContext) =
-        new SortedMapBuilderWrapper[AnyRef,AnyRef](SortedMapDeserializer.builderFor(collectionType.getRawClass, collectionType.containedType(0).getRawClass))
+        new SortedMapBuilderWrapper[AnyRef,AnyRef](SortedMapDeserializer.builderFor(collectionType.getRawClass, collectionType.containedType(0)))
     }
 
   private val containerDeserializer =
