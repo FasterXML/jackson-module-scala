@@ -112,7 +112,7 @@ class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with Shou
     propertyNamingStrategyMapper.readValue("""{"camel_case":42,"snake_case":42,"alllower":42,"allupper":42,"an_id":42}""", classOf[MixedPropertyNameStyleCaseClass]) should be (result)
   }
 
-  it should "support serializing into instance var properties" ignore {
+  it should "support serializing into instance var properties" in {
     val bean = new Bean("ctor")
     mapper.reader(bean.getClass).withValueToUpdate(bean).readValue("""{"prop":"readValue"}""")
     bean.prop should be ("readValue")
