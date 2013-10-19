@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.introspect
 import com.fasterxml.jackson.databind.JavaType
 
 object OrderingLocator {
-  val ORDERINGS = Map(
+  val ORDERINGS = Map.apply[Class[_],Ordering[_]](
     classOf[Unit] -> Ordering.Unit,
     classOf[Boolean] -> Ordering.Boolean,
     classOf[Byte] -> Ordering.Byte,
@@ -20,8 +20,9 @@ object OrderingLocator {
 
   def locate(javaType: JavaType): Ordering[AnyRef] = {
     def matches(other: Class[_]) = other.isAssignableFrom(javaType.getRawClass)
+    val found: Option[Ordering[_]] = ORDERINGS.find(_._1.isAssignableFrom(javaType.getRawClass)).map(_._2)
     val ordering =
-      ORDERINGS.find(e => matches(e._1)).map(_._2).getOrElse {
+      found.getOrElse {
         if (matches(classOf[Option[_]])) {
           val delegate = locate(javaType.containedType(0))
           Ordering.Option(delegate)

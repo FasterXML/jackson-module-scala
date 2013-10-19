@@ -6,11 +6,14 @@ import com.fasterxml.jackson.databind.deser.std.{StdValueInstantiator, Collectio
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.core.JsonParser
-import scala.collection.{immutable, SortedSet, mutable}
+import scala.collection._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import java.util.AbstractCollection
 import com.fasterxml.jackson.module.scala.introspect.OrderingLocator
 import java.lang.Object
+import scala.collection.generic.SortedSetFactory
+import scala.Some
+import scala.collection.immutable
 
 private class SortedSetBuilderWrapper[E](val builder: mutable.Builder[E, _ <: collection.SortedSet[E]]) extends AbstractCollection[E] {
 
@@ -22,13 +25,43 @@ private class SortedSetBuilderWrapper[E](val builder: mutable.Builder[E, _ <: co
 }
 
 private object SortedSetDeserializer {
-  def orderingFor = OrderingLocator.locate _
+  type BuilderFactory = (Ordering[AnyRef]) => mutable.Builder[AnyRef, SortedSet[AnyRef]]
 
-  def builderFor(cls: Class[_], valueType: JavaType): mutable.Builder[AnyRef, SortedSet[AnyRef]] =
-    if (classOf[mutable.TreeSet[_]].isAssignableFrom(cls)) mutable.TreeSet.newBuilder[AnyRef](orderingFor(valueType)) else
-    if (classOf[mutable.SortedSet[_]].isAssignableFrom(cls)) mutable.SortedSet.newBuilder[AnyRef](orderingFor(valueType)) else
-    if (classOf[immutable.TreeSet[_]].isAssignableFrom(cls)) immutable.TreeSet.newBuilder[AnyRef](orderingFor(valueType)) else
-    immutable.SortedSet.newBuilder[AnyRef](orderingFor(valueType))
+  def lookupClass(s: String): Option[Class[_]] = try {
+    Some(Predef.getClass.getClassLoader.loadClass(s))
+  } catch {
+    case e: ClassNotFoundException => None
+  }
+
+  def lookupBuilder(s: String): BuilderFactory = {
+    val moduleClass = lookupClass(s + "$").get
+    val module = moduleClass.getField("MODULE$").get(null).asInstanceOf[SortedSetFactory[SortedSet]]
+    (o) => module.newBuilder(o)
+  }
+
+  def classAndBuilder(s: String): Option[(Class[_], BuilderFactory)] = {
+    lookupClass(s).map(c => c -> lookupBuilder(s))
+  }
+
+  val BUILDERS = {
+    val builder = mutable.LinkedHashMap.newBuilder[Class[_], BuilderFactory]
+
+    // These were added in 2.10. We want to support them, but can't statically reference them, because
+    // the 2.9 library doesn't include them, and multi-target builds are awkward.
+    classAndBuilder("scala.collection.mutable.TreeSet").foreach(builder +=)
+    classAndBuilder("scala.collection.mutable.SortedSet").foreach(builder +=)
+
+    builder += (classOf[immutable.TreeSet[_]] -> (immutable.TreeSet.newBuilder[AnyRef](_)))
+    builder += (classOf[SortedSet[_]] -> (SortedSet.newBuilder[AnyRef](_)))
+    builder.result()
+  }
+
+  def builderFor(cls: Class[_], valueType: JavaType): mutable.Builder[AnyRef, SortedSet[AnyRef]] = {
+    val ordering = OrderingLocator.locate(valueType)
+    val found: Option[BuilderFactory] = BUILDERS.find(_._1.isAssignableFrom(cls)).map(_._2)
+    if (found.isDefined) found.get(ordering)
+    else throw new IllegalArgumentException(cls.getCanonicalName + " is not a supported SortedSet")
+  }
 }
 
 private class SortedSetInstantiator(config: DeserializationConfig, collectionType: Class[_], valueType: JavaType)

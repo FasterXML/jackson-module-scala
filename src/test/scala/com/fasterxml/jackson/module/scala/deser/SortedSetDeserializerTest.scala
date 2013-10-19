@@ -29,20 +29,22 @@ class SortedSetDeserializerTest extends DeserializationFixture with ShouldMatche
     result should be === setScala
   }
 
-  it should "deserialize a list into a mutable SortedSet" in { f =>
-    val result = f.readValue[mutable.SortedSet[String]](setJson)
-    result should be === setScala
-  }
+  // Not supported in 2.9; need to find a way to cross-version test
+//  it should "deserialize a list into a mutable SortedSet" in { f =>
+//    val result = f.readValue[mutable.SortedSet[String]](setJson)
+//    result should be === setScala
+//  }
 
   it should "deserialize a list into a TreeSet" in { f =>
     val result = f.readValue[TreeSet[String]](setJson)
     result should be === setScala
   }
 
-  it should "deserialize a list into a mutable TreeSet" in { f =>
-    val result = f.readValue[mutable.TreeSet[String]](setJson)
-    result should be === setScala
-  }
+  // Not supported in 2.9; need to find a way to cross-version test
+//  it should "deserialize a list into a mutable TreeSet" in { f =>
+//    val result = f.readValue[mutable.TreeSet[String]](setJson)
+//    result should be === setScala
+//  }
 
   it should "deserialize a list of Ints into a SortedSet" in { f =>
     val result = f.readValue[SortedSet[Int]](intSetJson)
