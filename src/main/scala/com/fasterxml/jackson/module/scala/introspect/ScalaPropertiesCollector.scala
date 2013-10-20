@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.{PropertyNamingStrategy, PropertyName, Ann
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect._
 
-import com.fasterxml.jackson.module.scala.util.Implicts._
+import com.fasterxml.jackson.module.scala.util.Implicits._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable

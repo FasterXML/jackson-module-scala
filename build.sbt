@@ -19,7 +19,7 @@ scalacOptions <+= (scalaBinaryVersion) map { binVer => binVer match {
   case _ => "-target:jvm-1.6"
 } }
 
-libraryDependencies <++= (scalaVersion) { (ver) => Seq("org.scala-lang" % "scalap" % ver) }
+// libraryDependencies <++= (scalaVersion) { (ver) => Seq("org.scala-lang" % "scalap" % ver) }
 
 libraryDependencies <++= (version) { (v) => Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % v,

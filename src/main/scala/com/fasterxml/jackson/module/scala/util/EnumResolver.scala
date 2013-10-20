@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 package util
 
-import Implicts._
+import Implicits._
 
 import com.fasterxml.jackson.databind.BeanProperty
 import com.fasterxml.jackson.module.scala.JsonScalaEnumeration

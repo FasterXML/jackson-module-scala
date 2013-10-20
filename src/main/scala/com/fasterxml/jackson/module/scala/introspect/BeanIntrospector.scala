@@ -28,7 +28,7 @@ import scala.reflect.NameTransformer
 import java.lang.reflect.{Modifier, Field, Constructor, Method}
 import com.google.common.cache.{LoadingCache, CacheBuilder}
 import scala.annotation.tailrec
-import com.fasterxml.jackson.module.scala.util.Implicts._
+import com.fasterxml.jackson.module.scala.util.Implicits._
 
 //TODO: This might be more efficient/type safe if we used Scala reflection here
 //but we have to support 2.9.x and 2.10.x - once the scala reflection APIs

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.{DeserializationFeature, JavaType, BeanDes
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std
 import com.fasterxml.jackson.module.scala.JacksonModule
-import com.fasterxml.jackson.module.scala.util.Implicts._
+import com.fasterxml.jackson.module.scala.util.Implicits._
 import java.{util => ju}
 import scala.collection.JavaConverters._
 import com.fasterxml.jackson.core.`type`.TypeReference
