@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ser.{ContextualSerializer, Serializers}
 
 import com.fasterxml.jackson.module.scala.{JsonScalaEnumeration, JacksonModule}
 
-import com.fasterxml.jackson.module.scala.util.Implicts._
+import com.fasterxml.jackson.module.scala.util.Implicits._
 
 trait ContextualEnumerationSerializer extends ContextualSerializer
 {

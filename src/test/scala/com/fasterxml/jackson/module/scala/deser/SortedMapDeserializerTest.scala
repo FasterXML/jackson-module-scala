@@ -30,8 +30,9 @@ class SortedMapDeserializerTest extends DeserializerTest with FlatSpec with Shou
     result should equal (variantMapScala)
   }
 
-  ignore should "deserialize an object with numeric keys into a SortedMap" in {
-    val result = deserialize[SortedMap[Int,String]](numericMapJson)
+  it should "deserialize an object with numeric keys into a SortedMap" in {
+    // NB: This is `java.lang.Integer` because of GH-104
+    val result = deserialize[SortedMap[Integer,String]](numericMapJson)
     result should equal (numericMapScala)
   }
 
@@ -40,5 +41,5 @@ class SortedMapDeserializerTest extends DeserializerTest with FlatSpec with Shou
   val variantMapJson = """{ "one": "1", "two": 2 }"""
   val variantMapScala = SortedMap[String,Any]("one"->"1","two"->2)
   val numericMapJson = """{ "1": "one", "2": "two" }"""
-  val numericMapScala = SortedMap(1->"one",2->"two")
+  val numericMapScala = SortedMap[Integer,String](Integer.valueOf(1)->"one",Integer.valueOf(2)->"two")
 }

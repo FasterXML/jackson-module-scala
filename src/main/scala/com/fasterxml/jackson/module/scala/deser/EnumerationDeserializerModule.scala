@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala
 package deser
 
 import util.EnumResolver
-import util.Implicts._
+import util.Implicits._
 
 import com.fasterxml.jackson
 import jackson.core

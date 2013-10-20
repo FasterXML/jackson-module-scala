@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.introspect.{AnnotatedClass, BasicClassIntr
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.module.scala.JacksonModule
-import com.fasterxml.jackson.module.scala.util.Implicts._
+import com.fasterxml.jackson.module.scala.util.Implicits._
 
 object ScalaClassIntrospector extends BasicClassIntrospector {
 

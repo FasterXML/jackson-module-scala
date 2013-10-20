@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import scala.collection.JavaConverters._
 import scala.None
-import com.fasterxml.jackson.module.scala.util.Implicts._
+import com.fasterxml.jackson.module.scala.util.Implicits._
 
 private class ScalaValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription)
   extends StdValueInstantiator(config, beanDesc.getType) {

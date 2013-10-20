@@ -9,28 +9,31 @@ import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
 import annotation.target.getter
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
 import com.fasterxml.jackson.module.scala.experimental.RequiredPropertiesSchemaModule
+import com.fasterxml.jackson.databind.JsonNode
 
-class NonEmptyOptions {
+object OptionSerializerTest
+{
+  class NonEmptyOptions {
 
-  //@JsonProperty
-  @(JsonInclude)(JsonInclude.Include.NON_EMPTY)
-  val none = None
+    //@JsonProperty
+    @(JsonInclude)(JsonInclude.Include.NON_EMPTY)
+    val none = None
 
-  //@JsonProperty
-  @(JsonInclude @getter)(JsonInclude.Include.NON_EMPTY)
-  val some = Some(1)
+    //@JsonProperty
+    @(JsonInclude @getter)(JsonInclude.Include.NON_EMPTY)
+    val some = Some(1)
 
+  }
+
+  case class OptionSchema(stringValue: Option[String])
+
+  case class MixedOptionSchema(@JsonProperty(required=true) nonOptionValue: String, stringValue: Option[String])
+  case class WrapperOfOptionOfJsonNode(jsonNode: Option[JsonNode])
 }
 
-case class OptionSchema(stringValue: Option[String])
-
-case class MixedOptionSchema(@JsonProperty(required=true) nonOptionValue: String, stringValue: Option[String])
-
-/**
- * Undocumented class.
- */
 @RunWith(classOf[JUnitRunner])
 class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
+  import OptionSerializerTest._
 
   lazy val module = DefaultScalaModule
 
@@ -111,6 +114,16 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
     val schema = visitor.finalSchema()
     val schemaString = mapper.writeValueAsString(schema)
     schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}""")
+  }
+
+  it should "serialize contained JsonNode correctly" in {
+    val json: String = """{"prop":"value"}"""
+    val tree: JsonNode = mapper.readTree(json)
+    val wrapperOfOptionOfJsonNode = WrapperOfOptionOfJsonNode(Some(tree))
+
+    val actualJson: String = mapper.writeValueAsString(wrapperOfOptionOfJsonNode)
+
+    actualJson should be === """{"jsonNode":{"prop":"value"}}"""
   }
 
 }

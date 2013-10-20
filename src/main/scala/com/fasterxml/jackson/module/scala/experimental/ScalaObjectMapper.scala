@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core._
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
-import com.fasterxml.jackson.module.scala.util.Implicts._
+import com.fasterxml.jackson.module.scala.util.Implicits._
 import com.google.common.cache.{LoadingCache, CacheLoader, CacheBuilder}
 
 trait ScalaObjectMapper {
