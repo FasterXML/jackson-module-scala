@@ -33,7 +33,7 @@ libraryDependencies <++= (version) { (v) => Seq(
 libraryDependencies ++= Seq(
     "com.thoughtworks.paranamer" % "paranamer" % "2.6",
     "com.google.code.findbugs" % "jsr305" % "2.0.1",
-    "com.google.guava" % "guava" % "13.0.1",
+    "com.google.guava" % "guava" % "15.0",
     // test dependencies
     "org.scalatest" %% "scalatest" % "2.0.M5b" % "test",
     "junit" % "junit" % "4.11" % "test",
