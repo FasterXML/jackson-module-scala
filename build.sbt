@@ -21,8 +21,8 @@ scalacOptions <+= (scalaBinaryVersion) map { binVer => binVer match {
 
 libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % "2.3.1",
-    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.3.0",
-    "com.fasterxml.jackson.core" % "jackson-databind" % "2.3.1",
+    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.3.1",
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.3.2-SNAPSHOT",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.3.1" % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.3.1" % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.3.1" % "test",
