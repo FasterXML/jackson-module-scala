@@ -8,8 +8,8 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation._
 import scala.annotation.target.{field, getter}
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
-import com.fasterxml.jackson.module.scala.experimental.RequiredPropertiesSchemaModule
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.scala.experimental.{ScalaObjectMapper, RequiredPropertiesSchemaModule}
+import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
 import scala.Some
 
 object OptionSerializerTest
@@ -146,6 +146,15 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
     val json: String = """{"base":{"$type":"impl"}}"""
     mapper.writeValueAsString(new BaseHolder(Some(Impl()))) should be === json
   }
+
+  it should "support default typing" in {
+    case class User(name: String, email:Option[String] = None)
+    val mapper = new ObjectMapper with ScalaObjectMapper
+    mapper.registerModule(DefaultScalaModule)
+    mapper.enableDefaultTyping()
+    mapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) should be === """{"name":"John Smith","email":"john.smith@unit.uk"}"""
+  }
+
 }
 
 class NonNullOption {
