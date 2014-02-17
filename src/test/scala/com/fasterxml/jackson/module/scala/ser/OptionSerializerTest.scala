@@ -5,11 +5,12 @@ import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.annotation.{JsonProperty, JsonInclude}
-import annotation.target.getter
+import com.fasterxml.jackson.annotation._
+import scala.annotation.target.{field, getter}
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
 import com.fasterxml.jackson.module.scala.experimental.RequiredPropertiesSchemaModule
 import com.fasterxml.jackson.databind.JsonNode
+import scala.Some
 
 object OptionSerializerTest
 {
@@ -29,6 +30,21 @@ object OptionSerializerTest
 
   case class MixedOptionSchema(@JsonProperty(required=true) nonOptionValue: String, stringValue: Option[String])
   case class WrapperOfOptionOfJsonNode(jsonNode: Option[JsonNode])
+
+  @JsonSubTypes(Array(new JsonSubTypes.Type(classOf[Impl])))
+  trait Base
+
+  @JsonTypeName("impl")
+  case class Impl() extends Base
+
+  class BaseHolder(
+    private var _base: Option[Base]
+  ) {
+    @(JsonTypeInfo @field)(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="$type")
+    def base = _base
+    def base_=(base:Option[Base]) { _base = base }
+  }
+
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -126,6 +142,10 @@ class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatch
     actualJson should be === """{"jsonNode":{"prop":"value"}}"""
   }
 
+  it should "propagate type information" in {
+    val json: String = """{"base":{"$type":"impl"}}"""
+    mapper.writeValueAsString(new BaseHolder(Some(Impl()))) should be === json
+  }
 }
 
 class NonNullOption {

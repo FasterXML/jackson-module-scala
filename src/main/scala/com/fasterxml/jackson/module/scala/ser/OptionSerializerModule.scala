@@ -19,6 +19,7 @@ import java.{util => ju}
 
 import scala.Some
 import scala.collection.JavaConverters._
+import com.fasterxml.jackson.databind.introspect.{AnnotatedMethod, NopAnnotationIntrospector}
 
 private class OptionSerializer(elementType: Option[JavaType],
                                valueTypeSerializer: Option[TypeSerializer],
@@ -28,15 +29,25 @@ private class OptionSerializer(elementType: Option[JavaType],
   with ContextualSerializer
   with SchemaAware
 {
-  def serialize(value: Option[_], jgen: JsonGenerator, provider: SerializerProvider) {
+  override def serialize(value: Option[_], jgen: JsonGenerator, provider: SerializerProvider) {
+    valueTypeSerializer.map(vt => serializeWithType(value, jgen, provider, vt)).getOrElse {
+      (value, elementSerializer) match {
+        case (Some(v: AnyRef), Some(vs)) => vs.serialize(v, jgen, provider)
+        case (Some(v), _) => provider.defaultSerializeValue(v, jgen)
+        case (None, _) => provider.defaultSerializeNull(jgen)
+      }
+    }
+  }
+
+  override def serializeWithType(value: Option[_], jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer) {
     (value, elementSerializer) match {
-      case (Some(v: AnyRef), Some(vs)) => vs.serialize(v, jgen, provider)
-      case (Some(v), _) => provider.defaultSerializeValue(v, jgen)
+      case (Some(v: AnyRef), Some(vs)) => vs.serializeWithType(v, jgen, provider, typeSer)
+      case (Some(v), _) => provider.findTypedValueSerializer(v.getClass, true, beanProperty.orNull).serializeWithType(v.asInstanceOf[AnyRef], jgen, provider, typeSer)
       case (None, _) => provider.defaultSerializeNull(jgen)
     }
   }
 
-  def createContextual(prov: SerializerProvider, property: BeanProperty): JsonSerializer[_] = {
+  override def createContextual(prov: SerializerProvider, property: BeanProperty): JsonSerializer[_] = {
     // Based on the version in AsArraySerializerBase
     val typeSer = valueTypeSerializer.optMap(_.forProperty(property))
     var ser: Option[JsonSerializer[_]] =
@@ -136,10 +147,13 @@ private object OptionSerializerResolver extends Serializers.Base {
                                            ): JsonSerializer[_] =
 
     if (!OPTION.isAssignableFrom(`type`.getRawClass)) null
-    else new OptionSerializer(Option(`type`.containedType(0)), Option(elementTypeSerializer), None, Option(elementValueSerializer))
+    else {
+      val elementType = `type`.containedType(0)
+      val typeSer = Option(elementTypeSerializer).orElse(Option(elementType.getTypeHandler.asInstanceOf[TypeSerializer]))
+      val valSer = Option(elementValueSerializer).orElse(Option(elementType.getValueHandler.asInstanceOf[JsonSerializer[AnyRef]]))
+      new OptionSerializer(Option(`type`.containedType(0)), typeSer, None, valSer)
+    }
 }
-
-
 
 trait OptionSerializerModule extends OptionTypeModifierModule {
   this += { ctx =>

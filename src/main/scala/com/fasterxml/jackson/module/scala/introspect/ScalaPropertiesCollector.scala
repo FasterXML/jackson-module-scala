@@ -151,7 +151,8 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
 
   override def _addMethods() {
     val ai = Option(_annotationIntrospector)
-    val methods = classDef.memberMethods().asScala
+    val methods = classDef.memberMethods().asScala.toSet
+    val seen = mutable.Set.empty[AnnotatedMethod]
 
     _descriptor.properties.view.filter(_.getter.isDefined).foreach { pd =>
       val name = pd.name
@@ -159,10 +160,12 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
       //call to pd.getter.get is safe because of the above filter
       methods.find(_.getMember == pd.getter.get).foreach { am =>
         _addGetterMethod(name, explName, am)
+        seen += am
       }
       pd.setter.foreach { setter =>
         methods.find(_.getMember == setter).foreach { am =>
           _addSetterMethod(name, explName, am)
+          seen += am
         }
       }
     }
@@ -172,7 +175,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     // we've already detected. TODO: Maybe fold those into PropertyDescriptor?
     // This additionally picks up any 'stray' methods that were not gathered up by the BeanIntrospector
     // which may have annotations on them which make them suitable accessing/setting properties
-    methods.filterNot(_isPropertyHandled).foreach { m =>
+    methods &~ seen filterNot _isPropertyHandled foreach { m =>
       m.getParameterCount match {
         case 0 => _addGetterMethod(m, ai.orNull)
         case 1 => _addSetterMethod(m, ai.orNull)
