@@ -64,7 +64,7 @@ trait ScalaObjectMapper {
       } else if(isCollectionLike(clazz)) {
         val typeArguments = m.typeArguments.map(constructType(_)).toArray
         if(typeArguments.length != 1) {
-          throw new IllegalArgumentException("Need exactly 1 type parameter for iterable like types ("+clazz.getName+")")
+          throw new IllegalArgumentException("Need exactly 1 type parameter for collection like types ("+clazz.getName+")")
         }
         getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
       } else {
@@ -309,8 +309,9 @@ trait ScalaObjectMapper {
   }
 
   private val ITERABLE = classOf[collection.Iterable[_]]
+  private val OPTION = classOf[Option[_]]
   private def isCollectionLike(c: Class[_]): Boolean = {
-    ITERABLE.isAssignableFrom(c)
+    ITERABLE.isAssignableFrom(c) || OPTION.isAssignableFrom(c)
   }
 
 }

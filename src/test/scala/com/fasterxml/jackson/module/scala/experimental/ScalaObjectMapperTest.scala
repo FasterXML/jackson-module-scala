@@ -196,6 +196,12 @@ class ScalaObjectMapperTest extends FlatSpec with ShouldMatchers {
     assert(result.isInstanceOf[collection.Map[_, _]])
   }
 
+  it should "read a option values from a JSON array" in {
+    val result = mapper.readValue[List[Option[String]]](toplevelOptionArrayJson)
+    result(0) should equal(Some("some"))
+    result(1) should equal(None)
+  }
+
   // No tests for the following functions:
   //  def readValue[T: Manifest](src: File): T
   //  def readValue[T: Manifest](src: URL): T
@@ -208,5 +214,6 @@ class ScalaObjectMapperTest extends FlatSpec with ShouldMatchers {
   private val genericTwoFieldJson = """{"first":"firstVal","second":"secondVal"}"""
   private val genericMixedFieldJson = """{"first":"firstVal","second":2}"""
   private val toplevelArrayJson = """[{"t":42},{"t":31}]"""
+  private val toplevelOptionArrayJson = """["some",null]"""
 
 }
