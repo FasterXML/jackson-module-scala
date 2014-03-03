@@ -45,7 +45,8 @@ private class UnsortedMapDeserializer(
   extends ContainerDeserializerBase[GenMap[_,_]](classOf[UnsortedMapDeserializer]) 
   with ContextualDeserializer {
 
-  private val javaContainerType = config.constructType(classOf[MapBuilderWrapper[AnyRef,AnyRef]])
+  private val javaContainerType =
+    config.getTypeFactory.constructMapLikeType(classOf[MapBuilderWrapper[_,_]], collectionType.containedType(0), collectionType.containedType(1))
 
   private val instantiator =
     new ValueInstantiator {
