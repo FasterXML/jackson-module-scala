@@ -3,7 +3,7 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.3"
 
 crossScalaVersions := Seq("2.9.1", "2.9.1-1", "2.9.2", "2.9.3", "2.10.3")
 
@@ -14,7 +14,7 @@ javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
 // Try to future-proof scala jvm targets, in case some future
 // scala version makes 1.7 a default
-scalacOptions <+= (scalaBinaryVersion) map { binVer =>
+scalacOptions <+= scalaBinaryVersion map { binVer =>
   val Version29 = "^2\\.9.*$".r
   binVer match {
     case Version29() => "-target:jvm-1.5"
