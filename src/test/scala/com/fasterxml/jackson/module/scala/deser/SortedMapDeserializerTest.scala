@@ -6,6 +6,8 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.SortedMap
 import scala.collection.immutable.TreeMap
+import java.util.UUID
+import com.fasterxml.jackson.core.`type`.TypeReference
 
 /**
  * @author Christopher Currie <ccurrie@impresys.com>
@@ -34,6 +36,11 @@ class SortedMapDeserializerTest extends DeserializerTest with FlatSpec with Shou
     // NB: This is `java.lang.Integer` because of GH-104
     val result = deserialize[SortedMap[Integer,String]](numericMapJson)
     result should equal (numericMapScala)
+  }
+
+  it should "handle key type information" in {
+    val result: SortedMap[UUID,Int] = mapper.readValue("""{"e79bf81e-3902-4801-831f-d161be435787":5}""", new TypeReference[SortedMap[UUID,Int]]{})
+    result.keys.head should be === UUID.fromString("e79bf81e-3902-4801-831f-d161be435787")
   }
 
   val mapJson =  """{ "one": "1", "two": "2" }"""
