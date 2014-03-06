@@ -10,4 +10,7 @@ scala:
    - 2.10.3
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
-
+branches:
+  only:
+    - master
+    - "2.3"
