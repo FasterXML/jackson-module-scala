@@ -2,14 +2,12 @@ package com.fasterxml.jackson.module.scala.ser
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
 
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import scala.reflect.BeanProperty
+import scala.beans.BeanProperty
 
 case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 

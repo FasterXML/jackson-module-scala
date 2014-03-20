@@ -3,11 +3,9 @@ package com.fasterxml.jackson.module.scala.ser
 import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation.JsonValue
-import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import scala.annotation.target.getter
+import scala.annotation.meta.getter
 
 object TestJsonValue
 {

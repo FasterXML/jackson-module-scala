@@ -1,21 +1,18 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import org.junit.runner.RunWith
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 
 import scala.collection._
-import scala.reflect.BeanProperty
+import scala.beans.BeanProperty
 import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo, JsonInclude, JsonProperty}
 import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 import scala.collection.immutable.ListMap
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import annotation.target.getter
+import annotation.meta.getter
 import com.fasterxml.jackson.databind.{SerializerProvider, JsonSerializer}
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.google.common.collect.ImmutableMap
 
 class BeanieWeenie(@BeanProperty @JsonProperty("a") var a: Int,
                    @BeanProperty @JsonProperty("b") var b: String, 

@@ -3,16 +3,13 @@ package com.fasterxml.jackson.module.scala.introspect
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.fixture.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.{Module, ObjectMapper}
-import com.fasterxml.jackson.databind.Module.SetupContext
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.deser.ScalaValueInstantiatorsModule
 import scala.volatile
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
-import scala.reflect.{BeanProperty, BeanInfo}
+import scala.beans.{BeanProperty, BeanInfo}
 import org.scalatest.{Outcome, Succeeded, Matchers}
 
 class Fields {
@@ -32,7 +29,7 @@ class Methods {
 
 case class Constructors(plainField: Int = 0)
 
-@SerialVersionUID(uid = 8675309)
+@SerialVersionUID(8675309)
 case class SerialID(firstField: String, secondField: Int) {
   @transient var excluded = 10
   @volatile var alsoExcluded = "no"

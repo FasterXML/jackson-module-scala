@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.{PropertyNamingStrategy, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import java.io.ByteArrayOutputStream
 import com.google.common.base.Optional
-import scala.reflect.BeanProperty
+import scala.beans.BeanProperty
 import javax.annotation.Nonnull
 
 class PojoWrittenInScala {

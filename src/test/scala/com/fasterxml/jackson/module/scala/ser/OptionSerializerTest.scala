@@ -1,12 +1,10 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.annotation._
-import scala.annotation.target.{field, getter}
+import scala.annotation.meta.{field, getter}
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
 import com.fasterxml.jackson.module.scala.experimental.{ScalaObjectMapper, RequiredPropertiesSchemaModule}
 import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
