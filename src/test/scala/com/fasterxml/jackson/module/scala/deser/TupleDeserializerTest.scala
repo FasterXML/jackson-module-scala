@@ -20,7 +20,7 @@ case class TupleValueString(string: String) extends TupleValueBase
 case class TupleContainer(tuple: (TupleValueBase,TupleValueBase))
 
 @RunWith(classOf[JUnitRunner])
-class TupleDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class TupleDeserializerTest extends DeserializerTest {
 
   lazy val module = DefaultScalaModule
 

@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class MiscTypesTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class MiscTypesTest extends DeserializerTest {
 
   def module = DefaultScalaModule
 

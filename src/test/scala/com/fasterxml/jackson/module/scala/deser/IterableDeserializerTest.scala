@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import org.scalatest.matchers.ShouldMatchers
 
-class IterableDeserializerTest extends DeserializationFixture with ShouldMatchers {
+class IterableDeserializerTest extends DeserializationFixture {
 
   // Testing values
   val listJson =  "[1,2,3,4,5,6]"

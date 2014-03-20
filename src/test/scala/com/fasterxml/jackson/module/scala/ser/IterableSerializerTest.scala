@@ -26,7 +26,7 @@ class NonEmptyCollections {
  * Undocumented class.
  */
 @RunWith(classOf[JUnitRunner])
-class IterableSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
+class IterableSerializerTest extends SerializerTest {
 
   lazy val module = new JacksonModule with IterableSerializerModule
 

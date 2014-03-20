@@ -9,7 +9,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 case class UnavailableField(foo: Option[String])
 
 @RunWith(classOf[JUnitRunner])
-class OptionDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class OptionDeserializerTest extends DeserializerTest {
   lazy val module = DefaultScalaModule
 
   "An ObjectMapper with OptionDeserializer" should "deserialize an Option[Int]" in {

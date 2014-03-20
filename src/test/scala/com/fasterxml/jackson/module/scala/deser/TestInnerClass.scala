@@ -30,7 +30,7 @@ class Dog
 
 // Cribbed from the same named test in jackson-databind
 @RunWith(classOf[JUnitRunner])
-class TestInnerClass extends DeserializerTest with FlatSpec with ShouldMatchers {
+class TestInnerClass extends DeserializerTest {
 
   def module = DefaultScalaModule
 

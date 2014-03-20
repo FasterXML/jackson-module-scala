@@ -15,7 +15,7 @@ object TestJsonValue
 }
 
 @RunWith(classOf[JUnitRunner])
-class TestJsonValue extends SerializerTest with FlatSpec with ShouldMatchers {
+class TestJsonValue extends SerializerTest {
   import TestJsonValue._
 
   override def module: Module = DefaultScalaModule

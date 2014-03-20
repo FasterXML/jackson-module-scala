@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.databind.{Module, ObjectMapper}
 
-trait JacksonTest {
+abstract class JacksonTest extends BaseSpec {
 
   def module: Module
 

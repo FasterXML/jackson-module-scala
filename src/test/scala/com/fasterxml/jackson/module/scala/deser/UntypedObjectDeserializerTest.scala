@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.{ObjectMapper, DeserializationConfig, Java
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.databind.`type`.MapLikeType
 
-class UntypedObjectDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class UntypedObjectDeserializerTest extends DeserializerTest {
   def module = DefaultScalaModule
 
   val jsonString = """{"sKey":"sValue","mKey":{"mData":"mValue"}}"""

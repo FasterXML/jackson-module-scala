@@ -13,7 +13,7 @@ import java.util.UUID
  * @author Christopher Currie <ccurrie@impresys.com>
  */
 @RunWith(classOf[JUnitRunner])
-class UnsortedMapDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class UnsortedMapDeserializerTest extends DeserializerTest {
 
   lazy val module = new UnsortedMapDeserializerModule {}
 

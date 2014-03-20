@@ -1,13 +1,10 @@
 language: scala
 jdk:
-   - oraclejdk7
+   - openjdk7
    - openjdk6
 scala:
-   - 2.9.1
-   - 2.9.1-1
-   - 2.9.2
-   - 2.9.3
    - 2.10.3
+   - 2.11.0-RC3
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
 branches:

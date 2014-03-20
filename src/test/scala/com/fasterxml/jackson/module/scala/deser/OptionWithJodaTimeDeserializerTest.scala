@@ -10,7 +10,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule
 private case class OptionalInt(x: Option[Int])
 
 @RunWith(classOf[JUnitRunner])
-class OptionWithJodaTimeDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class OptionWithJodaTimeDeserializerTest extends DeserializerTest {
 
   def module = DefaultScalaModule
 

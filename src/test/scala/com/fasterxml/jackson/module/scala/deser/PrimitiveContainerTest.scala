@@ -18,7 +18,7 @@ object PrimitiveContainerTest
 }
 
 @RunWith(classOf[JUnitRunner])
-class PrimitiveContainerTest extends DeserializationFixture with ShouldMatchers
+class PrimitiveContainerTest extends DeserializationFixture
 {
   import PrimitiveContainerTest._
 

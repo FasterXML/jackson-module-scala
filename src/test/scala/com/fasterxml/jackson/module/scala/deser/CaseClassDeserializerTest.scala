@@ -47,7 +47,7 @@ object CaseClassDeserializerTest
 }
 
 @RunWith(classOf[JUnitRunner])
-class CaseClassDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class CaseClassDeserializerTest extends DeserializerTest {
   import CaseClassDeserializerTest._
 
 

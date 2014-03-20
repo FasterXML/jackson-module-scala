@@ -7,7 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.JacksonModule
 
 @RunWith(classOf[JUnitRunner])
-class TupleSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
+class TupleSerializerTest extends SerializerTest {
   lazy val module = new JacksonModule with TupleSerializerModule
 
   "An ObjectMapper" should "serialize a Tuple2" in {

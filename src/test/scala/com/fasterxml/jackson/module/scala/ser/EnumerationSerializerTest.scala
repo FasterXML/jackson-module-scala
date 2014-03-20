@@ -25,7 +25,7 @@ object EnumerationSerializerTest
 }
 
 @RunWith(classOf[JUnitRunner])
-class EnumerationSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
+class EnumerationSerializerTest extends SerializerTest {
 
   import EnumerationSerializerTest._
 

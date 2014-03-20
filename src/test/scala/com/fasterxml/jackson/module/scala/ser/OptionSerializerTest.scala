@@ -48,7 +48,7 @@ object OptionSerializerTest
 }
 
 @RunWith(classOf[JUnitRunner])
-class OptionSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
+class OptionSerializerTest extends SerializerTest {
   import OptionSerializerTest._
 
   lazy val module = DefaultScalaModule

@@ -11,7 +11,7 @@ object CreatorTest
 }
 
 @RunWith(classOf[JUnitRunner])
-class CreatorTest extends DeserializationFixture with ShouldMatchers {
+class CreatorTest extends DeserializationFixture {
   import CreatorTest._
 
   behavior of "Creators"

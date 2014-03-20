@@ -19,7 +19,7 @@ object SortedSetDeserializerTest
 }
 
 @RunWith(classOf[JUnitRunner])
-class SortedSetDeserializerTest extends DeserializationFixture with ShouldMatchers {
+class SortedSetDeserializerTest extends DeserializationFixture {
   import SortedSetDeserializerTest._
 
   behavior of "SortedSetDeserializer"

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.module.scala.deser.ScalaValueInstantiatorsModule
 import scala.volatile
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import scala.reflect.{BeanProperty, BeanInfo}
+import org.scalatest.{Outcome, Succeeded, Matchers}
 
 class Fields {
   @JsonProperty // make it "visible" for Jackson
@@ -43,17 +44,17 @@ class SearchCriteria {
 }
 
 @RunWith(classOf[JUnitRunner])
-class TestPropertiesCollector extends FlatSpec with ShouldMatchers {
+class TestPropertiesCollector extends FlatSpec with Matchers {
 
   type FixtureParam = ObjectMapper
 
-  def withFixture(test: OneArgTest) {
+  def withFixture(test: OneArgTest): Outcome = {
 
     val mapper = new ObjectMapper()
     mapper.registerModule(new JacksonModule with ScalaClassIntrospectorModule with ScalaValueInstantiatorsModule)
 
     test(mapper)
-
+    Succeeded
   }
 
   behavior of "ScalaPropertiesCollector"

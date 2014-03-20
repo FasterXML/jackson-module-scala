@@ -8,7 +8,7 @@ import org.scalatest.matchers.ShouldMatchers
 case class UnpackagedCaseClass(intValue: Int, stringValue: String)
 
 @RunWith(classOf[JUnitRunner])
-class UnpackagedTest extends SerializerTest with FlatSpec with ShouldMatchers {
+class UnpackagedTest extends SerializerTest {
 
   def module = DefaultScalaModule
 

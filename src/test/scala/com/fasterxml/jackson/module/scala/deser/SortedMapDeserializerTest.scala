@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
  * @author Christopher Currie <ccurrie@impresys.com>
  */
 @RunWith(classOf[JUnitRunner])
-class SortedMapDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class SortedMapDeserializerTest extends DeserializerTest {
 
   lazy val module = new SortedMapDeserializerModule {}
 

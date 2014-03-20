@@ -61,7 +61,7 @@ case class InnerJavaEnum(fieldType: Field.Type)
 case class PrivateDefaultFields @JsonCreator() (@JsonProperty("firstName") private val firstName: String, @JsonProperty("lastName") lastName: String = "Freeman")
 
 @RunWith(classOf[JUnitRunner])
-class CaseClassSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
+class CaseClassSerializerTest extends SerializerTest {
 
   case class NestedClass(field: String)
 

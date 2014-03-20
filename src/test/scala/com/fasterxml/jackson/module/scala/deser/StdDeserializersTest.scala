@@ -5,7 +5,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 
 @RunWith(classOf[JUnitRunner])
-class StdDeserializersTest extends DeserializationFixture with ShouldMatchers {
+class StdDeserializersTest extends DeserializationFixture {
 
   behavior of "StdDeserializers"
 

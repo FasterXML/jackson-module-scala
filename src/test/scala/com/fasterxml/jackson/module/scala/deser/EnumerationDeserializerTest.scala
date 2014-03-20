@@ -26,7 +26,7 @@ class EnumMapHolder {
 
 
 @RunWith(classOf[JUnitRunner])
-class EnumerationDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class EnumerationDeserializerTest extends DeserializerTest {
 
   lazy val module = DefaultScalaModule
 

@@ -60,7 +60,7 @@ case class MapValueString(value: String) extends MapValueBase
 
 
 @RunWith(classOf[JUnitRunner])
-class MapSerializerTest extends SerializerTest with FlatSpec with ShouldMatchers {
+class MapSerializerTest extends SerializerTest {
 
   lazy val module = DefaultScalaModule
 

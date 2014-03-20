@@ -10,7 +10,7 @@ import collection.immutable.Queue
 import com.fasterxml.jackson.module.scala.JacksonModule
 
 @RunWith(classOf[JUnitRunner])
-class SeqDeserializerTest extends DeserializerTest with FlatSpec with ShouldMatchers {
+class SeqDeserializerTest extends DeserializerTest {
 
   lazy val module = new JacksonModule with SeqDeserializerModule
 
