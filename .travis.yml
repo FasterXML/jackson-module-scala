@@ -7,7 +7,14 @@ scala:
    - 2.11.0-RC3
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
+after_success:
+  - "test \"${TRAVIS_PULL_REQUEST}\" = 'false' && sbt 'set credentials += Credentials(\"Sonatype Nexus Repository Manager\", \"oss.sonatype.org\", \"${SONATYPE_USER}\", \"${SONATYPE_PASS}\")' publish"
+
 branches:
   only:
     - master
     - "2.3"
+
+env:
+  - secure: "iRusj6LbbeOTeZeTH7bW0Q2G9dVPJMo+50115/1cACZhoG/olP3p1dC9d3aawvpJ/pCsklooz32x0YfzFvJmzo/tvoHXDa/XFBaCDQifQFgGdXQN4WuZv8jrWYdPuAncr7ZXhi134IOZY9VITFknuv9LJRJZCui6bOXUNxXXu40="
+  - secure: "IZYXAx/29dnbsoW/qBA1Rue5cyf+C4vj1dXgsooD5J5FW+QI4tXWZQVo5JFeGD4SQrno5uP1SfvpeimjCThl4kfCFETF0SV9cbbc8Apdj0W+41h7U2xmfpKpOH2MhpSuLs5upSjP58rS17LnQGRTja0g2C311s/HNGRhPcuUWaw="
