@@ -8,7 +8,7 @@ scala:
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
 after_success:
-  - "test \"${TRAVIS_PULL_REQUEST}\" = 'false' && sbt 'set credentials += Credentials(\"Sonatype Nexus Repository Manager\", \"oss.sonatype.org\", \"${SONATYPE_USER}\", \"${SONATYPE_PASS}\")' publish"
+  - "test \"${TRAVIS_PULL_REQUEST}\" = 'false' &&  test \"${TRAVIS_JDK_VERSION}\" = 'openjdk6' && sbt 'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"' 'set credentials += Credentials(\"Sonatype Nexus Repository Manager\", \"oss.sonatype.org\", \"${SONATYPE_USER}\", \"${SONATYPE_PASS}\")' publish"
 
 branches:
   only:
