@@ -13,7 +13,7 @@ after_success:
       test "${TRAVIS_JDK_VERSION}" = 'openjdk6' &&
       sbt ++${TRAVIS_SCALA_VERSION}
       'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"'
-      "set credentials += Credentials(\"Sonatype Nexus Repository Manager\", \"oss.sonatype.org\", \"${SONATYPE_USER}\", \"${SONATYPE_PASS}\")"
+      'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv().get("SONATYPE_USER"), System.getenv().get("SONATYPE_PASS"))'
       publish
 
 branches:
@@ -23,5 +23,5 @@ branches:
 
 env:
   global:
-    - secure: "QpExOUiP4ftCERMXVJb/Rj5lDYbhKqQQOaY6JqNsF+SqKJs1aoWkZeDpTX3gBkV1UlUMDIiIzCYaAoR6YN+EQ0xd43KLw2HEJ0yaa4CIc9RUeB5+iuF9TJh2xoQ1vkwVDwdb64b7nqC1slEPazO5qOcZaA0UgK1Dj9gcoj0FTyM="
-    - secure: "U7yTgSNOUldyJ1DpEMBMRjDjd0XXsFQon7UAhJSPo+/L+1woz11DuX7OMd6JE5sdp/da2uiTzNlqblzh+75ekve04c9S9fEfEjQ5VWWNRFFFWwCMVKkWdXzi8oT8/2H8+MYXuwgh8k7LDahIs3pvaOI/2e11Jrfo5jTqOdubHOY="
+    - secure: "EAnt75OQNWHWvZomCAb8G5IdqcVMR0NqzngOKFOeSsjaB2CFVtfYoAq3dzp0utBqiOnWe1l5TCmcFUzMrkw+nuWbScKXYyiE6268LcA02/JBkAxnOcOo/6/xVh3oX0NhrBN5BSkJF5Hz5ffDXZArGM30s7FFhiijcmuo7J4/o0E="
+    - secure: "LYBEb/y1T1yb3CsNZe0Q+yUUqhYblvW8lMWXxy/Ozho+0FHA67TzCpGO9SOBVvp0Cewu2BzOeW6/Z9DZfOKL88zSvXT9HjSPRc7MEd17+LnqeTNmxTSz3RztXnyYqs/YPi7se+HscwYytnJKS611KZ0m1QkI4IrUcBS0Xib6ZhQ="
