@@ -12,8 +12,8 @@ after_success:
       test \"${TRAVIS_PULL_REQUEST}\" = 'false' &&
       test \"${TRAVIS_JDK_VERSION}\" = 'openjdk6' &&
       sbt 'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'
-          "set credentials += Credentials(\"Sonatype Nexus Repository Manager\", \"oss.sonatype.org\", \"${SONATYPE_USER}\", \"${SONATYPE_PASS}\")"
-          publish
+      "set credentials += Credentials(\"Sonatype Nexus Repository Manager\", \"oss.sonatype.org\", \"${SONATYPE_USER}\", \"${SONATYPE_PASS}\")"
+      publish
 
 branches:
   only:
@@ -22,5 +22,5 @@ branches:
 
 env:
   global:
-    - secure: "iRusj6LbbeOTeZeTH7bW0Q2G9dVPJMo+50115/1cACZhoG/olP3p1dC9d3aawvpJ/pCsklooz32x0YfzFvJmzo/tvoHXDa/XFBaCDQifQFgGdXQN4WuZv8jrWYdPuAncr7ZXhi134IOZY9VITFknuv9LJRJZCui6bOXUNxXXu40="
-    - secure: "IZYXAx/29dnbsoW/qBA1Rue5cyf+C4vj1dXgsooD5J5FW+QI4tXWZQVo5JFeGD4SQrno5uP1SfvpeimjCThl4kfCFETF0SV9cbbc8Apdj0W+41h7U2xmfpKpOH2MhpSuLs5upSjP58rS17LnQGRTja0g2C311s/HNGRhPcuUWaw="
+    - secure: "QpExOUiP4ftCERMXVJb/Rj5lDYbhKqQQOaY6JqNsF+SqKJs1aoWkZeDpTX3gBkV1UlUMDIiIzCYaAoR6YN+EQ0xd43KLw2HEJ0yaa4CIc9RUeB5+iuF9TJh2xoQ1vkwVDwdb64b7nqC1slEPazO5qOcZaA0UgK1Dj9gcoj0FTyM="
+    - secure: "U7yTgSNOUldyJ1DpEMBMRjDjd0XXsFQon7UAhJSPo+/L+1woz11DuX7OMd6JE5sdp/da2uiTzNlqblzh+75ekve04c9S9fEfEjQ5VWWNRFFFWwCMVKkWdXzi8oT8/2H8+MYXuwgh8k7LDahIs3pvaOI/2e11Jrfo5jTqOdubHOY="
