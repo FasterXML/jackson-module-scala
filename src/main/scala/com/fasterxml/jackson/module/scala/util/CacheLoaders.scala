@@ -2,6 +2,8 @@ package com.fasterxml.jackson.module.scala.util
 
 import com.google.common.cache.CacheLoader
 
+import scala.language.implicitConversions
+
 trait CacheLoaders {
   val DEFAULT_CACHE_SIZE = 50
 

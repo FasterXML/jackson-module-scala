@@ -41,7 +41,7 @@ class InteropTest extends FlatSpec with Matchers
 {
   "Scala module" should "support JsonDeserialize in Scala" in {
     val v = Util.mapper.readValue(Util.jsonString, classOf[B])
-    v should be === B("asdf", A1("qwer"))
+    v shouldBe B("asdf", A1("qwer"))
   }
 }
 

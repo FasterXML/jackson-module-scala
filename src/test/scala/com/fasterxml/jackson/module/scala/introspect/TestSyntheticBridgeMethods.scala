@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.introspect
 
-import org.scalatest.{FlatSpec, ShouldMatchers}
+import org.scalatest.{LoneElement, Inside, FlatSpec, ShouldMatchers}
+import com.fasterxml.jackson.module.scala.BaseSpec
 
 object TestSyntheticBridgeMethods {
   trait Outer {
@@ -16,21 +17,21 @@ object TestSyntheticBridgeMethods {
 // undefined ordering of methods from JVM reflection. This test should
 // consistently pass now, but previously it could alternately pass or
 // fail depending on the order used by the JVM for that execution.
-class TestSyntheticBridgeMethods extends FlatSpec with ShouldMatchers {
+class TestSyntheticBridgeMethods extends BaseSpec with LoneElement with Inside {
   import TestSyntheticBridgeMethods._
 
   behavior of "BeanIntrospector"
 
   it should "correctly find properties that have bridge or synthetic method overloads" in {
     val beanDesc = BeanIntrospector[Inner](classOf[Inner])
-    beanDesc.properties should have length 1
 
-    val propDesc = beanDesc.properties.head
-    propDesc.name should be === "prop"
-    propDesc.param should be ('empty)
-    propDesc.field should be ('defined)
-    propDesc.getter should be ('defined)
-    propDesc.setter should be ('empty)
+    inside (beanDesc.properties.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "prop"
+      p shouldBe empty
+      f shouldBe defined
+      g shouldBe defined
+      s shouldBe empty
+    }
   }
 
 }

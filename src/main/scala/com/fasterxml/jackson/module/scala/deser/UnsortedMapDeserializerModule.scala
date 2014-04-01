@@ -16,7 +16,8 @@ import com.fasterxml.jackson.databind.`type`.MapLikeType;
 
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 import deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
-;
+
+import scala.language.existentials
 
 private class MapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), GenMap[K,V]]) extends AbstractMap[K,V] {
   override def put(k: K, v: V) = { builder += ((k,v)); v }
@@ -42,7 +43,7 @@ private class UnsortedMapDeserializer(
     valueDeser: JsonDeserializer[_],
     valueTypeDeser: TypeDeserializer)
 
-  extends ContainerDeserializerBase[GenMap[_,_]](classOf[UnsortedMapDeserializer]) 
+  extends ContainerDeserializerBase[GenMap[_,_]](config.constructType(classOf[UnsortedMapDeserializer]))
   with ContextualDeserializer {
 
   private val javaContainerType =

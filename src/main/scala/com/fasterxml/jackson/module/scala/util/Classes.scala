@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.util
 
+import scala.language.implicitConversions
 import scala.reflect.{ScalaLongSignature, ScalaSignature}
 
 trait ClassW extends PimpedType[Class[_]] {

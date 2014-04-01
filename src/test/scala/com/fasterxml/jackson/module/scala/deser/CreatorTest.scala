@@ -18,13 +18,13 @@ class CreatorTest extends DeserializationFixture {
 
   it should "support constructing regular bean classes" in { f =>
     val bean = f.readValue[CreatorTestBean]("""{"a":"abc","b":"def"}""")
-    bean.a should be === "abc"
-    bean.b should be === "def"
+    bean.a shouldBe "abc"
+    bean.b shouldBe "def"
   }
 
   it should "support constructing case classes" in { f =>
     val bean = f.readValue[CreatorTestCase]("""{"a":"abc","b":"def"}""")
-    bean should be === CreatorTestCase("abc", "def")
+    bean shouldBe CreatorTestCase("abc", "def")
   }
 
 }

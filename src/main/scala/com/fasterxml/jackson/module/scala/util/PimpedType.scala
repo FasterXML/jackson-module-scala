@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala.util
 
+import scala.language.implicitConversions
+
 trait PimpedType[X] {
 
   def value: X

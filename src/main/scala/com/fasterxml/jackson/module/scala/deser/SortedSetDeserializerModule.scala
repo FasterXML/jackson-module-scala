@@ -14,6 +14,7 @@ import java.lang.Object
 import scala.collection.generic.SortedSetFactory
 import scala.Some
 import scala.collection.immutable
+import scala.language.postfixOps
 
 private class SortedSetBuilderWrapper[E](val builder: mutable.Builder[E, _ <: collection.SortedSet[E]]) extends AbstractCollection[E] {
 

@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala.util
 
+import scala.language.implicitConversions
+
 trait StringW extends PimpedType[String] {
   def orIfEmpty(s2: => String) = if (value.isEmpty) s2 else value
 }

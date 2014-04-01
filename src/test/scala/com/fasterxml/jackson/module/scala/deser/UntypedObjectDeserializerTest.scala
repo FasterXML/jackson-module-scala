@@ -1,7 +1,5 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FlatSpec
 import com.fasterxml.jackson.module.scala.{JacksonModule, DefaultScalaModule}
 import com.fasterxml.jackson.databind.{ObjectMapper, DeserializationConfig, JavaType, AbstractTypeResolver}
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
@@ -18,12 +16,11 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
     val mapValue = deserialize[Map[String,Any]](jsonString)
     mapValue should contain key "sKey"
     mapValue("sKey") should be ("sValue")
-    mapValue("mKey") match {
-      case m: collection.immutable.Map[String,Any] =>
-        m should contain key "mData"
-        m("mData") should be ("mValue")
-      case x => fail("Incorrect map type " + x.getClass)
-    }
+    val mKeyValue = mapValue("mKey")
+    mKeyValue shouldBe a [collection.immutable.Map[_,_]]
+    val typedMKeyValue = mKeyValue.asInstanceOf[collection.immutable.Map[String,Any]]
+    typedMKeyValue should contain key "mData"
+    typedMKeyValue("mData") shouldBe "mValue"
   }
 
   it should "honor AbstractTypeResolvers" in {
@@ -51,12 +48,11 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
 
     mapValue should contain key "sKey"
     mapValue("sKey") should be ("sValue")
-    mapValue("mKey") match {
-      case m: collection.immutable.TreeMap[String,Any] =>
-        m should contain key "mData"
-        m("mData") should be ("mValue")
-      case x => fail("Incorrect map type " + x.getClass)
-    }
+    val mKeyValue = mapValue("mKey")
+    mKeyValue shouldBe a [collection.immutable.TreeMap[_,_]]
+    val typedMKeyValue = mKeyValue.asInstanceOf[collection.immutable.TreeMap[String,Any]]
+    typedMKeyValue should contain key "mData"
+    typedMKeyValue("mData") shouldBe "mValue"
 
   }
 

@@ -2,7 +2,9 @@ package com.fasterxml.jackson.module.scala.modifiers
 
 import java.lang.reflect.{ParameterizedType, Type}
 
-import com.fasterxml.jackson.databind.`type`.SimpleType;
+import com.fasterxml.jackson.databind.`type`.SimpleType
+
+import scala.language.existentials
 
 private [modifiers] trait GenTypeModifier {
 

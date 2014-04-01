@@ -45,7 +45,7 @@ case class Person(name: String, @JsonIgnore location: Address, alias: Option[Str
 }
 
 @RunWith(classOf[JUnitRunner])
-class UnwrappedTest extends FlatSpec with ShouldMatchers {
+class UnwrappedTest extends BaseSpec {
 
   "mapper" should "handle ignored fields correctly" in {
     val mapper = new ObjectMapper()
@@ -63,7 +63,7 @@ class UnwrappedTest extends FlatSpec with ShouldMatchers {
 
     val p2 = mapper.readValue(json, classOf[Person])
 
-    p2 should be === p
+    p2 shouldEqual p
   }
 
   it should "handle JsonUnwrapped for non-creators" in {
@@ -78,8 +78,8 @@ class UnwrappedTest extends FlatSpec with ShouldMatchers {
     val json = mapper.writeValueAsString(p)
     val p2 = mapper.readValue(json, classOf[NonCreatorPerson])
 
-    p2.name should be === p.name
-    p2.location should be === p.location
-    p2.alias should be === p.alias
+    p2.name shouldBe p.name
+    p2.location shouldBe p.location
+    p2.alias shouldBe p.alias
   }
 }

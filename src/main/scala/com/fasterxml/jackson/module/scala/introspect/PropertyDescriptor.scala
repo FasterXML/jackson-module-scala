@@ -1,7 +1,8 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import java.lang.reflect.{Field, Method, Constructor}
-import reflect.NameTransformer
+
+import scala.language.existentials
 
 case class ConstructorParameter(constructor: Constructor[_], index: Int, defaultValueMethod: Option[Method])
 
@@ -14,7 +15,7 @@ case class PropertyDescriptor(name: String,
   if (List(field, getter).flatten.isEmpty) throw new IllegalArgumentException("One of field or getter must be defined.")
 
   def findAnnotation[A <: java.lang.annotation.Annotation](implicit mf: Manifest[A]): Option[A] = {
-    val cls = mf.erasure.asInstanceOf[Class[A]]
+    val cls = mf.runtimeClass.asInstanceOf[Class[A]]
     lazy val paramAnnotation = param flatMap { cp =>
       cp.constructor.getParameterAnnotations.apply(cp.index).find(_.getClass equals cls)
     }

@@ -18,7 +18,7 @@ class MiscTypesTest extends DeserializerTest {
     val json = mapper.writeValueAsString(data)
     val read = deserialize[List[UUID]](json)
 
-    read should be === (data)
+    read shouldBe (data)
   }
 
 }

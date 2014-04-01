@@ -26,45 +26,43 @@ class SortedSetDeserializerTest extends DeserializationFixture {
 
   it should "deserialize a list into a SortedSet" in { f =>
     val result = f.readValue[SortedSet[String]](setJson)
-    result should be === setScala
+    result shouldBe setScala
   }
 
-  // Not supported in 2.9; need to find a way to cross-version test
-//  it should "deserialize a list into a mutable SortedSet" in { f =>
-//    val result = f.readValue[mutable.SortedSet[String]](setJson)
-//    result should be === setScala
-//  }
+  it should "deserialize a list into a mutable SortedSet" in { f =>
+    val result = f.readValue[mutable.SortedSet[String]](setJson)
+    result shouldBe setScala
+  }
 
   it should "deserialize a list into a TreeSet" in { f =>
     val result = f.readValue[TreeSet[String]](setJson)
-    result should be === setScala
+    result shouldBe setScala
   }
 
-  // Not supported in 2.9; need to find a way to cross-version test
-//  it should "deserialize a list into a mutable TreeSet" in { f =>
-//    val result = f.readValue[mutable.TreeSet[String]](setJson)
-//    result should be === setScala
-//  }
+  it should "deserialize a list into a mutable TreeSet" in { f =>
+    val result = f.readValue[mutable.TreeSet[String]](setJson)
+    result shouldBe setScala
+  }
 
   it should "deserialize a list of Ints into a SortedSet" in { f =>
     val result = f.readValue[SortedSet[Int]](intSetJson)
-    result should be === intSetScala
+    result shouldBe intSetScala
   }
 
   it should "deserialize a list of Longs into a SortedSet" in { f =>
     val result = f.readValue[LongSetHolder](longSetHolderJson)
-    result should be === longSetHolderScala
+    result shouldBe longSetHolderScala
   }
 
   it should "deserialize a list of Comparables into a SortedSet" in { f =>
     val result = f.readValue[SortedSet[ComparableBean]](comparableSetJson)
-    result should be === comparableSetScala
+    result shouldBe comparableSetScala
   }
 
   it should "deserialize a lit of Ints into a SortedSet of Options" in { f =>
     // NB: This is `java.lang.Integer`, because of GH-104
     val result = f.readValue[SortedSet[Option[Integer]]](intSetJson, new TypeReference[SortedSet[Option[Integer]]]{})
-    result should be === optionIntSetScala
+    result shouldBe optionIntSetScala
   }
 
   val setJson = """[ "one", "two", "three" ]"""

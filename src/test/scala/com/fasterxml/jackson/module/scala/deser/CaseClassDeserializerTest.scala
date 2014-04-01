@@ -61,12 +61,12 @@ class CaseClassDeserializerTest extends DeserializerTest {
     val result = PropertiesTestCaseClass()
     result.intProperty = 1
     result.stringProperty = "foo"
-    deserialize[PropertiesTestCaseClass]("""{"intProperty":1,"stringProperty":"foo"}""") should be (result)
+    deserialize[PropertiesTestCaseClass]("""{"intProperty":1,"stringProperty":"foo"}""") shouldBe result
   }
 
   it should "honor Jackson annotations" in {
     val result = JacksonAnnotationTestCaseClass("foo","bar")
-    deserialize[JacksonAnnotationTestCaseClass]("""{"foo":"foo","bar":"bar"}""") should be (result)
+    deserialize[JacksonAnnotationTestCaseClass]("""{"foo":"foo","bar":"bar"}""") shouldBe result
   }
 
   it should "not try to deserialize a List" in {
@@ -77,19 +77,19 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   it should "deserialize a class with unicode property names" in {
     val result = UnicodeNameCaseClass(23, "the name of this")
-    deserialize[UnicodeNameCaseClass]("""{"winning-id":23,"name":"the name of this"}""") should be (result)
+    deserialize[UnicodeNameCaseClass]("""{"winning-id":23,"name":"the name of this"}""") shouldBe result
   }
 
   it should "deserialize a generic case class" in {
     val result = GenericTestCaseClass(42)
-    deserialize[GenericTestCaseClass[Int]]("""{"data":42}""") should be (result)
+    deserialize[GenericTestCaseClass[Int]]("""{"data":42}""") shouldBe result
   }
 
   it should "deserialize Longs properly" in {
     val expected = LongValueCaseClass(1234L, Some(123456789012345678L), Some(5678L))
     val result = deserialize[LongValueCaseClass]("""{"id":1234,"big":123456789012345678,"small":5678}""")
 
-    result should be === expected
+    result shouldBe expected
 
     result.id.getClass should be (classOf[Long])
     java.lang.Long.valueOf(result.id) should be (1234L)

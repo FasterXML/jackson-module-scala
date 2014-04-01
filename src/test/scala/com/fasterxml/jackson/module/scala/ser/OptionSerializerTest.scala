@@ -95,7 +95,7 @@ class OptionSerializerTest extends SerializerTest {
   it should "generate correct schema for options" in {
     val schema = mapper.generateJsonSchema(classOf[OptionSchema])
     val schemaString = mapper.writeValueAsString(schema)
-    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"}}}""")
+    schemaString shouldBe """{"type":"object","properties":{"stringValue":{"type":"string"}}}"""
   }
 
   it should "generate correct schema for options using the new jsonSchema jackson module" in {
@@ -104,7 +104,7 @@ class OptionSerializerTest extends SerializerTest {
 
     val schema = visitor.finalSchema()
     val schemaString = mapper.writeValueAsString(schema)
-    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"}}}""")
+    schemaString shouldBe """{"type":"object","properties":{"stringValue":{"type":"string"}}}"""
   }
 
   it should "mark as required the non-Option fields" in {
@@ -113,7 +113,7 @@ class OptionSerializerTest extends SerializerTest {
 
     val schema = visitor.finalSchema()
     val schemaString = mapper.writeValueAsString(schema)
-    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}""")
+    schemaString shouldBe """{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}"""
   }
 
   it should "support reversing the default for required properties in schema" in {
@@ -127,7 +127,7 @@ class OptionSerializerTest extends SerializerTest {
 
     val schema = visitor.finalSchema()
     val schemaString = mapper.writeValueAsString(schema)
-    schemaString should be === ("""{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}""")
+    schemaString shouldBe """{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}"""
   }
 
   it should "serialize contained JsonNode correctly" in {
@@ -137,12 +137,12 @@ class OptionSerializerTest extends SerializerTest {
 
     val actualJson: String = mapper.writeValueAsString(wrapperOfOptionOfJsonNode)
 
-    actualJson should be === """{"jsonNode":{"prop":"value"}}"""
+    actualJson shouldBe """{"jsonNode":{"prop":"value"}}"""
   }
 
   it should "propagate type information" in {
     val json: String = """{"base":{"$type":"impl"}}"""
-    mapper.writeValueAsString(new BaseHolder(Some(Impl()))) should be === json
+    mapper.writeValueAsString(new BaseHolder(Some(Impl()))) shouldBe json
   }
 
   it should "support default typing" in {
@@ -150,7 +150,7 @@ class OptionSerializerTest extends SerializerTest {
     val mapper = new ObjectMapper with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
     mapper.enableDefaultTyping()
-    mapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) should be === """{"name":"John Smith","email":"john.smith@unit.uk"}"""
+    mapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) shouldBe """{"name":"John Smith","email":"john.smith@unit.uk"}"""
   }
 
 }

@@ -26,17 +26,17 @@ class PrimitiveContainerTest extends DeserializationFixture
 
   it should "support deserializing primitives" in { f =>
     val value = f.readValue[OptionInt]("""{"value":1}""")
-    value.value should be === Some(1)
+    value.value shouldBe Some(1)
   }
 
   it should "support primitive conversions in" in { f =>
     val value = f.readValue[AnnotatedOptionInt]("""{"value":"1"}""")
-    value.value should be === Some(1)
+    value.value shouldBe Some(1)
   }
 
   it should "support type widening"  in { f =>
     val value = f.readValue[AnnotatedOptionLong]("""{"value":1}""")
-    value.value.get should be === 1L
+    value.value.get shouldBe 1L
   }
 
   it should "enforce type constraints"  in { f =>
@@ -49,13 +49,13 @@ class PrimitiveContainerTest extends DeserializationFixture
   it should "support map keys" ignore { f =>
     val value = f.readValue[AnnotatedHashKeyLong]("""{"value":{"1":"one"}}""")
     value.value should contain key 1L
-    value.value(1L) should be === "one"
+    value.value(1L) shouldBe "one"
   }
 
   it should "support map values" in { f =>
     val value = f.readValue[AnnotatedHashValueLong]("""{"value":{"key": "1"}}""")
     value.value should contain key "key"
-    value.value("key") should be === 1L
+    value.value("key") shouldBe 1L
   }
 
 }

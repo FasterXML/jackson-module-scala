@@ -7,7 +7,9 @@ scalaVersion := "2.10.3"
 
 crossScalaVersions := Seq("2.10.3", "2.11.0-RC3")
 
-scalacOptions ++= Seq("-deprecation", "-unchecked")
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfatal-warnings")
+
+scalacOptions in Test := Seq("-deprecation", "-unchecked", "-feature")
 
 // Ensure jvm 1.6 for java
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
@@ -27,8 +29,7 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.3.1" % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.3.1" % "test",
     "org.scalatest" %% "scalatest" % "2.1.2" % "test",
-    "junit" % "junit" % "4.11" % "test",
-    "com.novocode" % "junit-interface" % "0.10" % "test"
+    "junit" % "junit" % "4.11" % "test"
 )
 
 // resource filtering

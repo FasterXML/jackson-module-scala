@@ -10,15 +10,15 @@ class StdDeserializersTest extends DeserializationFixture {
   behavior of "StdDeserializers"
 
   it should "deserialize an integer into a scala BigDecimal" in { f =>
-    f.readValue[BigDecimal]("1") should be === BigDecimal(1)
+    f.readValue[BigDecimal]("1") shouldBe BigDecimal(1)
   }
 
   it should "deserialize an float into a scala BigDecimal" in { f =>
-    f.readValue[BigDecimal]("1.0") should be === BigDecimal(1.0f)
+    f.readValue[BigDecimal]("1.0") shouldBe BigDecimal(1.0)
   }
 
   it should "deserialize a string into a scala BigDecimal" in { f =>
-    f.readValue[BigDecimal]("\"1.0\"") should be === BigDecimal("1.0")
+    f.readValue[BigDecimal]("\"1.0\"") shouldBe BigDecimal("1.0")
   }
 
 

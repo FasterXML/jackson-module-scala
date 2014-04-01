@@ -54,7 +54,7 @@ object BeanIntrospector {
       case _: Exception => Array.empty
     }
 
-  def apply[T <: AnyRef](implicit mf: Manifest[_]): BeanDescriptor = apply[T](mf.erasure)
+  def apply[T <: AnyRef](implicit mf: Manifest[_]): BeanDescriptor = apply[T](mf.runtimeClass)
 
   def apply[T <: AnyRef](cls: Class[_]) = {
 

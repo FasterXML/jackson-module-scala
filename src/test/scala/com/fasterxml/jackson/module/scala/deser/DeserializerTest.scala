@@ -21,9 +21,9 @@ trait DeserializerTest extends JacksonTest {
   }
 
   private [this] def typeFromManifest(m: Manifest[_]): Type = {
-    if (m.typeArguments.isEmpty) { m.erasure }
+    if (m.typeArguments.isEmpty) { m.runtimeClass }
     else new ParameterizedType {
-      def getRawType = m.erasure
+      def getRawType = m.runtimeClass
 
       def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
 

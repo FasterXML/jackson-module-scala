@@ -3,18 +3,21 @@ package com.fasterxml.jackson.module.scala.util
 import collection.mutable.{ArrayBuffer, ListBuffer}
 import collection.GenTraversable
 import collection.generic.GenericCompanion
+import scala.reflect.ClassTag
+
+import scala.language.higherKinds
 
 /**
  * The CompanionSorter performs a topological sort on class hierarchy to ensure that the most specific builders
  * get registered first.
  */
 class CompanionSorter[CC[X] <: GenTraversable[X]] {
-  type HKClassManifest[CC2[_]] = ClassManifest[CC2[_]]
+  type HKClassManifest[CC2[_]] = ClassTag[CC2[_]]
 
   private[this] val companions = new ArrayBuffer[(Class[_], GenericCompanion[CC])]()
 
   def add[T[X] <: CC[X] : HKClassManifest](companion: GenericCompanion[T]): CompanionSorter[CC] = {
-    companions += implicitly[HKClassManifest[T]].erasure -> companion
+    companions += implicitly[HKClassManifest[T]].runtimeClass -> companion
     this
   }
 

@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.experimental
 
-import org.scalatest.FlatSpec
+import org.scalatest.{Matchers, FlatSpec}
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
@@ -43,7 +43,7 @@ private class Mixin(val foo: String)
 private case class GenericTestClass[T](t: T)
 
 @RunWith(classOf[JUnitRunner])
-class ScalaObjectMapperTest extends FlatSpec with ShouldMatchers {
+class ScalaObjectMapperTest extends FlatSpec with Matchers {
 
   val mapper = new ObjectMapper with ScalaObjectMapper
   mapper.registerModule(DefaultScalaModule)
@@ -170,9 +170,9 @@ class ScalaObjectMapperTest extends FlatSpec with ShouldMatchers {
   }
 
   it should "fail to read as List from a non-Array JSON input" in {
-    evaluating {
+    a [JsonMappingException] should be thrownBy {
       mapper.readValue[List[GenericTestClass[Int]]](genericJson)
-    } should produce[JsonMappingException]
+    }
   }
 
   it should "read values as Map from a JSON object" in {
@@ -186,9 +186,9 @@ class ScalaObjectMapperTest extends FlatSpec with ShouldMatchers {
   }
 
   it should "fail to read a Map from JSON with invalid types" in {
-    evaluating {
+    an [InvalidFormatException] should be thrownBy {
       mapper.readValue[Map[String, Int]](genericTwoFieldJson)
-    } should produce[InvalidFormatException]
+    }
   }
 
   it should "read a generic Object from a JSON object" in {

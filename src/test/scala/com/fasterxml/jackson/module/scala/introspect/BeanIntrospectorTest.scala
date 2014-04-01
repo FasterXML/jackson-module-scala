@@ -2,9 +2,11 @@ package com.fasterxml.jackson.module.scala.introspect
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Inside, OptionValues, LoneElement, FlatSpec}
+import org.scalatest.matchers.{HavePropertyMatcher, HavePropertyMatchResult, ShouldMatchers}
 import reflect.NameTransformer
+import com.fasterxml.jackson.module.scala.BaseSpec
+import java.lang.reflect.Member
 
 class PlainCtorBean(`field-name`: Int)
 {
@@ -46,8 +48,23 @@ class Child extends Parent {
 
 case class PrivateDefaultBean(private val privateField: String = "defaultValue")
 
+trait DecodedNameMatcher {
+  def decodedName(expectedValue: String) =
+    new HavePropertyMatcher[Member, String] {
+      def apply(member: Member) = {
+        val decodedName = NameTransformer.decode(member.getName)
+        HavePropertyMatchResult(
+          decodedName == expectedValue,
+          "name",
+          expectedValue,
+          decodedName
+        )
+      }
+    }
+}
+
 @RunWith(classOf[JUnitRunner])
-class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
+class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with OptionValues with DecodedNameMatcher {
 
   behavior of "BeanIntrospector"
 
@@ -60,14 +77,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, None, Some(f), None, None) =>
-        name should be === ("field-name")
-        NameTransformer.decode(f.getName) should be === ("field-name")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p shouldBe empty
+      f.value should have (decodedName ("field-name"))
+      g shouldBe empty
+      s shouldBe empty
     }
-
   }
 
   it should "recognize a val field" in {
@@ -79,15 +95,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, None, Some(f), Some(g), None) =>
-        name should be === ("field-name")
-        NameTransformer.decode(f.getName) should be === ("field-name")
-        NameTransformer.decode(g.getName) should be === ("field-name")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p shouldBe empty
+      f.value should have (decodedName ("field-name"))
+      g.value should have (decodedName ("field-name"))
+      s shouldBe empty
     }
-
   }
 
   it should "recognize a var field" in {
@@ -99,16 +113,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, None, Some(f), Some(g), Some(s)) =>
-        name should be === ("field-name")
-        NameTransformer.decode(f.getName) should be === ("field-name")
-        NameTransformer.decode(g.getName) should be === ("field-name")
-        NameTransformer.decode(s.getName) should be === ("field-name_=")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p shouldBe empty
+      f.value should have (decodedName ("field-name"))
+      g.value should have (decodedName ("field-name"))
+      s.value should have (decodedName ("field-name_="))
     }
-
   }
 
   it should "recognize a method property" in {
@@ -121,15 +132,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, None, None, Some(g), Some(s)) =>
-        name should be === ("field-name")
-        NameTransformer.decode(g.getName) should be === ("field-name")
-        NameTransformer.decode(s.getName) should be === ("field-name_=")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p shouldBe empty
+      f shouldBe empty
+      g.value should have (decodedName ("field-name"))
+      s.value should have (decodedName ("field-name_="))
     }
-
   }
 
   it should "recognize a private constructor parameter" in {
@@ -138,15 +147,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, Some(p), Some(f), None, None) =>
-        name should be === ("field-name")
-        p.index should be === (0)
-        NameTransformer.decode(f.getName) should be === ("field-name")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p.value should have ('index (0))
+      f.value should have (decodedName ("field-name"))
+      g shouldBe empty
+      s shouldBe empty
     }
-
   }
 
   it should "recognize a val constructor parameter" in {
@@ -155,16 +162,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, Some(p), Some(f), Some(g), None) =>
-        name should be === ("field-name")
-        p.index should be === (0)
-        NameTransformer.decode(f.getName) should be === ("field-name")
-        NameTransformer.decode(g.getName) should be === ("field-name")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p.value should have ('index (0))
+      f.value should have (decodedName ("field-name"))
+      g.value should have (decodedName ("field-name"))
+      s shouldBe empty
     }
-
   }
 
   it should "recognize a val case class parameter" in {
@@ -173,16 +177,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, Some(p), Some(f), Some(g), None) =>
-        name should be === ("field-name")
-        p.index should be === (0)
-        NameTransformer.decode(f.getName) should be === ("field-name")
-        NameTransformer.decode(g.getName) should be === ("field-name")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p.value should have ('index (0))
+      f.value should have (decodedName ("field-name"))
+      g.value should have (decodedName ("field-name"))
+      s shouldBe empty
     }
-
   }
 
   it should "recognize a var constructor parameter" in {
@@ -191,17 +192,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, Some(p), Some(f), Some(g), Some(s)) =>
-        name should be === ("field-name")
-        p.index should be === (0)
-        NameTransformer.decode(f.getName) should be === ("field-name")
-        NameTransformer.decode(g.getName) should be === ("field-name")
-        NameTransformer.decode(s.getName) should be === ("field-name_=")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p.value should have ('index (0))
+      f.value should have (decodedName ("field-name"))
+      g.value should have (decodedName ("field-name"))
+      s.value should have (decodedName ("field-name_="))
     }
-
   }
 
   it should "recognize a var case class parameter" in {
@@ -210,17 +207,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, Some(p), Some(f), Some(g), Some(s)) =>
-        name should be === ("field-name")
-        p.index should be === (0)
-        NameTransformer.decode(f.getName) should be === ("field-name")
-        NameTransformer.decode(g.getName) should be === ("field-name")
-        NameTransformer.decode(s.getName) should be === ("field-name_=")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p.value should have ('index (0))
+      f.value should have (decodedName ("field-name"))
+      g.value should have (decodedName ("field-name"))
+      s.value should have (decodedName ("field-name_="))
     }
-
   }
 
   it should "recognize a method-only property" in {
@@ -229,15 +222,13 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, None, None, Some(g), Some(s)) =>
-        name should be === ("field-name")
-        NameTransformer.decode(g.getName) should be === ("field-name")
-        NameTransformer.decode(s.getName) should be === ("field-name_=")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field-name"
+      p shouldBe empty
+      f shouldBe empty
+      g.value should have (decodedName ("field-name"))
+      s.value should have (decodedName ("field-name_="))
     }
-
   }
 
   it should "ignore static, synthetic, volatile and transient fields" in {
@@ -246,13 +237,12 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, Some(cp), Some(f), Some(g), None) =>
-        name should be === ("field")
-        f.getName should be === ("field")
-        NameTransformer.decode(g.getName) should be === ("field")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+      n shouldBe "field"
+      p should be ('defined)
+      f.value should have ('name ("field"))
+      g.value should have (decodedName("field"))
+      s shouldBe empty
     }
   }
 
@@ -262,13 +252,12 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, None, Some(f), Some(g), None) =>
-        name should be === ("included")
-        f.getName should be === ("included")
-        NameTransformer.decode(g.getName) should be === ("included")
-      case _ => assert(false, "Property does not have the correct format")
+    inside (props.loneElement) { case PropertyDescriptor(n, p, f, g, s) =>
+      n shouldBe "included"
+      p shouldBe empty
+      f.value should have ('name ("included"))
+      g.value should have (decodedName ("included"))
+      s shouldBe empty
     }
   }
 
@@ -278,8 +267,8 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (2)
-    props.map(_.name) should be === List("parentValue", "childValue")
+    props should have size 2
+    props.map(_.name) shouldBe List("parentValue", "childValue")
   }
 
   it should "correctly name a case class private field in the presence of constructor defaults" in {
@@ -288,12 +277,8 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    props should have size (1)
-    props.head match {
-      case PropertyDescriptor(name, _, _, _, _) =>
-        name should be === ("privateField")
-      case _ => assert(false, "Property does not have the correct format")
-    }
+    props should have size 1
+    props.head.name shouldBe "privateField"
   }
 }
 

@@ -85,13 +85,13 @@ class TestPropertiesCollector extends FlatSpec with Matchers {
   }
 
   it should "not deserialize static, volatile or transient fields" in { mapper: FixtureParam =>
-    evaluating {
+    an [UnrecognizedPropertyException] should be thrownBy {
       mapper.readValue("""{"firstField":"Hi","secondField":0,"excluded":15}""", classOf[SerialID])
-    } should produce[UnrecognizedPropertyException]
+    }
   }
 
   it should "deduplicate @BeanInfo properties" in { mapper: FixtureParam =>
     val result = mapper.readValue("""{"mapZoom":0}""", classOf[SearchCriteria])
-    result.mapZoom should be === 0
+    result.mapZoom shouldBe 0
   }
 }

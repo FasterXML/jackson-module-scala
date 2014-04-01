@@ -106,7 +106,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     val visible = explName.isDefined || _visibilityChecker.isFieldVisible(field)
     val ignored = _hasIgnoreMarker(field)
     val prop = _property(implName)
-    prop.addField(field, explName.orNull, explName.isDefined, visible, ignored)
+    prop.addField(field, explName.map(PropertyName.construct(_, null)).orNull, explName.isDefined, visible, ignored)
   }
 
   private def _addFieldCtor(implName: String, param: AnnotatedParameter, explName: Option[String]) {
@@ -121,7 +121,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     // GH-90: Don't add the creatorProp if it was ignored; Jackson doesn't expect this on creator
     // properties and won't filter it.
     if (/* !prop.hasSetter && */ !prop.anyIgnorals()) {
-      prop.addCtor(param, explName.orNull, explName.isDefined, true, _hasIgnoreMarker(param))
+      prop.addCtor(param, explName.map(PropertyName.construct(_, null)).orNull, explName.isDefined, true, _hasIgnoreMarker(param))
       creatorProperties += prop
     }
   }
@@ -208,14 +208,14 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
     val prop = _property(implName)
     val visible = explName.isDefined ||  _visibilityChecker.isGetterVisible(m)
     val ignore = _hasIgnoreMarker(m)
-    prop.addGetter(m, explName.orNull, explName.isDefined, visible, ignore)
+    prop.addGetter(m, explName.map(PropertyName.construct(_, null)).orNull, explName.isDefined, visible, ignore)
   }
 
   private def _addSetterMethod(implName: String, explName: Option[String], m: AnnotatedMethod) {
     val prop = _property(implName)
     val visible = explName.isDefined || _visibilityChecker.isSetterVisible(m)
     val ignore = _hasIgnoreMarker(m)
-    prop.addSetter(m, explName.orNull, explName.isDefined, visible, ignore)
+    prop.addSetter(m, explName.map(PropertyName.construct(_, null)).orNull, explName.isDefined, visible, ignore)
   }
 
   /**
@@ -238,7 +238,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
       } else if (!_forSerialization && prop.hasSetter) {
         name = naming.nameForSetterMethod(_config, prop.getSetter, name)
       }
-      val newProp = if (name != prop.getName) prop.withName(name) else prop
+      val newProp = if (name != prop.getName) prop.withSimpleName(name) else prop
       val old = _properties.get(name)
       if (old == null) {
         _properties.put(name, newProp)

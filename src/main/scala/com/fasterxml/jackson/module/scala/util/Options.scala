@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala.util
 
+import scala.language.implicitConversions
+
 trait OptionW[A] extends PimpedType[Option[A]] {
   def optMap[B](f: A => B): Option[B] =
     if (value.isEmpty) None else Option(f(value.get))

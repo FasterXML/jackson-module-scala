@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.databind.`type`.TypeBindings
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser.{CreatorProperty, ValueInstantiator, ValueInstantiators}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig}
+import com.fasterxml.jackson.databind.{PropertyMetadata, BeanDescription, DeserializationConfig}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import scala.collection.JavaConverters._
 import scala.None
@@ -16,12 +16,12 @@ private class ScalaValueInstantiator(config: DeserializationConfig, beanDesc: Be
   private [this] lazy val _ctorProps = for {
     prop <- beanDesc.findProperties().asScala
     param <- Option(prop.getConstructorParameter)
-    name = prop.getName
+    name = prop.getFullName
     wrap = prop.getWrapperName
     idx = param.getIndex
     typ = param.getType(_typeBindings)
   } yield {
-    new CreatorProperty(name, typ, wrap, null, null, param, idx, null, true)
+    new CreatorProperty(name, typ, wrap, null, null, param, idx, null, PropertyMetadata.construct(true, null))
   }
 
   val creator = beanDesc.getConstructors.asScala.headOption

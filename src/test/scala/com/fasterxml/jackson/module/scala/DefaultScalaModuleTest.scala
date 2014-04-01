@@ -6,7 +6,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class DefaultScalaModuleTest extends FlatSpec with ShouldMatchers {
+class DefaultScalaModuleTest extends BaseSpec {
 
   "DefaultScalaModule" should "have a sensible version" in {
     val version = DefaultScalaModule.version

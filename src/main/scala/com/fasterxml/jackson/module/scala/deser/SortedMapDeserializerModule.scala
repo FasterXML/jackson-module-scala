@@ -9,11 +9,12 @@ import scala.collection.immutable.TreeMap
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializerBase}
-import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer}
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 import deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
 import com.fasterxml.jackson.module.scala.introspect.OrderingLocator
+import scala.language.existentials
 
 private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), SortedMap[K,V]]) extends AbstractMap[K,V] {
   override def put(k: K, v: V) = { builder += ((k,v)); v }
