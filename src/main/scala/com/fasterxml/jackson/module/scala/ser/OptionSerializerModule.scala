@@ -25,24 +25,24 @@ private class OptionSerializer(elementType: Option[JavaType],
                                valueTypeSerializer: Option[TypeSerializer],
                                beanProperty: Option[BeanProperty],
                                elementSerializer: Option[JsonSerializer[AnyRef]])
-  extends StdSerializer[Option[_]](classOf[Option[_]])
+  extends StdSerializer[Option[AnyRef]](classOf[Option[AnyRef]])
   with ContextualSerializer
   with SchemaAware
 {
-  override def serialize(value: Option[_], jgen: JsonGenerator, provider: SerializerProvider) {
+  override def serialize(value: Option[AnyRef], jgen: JsonGenerator, provider: SerializerProvider) {
     valueTypeSerializer.map(vt => serializeWithType(value, jgen, provider, vt)).getOrElse {
       (value, elementSerializer) match {
         case (Some(v: AnyRef), Some(vs)) => vs.serialize(v, jgen, provider)
-        case (Some(v), _) => provider.defaultSerializeValue(v, jgen)
+        case (Some(v), _) => provider.findValueSerializer(v.getClass, beanProperty.orNull).serialize(v, jgen, provider)
         case (None, _) => provider.defaultSerializeNull(jgen)
       }
     }
   }
 
-  override def serializeWithType(value: Option[_], jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer) {
+  override def serializeWithType(value: Option[AnyRef], jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer) {
     (value, elementSerializer) match {
       case (Some(v: AnyRef), Some(vs)) => vs.serializeWithType(v, jgen, provider, typeSer)
-      case (Some(v), _) => provider.findTypedValueSerializer(v.getClass, true, beanProperty.orNull).serializeWithType(v.asInstanceOf[AnyRef], jgen, provider, typeSer)
+      case (Some(v), _) => provider.findTypedValueSerializer(v.getClass, true, beanProperty.orNull).serializeWithType(v, jgen, provider, typeSer)
       case (None, _) => provider.defaultSerializeNull(jgen)
     }
   }
@@ -82,7 +82,7 @@ private class OptionSerializer(elementType: Option[JavaType],
     }
   }
 
-  override def isEmpty(value: Option[_]): Boolean = value.isEmpty
+  override def isEmpty(value: Option[AnyRef]): Boolean = value.isEmpty
 
   override def getSchema(provider: SerializerProvider, typeHint: Type): JsonNode =
     getSchema(provider, typeHint, isOptional = true)
