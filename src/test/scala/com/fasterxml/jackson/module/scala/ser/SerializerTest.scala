@@ -9,10 +9,6 @@ import com.fasterxml.jackson.module.scala.JacksonTest
 
 trait SerializerTest extends JacksonTest {
 
-  def serialize(value: Any): String = {
-    val writer = new StringWriter()
-    mapper.writeValue(writer, value)
-    writer.toString
-  }
+  def serialize(value: Any): String = mapper.writeValueAsString(value)
 
 }

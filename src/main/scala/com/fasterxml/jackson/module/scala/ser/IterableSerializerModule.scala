@@ -21,7 +21,7 @@ private class IterableSerializer(seqType: Class[_],
                                  valueSerializer: Option[JsonSerializer[AnyRef]])
   extends AsArraySerializerBase[collection.Iterable[Any]](seqType, elemType, staticTyping, vts.orNull, property, valueSerializer.orNull) {
 
-  def hasSingleElement(p1: Iterable[Any]) = (p1.take(2).size == 1)
+  def hasSingleElement(p1: Iterable[Any]) = p1.take(2).size == 1
 
   val collectionSerializer =
     new CollectionSerializer(elemType, staticTyping, vts.orNull, property, valueSerializer.orNull)
@@ -31,7 +31,7 @@ private class IterableSerializer(seqType: Class[_],
   }
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
-    withResolved(property, newVts, valueSerializer.asInstanceOf[JsonSerializer[_]])
+    withResolved(property, newVts, valueSerializer.orNull)
 
   override def withResolved(newProperty: BeanProperty, newVts: TypeSerializer, elementSerializer: JsonSerializer[_]) =
     new IterableSerializer(seqType, elemType, staticTyping, Option(newVts), newProperty, Option(elementSerializer.asInstanceOf[JsonSerializer[AnyRef]]))
