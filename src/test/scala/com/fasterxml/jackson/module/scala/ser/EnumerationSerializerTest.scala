@@ -9,11 +9,14 @@ import org.junit.runner.RunWith
 
 import core.`type`.TypeReference
 
-class WeekdayType extends TypeReference[Weekday.type]
-case class AnnotationHolder(@JsonScalaEnumeration(classOf[WeekdayType]) weekday: Weekday.Weekday)
+object EnumerationSerializerTest {
 
-object EnumerationSerializerTest
-{
+  class WeekdayType extends TypeReference[Weekday.type]
+
+  case class AnnotationHolder(@JsonScalaEnumeration(classOf[WeekdayType]) weekday: Weekday.Weekday)
+
+  case class AnnotationOptionHolder(@JsonScalaEnumeration(classOf[WeekdayType]) weekday: Option[Weekday.Weekday])
+
   object OptionType extends Enumeration {
     val STRING = Value("string")
     val NUMBER = Value("number")
@@ -45,6 +48,11 @@ class EnumerationSerializerTest extends SerializerTest {
 
   it should "serialize an annotated Enumeration with custom values" in {
     serialize(OptionTypeHolder(OptionType.STRING)) should be ("""{"optionType":"string"}""")
+  }
+
+  it should "serialize an annotated Option[Enumeration]" in {
+    val holder = AnnotationOptionHolder(Some(Weekday.Fri))
+    serialize(holder) should be ("""{"weekday":"Fri"}""")
   }
 
 }
