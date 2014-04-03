@@ -1,12 +1,27 @@
 language: scala
-scala:
-   - 2.9.1
-   - 2.9.2
-   - 2.10.0
-   - 2.10.1
-   - 2.10.2
 jdk:
-   - oraclejdk7
    - openjdk7
    - openjdk6
-script: sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"' ++$TRAVIS_SCALA_VERSION test
+scala:
+   - 2.10.3
+   - 2.11.0-RC3
+sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
+
+after_success:
+  - >
+      test "${TRAVIS_PULL_REQUEST}" = 'false' &&
+      test "${TRAVIS_JDK_VERSION}" = 'openjdk6' &&
+      sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"'
+      'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
+      ++${TRAVIS_SCALA_VERSION}
+      publish
+
+branches:
+  only:
+    - master
+    - "2.3"
+
+env:
+  global:
+    - secure: "EAnt75OQNWHWvZomCAb8G5IdqcVMR0NqzngOKFOeSsjaB2CFVtfYoAq3dzp0utBqiOnWe1l5TCmcFUzMrkw+nuWbScKXYyiE6268LcA02/JBkAxnOcOo/6/xVh3oX0NhrBN5BSkJF5Hz5ffDXZArGM30s7FFhiijcmuo7J4/o0E="
+    - secure: "LYBEb/y1T1yb3CsNZe0Q+yUUqhYblvW8lMWXxy/Ozho+0FHA67TzCpGO9SOBVvp0Cewu2BzOeW6/Z9DZfOKL88zSvXT9HjSPRc7MEd17+LnqeTNmxTSz3RztXnyYqs/YPi7se+HscwYytnJKS611KZ0m1QkI4IrUcBS0Xib6ZhQ="
