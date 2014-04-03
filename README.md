@@ -31,7 +31,7 @@ issue, but since it's possible to turn this off, be aware that the current
 version will throw an exception if it cannot find the constructor parameter
 names. Future versions may permit configuration to suppress this exception.
 
-[![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master-sbt/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-module-scala-master-sbt/)
+[![Build Status](https://travis-ci.org/FasterXML/jackson-module-scala.svg?branch=2.3)](https://travis-ci.org/FasterXML/jackson-module-scala)
 
 # Usage
 
@@ -66,6 +66,8 @@ Consult the Scaladoc for further details.
 # Download, docs
 
 Check out [Wiki].
+
+<a href="http://www.jetbrains.com/idea/features/javascript.html" style="display:block; background:#0d3a9e url(http://www.jetbrains.com/idea/opensource/img/all/banners/idea468x60_blue.gif) no-repeat 0 7px; border:solid 1px #0d3a9e; margin:0;padding:0;text-decoration:none;text-indent:0;letter-spacing:-0.001em; width:466px; height:58px" alt="Java IDE with advanced HTML/CSS/JS editor for hardcore web-developers" title="Java IDE with advanced HTML/CSS/JS editor for hardcore web-developers"><span style="margin: 5px 0 0 61px;padding: 0;float: left;font-size: 12px;cursor:pointer;  background-image:none;border:0;color: #acc4f9; font-family: trebuchet ms,arial,sans-serif;font-weight: normal;text-align:left;">Developed with</span><span style="margin:0 0 0 205px;padding:18px 0 2px 0; line-height:13px;font-size:11px;cursor:pointer;  background-image:none;border:0;display:block; width:255px; color: #acc4f9; font-family: trebuchet ms,arial,sans-serif;font-weight: normal;text-align:left;">Java IDE with advanced HTML/CSS/JS<br/>editor for hardcore web-developers</span></a>
 
 [Jackson]: http://jackson.codehaus.org/
 [SAX]: http://www.saxproject.org/
