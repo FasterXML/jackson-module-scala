@@ -25,3 +25,7 @@ env:
   global:
     - secure: "EAnt75OQNWHWvZomCAb8G5IdqcVMR0NqzngOKFOeSsjaB2CFVtfYoAq3dzp0utBqiOnWe1l5TCmcFUzMrkw+nuWbScKXYyiE6268LcA02/JBkAxnOcOo/6/xVh3oX0NhrBN5BSkJF5Hz5ffDXZArGM30s7FFhiijcmuo7J4/o0E="
     - secure: "LYBEb/y1T1yb3CsNZe0Q+yUUqhYblvW8lMWXxy/Ozho+0FHA67TzCpGO9SOBVvp0Cewu2BzOeW6/Z9DZfOKL88zSvXT9HjSPRc7MEd17+LnqeTNmxTSz3RztXnyYqs/YPi7se+HscwYytnJKS611KZ0m1QkI4IrUcBS0Xib6ZhQ="
+
+notifications:
+  email: travis-ci@fasterxml.com
+

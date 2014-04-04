@@ -81,7 +81,7 @@ object BeanIntrospector {
         if (c == null || c == classOf[AnyRef]) {
           acc
         } else {
-          next(c.getSuperclass, c :: acc)
+          next(c.getSuperclass, acc :+ c)
         }
       }
       next(cls, Nil)
@@ -174,7 +174,7 @@ object BeanIntrospector {
       name = maybePrivateName(field)
       if !name.contains('$')
       if isAcceptableField(field)
-    } yield PropertyDescriptor(name, findConstructorParam(cls, name), Some(field), findGetter(cls, name), findSetter(cls, name))
+    } yield PropertyDescriptor(name, findConstructorParam(hierarchy.head, name), Some(field), findGetter(cls, name), findSetter(cls, name))
 
     //this will create properties for all methods with a non-Unit/Void return type and no arguments
     //that also have a setter present that matches the pattern 'propertyName'+'_='.

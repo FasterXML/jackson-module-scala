@@ -67,6 +67,10 @@ Consult the Scaladoc for further details.
 
 Check out [Wiki].
 
+# Acknowledgements
+
+[![Developed with IntelliJ IDEA](http://www.jetbrains.com/img/logos/logo_intellij_idea.png "Developed with IntelliJ IDEA")](http://www.jetbrains.com/idea/features/scala.html)
+
 [Jackson]: http://jackson.codehaus.org/
 [SAX]: http://www.saxproject.org/
 [DOM]: http://www.w3.org/TR/DOM-Level-3-Core/

@@ -268,7 +268,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val props = beanDesc.properties
 
     props should have size 2
-    props.map(_.name) shouldBe List("parentValue", "childValue")
+    props.map(_.name) shouldBe List("childValue", "parentValue")
   }
 
   it should "correctly name a case class private field in the presence of constructor defaults" in {
