@@ -280,7 +280,7 @@ class BeanIntrospectorTest extends FlatSpec with ShouldMatchers {
     val props = beanDesc.properties
 
     props should have size (2)
-    props.map(_.name) should be === List("parentValue", "childValue")
+    props.map(_.name) should be === List("childValue", "parentValue")
   }
 
   it should "correctly name a case class private field in the presence of constructor defaults" in {
