@@ -27,8 +27,8 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
   private [this] val _getPropertyName: (PropertyDescriptor) => Option[PropertyName] =
     (_propertyIntrospector, _forSerialization) match {
       case (None, _) => (m) => None
-      case (Some(pi), true) => (pi.findNameForSerialization _)
-      case (Some(pi), false) => (pi.findNameForDeserialization _)
+      case (Some(pi), true) => pi.findNameForSerialization
+      case (Some(pi), false) => pi.findNameForDeserialization
     }
 
   private [this] val _hasIgnoreMarker: (AnnotatedMember) => Boolean =
@@ -266,7 +266,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
 
     def findNameForSerialization(prop: PropertyDescriptor): Option[PropertyName] = {
       prop match {
-        case PropertyDescriptor(name, optParam, Some(f), _, _) => {
+        case PropertyDescriptor(name, optParam, Some(f), _, _) =>
           val annotatedParam = optParam.flatMap { cp =>
             _ctors.find(_.getAnnotated == cp.constructor).map(_.getParameter(cp.index))
           }
@@ -274,7 +274,6 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
           val paramName = annotatedParam.optMap(ai.findNameForDeserialization(_))
           val fieldName = annotatedField.optMap(ai.findNameForSerialization(_))
           fieldName orElse paramName
-        }
 
         case PropertyDescriptor(name, _, None, Some(g), _) =>
           _methods.find(_.getMember == g).optMap(ai.findNameForSerialization(_))
@@ -285,7 +284,7 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
 
     def findNameForDeserialization(prop: PropertyDescriptor): Option[PropertyName] = {
       prop match {
-        case PropertyDescriptor(name, optParam, Some(f), _, _) => {
+        case PropertyDescriptor(name, optParam, Some(f), _, _) =>
           val annotatedParam = optParam.flatMap { cp =>
             _ctors.find(_.getAnnotated == cp.constructor).map(_.getParameter(cp.index))
           }
@@ -293,7 +292,6 @@ class ScalaPropertiesCollector(config: MapperConfig[_],
           val paramName = annotatedParam.optMap(ai.findNameForDeserialization(_))
           val fieldName = annotatedField.optMap(ai.findNameForDeserialization(_))
           fieldName orElse paramName
-        }
 
         case PropertyDescriptor(name, _, None, _, Some(s)) =>
           _methods.find(_.getMember == s).optMap(ai.findNameForDeserialization(_))
