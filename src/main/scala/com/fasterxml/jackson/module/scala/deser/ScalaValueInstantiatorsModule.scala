@@ -21,7 +21,7 @@ private class ScalaValueInstantiator(config: DeserializationConfig, beanDesc: Be
     idx = param.getIndex
     typ = param.getType(_typeBindings)
   } yield {
-    new CreatorProperty(name, typ, wrap, null, null, param, idx, null, PropertyMetadata.construct(true, null))
+    new CreatorProperty(name, typ, wrap, null, null, param, idx, null, PropertyMetadata.construct(true, null, null))
   }
 
   val creator = beanDesc.getConstructors.asScala.headOption
