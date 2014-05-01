@@ -7,9 +7,9 @@ scalaVersion := "2.10.4"
 
 crossScalaVersions := Seq("2.10.4", "2.11.0")
 
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfatal-warnings")
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
-scalacOptions in Test := Seq("-deprecation", "-unchecked", "-feature")
+scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
 // Ensure jvm 1.6 for java
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
