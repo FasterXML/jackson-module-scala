@@ -1,7 +1,11 @@
-import PgpKeys._
 import sbtrelease._
+import ReleasePlugin._
 import ReleaseKeys._
 import ReleaseStateTransformations._
+import Utilities._
+import com.typesafe.sbt.osgi.OsgiKeys
+import com.typesafe.sbt.osgi.OsgiKeys._
+import com.typesafe.sbt.pgp.PgpKeys._
 
 // OSGI bundles
 
@@ -71,3 +75,23 @@ nextVersion := { ver => Version(ver).map(_.bumpBugfix.asSnapshot.string).getOrEl
 // use maven style tag name
 tagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
 
+// Customized release process
+
+ReleaseKeys.releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  publishArtifacts.copy(action = publishSignedAction),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges
+)
+
+lazy val publishSignedAction = { st: State =>
+  val extracted = st.extract
+  val ref = extracted.get(thisProjectRef)
+  extracted.runAggregated(publishSigned in Global in ref, st)
+}
