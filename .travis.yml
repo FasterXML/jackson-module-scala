@@ -4,7 +4,7 @@ jdk:
    - openjdk6
 scala:
    - 2.10.4
-   - 2.11.0-RC4
+   - 2.11.2
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
 after_success:
