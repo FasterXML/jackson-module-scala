@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import com.fasterxml.jackson.databind.node.JsonNodeType
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -8,7 +10,7 @@ import scala.annotation.meta.{field, getter}
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
 import com.fasterxml.jackson.module.scala.experimental.{ScalaObjectMapper, RequiredPropertiesSchemaModule}
 import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
-import scala.Some
+import scala.collection.JavaConverters._
 
 object OptionSerializerTest
 {
@@ -94,17 +96,33 @@ class OptionSerializerTest extends SerializerTest {
 
   it should "generate correct schema for options" in {
     val schema = mapper.generateJsonSchema(classOf[OptionSchema])
-    val schemaString = mapper.writeValueAsString(schema)
-    schemaString shouldBe """{"type":"object","properties":{"stringValue":{"type":"string"}}}"""
+    val schemaNode = schema.getSchemaNode
+
+    val typeNode = schemaNode.path("type")
+    typeNode should not be 'missingNode
+    typeNode should have (
+      'nodeType (JsonNodeType.STRING),
+      'textValue ("object")
+    )
+
+    val stringValueTypeNode = schemaNode.path("properties").path("stringValue").path("type")
+    stringValueTypeNode should not be 'missingNode
+    stringValueTypeNode should have (
+      'nodeType (JsonNodeType.STRING),
+      'textValue ("string")
+    )
   }
 
   it should "generate correct schema for options using the new jsonSchema jackson module" in {
     val visitor = new SchemaFactoryWrapper()
     mapper.acceptJsonFormatVisitor(mapper.constructType(classOf[OptionSchema]), visitor)
 
-    val schema = visitor.finalSchema()
-    val schemaString = mapper.writeValueAsString(schema)
-    schemaString shouldBe """{"type":"object","properties":{"stringValue":{"type":"string"}}}"""
+    val schema = visitor.finalSchema
+    schema should be an 'objectSchema
+    val props = schema.asObjectSchema().getProperties.asScala
+    props should contain key "stringValue"
+    val stringValue = props("stringValue")
+    stringValue should be a 'stringSchema
   }
 
   it should "mark as required the non-Option fields" in {
@@ -112,8 +130,17 @@ class OptionSerializerTest extends SerializerTest {
     mapper.acceptJsonFormatVisitor(mapper.constructType(classOf[MixedOptionSchema]), visitor)
 
     val schema = visitor.finalSchema()
-    val schemaString = mapper.writeValueAsString(schema)
-    schemaString shouldBe """{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}"""
+    schema should be an 'objectSchema
+    val props = schema.asObjectSchema().getProperties.asScala
+    props should contain key "stringValue"
+    val stringValue = props("stringValue")
+    stringValue should be a 'stringSchema
+    stringValue.getRequired shouldBe null
+
+    props should contain key "nonOptionValue"
+    val nonOptionValue: JsonSchema = props("nonOptionValue")
+    nonOptionValue should be a 'stringSchema
+    nonOptionValue.getRequired shouldBe true
   }
 
   it should "support reversing the default for required properties in schema" in {
@@ -126,8 +153,17 @@ class OptionSerializerTest extends SerializerTest {
     m.acceptJsonFormatVisitor(mapper.constructType(classOf[DefaultOptionSchema]), visitor)
 
     val schema = visitor.finalSchema()
-    val schemaString = mapper.writeValueAsString(schema)
-    schemaString shouldBe """{"type":"object","properties":{"stringValue":{"type":"string"},"nonOptionValue":{"type":"string","required":true}}}"""
+    schema should be an 'objectSchema
+    val props = schema.asObjectSchema().getProperties.asScala
+    props should contain key "stringValue"
+    val stringValue = props("stringValue")
+    stringValue should be a 'stringSchema
+    stringValue.getRequired shouldBe null
+
+    props should contain key "nonOptionValue"
+    val nonOptionValue: JsonSchema = props("nonOptionValue")
+    nonOptionValue should be a 'stringSchema
+    nonOptionValue.getRequired shouldBe true
   }
 
   it should "serialize contained JsonNode correctly" in {
