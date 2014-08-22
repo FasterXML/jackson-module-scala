@@ -1,15 +1,35 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.annotation.{JsonTypeName, JsonSubTypes, JsonTypeInfo}
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
+import scala.annotation.meta.field
+
 case class UnavailableField(foo: Option[String])
+
+object OptionDeserializerTest {
+  @JsonSubTypes(Array(new JsonSubTypes.Type(classOf[Impl])))
+  trait Base
+
+  @JsonTypeName("impl")
+  case class Impl() extends Base
+
+  case class BaseHolder(
+    private var _base: Option[Base]
+  ) {
+    @(JsonTypeInfo @field)(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="$type")
+    def base = _base
+    def base_=(base:Option[Base]) { _base = base }
+  }
+}
 
 @RunWith(classOf[JUnitRunner])
 class OptionDeserializerTest extends DeserializerTest {
+  import OptionDeserializerTest._
   lazy val module = DefaultScalaModule
 
   "An ObjectMapper with OptionDeserializer" should "deserialize an Option[Int]" in {
@@ -37,5 +57,14 @@ class OptionDeserializerTest extends DeserializerTest {
 
   it should "sythensize None for optional fields that are non-existent" in {
     deserialize[UnavailableField]("{}") should be(UnavailableField(None))
+  }
+
+  it should "propagate type information" in {
+    val json: String = """{"base":{"$type":"impl"}}"""
+    deserialize[BaseHolder](json) should be(BaseHolder(Some(Impl())))
+  }
+
+  it should "deserialize a polymorphic null as None" in {
+    deserialize[BaseHolder]("""{"base":null}""") should be(BaseHolder(None))
   }
 }
