@@ -5,15 +5,23 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.util.StdConverter
-import com.fasterxml.jackson.databind.{JavaType, BeanDescription, SerializationConfig, JsonSerializer}
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 import scala.collection.JavaConverters._
 import scala.collection.Map
 
-private class MapConverter(inputType: JavaType)
+private class MapConverter(inputType: JavaType, config: SerializationConfig)
   extends StdConverter[Map[_,_],java.util.Map[_,_]]
 {
-  def convert(value: Map[_,_]) = value.asJava
+  def convert(value: Map[_,_]): java.util.Map[_,_] = {
+    val m = if (config.isEnabled(SerializationFeature.WRITE_NULL_MAP_VALUES)) {
+      value
+    } else {
+      value.filter(_._2 != None)
+    }
+    m.asJava
+  }
+
 
   override def getInputType(factory: TypeFactory) = inputType
 
@@ -38,7 +46,7 @@ private object MapSerializerResolver extends Serializers.Base {
     val rawClass = mapLikeType.getRawClass
 
     if (!BASE.isAssignableFrom(rawClass)) null
-    else new StdDelegatingSerializer(new MapConverter(mapLikeType))
+    else new StdDelegatingSerializer(new MapConverter(mapLikeType, config))
   }
 
 }

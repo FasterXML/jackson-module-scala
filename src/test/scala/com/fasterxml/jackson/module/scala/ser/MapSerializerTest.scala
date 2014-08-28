@@ -1,16 +1,18 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import scala.collection._
+import JavaConverters._
 import scala.beans.BeanProperty
 import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo, JsonInclude, JsonProperty}
 import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 import scala.collection.immutable.ListMap
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import annotation.meta.getter
-import com.fasterxml.jackson.databind.{SerializerProvider, JsonSerializer}
+import com.fasterxml.jackson.databind.{SerializationFeature, SerializerProvider, JsonSerializer}
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
@@ -110,5 +112,15 @@ class MapSerializerTest extends SerializerTest {
       //val map = ImmutableMap.of[String, MapValueBase]("Double", MapValueDouble(1.0), "String", MapValueString("word"))
     }
     serialize(wrapper) should be ("""{"map":{"Double":{"type":"MapValueDouble","value":1.0},"String":{"type":"MapValueString","value":"word"}}}""")
+  }
+
+  it should "suppress None when WRITE_NULL_MAP_VALUES is active" in {
+    val wrapper = new {
+      val map = Map("key" -> None)
+    }
+    val m = mapper.copy()
+    m.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
+    val v = m.writeValueAsString(wrapper)
+    v shouldBe """{"map":{}}"""
   }
 }
