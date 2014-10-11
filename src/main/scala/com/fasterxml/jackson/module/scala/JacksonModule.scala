@@ -2,21 +2,21 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.Version
 
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.Module.SetupContext;
-import com.fasterxml.jackson.databind.deser.Deserializers;
-import com.fasterxml.jackson.databind.ser.{Serializers, BeanSerializerModifier};
-import com.fasterxml.jackson.databind.`type`.TypeModifier;
+import com.fasterxml.jackson.databind.Module
+import com.fasterxml.jackson.databind.Module.SetupContext
+import com.fasterxml.jackson.databind.deser.Deserializers
+import com.fasterxml.jackson.databind.ser.{Serializers, BeanSerializerModifier}
+import com.fasterxml.jackson.databind.`type`.TypeModifier
 
 import java.util.Properties
 import collection.JavaConverters._
-import collection.mutable.Map
+import collection.mutable
 
 object JacksonModule {
   private val VersionRegex = """(\d+)\.(\d+)(?:\.(\d+)(?:\-(.*))?)?""".r
   private val cls = classOf[JacksonModule]
   private val buildPropsFilename = cls.getPackage.getName.replace('.','/') + "/build.properties"
-  lazy val buildProps: Map[String, String] = {
+  lazy val buildProps: mutable.Map[String, String] = {
     val props = new Properties
     val stream = cls.getClassLoader.getResourceAsStream(buildPropsFilename)
     if (stream ne null) props.load(stream)
