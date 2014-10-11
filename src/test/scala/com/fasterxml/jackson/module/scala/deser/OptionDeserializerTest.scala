@@ -25,6 +25,10 @@ object OptionDeserializerTest {
     def base = _base
     def base_=(base:Option[Base]) { _base = base }
   }
+
+  case class Defaulted(id: Int, name: String = "") {
+    def this() = this(1,"")
+  }
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -66,5 +70,12 @@ class OptionDeserializerTest extends DeserializerTest {
 
   it should "deserialize a polymorphic null as None" in {
     deserialize[BaseHolder]("""{"base":null}""") should be(BaseHolder(None))
+  }
+
+  it should "deserialze defaulted parameters correctly (without defaults)" in {
+    val json = mapper.writeValueAsString(Defaulted(id = 1))
+    json shouldBe """{"id":1,"name":""}"""
+    val d = mapper.readValue(json, classOf[Defaulted])
+    d.name should not be null
   }
 }
