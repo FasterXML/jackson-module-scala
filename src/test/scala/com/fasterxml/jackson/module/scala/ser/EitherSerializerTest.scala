@@ -10,6 +10,8 @@ class EitherSerializerTest extends SerializerTest with EitherJsonTestSupport {
 
   val module = DefaultScalaModule
 
+  val json = jsonOf(s"""{"prop":"$str"}""")
+
 
   "EitherSerializer" should "be able to serialize right with string" in {
     serialize(Right(str)) should be (s"""{"r":"$str"}""")
@@ -33,5 +35,21 @@ class EitherSerializerTest extends SerializerTest with EitherJsonTestSupport {
 
   it should "be able to serialize Left with complex objects" in {
     serialize(Left(obj)) should be (s"""{"l":${serialize(obj)}}""")
+  }
+
+  it should "serialize contained JsonNode in Right correctly" in {
+    serialize(WrapperOfEitherOfJsonNode(Right(json))) shouldBe s"""{"either":{"r":$json}}"""
+  }
+
+  it should "serialize contained JsonNode in Left correctly" in {
+    serialize(WrapperOfEitherOfJsonNode(Left(json))) shouldBe s"""{"either":{"l":$json}}"""
+  }
+
+  it should "propagate type information on Right" in {
+    serialize(BaseHolder(Right(Impl()))) shouldBe """{"base":{"r":{"$type":"impl"}}}"""
+  }
+
+  it should "propagate type information on Left" in {
+    serialize(BaseHolder(Left(Impl()))) shouldBe """{"base":{"l":{"$type":"impl"}}}"""
   }
 }
