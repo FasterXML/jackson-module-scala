@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.fasterxml.jackson.databind.ser.{ContextualSerializer, Serializers}
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import scala.language.existentials
+
 private class EitherSerializer(elementType: Option[JavaType],
                                valueTypeSerializer: Option[TypeSerializer],
                                beanProperty: Option[BeanProperty],
