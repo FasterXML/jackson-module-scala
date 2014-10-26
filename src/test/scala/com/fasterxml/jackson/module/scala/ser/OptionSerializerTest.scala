@@ -196,11 +196,11 @@ class OptionSerializerTest extends SerializerTest {
     val mapper = new ObjectMapper
     mapper.registerModule(DefaultScalaModule)
 
-    val apple = Apple(42)
+    val apple = Apple("green")
 
     val basket = OrderedFruitBasket(fruits = Some(Seq(apple)))
 
-    serialize(basket) should be ("""{"fruits":[{"type":"Apple","size":42}]}""")
+    serialize(basket) should be ("""{"fruits":[{"type":"Apple","color":"green"}]}""")
   }
 
   it should "serialize JsonTypeInfo info in Option[Set[T]]" in {
@@ -208,11 +208,11 @@ class OptionSerializerTest extends SerializerTest {
     val mapper = new ObjectMapper
     mapper.registerModule(DefaultScalaModule)
 
-    val apple = Apple(42)
+    val apple = Apple("green")
 
     val basket = NonOrderedFruitBasket(fruits = Some(Set(apple)))
 
-    serialize(basket) should be ("""{"fruits":[{"type":"Apple","size":42}]}""")
+    serialize(basket) should be ("""{"fruits":[{"type":"Apple","color":"green"}]}""")
   }
 
   it should "serialize JsonTypeInfo info in Option[java.util.List[T]]" in {
@@ -220,13 +220,13 @@ class OptionSerializerTest extends SerializerTest {
     val mapper = new ObjectMapper
     mapper.registerModule(DefaultScalaModule)
 
-    val apple = Apple(42)
+    val apple = Apple("green")
 
-    val list = new util.ArrayList[Fruit]()
-    list.add(apple)
-    val basket = JavaTypedFruitBasket(fruits = Some(list))
+    val javaFruits = new util.ArrayList[Fruit]()
+    javaFruits.add(apple)
+    val basket = JavaTypedFruitBasket(fruits = Some(javaFruits))
 
-    serialize(basket) should be ("""{"fruits":[{"type":"Apple","size":42}]}""")
+    serialize(basket) should be ("""{"fruits":[{"type":"Apple","color":"green"}]}""")
   }
 
 
@@ -239,11 +239,10 @@ class NonNullOption {
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 trait Fruit {
-  def size: Int
+  def color: String
 }
 
-case class Apple(size: Int) extends Fruit
-
+case class Apple(color: String) extends Fruit
 case class OrderedFruitBasket(fruits: Option[Seq[Fruit]])
 case class NonOrderedFruitBasket(fruits: Option[Set[Fruit]])
 case class JavaTypedFruitBasket(fruits: Option[java.util.List[Fruit]])
