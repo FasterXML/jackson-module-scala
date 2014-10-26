@@ -18,14 +18,17 @@ private class EitherSerializer(elementType: Option[JavaType],
 
 
   def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializerProvider) {
-      jgen.writeStartObject()
-      value.fold(serializeValue(field = "l", _, jgen, provider, valueTypeSerializer), serializeValue(field = "r", _, jgen, provider, valueTypeSerializer))
-      jgen.writeEndObject()
+    serializeEither(value, jgen, provider, valueTypeSerializer)
   }
 
   override def serializeWithType(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer) {
+    serializeEither(value, jgen, provider, Option(typeSer))
+  }
+
+
+  private def serializeEither(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializerProvider, typeSer: Option[TypeSerializer]) {
     jgen.writeStartObject()
-    value.fold(serializeValue(field = "l", _, jgen, provider, Option(typeSer)), serializeValue(field = "r", _, jgen, provider, Option(typeSer)))
+    value.fold(serializeValue(field = "l", _, jgen, provider, typeSer), serializeValue(field = "r", _, jgen, provider, typeSer))
     jgen.writeEndObject()
   }
 
