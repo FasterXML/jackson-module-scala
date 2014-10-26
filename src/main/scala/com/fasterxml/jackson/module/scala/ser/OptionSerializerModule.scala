@@ -17,9 +17,7 @@ import jsonFormatVisitors.JsonFormatVisitorWrapper
 import java.lang.reflect.Type
 import java.{util => ju}
 
-import scala.Some
 import scala.collection.JavaConverters._
-import com.fasterxml.jackson.databind.introspect.{AnnotatedMethod, NopAnnotationIntrospector}
 
 private class OptionSerializer(elementType: Option[JavaType],
                                valueTypeSerializer: Option[TypeSerializer],
@@ -33,7 +31,14 @@ private class OptionSerializer(elementType: Option[JavaType],
     valueTypeSerializer.map(vt => serializeWithType(value, jgen, provider, vt)).getOrElse {
       (value, elementSerializer) match {
         case (Some(v: AnyRef), Some(vs)) => vs.serialize(v, jgen, provider)
-        case (Some(v), _) => provider.findValueSerializer(v.getClass, beanProperty.orNull).serialize(v, jgen, provider)
+        case (Some(v), _) =>
+          val cls = v.getClass
+          val ser = if (elementType.exists(_.hasGenericTypes))
+            provider.findValueSerializer(provider.constructSpecializedType(elementType.orNull, cls), beanProperty.orNull)
+          else
+            provider.findValueSerializer(cls, beanProperty.orNull)
+          ser.serialize(v, jgen, provider)
+
         case (None, _) => provider.defaultSerializeNull(jgen)
       }
     }
@@ -42,7 +47,14 @@ private class OptionSerializer(elementType: Option[JavaType],
   override def serializeWithType(value: Option[AnyRef], jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer) {
     (value, elementSerializer) match {
       case (Some(v: AnyRef), Some(vs)) => vs.serializeWithType(v, jgen, provider, typeSer)
-      case (Some(v), _) => provider.findTypedValueSerializer(v.getClass, true, beanProperty.orNull).serializeWithType(v, jgen, provider, typeSer)
+      case (Some(v), _) =>
+        val cls = v.getClass
+        val ser = if (elementType.exists(_.hasGenericTypes))
+          provider.findTypedValueSerializer(provider.constructSpecializedType(elementType.orNull, cls), true, beanProperty.orNull)
+        else
+          provider.findTypedValueSerializer(cls, true, beanProperty.orNull)
+        ser.serializeWithType(v, jgen, provider, typeSer)
+
       case (None, _) => provider.defaultSerializeNull(jgen)
     }
   }
