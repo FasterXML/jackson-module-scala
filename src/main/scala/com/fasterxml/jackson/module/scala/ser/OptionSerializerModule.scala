@@ -2,24 +2,22 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-import util.Implicits._
-import modifiers.OptionTypeModifierModule
-
-import core.JsonGenerator
-import databind._
-import jsontype.TypeSerializer
-import jsonschema.{JsonSchema, SchemaAware}
-import ser.{ContextualSerializer, BeanPropertyWriter, BeanSerializerModifier, Serializers}
-import ser.std.StdSerializer
-import `type`.CollectionLikeType
-import jsonFormatVisitors.JsonFormatVisitorWrapper
-
 import java.lang.reflect.Type
 import java.{util => ju}
 
-import scala.Some
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
+import com.fasterxml.jackson.databind.jsonschema.{JsonSchema, SchemaAware}
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import com.fasterxml.jackson.databind.ser.{BeanPropertyWriter, BeanSerializerModifier, ContextualSerializer, Serializers}
+import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
+import com.fasterxml.jackson.module.scala.util.Implicits._
+
 import scala.collection.JavaConverters._
-import com.fasterxml.jackson.databind.introspect.{AnnotatedMethod, NopAnnotationIntrospector}
+import scala.collection.TraversableOnce
 
 private class OptionSerializer(elementType: Option[JavaType],
                                valueTypeSerializer: Option[TypeSerializer],
@@ -33,6 +31,7 @@ private class OptionSerializer(elementType: Option[JavaType],
     valueTypeSerializer.map(vt => serializeWithType(value, jgen, provider, vt)).getOrElse {
       (value, elementSerializer) match {
         case (Some(v: AnyRef), Some(vs)) => vs.serialize(v, jgen, provider)
+        case (Some(v @ (_: TraversableOnce[_] | _: java.util.Collection[_])), _) => provider.findValueSerializer(elementType.get, beanProperty.orNull).serialize(v, jgen, provider)
         case (Some(v), _) => provider.findValueSerializer(v.getClass, beanProperty.orNull).serialize(v, jgen, provider)
         case (None, _) => provider.defaultSerializeNull(jgen)
       }
