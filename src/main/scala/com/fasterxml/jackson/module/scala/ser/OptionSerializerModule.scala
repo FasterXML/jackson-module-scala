@@ -21,6 +21,8 @@ import scala.Some
 import scala.collection.JavaConverters._
 import com.fasterxml.jackson.databind.introspect.{AnnotatedMethod, NopAnnotationIntrospector}
 
+import scala.collection.TraversableOnce
+
 private class OptionSerializer(elementType: Option[JavaType],
                                valueTypeSerializer: Option[TypeSerializer],
                                beanProperty: Option[BeanProperty],
@@ -33,6 +35,7 @@ private class OptionSerializer(elementType: Option[JavaType],
     valueTypeSerializer.map(vt => serializeWithType(value, jgen, provider, vt)).getOrElse {
       (value, elementSerializer) match {
         case (Some(v: AnyRef), Some(vs)) => vs.serialize(v, jgen, provider)
+        case (Some(v @ (_: TraversableOnce[_] | _: java.util.Collection[_])), _) => provider.findValueSerializer(elementType.get, beanProperty.orNull).serialize(v, jgen, provider)
         case (Some(v), _) => provider.findValueSerializer(v.getClass, beanProperty.orNull).serialize(v, jgen, provider)
         case (None, _) => provider.defaultSerializeNull(jgen)
       }
