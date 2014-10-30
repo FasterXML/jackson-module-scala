@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.ser
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{Succeeded, Outcome, Matchers, fixture}
+import org.scalatest.{Outcome, Matchers, fixture}
 import com.fasterxml.jackson.databind.{PropertyNamingStrategy, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import java.io.ByteArrayOutputStream
@@ -25,7 +25,6 @@ class NamingStrategyTest extends fixture.FlatSpec with Matchers {
     mapper.registerModule(DefaultScalaModule)
     mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
     test(mapper)
-    Succeeded
   }
 
   "DefaultScalaModule" should "correctly handle naming strategies" in { mapper =>

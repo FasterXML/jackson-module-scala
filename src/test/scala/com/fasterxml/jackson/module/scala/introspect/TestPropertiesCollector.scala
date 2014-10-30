@@ -10,7 +10,7 @@ import com.fasterxml.jackson.module.scala.deser.ScalaValueInstantiatorsModule
 import scala.volatile
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import scala.beans.{BeanProperty, BeanInfo}
-import org.scalatest.{Outcome, Succeeded, Matchers}
+import org.scalatest.{Outcome, Matchers}
 
 class Fields {
   @JsonProperty // make it "visible" for Jackson
@@ -51,7 +51,6 @@ class TestPropertiesCollector extends FlatSpec with Matchers {
     mapper.registerModule(new JacksonModule with ScalaClassIntrospectorModule with ScalaValueInstantiatorsModule)
 
     test(mapper)
-    Succeeded
   }
 
   behavior of "ScalaPropertiesCollector"
