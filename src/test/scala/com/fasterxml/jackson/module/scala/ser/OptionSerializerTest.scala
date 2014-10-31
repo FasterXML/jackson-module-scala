@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import java.util
+
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema
 import org.junit.runner.RunWith
@@ -189,9 +191,58 @@ class OptionSerializerTest extends SerializerTest {
     mapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) shouldBe """{"name":"John Smith","email":"john.smith@unit.uk"}"""
   }
 
+  it should "serialize JsonTypeInfo info in Option[Seq[T]]" in {
+
+    val mapper = new ObjectMapper
+    mapper.registerModule(DefaultScalaModule)
+
+    val apple = Apple("green")
+
+    val basket = OrderedFruitBasket(fruits = Some(Seq(apple)))
+
+    serialize(basket) should be ("""{"fruits":[{"type":"Apple","color":"green"}]}""")
+  }
+
+  it should "serialize JsonTypeInfo info in Option[Set[T]]" in {
+
+    val mapper = new ObjectMapper
+    mapper.registerModule(DefaultScalaModule)
+
+    val apple = Apple("green")
+
+    val basket = NonOrderedFruitBasket(fruits = Some(Set(apple)))
+
+    serialize(basket) should be ("""{"fruits":[{"type":"Apple","color":"green"}]}""")
+  }
+
+  it should "serialize JsonTypeInfo info in Option[java.util.List[T]]" in {
+
+    val mapper = new ObjectMapper
+    mapper.registerModule(DefaultScalaModule)
+
+    val apple = Apple("green")
+
+    val javaFruits = new util.ArrayList[Fruit]()
+    javaFruits.add(apple)
+    val basket = JavaTypedFruitBasket(fruits = Some(javaFruits))
+
+    serialize(basket) should be ("""{"fruits":[{"type":"Apple","color":"green"}]}""")
+  }
+
+
+
 }
 
 class NonNullOption {
   @JsonProperty var foo: Option[String] = None
 }
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+trait Fruit {
+  def color: String
+}
+
+case class Apple(color: String) extends Fruit
+case class OrderedFruitBasket(fruits: Option[Seq[Fruit]])
+case class NonOrderedFruitBasket(fruits: Option[Set[Fruit]])
+case class JavaTypedFruitBasket(fruits: Option[java.util.List[Fruit]])
