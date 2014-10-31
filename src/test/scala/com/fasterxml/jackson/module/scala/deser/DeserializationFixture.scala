@@ -14,7 +14,6 @@ class DeserializationFixture extends fixture.FlatSpec with Matchers {
     val mapper = new ObjectMapper() with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
     test(mapper)
-    Succeeded
   }
 
 }
