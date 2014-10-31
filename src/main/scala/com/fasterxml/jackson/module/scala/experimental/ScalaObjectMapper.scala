@@ -2,12 +2,13 @@ package com.fasterxml.jackson.module.scala.experimental
 
 import java.io._
 import java.net.URL
+
 import com.fasterxml.jackson.core._
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
 import com.fasterxml.jackson.module.scala.util.Implicits._
-import com.google.common.cache.{LoadingCache, CacheLoader, CacheBuilder}
+import com.google.common.cache.{CacheBuilder, LoadingCache}
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>
@@ -29,7 +30,7 @@ trait ScalaObjectMapper {
    *                     be "added" to target's annotations, overriding as necessary
    */
   final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() {
-    addMixInAnnotations(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
+    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
 
   final def findMixInClassFor[T: Manifest]: Class[_] = {
@@ -69,7 +70,7 @@ trait ScalaObjectMapper {
         getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
       } else {
         val typeArguments = m.typeArguments.map(constructType(_)).toArray
-        getTypeFactory.constructParametricType(clazz, typeArguments: _*)
+        getTypeFactory.constructParametrizedType(clazz, clazz, typeArguments: _*)
       }
     }
   def constructType[T](implicit m: Manifest[T]): JavaType = typeCache.get(m)
