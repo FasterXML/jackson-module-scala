@@ -1,14 +1,18 @@
-package com.fasterxml.jackson.module.scala.ser
+package com.fasterxml.jackson
+package module.scala
+package ser
 
+import java.io.ByteArrayOutputStream
+import javax.annotation.Nonnull
+
+import databind.{ObjectMapper, PropertyNamingStrategy}
+
+import com.google.common.base.Optional
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{Succeeded, Outcome, Matchers, fixture}
-import com.fasterxml.jackson.databind.{PropertyNamingStrategy, ObjectMapper}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import java.io.ByteArrayOutputStream
-import com.google.common.base.Optional
+import org.scalatest.{Matchers, Outcome, fixture}
+
 import scala.beans.BeanProperty
-import javax.annotation.Nonnull
 
 class PojoWrittenInScala {
   @Nonnull @BeanProperty var optFoo: Optional[String] = Optional.absent()
@@ -25,7 +29,6 @@ class NamingStrategyTest extends fixture.FlatSpec with Matchers {
     mapper.registerModule(DefaultScalaModule)
     mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
     test(mapper)
-    Succeeded
   }
 
   "DefaultScalaModule" should "correctly handle naming strategies" in { mapper =>
