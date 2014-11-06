@@ -1,10 +1,8 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.lang.reflect.{Type, ParameterizedType}
+import java.lang.reflect.{ParameterizedType, Type}
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.`type`.TypeReference;
-
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.JacksonTest
 
 /**
@@ -12,6 +10,8 @@ import com.fasterxml.jackson.module.scala.JacksonTest
  */
 
 trait DeserializerTest extends JacksonTest {
+
+  def serialize(o: AnyRef) = mapper.writeValueAsString(o)
 
   def deserialize[T: Manifest](value: String) : T =
     mapper.readValue(value, typeReference[T])

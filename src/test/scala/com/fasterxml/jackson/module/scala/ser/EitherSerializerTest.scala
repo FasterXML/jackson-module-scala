@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, Impl}
 import com.fasterxml.jackson.module.scala.deser.EitherJsonTestSupport
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

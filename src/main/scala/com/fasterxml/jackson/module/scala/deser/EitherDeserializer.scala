@@ -2,50 +2,74 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`._
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.deser.EitherDeserializer.ElementDeserializerConfig
 
 
 private class EitherDeserializer(javaType: JavaType,
                                  config: DeserializationConfig,
-                                 leftDeserializer: Option[JsonDeserializer[Object]] = None,
-                                 rightDeserializer: Option[JsonDeserializer[Object]] = None)
-  extends StdDeserializer[Either[_, _]](classOf[Either[_, _]])
+                                 leftDeserializerConfig: ElementDeserializerConfig,
+                                 rightDeserializerConfig: ElementDeserializerConfig)
+  extends StdDeserializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]])
   with ContextualDeserializer {
 
   def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
-    def deserializerFor(loc: Int) =
-      Option(ctxt.findContextualValueDeserializer(javaType.containedType(loc), property))
+
+    def deserializerConfigFor(param: Int, inType: JavaType, property: BeanProperty): ElementDeserializerConfig = {
+      val containedType = javaType.containedType(param)
+
+      val paramDeserializer = Option( ctxt.findContextualValueDeserializer(containedType, property) )
+      val typeDeserializer = Option(property).map(p => BeanDeserializerFactory.instance.findPropertyTypeDeserializer(ctxt.getConfig, containedType, p.getMember) )
+
+      ElementDeserializerConfig( paramDeserializer, typeDeserializer )
+    }
 
     javaType.containedTypeCount match {
-      case 2 => val leftDeser = deserializerFor(0)
-        val rightDeser = deserializerFor(1)
-        new EitherDeserializer(javaType, config, leftDeser, rightDeser)
+      case 2 =>
+        val leftDeserializerConfig = deserializerConfigFor(0, javaType, property)
+        val rightDeserializerConfig = deserializerConfigFor(1, javaType, property)
+        new EitherDeserializer(javaType, config, leftDeserializerConfig, rightDeserializerConfig)
       case _ => this
     }
   }
 
-  def deserialize(jp: JsonParser, ctxt: DeserializationContext) = {
+  private def deserializeValue(`type`: JsonToken, config: ElementDeserializerConfig, jp: JsonParser, ctxt: DeserializationContext) =
+    (config, `type`) match {
+      case (_, JsonToken.VALUE_NULL) => null
+      case (ElementDeserializerConfig(Some(ed), Some(td)), _) =>
+        ed.deserializeWithType(jp, ctxt, td)
+      case (ElementDeserializerConfig(Some(ed), _), _) => ed.deserialize(jp, ctxt)
+      case (_, _) => throw ctxt.mappingException(javaType.getRawClass)
+    }
+
+  private def deserializeEither(jp: JsonParser, ctxt: DeserializationContext) = {
     jp.nextToken()
 
     val key = jp.getCurrentName
-
     val `type` = jp.nextToken()
 
-    // this is shit, there is probably a better way to handle null values
-    // need to understand what the type is without jackson types
-    (key, leftDeserializer, rightDeserializer, `type`) match {
-      case ("l", _, _, JsonToken.VALUE_NULL) => Left(null)
-      case ("r", _, _, JsonToken.VALUE_NULL) => Right(null)
-      case ("l", Some(d), _, _) => Left(d.deserialize(jp, ctxt))
-      case ("r", _, Some(r), _) => Right(r.deserialize(jp, ctxt))
+    key match {
+      case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+      case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
       case _ => throw ctxt.mappingException(javaType.getRawClass)
     }
   }
+
+  def deserialize(jp: JsonParser, ctxt: DeserializationContext) = deserializeEither(jp, ctxt)
+  override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer)  = deserializeEither(jp, ctxt)
 }
+
+private object EitherDeserializer {
+  case class ElementDeserializerConfig(deserializer: Option[JsonDeserializer[AnyRef]], typeDeseriazlier: Option[TypeDeserializer])
+
+  object ElementDeserializerConfig {
+    val empty = ElementDeserializerConfig(None, None)
+  }
+}
+
 
 private object EitherDeserializerResolver extends Deserializers.Base {
 
@@ -55,10 +79,8 @@ private object EitherDeserializerResolver extends Deserializers.Base {
     val rawClass = `type`.getRawClass
 
     if (!EITHER.isAssignableFrom(rawClass)) null
-    else new EitherDeserializer(`type`, config)
+    else new EitherDeserializer( `type`, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty )
   }
-
-  override def findMapLikeDeserializer(`type`: MapLikeType, config: DeserializationConfig, beanDesc: BeanDescription, keyDeserializer: KeyDeserializer, elementTypeDeserializer: TypeDeserializer, elementDeserializer: JsonDeserializer[_]) = super.findMapLikeDeserializer(`type`, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
 }
 
 trait EitherDeserializerModule extends JacksonModule {

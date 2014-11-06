@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, Impl, PlainPojoObject}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -32,11 +33,23 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
   }
 
   it should "be able to deserialize Right with complex objects" in {
-    deserialize[Either[String, PlainPojoObject]](s"""{"r":${mapper.writeValueAsString(obj)}}""") should be (Right(obj))
+    deserialize[Either[String, PlainPojoObject]](s"""{"r":${serialize(obj)}}""") should be (Right(obj))
   }
 
   it should "be able to deserialize Left with complex objects" in {
-    deserialize[Either[PlainPojoObject, String]](s"""{"l":${mapper.writeValueAsString(obj)}}""") should be (Left(obj))
+    deserialize[Either[PlainPojoObject, String]](s"""{"l":${serialize(obj)}}""") should be (Left(obj))
+  }
+
+  it should "propagate type information for Right" in {
+    deserialize[BaseHolder]("""{"base":{"r":{"$type":"impl"}}}""") should be(BaseHolder(Right(Impl())))
+  }
+
+  it should "propagate type information for Left" in {
+    deserialize[BaseHolder]("""{"base":{"l":{"$type":"impl"}}}""") should be(BaseHolder(Left(Impl())))
+  }
+
+  it should "deserialize a polymorphic null as null" in {
+    deserialize[BaseHolder]("""{"base":null}""") should be(BaseHolder(null))
   }
 }
 
@@ -53,6 +66,10 @@ trait EitherJsonTestSupport {
 
   case class WrapperOfEitherOfJsonNode(either: Either[JsonNode, JsonNode])
 
+}
+
+object EitherJsonTest {
+
   @JsonSubTypes(Array(new JsonSubTypes.Type(classOf[Impl])))
   trait Base
 
@@ -64,6 +81,7 @@ trait EitherJsonTestSupport {
     def base = _base
     def base_=(base:Either[Base, Base]) { _base = base }
   }
+
+  case class PlainPojoObject(a: String, b: Option[String], c: Long)
 }
 
-case class PlainPojoObject(a: String, b: Option[String], c: Long)
