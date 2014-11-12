@@ -42,6 +42,10 @@ private class Target {
 private class Mixin(val foo: String)
 private case class GenericTestClass[T](t: T)
 
+private case class ListContainerWithSomeDefault(xs: List[String] = List("a", "b", "c"))
+private case class ListContainerWithNilAsDefault(xs: List[Int] = Nil)
+private case class MultiValuedListContainerDefaults(xs: List[Any] = Nil, ys: List[Boolean] = List(false, true, true))
+
 @RunWith(classOf[JUnitRunner])
 class ScalaObjectMapperTest extends FlatSpec with Matchers {
 
@@ -202,6 +206,46 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
     result(1) should equal(None)
   }
 
+  it should "use default values from constructor for empty array fields" in {
+    val result = mapper.readValueWithDefaults[ListContainerWithSomeDefault](emptyArrayFieldJson)
+    result should equal (ListContainerWithSomeDefault(Nil))
+  }
+
+  it should "use default values from constructor for nullifed array fields" in {
+    val result = mapper.readValueWithDefaults[ListContainerWithSomeDefault](nullifiedArrayFieldJson)
+    result should equal (ListContainerWithSomeDefault(List("a", "b", "c")))
+  }
+
+  it should "ignore default values for non-empty array type fields" in {
+    val result = mapper.readValueWithDefaults[ListContainerWithSomeDefault](stringArrayFieldJson)
+    result should equal (ListContainerWithSomeDefault(List("x", "y", "z")))
+  }
+
+  it should "use Nil from constructor for nullified array fields" in {
+    val result = mapper.readValueWithDefaults[ListContainerWithNilAsDefault](nullifiedArrayFieldJson)
+    result should equal (ListContainerWithNilAsDefault(Nil))
+  }
+
+  it should "use Nil from constructor for empty array fields" in {
+    val result = mapper.readValueWithDefaults[ListContainerWithNilAsDefault](emptyArrayFieldJson)
+    result should equal (ListContainerWithNilAsDefault(Nil))
+  }
+
+  it should "ignore defaulted Nil for non-empty array type fields" in {
+    val result = mapper.readValueWithDefaults[ListContainerWithNilAsDefault](intArrayFieldJson)
+    result should equal (ListContainerWithNilAsDefault(List(1, 2, 3)))
+  }
+
+  it should "return defaults if the property is absent" in {
+    val result = mapper.readValueWithDefaults[ListContainerWithSomeDefault](emptyJson)
+    result should equal (ListContainerWithSomeDefault(List("a", "b", "c")))
+  }
+
+  it should "use multiple default parameters from constructor for array typed fields" in {
+    val result = mapper.readValueWithDefaults[MultiValuedListContainerDefaults](multipleArrayFieldsJson)
+    result should equal (MultiValuedListContainerDefaults(List("x", "y", "z"), List()))
+  }
+
   // No tests for the following functions:
   //  def readValue[T: Manifest](src: File): T
   //  def readValue[T: Manifest](src: URL): T
@@ -215,5 +259,10 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
   private val genericMixedFieldJson = """{"first":"firstVal","second":2}"""
   private val toplevelArrayJson = """[{"t":42},{"t":31}]"""
   private val toplevelOptionArrayJson = """["some",null]"""
-
+  private val emptyArrayFieldJson = """{"xs": []}"""
+  private val nullifiedArrayFieldJson = """{"xs": null}"""
+  private val stringArrayFieldJson = """{"xs": ["x", "y", "z"]}"""
+  private val intArrayFieldJson = """{"xs": [1, 2, 3]}"""
+  private val emptyJson = """{}"""
+  private val multipleArrayFieldsJson = """{"xs": ["x", "y", "z"], "ys":[]}"""
 }

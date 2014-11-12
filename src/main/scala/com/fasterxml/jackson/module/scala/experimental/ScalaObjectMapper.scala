@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core._
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
+import com.fasterxml.jackson.module.scala.experimental.util.DefaultParameterValuesSetter
 import com.fasterxml.jackson.module.scala.util.Implicits._
 import com.google.common.cache.{LoadingCache, CacheLoader, CacheBuilder}
 
@@ -194,6 +195,10 @@ trait ScalaObjectMapper {
 
   def readValue[T: Manifest](src: Array[Byte], offset: Int, len: Int): T = {
     readValue(src, offset, len, constructType[T])
+  }
+
+  def readValueWithDefaults[T: Manifest](content: String): T = {
+    DefaultParameterValuesSetter(readValue(content, constructType[T]))
   }
 
   /*
