@@ -1,17 +1,13 @@
-package com.fasterxml.jackson.module.scala.deser
+package com.fasterxml.jackson
+package module.scala
+package deser
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.scalatest.junit.JUnitRunner
+import annotation.JsonProperty
+import databind.{ObjectReader, JsonMappingException, ObjectMapper, PropertyNamingStrategy}
+import databind.annotation.JsonDeserialize
+
 import org.junit.runner.RunWith
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import org.scalatest.junit.JUnitRunner
 
 object CaseClassDeserializerTest
 {
@@ -48,7 +44,7 @@ object CaseClassDeserializerTest
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest {
-  import CaseClassDeserializerTest._
+  import com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerTest._
 
 
   def module = DefaultScalaModule
@@ -119,7 +115,8 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   it should "support serializing into instance var properties" in {
     val bean = new Bean("ctor")
-    mapper.reader(bean.getClass).withValueToUpdate(bean).readValue("""{"prop":"readValue"}""")
+    val reader: ObjectReader = mapper.reader(bean.getClass)
+    reader.withValueToUpdate(bean).readValue("""{"prop":"readValue"}""")
     bean.prop should be ("readValue")
   }
 
