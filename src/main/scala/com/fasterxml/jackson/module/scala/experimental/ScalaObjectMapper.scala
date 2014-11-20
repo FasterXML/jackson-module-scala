@@ -10,13 +10,6 @@ import com.fasterxml.jackson.databind.jsonschema.JsonSchema
 import com.fasterxml.jackson.module.scala.util.Implicits._
 import com.google.common.cache.{CacheBuilder, LoadingCache}
 
-import scala.language.existentials
-import scala.reflect.api.Symbols
-import scala.reflect.{ClassTag, classTag}
-import scala.reflect.runtime.currentMirror
-import scala.reflect.runtime.{universe => ru}
-import ru.TypeRefTag // not unused, required for patmat
-
 trait ScalaObjectMapper {
   self: ObjectMapper =>
 
@@ -36,19 +29,19 @@ trait ScalaObjectMapper {
    * @tparam MixinSource Class (or interface) whose annotations are to
    *                     be "added" to target's annotations, overriding as necessary
    */
-  final def addMixin[Target: ClassTag, MixinSource: ClassTag]() = {
-    addMixIn(classTag[Target].runtimeClass, classTag[MixinSource].runtimeClass)
+  final def addMixin[Target: Manifest, MixinSource: Manifest]() = {
+    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
 
   /**
    * @deprecated Since 2.5: replaced by a fluent form of the method; { @link #addMixIn(Class, Class)}.
    */
-  final def addMixInAnnotations[Target: ClassTag, MixinSource: ClassTag]() = {
-    addMixIn(classTag[Target].runtimeClass, classTag[MixinSource].runtimeClass)
+  final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() = {
+    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
 
-  final def findMixInClassFor[T: ClassTag]: Class[_] = {
-    findMixInClassFor(classTag[T].runtimeClass)
+  final def findMixInClassFor[T: Manifest]: Class[_] = {
+    findMixInClassFor(manifest[T].runtimeClass)
   }
 
   /*
@@ -62,31 +55,32 @@ trait ScalaObjectMapper {
    * type (typically <code>java.lang.Class</code>), but without explicit
    * context.
    */
-  private[this] val typeCache: LoadingCache[ru.Type, JavaType] =
-    CacheBuilder.newBuilder().maximumSize(DEFAULT_CACHE_SIZE).build(constructType2 _)
-
-  private def constructType2(t: ru.Type): JavaType = {
-    t match {
-      case ru.TypeRef(_, sym, args) =>
-        val clazz = if (isAnyRef(t)) {
-          currentMirror.runtimeClass(t)
-        } else {
-          boxPrimitive(sym)
+  private[this] val typeCache: LoadingCache[Manifest[_], JavaType] =
+    CacheBuilder.newBuilder().maximumSize(DEFAULT_CACHE_SIZE).build { m: Manifest[_] =>
+      val clazz = m.runtimeClass
+      if(isArray(clazz)) {
+        //It looks like getting the component type is the best we can do, at
+        //least if we also want to support 2.9.x - scala 2.10.x adds full
+        //type info in the typeArguments field of an Array's manifest.
+        getTypeFactory.constructArrayType(clazz.getComponentType)
+      } else if(isMapLike(clazz)) {
+        val typeArguments = m.typeArguments.map(constructType(_)).toArray
+        if(typeArguments.length != 2) {
+          throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
         }
-        val typeArguments: Seq[JavaType] = args.map(typeCache.get)
-        if (isArray(t)) {
-          getTypeFactory.constructArrayType(typeArguments(0))
-        } else if (isMapLike(t)) {
-          getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
-        } else if (isCollectionLike(t)) {
-          getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
-        } else {
-          getTypeFactory.constructParametrizedType(clazz, clazz, typeArguments.toArray: _*)
+        getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
+      } else if(isCollectionLike(clazz)) {
+        val typeArguments = m.typeArguments.map(constructType(_)).toArray
+        if(typeArguments.length != 1) {
+          throw new IllegalArgumentException("Need exactly 1 type parameter for collection like types ("+clazz.getName+")")
         }
+        getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
+      } else {
+        val typeArguments = m.typeArguments.map(constructType(_)).toArray
+        getTypeFactory.constructParametrizedType(clazz, clazz, typeArguments: _*)
+      }
     }
-  }
-
-  def constructType[T](implicit t: ru.TypeTag[T]): JavaType = typeCache.get(t.tpe)
+  def constructType[T](implicit m: Manifest[T]): JavaType = typeCache.get(m)
 
   /*
    **********************************************************
@@ -103,7 +97,7 @@ trait ScalaObjectMapper {
    * and specifically needs to be used if the root type is a
    * parameterized (generic) container type.
    */
-  def readValue[T: ru.TypeTag](jp: JsonParser): T = {
+  def readValue[T: Manifest](jp: JsonParser): T = {
     readValue(jp, constructType[T])
   }
 
@@ -119,7 +113,7 @@ trait ScalaObjectMapper {
    * <p>
    * Note that [[com.fasterxml.jackson.databind.ObjectReader]] has more complete set of variants.
    */
-  def readValues[T: ru.TypeTag](jp: JsonParser): MappingIterator[T] = {
+  def readValues[T: Manifest](jp: JsonParser): MappingIterator[T] = {
     readValues(jp, constructType[T])
   }
 
@@ -138,8 +132,8 @@ trait ScalaObjectMapper {
    * objectMapper.convertValue(n, valueClass);
    * </pre>
    */
-  def treeToValue[T: ClassTag](n: TreeNode): T = {
-    treeToValue(n, classTag[T].runtimeClass).asInstanceOf[T]
+  def treeToValue[T: Manifest](n: TreeNode): T = {
+    treeToValue(n, manifest[T].runtimeClass).asInstanceOf[T]
   }
 
   /*
@@ -158,8 +152,8 @@ trait ScalaObjectMapper {
    *         given class (potentially serializable), false otherwise (not
    *         serializable)
    */
-  def canSerialize[T: ClassTag]: Boolean = {
-    canSerialize(classTag[T].runtimeClass)
+  def canSerialize[T: Manifest]: Boolean = {
+    canSerialize(manifest[T].runtimeClass)
   }
 
   /**
@@ -172,7 +166,7 @@ trait ScalaObjectMapper {
    *         given class (potentially serializable), false otherwise (not
    *         serializable)
    */
-  def canDeserialize[T: ru.TypeTag]: Boolean = {
+  def canDeserialize[T: Manifest]: Boolean = {
     canDeserialize(constructType[T])
   }
 
@@ -182,31 +176,31 @@ trait ScalaObjectMapper {
    * convenience methods
    **********************************************************
    */
-  def readValue[T: ru.TypeTag](src: File): T = {
+  def readValue[T: Manifest](src: File): T = {
     readValue(src, constructType[T])
   }
 
-  def readValue[T: ru.TypeTag](src: URL): T = {
+  def readValue[T: Manifest](src: URL): T = {
     readValue(src, constructType[T])
   }
 
-  def readValue[T: ru.TypeTag](content: String): T = {
+  def readValue[T: Manifest](content: String): T = {
     readValue(content, constructType[T])
   }
 
-  def readValue[T: ru.TypeTag](src: Reader): T = {
+  def readValue[T: Manifest](src: Reader): T = {
     readValue(src, constructType[T])
   }
 
-  def readValue[T: ru.TypeTag](src: InputStream): T = {
+  def readValue[T: Manifest](src: InputStream): T = {
     readValue(src, constructType[T])
   }
 
-  def readValue[T: ru.TypeTag](src: Array[Byte]): T = {
+  def readValue[T: Manifest](src: Array[Byte]): T = {
     readValue(src, constructType[T])
   }
 
-  def readValue[T: ru.TypeTag](src: Array[Byte], offset: Int, len: Int): T = {
+  def readValue[T: Manifest](src: Array[Byte], offset: Int, len: Int): T = {
     readValue(src, offset, len, constructType[T])
   }
 
@@ -221,14 +215,14 @@ trait ScalaObjectMapper {
    * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectWriter]] that will
    * serialize objects using specified JSON View (filter).
    */
-  def writerWithView[T: ClassTag]: ObjectWriter = {
-    writerWithView(classTag[T].runtimeClass)
+  def writerWithView[T: Manifest]: ObjectWriter = {
+    writerWithView(manifest[T].runtimeClass)
   }
 
   /**
    * @deprecated Since 2.5, use { @link #writerFor(Class)} instead
    */
-  def writerWithType[T: ru.TypeTag]: ObjectWriter = {
+  def writerWithType[T: Manifest]: ObjectWriter = {
     writerFor[T]
   }
 
@@ -243,7 +237,7 @@ trait ScalaObjectMapper {
    *
    * @since 2.5
    */
-  def writerFor[T: ru.TypeTag]: ObjectWriter = {
+  def writerFor[T: Manifest]: ObjectWriter = {
     writerFor(constructType[T])
   }
 
@@ -258,7 +252,7 @@ trait ScalaObjectMapper {
    * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
    * read or update instances of specified type
    */
-  def reader[T: ru.TypeTag]: ObjectReader = {
+  def reader[T: Manifest]: ObjectReader = {
     reader(constructType[T])
   }
 
@@ -266,8 +260,8 @@ trait ScalaObjectMapper {
    * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
    * deserialize objects using specified JSON View (filter).
    */
-  def readerWithView[T: ClassTag]: ObjectReader = {
-    readerWithView(classTag[T].runtimeClass)
+  def readerWithView[T: Manifest]: ObjectReader = {
+    readerWithView(manifest[T].runtimeClass)
   }
 
   /*
@@ -288,7 +282,7 @@ trait ScalaObjectMapper {
    *                                  if so, root cause will contain underlying checked exception data binding
    *                                  functionality threw
    */
-  def convertValue[T: ru.TypeTag](fromValue: Any): T = {
+  def convertValue[T: Manifest](fromValue: Any): T = {
     convertValue(fromValue, constructType[T])
   }
 
@@ -306,8 +300,8 @@ trait ScalaObjectMapper {
    * @return Constructed JSON schema.
    */
   @deprecated("JsonSchema is deprecated in favor of JsonFormatVisitor", "2.2.2")
-  def generateJsonSchema[T: ClassTag]: JsonSchema = {
-    generateJsonSchema(classTag[T].runtimeClass)
+  def generateJsonSchema[T: Manifest]: JsonSchema = {
+    generateJsonSchema(manifest[T].runtimeClass)
   }
 
   /**
@@ -321,44 +315,23 @@ trait ScalaObjectMapper {
    *
    * @since 2.1
    */
-  def acceptJsonFormatVisitor[T: ru.TypeTag](visitor: JsonFormatVisitorWrapper) {
-    acceptJsonFormatVisitor(constructType[T], visitor)
+  def acceptJsonFormatVisitor[T: Manifest](visitor: JsonFormatVisitorWrapper) {
+    acceptJsonFormatVisitor(manifest[T].runtimeClass, visitor)
   }
 
-  private val ANYREF = ru.typeOf[AnyRef]
-  private def isAnyRef(t: ru.Type): Boolean = t <:< ANYREF
-
-  private val ARRAY = ru.typeOf[scala.Array[_]]
-  private def isArray(t: ru.Type): Boolean = t <:< ARRAY
-
-  private val MAP = ru.typeOf[collection.Map[_,_]]
-  private def isMapLike(t: ru.Type): Boolean = t <:< MAP
-
-  private val TRAVERSABLE = ru.typeOf[collection.Traversable[_]]
-  private val OPTION = ru.typeOf[Option[_]]
-  private def isCollectionLike(t: ru.Type): Boolean = t <:< TRAVERSABLE || t <:< OPTION
-
-  // The cake is a lie
-  private val DoubleClass: Symbols # SymbolApi = ru.definitions.DoubleClass
-  private val FloatClass: Symbols # SymbolApi = ru.definitions.FloatClass
-  private val LongClass: Symbols # SymbolApi = ru.definitions.LongClass
-  private val IntClass: Symbols # SymbolApi = ru.definitions.IntClass
-  private val CharClass: Symbols # SymbolApi = ru.definitions.CharClass
-  private val ShortClass: Symbols # SymbolApi = ru.definitions.ShortClass
-  private val ByteClass: Symbols # SymbolApi = ru.definitions.ByteClass
-  private val BooleanClass: Symbols # SymbolApi = ru.definitions.BooleanClass
-
-  private def boxPrimitive(sym: Symbols # SymbolApi) = {
-    sym match {
-      case DoubleClass => classOf[Double]
-      case FloatClass => classOf[Float]
-      case LongClass => classOf[Long]
-      case IntClass => classOf[Int]
-      case CharClass => classOf[Char]
-      case ShortClass => classOf[Short]
-      case ByteClass => classOf[Byte]
-      case BooleanClass => classOf[Boolean]
-      case _ => classOf[AnyRef]
-    }
+  private def isArray(c: Class[_]): Boolean = {
+    c.isArray
   }
+
+  private val MAP = classOf[collection.Map[_,_]]
+  private def isMapLike(c: Class[_]): Boolean = {
+    MAP.isAssignableFrom(c)
+  }
+
+  private val ITERABLE = classOf[collection.Iterable[_]]
+  private val OPTION = classOf[Option[_]]
+  private def isCollectionLike(c: Class[_]): Boolean = {
+    ITERABLE.isAssignableFrom(c) || OPTION.isAssignableFrom(c)
+  }
+
 }
