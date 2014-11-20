@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.module.scala.deser.{ScalaStdValueInstantiatorsModule, UntypedObjectDeserializerModule}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
+import com.fasterxml.jackson.module.scala.modifiers.EitherModule
 
 /**
  * Complete module with support for all features.
@@ -28,6 +29,7 @@ class DefaultScalaModule
      with ScalaStdValueInstantiatorsModule
      with ScalaAnnotationIntrospectorModule
      with UntypedObjectDeserializerModule
+     with EitherModule
 {
   override def getModuleName = "DefaultScalaModule"
 }
