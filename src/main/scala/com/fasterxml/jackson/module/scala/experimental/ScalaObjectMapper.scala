@@ -29,7 +29,14 @@ trait ScalaObjectMapper {
    * @tparam MixinSource Class (or interface) whose annotations are to
    *                     be "added" to target's annotations, overriding as necessary
    */
-  final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() {
+  final def addMixin[Target: Manifest, MixinSource: Manifest]() = {
+    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
+  }
+
+  /**
+   * @deprecated Since 2.5: replaced by a fluent form of the method; { @link #addMixIn(Class, Class)}.
+   */
+  final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() = {
     addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
 
@@ -213,13 +220,25 @@ trait ScalaObjectMapper {
   }
 
   /**
-   * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectWriter]] that will
-   * serialize objects using specified root type, instead of actual
-   * runtime type of value. Type must be a super-type of runtime
-   * type.
+   * @deprecated Since 2.5, use { @link #writerFor(Class)} instead
    */
   def writerWithType[T: Manifest]: ObjectWriter = {
-    writerWithType(constructType[T])
+    writerFor[T]
+  }
+
+  /**
+   * Factory method for constructing {@link ObjectWriter} that will
+   * serialize objects using specified root type, instead of actual
+   * runtime type of value. Type must be a super-type of runtime type.
+   * <p>
+   * Main reason for using this method is performance, as writer is able
+   * to pre-fetch serializer to use before write, and if writer is used
+   * more than once this avoids addition per-value serializer lookups.
+   *
+   * @since 2.5
+   */
+  def writerFor[T: Manifest]: ObjectWriter = {
+    writerFor(constructType[T])
   }
 
   /*
