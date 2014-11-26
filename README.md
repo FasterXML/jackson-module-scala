@@ -65,7 +65,8 @@ Consult the Scaladoc for further details.
 
 # Download, docs
 
-Check out [Wiki].
+Check out [Wiki]. API Scaladocs can be found [on the project site][API] but they are not really
+well suited to end users, as most classes are implementation details of the module.
 
 # Acknowledgements
 
@@ -79,3 +80,4 @@ Check out [Wiki].
 [Java Bean]: http://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
 [Scala]: http://www.scala-lang.org/
 [Wiki]: https://github.com/FasterXML/jackson-module-scala/wiki
+[API]: http://fasterxml.github.io/jackson-module-scala/latest/api/#com.fasterxml.jackson.module.scala.package

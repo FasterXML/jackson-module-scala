@@ -36,3 +36,11 @@ libraryDependencies ++= Seq(
 // resource filtering
 seq(filterSettings: _*)
 
+// site
+site.settings
+
+site.includeScaladoc()
+
+ghpages.settings
+
+git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
