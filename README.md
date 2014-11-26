@@ -31,7 +31,7 @@ issue, but since it's possible to turn this off, be aware that the current
 version will throw an exception if it cannot find the constructor parameter
 names. Future versions may permit configuration to suppress this exception.
 
-[![Build Status](https://travis-ci.org/FasterXML/jackson-module-scala.png?branch=master)](https://travis-ci.org/FasterXML/jackson-module-scala)
+[![Build Status](https://travis-ci.org/FasterXML/jackson-module-scala.svg?branch=2.4)](https://travis-ci.org/FasterXML/jackson-module-scala)
 
 # Usage
 
