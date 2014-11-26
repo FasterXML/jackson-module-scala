@@ -79,7 +79,9 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
   }
 
   override def findCreatorBinding(a: Annotated): JsonCreator.Mode =
-    if (hasCreatorAnnotation(a)) JsonCreator.Mode.PROPERTIES else null
+    paramFor(a) optMap { _.getAnnotation(classOf[JsonCreator]) } map { _.mode } getOrElse {
+      if (hasCreatorAnnotation(a)) JsonCreator.Mode.PROPERTIES else null
+    }
 }
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
