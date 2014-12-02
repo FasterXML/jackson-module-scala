@@ -4,7 +4,6 @@ import ReleaseKeys._
 import ReleaseStateTransformations._
 import Utilities._
 import com.typesafe.sbt.osgi.OsgiKeys
-import com.typesafe.sbt.osgi.OsgiKeys._
 import com.typesafe.sbt.pgp.PgpKeys._
 
 // OSGI bundles
@@ -85,6 +84,7 @@ ReleaseKeys.releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,
   tagRelease,
   publishArtifacts.copy(action = publishSignedAction),
+  Build.generateAndPushDocs,
   setNextVersion,
   commitNextVersion,
   pushChanges

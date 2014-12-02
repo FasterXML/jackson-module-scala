@@ -1,0 +1,19 @@
+This patch release tracks Jackson 2.4. The 2.4 series adds support for
+Scala 2.11, and drops support for Scala 2.9.
+
+## Fixes in 2.4.1
+
+There are no new fixes in this release; it serves to track the 2.4.1 release
+of the upstream Jackson projects.
+
+## Fixes in 2.4.0
+
+* [[gh-134]](https://github.com/FasterXML/jackson-module-scala/issues/134)
+  Instantiation of a Scala class with a single val from a string fails
+
+* [[gh-133]](https://github.com/FasterXML/jackson-module-scala/issues/133)
+  2.11 build
+
+* [[gh-132]](https://github.com/FasterXML/jackson-module-scala/pull/132)
+  treat Option as CollectionLike in ScalaObjectMapper (courtesy of @wpalmeri)
+
