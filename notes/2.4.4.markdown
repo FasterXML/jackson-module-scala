@@ -6,6 +6,12 @@ Scala 2.11, and drops support for Scala 2.9.
 * [[gh-149]](https://github.com/FasterXML/jackson-module-scala/issues/149)
   Use type information to deser `Option` (courtesy of @orac)
 
+* [[gh-148]](https://github.com/FasterXML/jackson-module-scala/issues/148)
+  Performance regression in 2.2.3
+
+* [[gh-145]](https://github.com/FasterXML/jackson-module-scala/issues/145)
+  readValue for `Map[String, Any]` or `List[Any]` is very slow
+
 ## Fixes in 2.4.3
 
 * [[gh-157]](https://github.com/FasterXML/jackson-module-scala/pull/157)

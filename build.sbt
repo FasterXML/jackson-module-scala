@@ -19,16 +19,16 @@ scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "com.fasterxml.jackson.core" % "jackson-core" % "2.4.3",
-    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.4.3",
-    "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.3",
+    "com.fasterxml.jackson.core" % "jackson-core" % "2.4.4",
+    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.4.4",
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.4",
     "com.thoughtworks.paranamer" % "paranamer" % "2.6",
     "com.google.code.findbugs" % "jsr305" % "2.0.1",
     "com.google.guava" % "guava" % "15.0",
     // test dependencies
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.4.2" % "test",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.4.2" % "test",
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.4.2" % "test",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.4.4" % "test",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.4.4" % "test",
+    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.4.4" % "test",
     "org.scalatest" %% "scalatest" % "2.2.1" % "test",
     "junit" % "junit" % "4.11" % "test"
 )
