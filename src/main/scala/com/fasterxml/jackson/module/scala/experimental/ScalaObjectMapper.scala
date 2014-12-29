@@ -219,7 +219,7 @@ trait ScalaObjectMapper {
    * type.
    */
   def writerWithType[T: Manifest]: ObjectWriter = {
-    writerWithType(constructType[T])
+    writerFor(constructType[T])
   }
 
   /*

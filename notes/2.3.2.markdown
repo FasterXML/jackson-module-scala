@@ -1,0 +1,47 @@
+This patch release tracks Jackson 2.3 and fixes a number of issues.
+
+## Fixes in 2.3.2
+
+* [[gh-131]](https://github.com/FasterXML/jackson-module-scala/issues/131)
+  `Map` deserialization loses key type information
+
+* [[gh-130]](https://github.com/FasterXML/jackson-module-scala/issues/130)
+  jackson-module-scala don't include the license file
+
+* [[gh-127]](https://github.com/FasterXML/jackson-module-scala/issues/127)
+  `BigDecimal` fails to deserialize an integer
+
+* [[gh-126]](https://github.com/FasterXML/jackson-module-scala/issues/126)
+  Serializing `Option` with `enableDefaultTyping` fails
+
+* [[gh-125]](https://github.com/FasterXML/jackson-module-scala/issues/125)
+  `JsonTypeInfo` on `Option` doesn't work
+
+* [[gh-124]](https://github.com/FasterXML/jackson-module-scala/issues/124)
+  `@JsonValue` annotation doesn't work with Scala `val` definitions
+
+* [[gh-120]](https://github.com/FasterXML/jackson-module-scala/issues/120)
+  Serializing a concrete class inheriting a trait randomly fails
+
+## Fixes in 2.3.1
+
+* [[gh-116]](https://github.com/FasterXML/jackson-module-scala/issues/116)
+  Deserializing Iterable
+
+* [[gh-105]](https://github.com/FasterXML/jackson-module-scala/issues/105)
+  Deserialization fails for Array[T] in case class
+
+## Fixes in 2.3.0
+
+* [[gh-103]](https://github.com/FasterXML/jackson-module-scala/issues/103)
+  (Regression) Serialization of a class containing Option[JsonNode] fails
+
+* [[gh-102]](https://github.com/FasterXML/jackson-module-scala/issues/102)
+  (Regression) JsonMappingException Argument of constructor has no property name annotation
+
+* [[gh-101]](https://github.com/FasterXML/jackson-module-scala/issues/101)
+  version 2.2.3 can't deserialize some class that verision 2.2.2 can
+
+* [[gh-100]](https://github.com/FasterXML/jackson-module-scala/issues/100)
+  Deserializing SortedSets
+

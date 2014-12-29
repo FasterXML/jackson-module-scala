@@ -23,7 +23,8 @@
 
 package com.fasterxml.jackson.module.scala.introspect
 
-import com.thoughtworks.paranamer.BytecodeReadingParanamer
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass
+import com.thoughtworks.paranamer.{CachingParanamer, BytecodeReadingParanamer}
 import scala.reflect.NameTransformer
 import java.lang.reflect.{Modifier, Field, Constructor, Method}
 import com.google.common.cache.{LoadingCache, CacheBuilder}
