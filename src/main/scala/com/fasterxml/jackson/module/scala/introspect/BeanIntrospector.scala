@@ -23,12 +23,12 @@
 
 package com.fasterxml.jackson.module.scala.introspect
 
-import com.thoughtworks.paranamer.BytecodeReadingParanamer
-import scala.reflect.NameTransformer
-import java.lang.reflect.{Modifier, Field, Constructor, Method}
-import com.google.common.cache.{LoadingCache, CacheBuilder}
+import java.lang.reflect.{Constructor, Field, Method, Modifier}
+
+import com.thoughtworks.paranamer.{BytecodeReadingParanamer, CachingParanamer}
+
 import scala.annotation.tailrec
-import com.fasterxml.jackson.module.scala.util.Implicits._
+import scala.reflect.NameTransformer
 
 //TODO: This might be more efficient/type safe if we used Scala reflection here
 //but we have to support 2.9.x and 2.10.x - once the scala reflection APIs
@@ -37,22 +37,10 @@ import com.fasterxml.jackson.module.scala.util.Implicits._
 
 object BeanIntrospector {
 
-  private [this] val paranamer = new BytecodeReadingParanamer
-  private [this] val ctorParamNamesCache: LoadingCache[Constructor[_],Array[String]] =
-    // TODO: consider module configuration of the cache
-    CacheBuilder.newBuilder
-      .maximumSize(DEFAULT_CACHE_SIZE)
-      .build(paranamer.lookupParameterNames(_: Constructor[_]).map(NameTransformer.decode))
+  private [this] val paranamer = new CachingParanamer(new BytecodeReadingParanamer)
 
   private def getCtorParams(ctor: Constructor[_]): Array[String] =
-    try
-    {
-      ctorParamNamesCache.get(ctor)
-    }
-    catch
-    {
-      case _: Exception => Array.empty
-    }
+    paranamer.lookupParameterNames(ctor, false).map(NameTransformer.decode)
 
   def apply[T <: AnyRef](implicit mf: Manifest[_]): BeanDescriptor = apply[T](mf.runtimeClass)
 

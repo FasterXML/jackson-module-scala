@@ -3,39 +3,43 @@ package introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.PropertyName
+import com.fasterxml.jackson.databind.`type`.ClassKey
 import com.fasterxml.jackson.databind.introspect._
+import com.fasterxml.jackson.databind.util.LRUMap
 import com.fasterxml.jackson.module.scala.util.Implicits._
-import com.google.common.cache.{CacheBuilder, LoadingCache}
 
 import scala.collection.JavaConverters._
 
 object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
 {
-  val descriptors: LoadingCache[Class[_], BeanDescriptor] =
-    CacheBuilder.newBuilder()
-      .maximumSize(DEFAULT_CACHE_SIZE)
-      .build(BeanIntrospector.apply (_:Class[_]))
+  private [this] val _descriptorCache = new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  val classes: LoadingCache[Class[_], AnnotatedClass] =
-    CacheBuilder.newBuilder()
-      .maximumSize(DEFAULT_CACHE_SIZE)
-      .build(AnnotatedClass.constructWithoutSuperTypes(_:Class[_], this, null))
+  private def _descriptorFor(clz: Class[_]): BeanDescriptor = {
+    val key = new ClassKey(clz)
+    var result = _descriptorCache.get(key)
+    if (result == null) {
+      result = BeanIntrospector(clz)
+      _descriptorCache.put(key, result)
+    }
+
+    result
+  }
 
   private def annotatedClassFor(am: AnnotatedMember): AnnotatedClass =
-    classes.get(am.getDeclaringClass)
+    am.getContextClass
 
   private def fieldName(af: AnnotatedField): Option[String] = {
-    val d = descriptors.get(af.getDeclaringClass)
+    val d = _descriptorFor(af.getDeclaringClass)
     d.properties.find(p => p.field.exists(_ == af.getAnnotated)).map(_.name)
   }
 
   private def methodName(am: AnnotatedMethod): Option[String] = {
-    val d = descriptors.get(am.getDeclaringClass)
+    val d = _descriptorFor(am.getDeclaringClass)
     d.properties.find(p => (p.getter ++ p.setter).exists(_ == am.getAnnotated)).map(_.name)
   }
 
   private def paramName(ap: AnnotatedParameter): Option[String] = {
-    val d = descriptors.get(ap.getDeclaringClass)
+    val d = _descriptorFor(ap.getDeclaringClass)
     d.properties.find(p => p.param.exists { cp =>
       cp.constructor == ap.getOwner.getAnnotated && cp.index == ap.getIndex
     }).map(_.name)
@@ -44,7 +48,7 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
   private def paramFor(a: Annotated): Option[AnnotatedParameter] = {
     a match {
       case am: AnnotatedMember =>
-        val d = descriptors.get(am.getDeclaringClass)
+        val d = _descriptorFor(am.getDeclaringClass)
         val prop = d.properties.find(p =>
           (p.field ++ p.getter ++ p.setter ++ p.param).exists(_  == a.getAnnotated)
         )
@@ -72,7 +76,7 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
   override def hasCreatorAnnotation(a: Annotated): Boolean = {
     a match {
       case ac: AnnotatedConstructor =>
-        val d = descriptors.get(ac.getDeclaringClass)
+        val d = _descriptorFor(ac.getDeclaringClass)
         d.properties.exists(p => p.param.exists(_.constructor == ac.getAnnotated))
       case _ => false
     }

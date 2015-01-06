@@ -3,10 +3,8 @@ package module.scala
 package ser
 
 import java.io.ByteArrayOutputStream
-import javax.annotation.Nonnull
 
-import databind.{ObjectMapper, PropertyNamingStrategy}
-
+import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
 import com.google.common.base.Optional
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -15,8 +13,8 @@ import org.scalatest.{Matchers, Outcome, fixture}
 import scala.beans.BeanProperty
 
 class PojoWrittenInScala {
-  @Nonnull @BeanProperty var optFoo: Optional[String] = Optional.absent()
-  @Nonnull @BeanProperty var bar: Int = 0
+  @BeanProperty var optFoo: Optional[String] = Optional.absent()
+  @BeanProperty var bar: Int = 0
 }
 
 @RunWith(classOf[JUnitRunner])

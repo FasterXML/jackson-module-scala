@@ -7,8 +7,6 @@ import com.fasterxml.jackson.core._
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
-import com.fasterxml.jackson.module.scala.util.Implicits._
-import com.google.common.cache.{CacheBuilder, LoadingCache}
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>
@@ -55,32 +53,30 @@ trait ScalaObjectMapper {
    * type (typically <code>java.lang.Class</code>), but without explicit
    * context.
    */
-  private[this] val typeCache: LoadingCache[Manifest[_], JavaType] =
-    CacheBuilder.newBuilder().maximumSize(DEFAULT_CACHE_SIZE).build { m: Manifest[_] =>
-      val clazz = m.runtimeClass
-      if(isArray(clazz)) {
-        //It looks like getting the component type is the best we can do, at
-        //least if we also want to support 2.9.x - scala 2.10.x adds full
-        //type info in the typeArguments field of an Array's manifest.
-        getTypeFactory.constructArrayType(clazz.getComponentType)
-      } else if(isMapLike(clazz)) {
-        val typeArguments = m.typeArguments.map(constructType(_)).toArray
-        if(typeArguments.length != 2) {
-          throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
-        }
-        getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
-      } else if(isCollectionLike(clazz)) {
-        val typeArguments = m.typeArguments.map(constructType(_)).toArray
-        if(typeArguments.length != 1) {
-          throw new IllegalArgumentException("Need exactly 1 type parameter for collection like types ("+clazz.getName+")")
-        }
-        getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
-      } else {
-        val typeArguments = m.typeArguments.map(constructType(_)).toArray
-        getTypeFactory.constructParametrizedType(clazz, clazz, typeArguments: _*)
+  def constructType[T](implicit m: Manifest[T]): JavaType = {
+    val clazz = m.runtimeClass
+    if(isArray(clazz)) {
+      //It looks like getting the component type is the best we can do, at
+      //least if we also want to support 2.9.x - scala 2.10.x adds full
+      //type info in the typeArguments field of an Array's manifest.
+      getTypeFactory.constructArrayType(clazz.getComponentType)
+    } else if(isMapLike(clazz)) {
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if(typeArguments.length != 2) {
+        throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
       }
+      getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
+    } else if(isCollectionLike(clazz)) {
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if(typeArguments.length != 1) {
+        throw new IllegalArgumentException("Need exactly 1 type parameter for collection like types ("+clazz.getName+")")
+      }
+      getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
+    } else {
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      getTypeFactory.constructParametrizedType(clazz, clazz, typeArguments: _*)
     }
-  def constructType[T](implicit m: Manifest[T]): JavaType = typeCache.get(m)
+  }
 
   /*
    **********************************************************
