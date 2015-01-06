@@ -1,16 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.JsonParser;
-
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-;
-import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
-
-import com.fasterxml.jackson.databind.`type`.CollectionLikeType;
-
+import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
-import deser.{ResolvableDeserializer, ContextualDeserializer, Deserializers}
 
 private class OptionDeserializer(elementType: JavaType,
                                  valueTypeDeser: Option[TypeDeserializer],
@@ -34,7 +30,7 @@ private class OptionDeserializer(elementType: JavaType,
         deser1
       }
     } else {
-      Option(ctxt.handleSecondaryContextualization(deser1.get, property))
+      Option(ctxt.handleSecondaryContextualization(deser1.get, property, elementType))
     }
     if (deser2 != elementDeser || property != beanProperty.orNull || valueTypeDeser != typeDeser)
       new OptionDeserializer(elementType, typeDeser, Option(property), deser2.asInstanceOf[Option[JsonDeserializer[AnyRef]]])
