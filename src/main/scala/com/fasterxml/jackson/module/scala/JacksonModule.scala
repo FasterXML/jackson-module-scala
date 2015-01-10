@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.Version
 
-import com.fasterxml.jackson.databind.Module
+import com.fasterxml.jackson.databind.{JsonMappingException, Module}
 import com.fasterxml.jackson.databind.Module.SetupContext
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.ser.{Serializers, BeanSerializerModifier}
@@ -36,6 +36,10 @@ object JacksonModule {
   }
 }
 
+object VersionExtractor {
+  def unapply(v: Version) = Some(v.getMajorVersion, v.getMinorVersion)
+}
+
 trait JacksonModule extends Module {
 
   private val initializers = Seq.newBuilder[SetupContext => Unit]
@@ -44,7 +48,27 @@ trait JacksonModule extends Module {
 
   def version = JacksonModule.version
 
-  def setupModule(context: SetupContext) { initializers result() foreach (_ apply context) }
+  def setupModule(context: SetupContext) {
+    val MajorVersion = version.getMajorVersion
+    val MinorVersion = version.getMinorVersion
+    context.getMapperVersion match {
+      case version@VersionExtractor(MajorVersion, minor) if minor < MinorVersion =>
+        throw new JsonMappingException("Jackson version is too old " + version)
+      case version@VersionExtractor(MajorVersion, minor) =>
+        // Under semantic versioning, this check would not be needed; however Jackson
+        // occasionally has functionally breaking changes across minor versions
+        // (2.4 -> 2.5 as an example). This may be the fault of the Scala module
+        // depending on implementation details, so for now we'll just declare ourselves
+        // as incompatible and move on.
+        if (minor > MinorVersion) {
+          throw new JsonMappingException("Incompatible Jackson version: " + version)
+        }
+      case version =>
+        throw new JsonMappingException("Incompatible Jackson version: " + version)
+    }
+
+    initializers result() foreach (_ apply context)
+  }
 
   protected def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
   protected def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
