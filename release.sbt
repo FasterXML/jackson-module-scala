@@ -1,8 +1,7 @@
-import sbtrelease._
-import ReleasePlugin._
+import sbtrelease.ReleasePlugin._
 import ReleaseKeys._
-import ReleaseStateTransformations._
-import Utilities._
+import sbtrelease.ReleaseStateTransformations._
+import sbtrelease.Utilities._
 import com.typesafe.sbt.osgi.OsgiKeys
 import com.typesafe.sbt.pgp.PgpKeys._
 
@@ -69,14 +68,14 @@ pomExtra := {
 releaseSettings
 
 // bump bugfix on release
-nextVersion := { ver => Version(ver).map(_.bumpBugfix.asSnapshot.string).getOrElse(versionFormatError) }
+nextVersion := { ver => sbtrelease.Version(ver).map(_.bumpBugfix.asSnapshot.string).getOrElse(sbtrelease.versionFormatError) }
 
 // use maven style tag name
 tagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
 
 // Customized release process
 
-ReleaseKeys.releaseProcess := Seq[ReleaseStep](
+ReleaseKeys.releaseProcess := Seq[sbtrelease.ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
   runTest,
