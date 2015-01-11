@@ -63,6 +63,17 @@ val myMap = mapper.readValue[Map[String,Tuple2[Int,Int]]](src)
 
 Consult the Scaladoc for further details.
 
+# Building
+
+The master branch often depends on SNAPSHOT versions of the core Jackson projects,
+which are published to the Sonatype OSS Repository. To make these dependencies available,
+create a file called `sonatype.sbt` in the same directory as `build.sbt` with the following
+content. The project `.gitignore` file intentionally prevents this file from being checked in.
+
+``` scala
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+```
+
 # Download, docs
 
 Check out [Wiki]. API Scaladocs can be found [on the project site][API] but they are not really
