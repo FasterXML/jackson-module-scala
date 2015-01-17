@@ -31,8 +31,14 @@ libraryDependencies ++= Seq(
     "junit" % "junit" % "4.11" % "test"
 )
 
-// resource filtering
-seq(filterSettings: _*)
+// build.properties
+resourceGenerators in Compile <+=
+  (resourceManaged in Compile, version, organization, name) map { (dir, v, o, n) =>
+    val file = dir / "com" / "fasterxml" / "jackson" / "module" / "scala" / "build.properties"
+    val contents = "version=%s\ngroupId=%s\nartifactId=%s\n".format(v, o, n)
+    IO.write(file, contents)
+    Seq(file)
+  }
 
 // site
 site.settings
