@@ -6,12 +6,13 @@ import com.typesafe.sbt.osgi.OsgiKeys
 import com.typesafe.sbt.pgp.PgpKeys._
 
 // OSGI bundles
-
 osgiSettings
 
 OsgiKeys.exportPackage := Seq(
   "com.fasterxml.jackson.module.scala.*"
 )
+
+OsgiKeys.privatePackage := Nil
 
 // publishing
 publishMavenStyle := true
@@ -73,24 +74,7 @@ nextVersion := { ver => sbtrelease.Version(ver).map(_.bumpBugfix.asSnapshot.stri
 // use maven style tag name
 tagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
 
-// Customized release process
+// sign artifacts
 
-ReleaseKeys.releaseProcess := Seq[sbtrelease.ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  publishArtifacts.copy(action = publishSignedAction),
-  Build.generateAndPushDocs,
-  setNextVersion,
-  commitNextVersion,
-  pushChanges
-)
+publishArtifactsAction := PgpKeys.publishSigned.value
 
-lazy val publishSignedAction = { st: State =>
-  val extracted = st.extract
-  val ref = extracted.get(thisProjectRef)
-  extracted.runAggregated(publishSigned in Global in ref, st)
-}
