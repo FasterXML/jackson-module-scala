@@ -1,12 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FlatSpec
-import org.scalatest.junit.JUnitRunner
-import org.junit.runner.RunWith
-import com.fasterxml.jackson.module.scala.{JsonScalaEnumeration, DefaultScalaModule, Weekday}
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration, Weekday}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+
+import scala.annotation.meta.beanGetter
+import scala.beans.BeanProperty
 
 class EnumContainer {
 
@@ -24,9 +24,21 @@ class EnumMapHolder {
 
 }
 
+object EnumerationDeserializerTest  {
+  trait BeanPropertyEnumMapHolder {
+
+    @(JsonScalaEnumeration @beanGetter)(classOf[WeekdayType])
+    @BeanProperty
+    var weekdayMap: Map[Weekday.Value, String] = Map.empty
+
+  }
+
+  class HolderImpl extends BeanPropertyEnumMapHolder
+}
 
 @RunWith(classOf[JUnitRunner])
 class EnumerationDeserializerTest extends DeserializerTest {
+  import EnumerationDeserializerTest._
 
   lazy val module = DefaultScalaModule
 
@@ -43,7 +55,12 @@ class EnumerationDeserializerTest extends DeserializerTest {
 
   it should "deserialize an annotated Enumeration as a key" in {
     val result = deserialize[EnumMapHolder](weekdayMapJson)
-    result.weekdayMap should contain key (Weekday.Mon)
+    result.weekdayMap should contain key Weekday.Mon
+  }
+
+  it should "locate the annotation on BeanProperty fields" in {
+    val result = deserialize[HolderImpl](weekdayMapJson)
+    result.weekdayMap should contain key Weekday.Mon
   }
 
 	val fridayEnumJson = """{"day": {"enumClass":"com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}}"""
