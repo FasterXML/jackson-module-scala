@@ -19,9 +19,9 @@ scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "com.fasterxml.jackson.core" % "jackson-core" % "2.5.0",
+    "com.fasterxml.jackson.core" % "jackson-core" % "2.6.0-SNAPSHOT",
     "com.fasterxml.jackson.core" % "jackson-annotations" % "2.5.0",
-    "com.fasterxml.jackson.core" % "jackson-databind" % "2.5.0",
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.0-SNAPSHOT",
     "com.thoughtworks.paranamer" % "paranamer" % "2.6",
     // test dependencies
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.5.0" % "test",
