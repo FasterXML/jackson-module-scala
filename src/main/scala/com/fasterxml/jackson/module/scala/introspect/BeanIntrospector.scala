@@ -112,6 +112,10 @@ object BeanIntrospector {
       findMethod(cls, propertyName).filter(isAcceptableGetter)
     }
 
+    def findBeanGetter(cls: Class[_], propertyName: String): Option[Method] = {
+      findMethod(cls, "get" + propertyName.capitalize).filter(isAcceptableGetter)
+    }
+
     //True if the method fits the 'getter' pattern
     def isAcceptableGetter(m: Method): Boolean = {
       isAcceptableMethod(m) && m.getParameterTypes.length == 0 && m.getReturnType != Void.TYPE
@@ -119,6 +123,10 @@ object BeanIntrospector {
 
     def findSetter(cls: Class[_], propertyName: String): Option[Method] = {
       findMethod(cls, propertyName + "_=").filter(isAcceptableSetter)
+    }
+
+    def findBeanSetter(cls: Class[_], propertyName: String): Option[Method] = {
+      findMethod(cls, "set" + propertyName.capitalize).filter(isAcceptableSetter)
     }
 
     //True if the method fits the 'setter' pattern
@@ -162,7 +170,9 @@ object BeanIntrospector {
       name = maybePrivateName(field)
       if !name.contains('$')
       if isAcceptableField(field)
-    } yield PropertyDescriptor(name, findConstructorParam(hierarchy.head, name), Some(field), findGetter(cls, name), findSetter(cls, name))
+      beanGetter = findBeanGetter(cls, name)
+      beanSetter = findBeanSetter(cls, name)
+    } yield PropertyDescriptor(name, findConstructorParam(hierarchy.head, name), Some(field), findGetter(cls, name), findSetter(cls, name), beanGetter, beanSetter)
 
     //this will create properties for all methods with a non-Unit/Void return type and no arguments
     //that also have a setter present that matches the pattern 'propertyName'+'_='.
@@ -184,7 +194,9 @@ object BeanIntrospector {
       if !name.contains('$')
       if !fields.exists(_.name == name)
       setter <- findSetter(cls, name)
-    } yield PropertyDescriptor(name, None, None, Some(getter), Some(setter))
+      beanGetter = findBeanGetter(cls, name)
+      beanSetter = findBeanSetter(cls, name)
+    } yield PropertyDescriptor(name, None, None, Some(getter), Some(setter), beanGetter, beanSetter)
 
 
     BeanDescriptor(cls, fields ++ methods)

@@ -25,7 +25,7 @@ class TestSyntheticBridgeMethods extends BaseSpec with LoneElement with Inside {
   it should "correctly find properties that have bridge or synthetic method overloads" in {
     val beanDesc = BeanIntrospector[Inner](classOf[Inner])
 
-    inside (beanDesc.properties.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (beanDesc.properties.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "prop"
       p shouldBe empty
       f shouldBe defined

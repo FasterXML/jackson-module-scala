@@ -1,21 +1,24 @@
 package com.fasterxml.jackson.module.scala
 package util
 
-import Implicits._
+import java.lang.reflect.ParameterizedType
 
 import com.fasterxml.jackson.databind.BeanProperty
-import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
-import java.lang.reflect.ParameterizedType
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 
 object EnumResolver {
 
   def apply(property: BeanProperty): Option[EnumResolver] = {
-    Option(property).optMap(_.getAnnotation(classOf[JsonScalaEnumeration]))
-      .map { a =>
-        val pt = a.value().getGenericSuperclass.asInstanceOf[ParameterizedType]
-        val args = pt.getActualTypeArguments
-        apply(args(0).asInstanceOf[Class[Enumeration]])
-      }
+    Option(property)
+      .flatMap(p => ScalaAnnotationIntrospector.propertyFor(p.getMember))
+      .flatMap(_.findAnnotation[JsonScalaEnumeration])
+      .map(a => apply(a))
+  }
+
+  def apply(a: JsonScalaEnumeration): EnumResolver = {
+    val pt = a.value().getGenericSuperclass.asInstanceOf[ParameterizedType]
+    val args = pt.getActualTypeArguments
+    apply(args(0).asInstanceOf[Class[Enumeration]])
   }
 
   def apply[T <: Enumeration](cls: Class[T]): EnumResolver = {

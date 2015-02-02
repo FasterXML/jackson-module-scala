@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumerat
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-import scala.annotation.meta.beanGetter
 import scala.beans.BeanProperty
 
 class EnumContainer {
@@ -27,8 +26,8 @@ class EnumMapHolder {
 object EnumerationDeserializerTest  {
   trait BeanPropertyEnumMapHolder {
 
-    @(JsonScalaEnumeration @beanGetter)(classOf[WeekdayType])
     @BeanProperty
+    @JsonScalaEnumeration(classOf[WeekdayType])
     var weekdayMap: Map[Weekday.Value, String] = Map.empty
 
   }
@@ -38,7 +37,7 @@ object EnumerationDeserializerTest  {
 
 @RunWith(classOf[JUnitRunner])
 class EnumerationDeserializerTest extends DeserializerTest {
-  import EnumerationDeserializerTest._
+  import com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerTest._
 
   lazy val module = DefaultScalaModule
 
