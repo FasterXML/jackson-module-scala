@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.util.LRUMap
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
 import scala.collection.JavaConverters._
+import scala.language.postfixOps
 
 object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
 {
@@ -45,14 +46,27 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
     }).map(_.name)
   }
 
+  def propertyFor(a: Annotated): Option[PropertyDescriptor] = {
+    a match {
+      case ap: AnnotatedParameter =>
+        val d = _descriptorFor(ap.getDeclaringClass)
+        d.properties.find(p =>
+          p.param.exists { cp =>
+            (cp.constructor == ap.getOwner.getAnnotated) && (cp.index == ap.getIndex)
+          }
+        )
+      case am: AnnotatedMember =>
+        val d = _descriptorFor(am.getDeclaringClass)
+        d.properties.find(p =>
+          (p.field ++ p.getter ++ p.setter ++ p.param ++ p.beanGetter ++ p.beanSetter).exists(_  == a.getAnnotated)
+        )
+    }
+  }
+
   private def paramFor(a: Annotated): Option[AnnotatedParameter] = {
     a match {
       case am: AnnotatedMember =>
-        val d = _descriptorFor(am.getDeclaringClass)
-        val prop = d.properties.find(p =>
-          (p.field ++ p.getter ++ p.setter ++ p.param).exists(_  == a.getAnnotated)
-        )
-        prop.flatMap(_.param).flatMap { cp =>
+        propertyFor(a).flatMap(_.param).flatMap { cp =>
           annotatedClassFor(am)
             .getConstructors.asScala.find(_.getAnnotated == cp.constructor)
             .map(_.getParameter(cp.index))

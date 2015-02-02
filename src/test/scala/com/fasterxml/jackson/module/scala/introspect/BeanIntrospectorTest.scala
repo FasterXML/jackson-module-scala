@@ -77,7 +77,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p shouldBe empty
       f.value should have (decodedName ("field-name"))
@@ -95,7 +95,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p shouldBe empty
       f.value should have (decodedName ("field-name"))
@@ -113,7 +113,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p shouldBe empty
       f.value should have (decodedName ("field-name"))
@@ -132,7 +132,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p shouldBe empty
       f shouldBe empty
@@ -147,7 +147,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p.value should have ('index (0))
       f.value should have (decodedName ("field-name"))
@@ -162,7 +162,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p.value should have ('index (0))
       f.value should have (decodedName ("field-name"))
@@ -177,7 +177,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p.value should have ('index (0))
       f.value should have (decodedName ("field-name"))
@@ -192,7 +192,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p.value should have ('index (0))
       f.value should have (decodedName ("field-name"))
@@ -207,7 +207,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p.value should have ('index (0))
       f.value should have (decodedName ("field-name"))
@@ -222,7 +222,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field-name"
       p shouldBe empty
       f shouldBe empty
@@ -237,7 +237,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
       n shouldBe "field"
       p should be ('defined)
       f.value should have ('name ("field"))
@@ -252,7 +252,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
     val props = beanDesc.properties
 
-    inside (props.loneElement) { case PropertyDescriptor(n, p, f, g, s) =>
+    inside (props.loneElement) { case PropertyDescriptor(n, p, f, g, s, _, _) =>
       n shouldBe "included"
       p shouldBe empty
       f.value should have ('name ("included"))
