@@ -12,10 +12,14 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
 // Ensure jvm 1.6 for java
-// javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
+javacOptions ++= Seq(
+  "-source", "1.6",
+  "-target", "1.6",
+  "-bootclasspath", (new File(System.getenv("JAVA6_HOME")) / "jre" / "lib" / "rt.jar").toString
+)
 
 // Try to future-proof scala jvm targets, in case some future scala version makes 1.7 a default
-// scalacOptions += "-target:jvm-1.6"
+scalacOptions += "-target:jvm-1.6"
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
