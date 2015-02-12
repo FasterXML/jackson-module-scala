@@ -14,7 +14,7 @@ object UntypedObjectDeserializer
   lazy val MAP = new TypeReference[collection.Map[String,Any]] {}
 }
 
-private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer {
+private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer(null, null) {
 
   private var _mapDeser: JsonDeserializer[AnyRef] = _
   private var _listDeser: JsonDeserializer[AnyRef] = _
