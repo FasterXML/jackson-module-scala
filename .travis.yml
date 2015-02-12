@@ -9,7 +9,7 @@ sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatyp
 before_script:
   - jdk_switcher use openjdk6
   - export JAVA6_HOME=$JAVA_HOME
-  - jdk_switcher use openjdk8
+  - jdk_switcher use oraclejdk8
 
 after_success:
   - >
