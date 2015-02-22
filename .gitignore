@@ -12,7 +12,7 @@ syntax: glob
 lib_managed
 project/boot
 project/target
-target
+target/
 logs
 
 # IDEA

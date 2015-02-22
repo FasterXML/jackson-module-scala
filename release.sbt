@@ -1,23 +1,20 @@
-import sbtrelease.ReleasePlugin._
-import ReleaseKeys._
-import sbtrelease.ReleaseStateTransformations._
-import sbtrelease.Utilities._
 import com.typesafe.sbt.osgi.OsgiKeys
-import com.typesafe.sbt.pgp.PgpKeys._
+import sbtrelease.ReleasePlugin.ReleaseKeys._
+import sbtrelease.ReleasePlugin._
 
 // OSGI bundles
 osgiSettings
 
-OsgiKeys.exportPackage := Seq(
+OsgiKeys.exportPackage in ThisBuild := Seq(
   "com.fasterxml.jackson.module.scala.*"
 )
 
-OsgiKeys.privatePackage := Nil
+OsgiKeys.privatePackage in ThisBuild := Nil
 
 // publishing
-publishMavenStyle := true
+publishMavenStyle in ThisBuild := true
 
-publishTo <<= version { v =>
+publishTo in ThisBuild <<= version { v =>
   val nexus = "https://oss.sonatype.org/"
   if (v.trim.endsWith("SNAPSHOT"))
     Some("snapshots" at nexus + "content/repositories/snapshots")
@@ -25,11 +22,11 @@ publishTo <<= version { v =>
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
-publishArtifact in Test := false
+publishArtifact in (ThisBuild, Test) := false
 
-pomIncludeRepository := { _ => false }
+pomIncludeRepository in ThisBuild := { _ => false }
 
-pomExtra := {
+pomExtra in ThisBuild := {
   <url>http://wiki.fasterxml.com/JacksonModuleScala</url>
   <licenses>
     <license>
@@ -76,5 +73,5 @@ tagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
 
 // sign artifacts
 
-publishArtifactsAction := PgpKeys.publishSigned.value
+publishArtifactsAction in ThisBuild := PgpKeys.publishSigned.value
 
