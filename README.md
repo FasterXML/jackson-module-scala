@@ -61,7 +61,7 @@ mapper.registerModule(DefaultScalaModule)
 val myMap = mapper.readValue[Map[String,Tuple2[Int,Int]]](src)
 ```
 
-Consult the Scaladoc for further details.
+Consult the [Scaladoc](http://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
 
 # Building
 
