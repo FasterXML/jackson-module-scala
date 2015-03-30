@@ -31,12 +31,14 @@ private class TupleDeserializer(javaType: JavaType,
 
     val paramDesers = paramTypes map (ctxt.findContextualValueDeserializer(_, property))
 
-    val typeDesers = Option(property).map { p =>
+    val typeDesers: Seq[TypeDeserializer] = {
       val factory = BeanDeserializerFactory.instance
-      paramTypes map { pt =>
-        factory.findPropertyTypeDeserializer(ctxt.getConfig, pt, property.getMember)
+      if (property != null) {
+        paramTypes map (factory.findPropertyTypeDeserializer(ctxt.getConfig, _, property.getMember))
+      } else {
+        paramTypes map (factory.findTypeDeserializer(config, _))
       }
-    } getOrElse Stream.fill(paramTypes.size)(null)
+    }
 
     new TupleDeserializer(javaType, config, paramDesers, typeDesers)
   }
