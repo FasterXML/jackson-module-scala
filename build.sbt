@@ -1,3 +1,5 @@
+import java.io.File
+
 // Basic facts
 name := "jackson-module-scala"
 
@@ -12,10 +14,12 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
 // Ensure jvm 1.6 for java
+lazy val java6Home = new File(System.getenv("JAVA6_HOME"))
+
 javacOptions ++= Seq(
   "-source", "1.6",
   "-target", "1.6",
-  "-bootclasspath", (new File(System.getenv("JAVA6_HOME")) / "jre" / "lib" / "rt.jar").toString
+  "-bootclasspath", Array((java6Home / "jre" / "lib" / "rt.jar").toString, (java6Home / ".." / "Classes"/ "classes.jar").toString).mkString(File.pathSeparator)
 )
 
 // Try to future-proof scala jvm targets, in case some future scala version makes 1.7 a default
