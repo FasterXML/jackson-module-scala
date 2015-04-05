@@ -1,0 +1,38 @@
+DEPENDENCIES
+  git
+  java
+  maven
+  sbt-extras
+
+GRAPH
+  7-zip (1.0.2)
+    windows (>= 1.2.2)
+  ark (0.9.0)
+    7-zip (>= 0.0.0)
+    windows (>= 0.0.0)
+  build-essential (2.2.2)
+  chef_handler (1.1.6)
+  dmg (2.2.2)
+  git (4.1.0)
+    build-essential (>= 0.0.0)
+    dmg (>= 0.0.0)
+    runit (>= 1.0)
+    windows (>= 0.0.0)
+    yum (~> 3.0)
+    yum-epel (>= 0.0.0)
+  java (1.31.0)
+  maven (1.3.0)
+    ark (~> 0.4)
+    java (~> 1.13)
+    windows (>= 0.0.0)
+  runit (1.5.18)
+    build-essential (>= 0.0.0)
+    yum (~> 3.0)
+    yum-epel (>= 0.0.0)
+  sbt-extras (0.4.0)
+    java (>= 0.0.0)
+  windows (1.36.6)
+    chef_handler (>= 0.0.0)
+  yum (3.5.3)
+  yum-epel (0.6.0)
+    yum (~> 3.0)
