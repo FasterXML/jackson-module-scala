@@ -46,6 +46,19 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
     }).map(_.name)
   }
 
+  private def isScalaPackage(pkg: Option[Package]): Boolean =
+    pkg flatMap { _.getName.split("\\.").headOption } exists { _ == "scala" }
+
+  private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
+    cls.hasSignature && !isScalaPackage(Option(cls.getPackage))
+
+  private def isScala(a: Annotated): Boolean = {
+    a match {
+      case ac: AnnotatedClass => isMaybeScalaBeanType(ac.getAnnotated)
+      case am: AnnotatedMember => isMaybeScalaBeanType(am.getContextClass.getAnnotated)
+    }
+  }
+
   def propertyFor(a: Annotated): Option[PropertyDescriptor] = {
     a match {
       case ap: AnnotatedParameter =>
@@ -88,6 +101,10 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
     paramFor(member).flatMap(p => Option(super.findNameForSerialization(p))).orNull
 
   override def hasCreatorAnnotation(a: Annotated): Boolean = {
+    if (!isScala(a)) {
+      return super.hasCreatorAnnotation(a)
+    }
+
     a match {
       case ac: AnnotatedConstructor =>
         val d = _descriptorFor(ac.getDeclaringClass)

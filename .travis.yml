@@ -1,6 +1,8 @@
 language: scala
 jdk:
    - oraclejdk8
+   - openjdk6
+
 scala:
    - 2.10.4
    - 2.11.4
@@ -9,11 +11,11 @@ sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatyp
 before_script:
   - jdk_switcher use openjdk6
   - export JAVA6_HOME=$JAVA_HOME
-  - jdk_switcher use oraclejdk8
+  - jdk_switcher use $TRAVIS_JDK_VERSION
 
 after_success:
   - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' &&
+      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'openjdk6' &&
       sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"'
       'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
       ++${TRAVIS_SCALA_VERSION}
