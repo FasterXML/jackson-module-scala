@@ -31,3 +31,7 @@ logs
 
 # snapshots
 sonatype.sbt
+
+# Vagrant
+/.vagrant/
+

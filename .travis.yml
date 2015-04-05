@@ -1,6 +1,8 @@
 language: scala
 jdk:
    - oraclejdk8
+   - openjdk6
+
 scala:
    - 2.10.4
    - 2.11.4
@@ -9,7 +11,7 @@ sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatyp
 before_script:
   - jdk_switcher use openjdk6
   - export JAVA6_HOME=$JAVA_HOME
-  - jdk_switcher use oraclejdk8
+  - jdk_switcher use $TRAVIS_JDK_VERSION
 
 after_success:
   - >
