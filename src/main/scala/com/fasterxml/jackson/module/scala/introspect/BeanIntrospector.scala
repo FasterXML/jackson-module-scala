@@ -83,8 +83,8 @@ object BeanIntrospector {
 
     def isNotSyntheticOrBridge(m: Method): Boolean = !(m.isBridge || m.isSynthetic)
 
-    def findMethod(cls: Class[_], name: String): Option[Method] =
-      listMethods(cls).filter(isNotSyntheticOrBridge).find(m => NameTransformer.decode(m.getName) == name).headOption
+    def findMethod(cls: Class[_], name: String): Seq[Method] =
+      listMethods(cls).filter(isNotSyntheticOrBridge).filter(m => NameTransformer.decode(m.getName) == name)
 
     def listFields(cls: Class[_]): Stream[Field] = cls match {
       case null => Stream.empty
@@ -109,11 +109,11 @@ object BeanIntrospector {
     }
 
     def findGetter(cls: Class[_], propertyName: String): Option[Method] = {
-      findMethod(cls, propertyName).filter(isAcceptableGetter)
+      findMethod(cls, propertyName).find(isAcceptableGetter)
     }
 
     def findBeanGetter(cls: Class[_], propertyName: String): Option[Method] = {
-      findMethod(cls, "get" + propertyName.capitalize).filter(isAcceptableGetter)
+      findMethod(cls, "get" + propertyName.capitalize).find(isAcceptableGetter)
     }
 
     //True if the method fits the 'getter' pattern
@@ -122,11 +122,11 @@ object BeanIntrospector {
     }
 
     def findSetter(cls: Class[_], propertyName: String): Option[Method] = {
-      findMethod(cls, propertyName + "_=").filter(isAcceptableSetter)
+      findMethod(cls, propertyName + "_=").find(isAcceptableSetter)
     }
 
     def findBeanSetter(cls: Class[_], propertyName: String): Option[Method] = {
-      findMethod(cls, "set" + propertyName.capitalize).filter(isAcceptableSetter)
+      findMethod(cls, "set" + propertyName.capitalize).find(isAcceptableSetter)
     }
 
     //True if the method fits the 'setter' pattern
