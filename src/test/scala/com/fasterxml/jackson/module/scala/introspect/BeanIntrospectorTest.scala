@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.introspect
 
+import com.fasterxml.jackson.module.scala.introspect.BeanIntrospectorTest.DecodedNameMatcher
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{Inside, OptionValues, LoneElement, FlatSpec}
@@ -8,63 +9,76 @@ import reflect.NameTransformer
 import com.fasterxml.jackson.module.scala.BaseSpec
 import java.lang.reflect.Member
 
-class PlainCtorBean(`field-name`: Int)
-{
-  // This needs to exist otherwise it gets optimized away
-  def x = `field-name`
-}
+object BeanIntrospectorTest {
 
-class ValCtorBean(val `field-name`: Int)
-case class ValCaseBean(`field-name`: Int)
+  class PlainCtorBean(`field-name`: Int) {
+    // This needs to exist otherwise it gets optimized away
+    def x = `field-name`
+  }
 
-class VarCtorBean(var `field-name`: Int)
-case class VarCaseBean(var `field-name`: Int)
+  class ValCtorBean(val `field-name`: Int)
 
-class MethodBean
-{
-  def `field-name` = 0
-  def `field-name_=`(v: Int) { }
-}
+  case class ValCaseBean(`field-name`: Int)
 
-//adding @SerialVersionUID puts a public static final int field on the generated class
-//this field should be ignored
-@SerialVersionUID(8675309)
-case class SerialIDBean(field: String) {
-  @transient val shouldBeExluded = 10
-  @volatile var alsoExcluded = 20
-}
+  class VarCtorBean(var `field-name`: Int)
 
-class StaticMethodBean extends JavaStaticMethods {
-  val included = "included"
-}
+  case class VarCaseBean(var `field-name`: Int)
 
-class Parent {
-  var parentValue = "parentValue"
-}
+  class MethodBean {
+    def `field-name` = 0
 
-class Child extends Parent {
-  var childValue = "childValue"
-}
+    def `field-name_=`(v: Int) {}
+  }
 
-case class PrivateDefaultBean(private val privateField: String = "defaultValue")
+  //adding @SerialVersionUID puts a public static final int field on the generated class
+  //this field should be ignored
+  @SerialVersionUID(8675309)
+  case class SerialIDBean(field: String) {
+    @transient val shouldBeExluded = 10
+    @volatile var alsoExcluded = 20
+  }
 
-trait DecodedNameMatcher {
-  def decodedName(expectedValue: String) =
-    new HavePropertyMatcher[Member, String] {
-      def apply(member: Member) = {
-        val decodedName = NameTransformer.decode(member.getName)
-        HavePropertyMatchResult(
-          decodedName == expectedValue,
-          "name",
-          expectedValue,
-          decodedName
-        )
+  class StaticMethodBean extends JavaStaticMethods {
+    val included = "included"
+  }
+
+  class Parent {
+    var parentValue = "parentValue"
+  }
+
+  class Child extends Parent {
+    var childValue = "childValue"
+  }
+
+  case class PrivateDefaultBean(private val privateField: String = "defaultValue")
+
+  trait DecodedNameMatcher {
+    def decodedName(expectedValue: String) =
+      new HavePropertyMatcher[Member, String] {
+        def apply(member: Member) = {
+          val decodedName = NameTransformer.decode(member.getName)
+          HavePropertyMatchResult(
+            decodedName == expectedValue,
+            "name",
+            expectedValue,
+            decodedName
+          )
+        }
       }
-    }
+  }
+
+  class OverloadedGetter {
+    var firstName: String = ""
+    var lastName: String = ""
+
+    def firstName(firstName: String) {}
+    def lastName(lastName: String) {}
+  }
 }
 
 @RunWith(classOf[JUnitRunner])
 class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with OptionValues with DecodedNameMatcher {
+  import BeanIntrospectorTest._
 
   behavior of "BeanIntrospector"
 
@@ -279,6 +293,16 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
 
     props should have size 1
     props.head.name shouldBe "privateField"
+  }
+
+  it should "find getters among overloads" in {
+    type Bean = OverloadedGetter
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    props should have size 2
+    props.forall ( _.getter.isDefined ) shouldBe true
   }
 }
 
