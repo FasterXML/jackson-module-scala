@@ -51,6 +51,10 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
   it should "deserialize a polymorphic null as null" in {
     deserialize[BaseHolder]("""{"base":null}""") should be(BaseHolder(null))
   }
+
+  it should "deserialize a seq wrapped Either" in {
+    deserialize[Seq[Either[String, String]]]("""[{"l":"left"}]""") shouldBe Seq(Left("left"))
+  }
 }
 
 
