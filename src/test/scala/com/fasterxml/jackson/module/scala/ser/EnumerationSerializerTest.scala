@@ -2,12 +2,11 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FlatSpec
-import org.scalatest.junit.JUnitRunner
+import com.fasterxml.jackson.core.`type`.TypeReference
 import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
-import core.`type`.TypeReference
+import scala.beans.BeanProperty
 
 object EnumerationSerializerTest {
 
@@ -24,7 +23,11 @@ object EnumerationSerializerTest {
   }
 
   class OptionTypeReference extends TypeReference[OptionType.type]
-  case class OptionTypeHolder(@JsonScalaEnumeration(classOf[OptionTypeReference]) optionType: OptionType.Value)
+  case class OptionTypeHolder(@JsonScalaEnumeration(classOf[OptionTypeReference]) @BeanProperty optionType: OptionType.Value)
+
+  case class OptionTypeKeyedMapHolder(
+    @JsonScalaEnumeration(classOf[OptionTypeReference]) @BeanProperty map: Map[OptionType.Value, String]
+                                 )
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -55,4 +58,9 @@ class EnumerationSerializerTest extends SerializerTest {
     serialize(holder) should be ("""{"weekday":"Fri"}""")
   }
 
+  it should "serialize a Map keyed with annotated Option[Enumeration]" in {
+    val holder = OptionTypeKeyedMapHolder(Map(OptionType.STRING -> "foo"))
+    serialize(holder) shouldBe """{"map":{"string":"foo"}}"""
+  }
+  
 }

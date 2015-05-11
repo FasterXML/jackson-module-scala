@@ -16,7 +16,7 @@ private class EitherDeserializer(javaType: JavaType,
   extends StdDeserializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]])
   with ContextualDeserializer {
 
-  def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[Either[AnyRef, AnyRef]] = {
 
     def deserializerConfigFor(param: Int, inType: JavaType, property: BeanProperty): ElementDeserializerConfig = {
       val containedType = javaType.containedType(param)
@@ -45,21 +45,28 @@ private class EitherDeserializer(javaType: JavaType,
       case (_, _) => throw ctxt.mappingException(javaType.getRawClass)
     }
 
-  private def deserializeEither(jp: JsonParser, ctxt: DeserializationContext) = {
+  private def deserializeEither(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] = {
     jp.nextToken()
 
     val key = jp.getCurrentName
     val `type` = jp.nextToken()
 
-    key match {
+    val result = key match {
       case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
       case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
       case _ => throw ctxt.mappingException(javaType.getRawClass)
     }
+
+    // consume END_OBJECT
+    jp.nextToken()
+
+    result
   }
 
-  def deserialize(jp: JsonParser, ctxt: DeserializationContext) = deserializeEither(jp, ctxt)
-  override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer)  = deserializeEither(jp, ctxt)
+  override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] =
+    deserializeEither(jp, ctxt)
+  override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer): Either[AnyRef, AnyRef] =
+    deserializeEither(jp, ctxt)
 }
 
 private object EitherDeserializer {
