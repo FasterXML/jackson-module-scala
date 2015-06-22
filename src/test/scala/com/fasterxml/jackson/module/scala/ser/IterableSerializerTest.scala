@@ -1,15 +1,12 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonTypeInfo}
+import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
-import com.fasterxml.jackson.databind.JsonMappingException
-import scala.collection.{mutable, immutable, Iterator}
-import com.fasterxml.jackson.annotation.{JsonTypeInfo, JsonProperty, JsonInclude}
-import java.util
+import scala.collection.{Iterator, immutable, mutable}
 
 class NonEmptyCollections {
 

@@ -1,10 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.scalatest.matchers.ShouldMatchers
+import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.core.JsonParseException
 
 object PrimitiveContainerTest
 {
@@ -40,7 +39,7 @@ class PrimitiveContainerTest extends DeserializationFixture
   }
 
   it should "enforce type constraints"  in { f =>
-    val thrown = intercept[JsonParseException] {
+    val thrown = intercept[JsonMappingException] {
       f.readValue[AnnotatedOptionInt]("""{"value":9223372036854775807}""").value.get
     }
     thrown.getMessage should startWith ("Numeric value (9223372036854775807) out of range")

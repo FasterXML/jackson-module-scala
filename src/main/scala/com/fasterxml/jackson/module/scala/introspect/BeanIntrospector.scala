@@ -25,6 +25,7 @@ package com.fasterxml.jackson.module.scala.introspect
 
 import java.lang.reflect.{Constructor, Field, Method, Modifier}
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.thoughtworks.paranamer.{BytecodeReadingParanamer, CachingParanamer}
 
 import scala.annotation.tailrec
@@ -193,10 +194,10 @@ object BeanIntrospector {
       if findField(cls, name).isEmpty
       if !name.contains('$')
       if !fields.exists(_.name == name)
-      setter <- findSetter(cls, name)
+      setter = findSetter(cls, name) if setter.isDefined || getter.getAnnotation(classOf[JsonProperty]) != null
       beanGetter = findBeanGetter(cls, name)
       beanSetter = findBeanSetter(cls, name)
-    } yield PropertyDescriptor(name, None, None, Some(getter), Some(setter), beanGetter, beanSetter)
+    } yield PropertyDescriptor(name, None, None, Some(getter), setter, beanGetter, beanSetter)
 
 
     BeanDescriptor(cls, fields ++ methods)
