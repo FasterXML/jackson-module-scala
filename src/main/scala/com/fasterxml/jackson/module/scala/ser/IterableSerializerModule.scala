@@ -1,51 +1,80 @@
-package com.fasterxml.jackson.module.scala.ser
+package com.fasterxml.jackson
+package module.scala
+package ser
+
+import core.JsonGenerator
+
+import databind.{BeanDescription, BeanProperty, JavaType, JsonSerializer, SerializationConfig, SerializerProvider}
+import databind.`type`.CollectionLikeType
+import databind.jsontype.TypeSerializer
+import databind.ser.{ContainerSerializer, Serializers}
+import databind.ser.std.{AsArraySerializerBase, CollectionSerializer}
+
+import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
 
 import collection.JavaConverters._
 
-import com.fasterxml.jackson.core.JsonGenerator
+import java.{lang => jl}
 
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.CollectionLikeType
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, CollectionSerializer}
+// CollectionSerializer *needs* an elementType, but AsArraySerializerBase *forces*
+// static typing if the element type is final. This makes sense to Java, but Scala
+// corrupts the Java type system in the case of "ValueTypes"; the signature of the
+// collection is marked as the underlying type, but the storage actually holds the
+// value type, causing casts that Jackson does to fail.
+//
+// The workaround is to let Jackson know that it can't rely on the element type
+// by telling it the element type is AnyRef.
+private trait IterableSerializer
+  extends AsArraySerializerBase[collection.Iterable[Any]]
+{
+  def collectionSerializer: CollectionSerializer
 
-import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
-import collection.Iterable
+  override def hasSingleElement(value: collection.Iterable[Any]): Boolean =
+    value.hasDefiniteSize && value.size == 1
 
-private class IterableSerializer(seqType: Class[_],
-                                 elemType: JavaType,
-                                 anyRefType: JavaType,
-                                 staticTyping: Boolean,
-                                 vts: Option[TypeSerializer],
-                                 property: BeanProperty,
-                                 valueSerializer: Option[JsonSerializer[AnyRef]])
-  // CollectionSerializer *needs* an elementType, but AsArraySerializerBase *forces*
-  // static typing if the element type is final. This makes sense to Java, but Scala
-  // corrupts the Java type system in the case of "ValueTypes"; the signature of the
-  // collection is marked as the underlying type, but the storage actually holds the
-  // value type, causing casts that Jackson does to fail.
-  //
-  // The workaround is to let Jackson know that it can't rely on the element type
-  // by telling it the element type is AnyRef.
-  extends AsArraySerializerBase[collection.Iterable[Any]](seqType, anyRefType, staticTyping, vts.orNull, property, valueSerializer.orNull) {
-
-  def hasSingleElement(p1: Iterable[Any]) = p1.take(2).size == 1
-
-  val collectionSerializer =
-    new CollectionSerializer(elemType, staticTyping, vts.orNull, property, valueSerializer.orNull)
-
-  def serializeContents(value: Iterable[Any], jgen: JsonGenerator, provider: SerializerProvider) {
-    collectionSerializer.serializeContents(value.asJavaCollection, jgen, provider)
+  override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider) {
+    collectionSerializer.serializeContents(value.asJavaCollection, gen, provider)
   }
 
-  override def _withValueTypeSerializer(newVts: TypeSerializer) =
-    withResolved(property, newVts, valueSerializer.orNull)
-
-  override def withResolved(newProperty: BeanProperty, newVts: TypeSerializer, elementSerializer: JsonSerializer[_]) =
-    new IterableSerializer(seqType, elemType, anyRefType, staticTyping, Option(newVts), newProperty, Option(elementSerializer.asInstanceOf[JsonSerializer[AnyRef]]))
+  override def withResolved(property: BeanProperty,
+                            vts: TypeSerializer,
+                            elementSerializer: JsonSerializer[_],
+                            unwrapSingle: jl.Boolean): ResolvedIterableSerializer =
+    new ResolvedIterableSerializer(this, property, vts, elementSerializer, unwrapSingle)
 
   override def isEmpty(prov: SerializerProvider, value: collection.Iterable[Any]): Boolean = value.isEmpty
+}
+
+private class ResolvedIterableSerializer( src: IterableSerializer,
+                                          property: BeanProperty,
+                                          vts: TypeSerializer,
+                                          elementSerializer: JsonSerializer[_],
+                                          unwrapSingle: jl.Boolean )
+  extends AsArraySerializerBase[collection.Iterable[Any]](src, property, vts, elementSerializer, unwrapSingle)
+  with IterableSerializer
+{
+  val collectionSerializer =
+    new CollectionSerializer(src.collectionSerializer, property, vts, elementSerializer, unwrapSingle)
+
+  override def _withValueTypeSerializer(newVts: TypeSerializer): ContainerSerializer[_] =
+    new ResolvedIterableSerializer(this, property, newVts, elementSerializer, unwrapSingle)
+}
+
+
+private class UnresolvedIterableSerializer( cls: Class[_],
+                                            et: JavaType,
+                                            staticTyping: Boolean,
+                                            vts: TypeSerializer,
+                                            elementSerializer: JsonSerializer[AnyRef] )
+  extends AsArraySerializerBase[collection.Iterable[Any]](cls, et, staticTyping, vts, elementSerializer)
+  with IterableSerializer
+{
+  val collectionSerializer =
+    new CollectionSerializer(et, staticTyping, vts, elementSerializer)
+
+  override def _withValueTypeSerializer(newVts: TypeSerializer): ContainerSerializer[_] =
+    new UnresolvedIterableSerializer(cls, et, staticTyping, newVts, elementSerializer)
+
 }
 
 private object IterableSerializerResolver extends Serializers.Base {
@@ -58,7 +87,7 @@ private object IterableSerializerResolver extends Serializers.Base {
     val rawClass = collectionType.getRawClass
     if (!classOf[collection.Iterable[Any]].isAssignableFrom(rawClass)) null else
     if (classOf[collection.Map[Any,Any]].isAssignableFrom(rawClass)) null else
-    new IterableSerializer(rawClass, collectionType.containedType(0), config.constructType(classOf[AnyRef]), false, Option(elementTypeSerializer), null, Option(elementSerializer))
+    new UnresolvedIterableSerializer(rawClass, collectionType.containedType(0), false, elementTypeSerializer, elementSerializer)
   }
 
 }
