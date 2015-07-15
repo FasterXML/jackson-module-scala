@@ -73,10 +73,8 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
                                             elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
     
     val rawClass = collectionType.getRawClass
-    if (classOf[collection.Iterator[Any]].isAssignableFrom(rawClass))
-      new UnresolvedIteratorSerializer(rawClass, collectionType.containedType(0), false, elementTypeSerializer, elementSerializer)       
-    else
-      null
+    if (!classOf[collection.Iterator[Any]].isAssignableFrom(rawClass)) null else
+    new UnresolvedIteratorSerializer(rawClass, collectionType.containedType(0), false, elementTypeSerializer, elementSerializer)
   }
 }
 

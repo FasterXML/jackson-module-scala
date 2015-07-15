@@ -16,14 +16,6 @@ import collection.JavaConverters._
 
 import java.{lang => jl}
 
-// CollectionSerializer *needs* an elementType, but AsArraySerializerBase *forces*
-// static typing if the element type is final. This makes sense to Java, but Scala
-// corrupts the Java type system in the case of "ValueTypes"; the signature of the
-// collection is marked as the underlying type, but the storage actually holds the
-// value type, causing casts that Jackson does to fail.
-//
-// The workaround is to let Jackson know that it can't rely on the element type
-// by telling it the element type is AnyRef.
 private trait IterableSerializer
   extends AsArraySerializerBase[collection.Iterable[Any]]
 {
@@ -87,7 +79,16 @@ private object IterableSerializerResolver extends Serializers.Base {
     val rawClass = collectionType.getRawClass
     if (!classOf[collection.Iterable[Any]].isAssignableFrom(rawClass)) null else
     if (classOf[collection.Map[Any,Any]].isAssignableFrom(rawClass)) null else
-    new UnresolvedIterableSerializer(rawClass, collectionType.containedType(0), false, elementTypeSerializer, elementSerializer)
+
+    // CollectionSerializer *needs* an elementType, but AsArraySerializerBase *forces*
+    // static typing if the element type is final. This makes sense to Java, but Scala
+    // corrupts the Java type system in the case of "ValueTypes"; the signature of the
+    // collection is marked as the underlying type, but the storage actually holds the
+    // value type, causing casts that Jackson does to fail.
+    //
+    // The workaround is to let Jackson know that it can't rely on the element type
+    // by telling it the element type is AnyRef.
+    new UnresolvedIterableSerializer(rawClass, config.constructType(classOf[AnyRef]), false, elementTypeSerializer, elementSerializer)
   }
 
 }
