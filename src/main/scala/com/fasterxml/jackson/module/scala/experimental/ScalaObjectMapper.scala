@@ -248,14 +248,6 @@ trait ScalaObjectMapper {
    * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
    * read or update instances of specified type
    */
-  def readerFor[T: Manifest]: ObjectReader = {
-    readerFor(constructType[T])
-  }
-
-  /**
-   * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
-   * read or update instances of specified type
-   */
   @deprecated(message = "Replaced with readerFor", since = "2.6")
   def reader[T: Manifest]: ObjectReader = {
     reader(constructType[T])
