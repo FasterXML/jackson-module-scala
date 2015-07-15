@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.10.5"
 
-crossScalaVersions := Seq("2.10.5", "2.11.6")
+crossScalaVersions := Seq("2.10.5", "2.11.7")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 

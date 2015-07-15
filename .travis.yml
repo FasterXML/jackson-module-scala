@@ -1,11 +1,16 @@
+sudo: false
+cache:
+  directories:
+    - $HOME/.sbt
+
 language: scala
 jdk:
    - oraclejdk8
    - openjdk6
 
 scala:
-   - 2.10.4
-   - 2.11.4
+   - 2.10.5
+   - 2.11.7
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
 before_script:
