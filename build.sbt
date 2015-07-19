@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % "2.6.0-rc4",
     "com.fasterxml.jackson.core" % "jackson-annotations" % "2.6.0-rc4",
     "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.0-SNAPSHOT",
-    "com.thoughtworks.paranamer" % "paranamer" % "2.6",
+    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % "2.6.0-rc4" exclude("com.fasterxml.jackson.core","jackson-databind"),
     // test dependencies
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.6.0-rc4" % "test" exclude("com.fasterxml.jackson.core","jackson-databind"),
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.6.0-rc4" % "test" exclude("com.fasterxml.jackson.core","jackson-databind"),

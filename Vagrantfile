@@ -25,6 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provision :chef_zero do |chef|
+    chef.add_recipe :apt
     chef.add_recipe :git
     chef.add_recipe :maven
     chef.add_recipe :'sbt-extras'

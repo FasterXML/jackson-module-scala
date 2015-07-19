@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import com.fasterxml.jackson.annotation.JsonProperty.Access
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -56,7 +57,10 @@ class NonCaseWithBeanProperty {
 
 case class InnerJavaEnum(fieldType: Field.Type)
 
-case class PrivateDefaultFields @JsonCreator() (@JsonProperty("firstName") private val firstName: String, @JsonProperty("lastName") lastName: String = "Freeman")
+case class PrivateDefaultFields(
+  @JsonProperty(access = Access.READ_ONLY) private val firstName: String,
+  @JsonProperty lastName: String = "Freeman"
+)
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest {
@@ -102,7 +106,7 @@ class CaseClassSerializerTest extends SerializerTest {
   }
 
   it should "serialize a case class with unicode name properties" in {
-    serialize(UnicodeNameCaseClass(23, "the name of this")) should equal( """{"winning-id":23,"name":"the name of this"}""")
+    serialize(UnicodeNameCaseClass(23, "the name of this")) should equal( """{"name":"the name of this","winning-id":23}""")
   }
 
   it should "seralize a generic case class" in {

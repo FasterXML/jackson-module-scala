@@ -1,17 +1,17 @@
-package com.fasterxml.jackson.module.scala
+package com.fasterxml.jackson
+package module
+package scala
 package introspect
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.PropertyName
-import com.fasterxml.jackson.databind.`type`.ClassKey
-import com.fasterxml.jackson.databind.introspect._
-import com.fasterxml.jackson.databind.util.LRUMap
-import com.fasterxml.jackson.module.scala.util.Implicits._
+import annotation.JsonCreator
+import databind.`type`.ClassKey
+import databind.introspect._
+import databind.util.LRUMap
+import paranamer.ParanamerAnnotationIntrospector
 
-import scala.collection.JavaConverters._
-import scala.language.postfixOps
+import util.Implicits._
 
-object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
+object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
 {
   private [this] val _descriptorCache = new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
@@ -25,9 +25,6 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
 
     result
   }
-
-  private def annotatedClassFor(am: AnnotatedMember): AnnotatedClass =
-    am.getContextClass
 
   private def fieldName(af: AnnotatedField): Option[String] = {
     val d = _descriptorFor(af.getDeclaringClass)
@@ -47,7 +44,7 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
   }
 
   private def isScalaPackage(pkg: Option[Package]): Boolean =
-    pkg flatMap { _.getName.split("\\.").headOption } exists { _ == "scala" }
+    pkg.exists(_.getName.startsWith("scala."))
 
   private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
     cls.hasSignature && !isScalaPackage(Option(cls.getPackage))
@@ -76,18 +73,6 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
     }
   }
 
-  private def paramFor(a: Annotated): Option[AnnotatedParameter] = {
-    a match {
-      case am: AnnotatedMember =>
-        propertyFor(a).flatMap(_.param).flatMap { cp =>
-          annotatedClassFor(am)
-            .getConstructors.asScala.find(_.getAnnotated == cp.constructor)
-            .map(_.getParameter(cp.index))
-        }
-      case _ => None
-    }
-  }
-
   override def findImplicitPropertyName(member: AnnotatedMember): String = {
     member match {
       case af: AnnotatedField => fieldName(af).orNull
@@ -97,28 +82,21 @@ object ScalaAnnotationIntrospector extends JacksonAnnotationIntrospector
     }
   }
 
-  override def findNameForSerialization(member: Annotated): PropertyName =
-    paramFor(member).flatMap(p => Option(super.findNameForSerialization(p))).orNull
-
   override def hasCreatorAnnotation(a: Annotated): Boolean = {
-    if (!isScala(a)) {
-      return super.hasCreatorAnnotation(a)
-    }
-
     a match {
       case ac: AnnotatedConstructor =>
-        val d = _descriptorFor(ac.getDeclaringClass)
-        d.properties.exists(p => p.param.exists(_.constructor == ac.getAnnotated))
+        isScala(ac) && _descriptorFor(ac.getDeclaringClass).
+          properties.view.flatMap(_.param).exists(_.constructor == ac.getAnnotated)
       case _ => false
     }
   }
 
   override def findCreatorBinding(a: Annotated): JsonCreator.Mode =
-    paramFor(a) optMap { _.getAnnotation(classOf[JsonCreator]) } map { _.mode } getOrElse {
-      if (hasCreatorAnnotation(a)) JsonCreator.Mode.PROPERTIES else null
-    }
+    if (isScala(a) && hasCreatorAnnotation(a)) JsonCreator.Mode.PROPERTIES else null
+
 }
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
+  this += { _.appendAnnotationIntrospector(new ParanamerAnnotationIntrospector()) }
   this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
 }
