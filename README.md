@@ -1,3 +1,9 @@
+# IMPORTANT
+
+Version 2.6.0 of this module has been released incorrectly. Please refrain
+from using this version. An updated release will be published as soon as
+possible.
+
 # Overview
 
 [Jackson][] is a fast JSON processor for Java that supports three models:
