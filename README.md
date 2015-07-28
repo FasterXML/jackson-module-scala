@@ -1,8 +1,8 @@
 # IMPORTANT
 
 Version 2.6.0 of this module has been released incorrectly. Please refrain
-from using this version. An updated release will be published as soon as
-possible.
+from using this version. A patch release, 2.6.0-1, has been made available
+instead.
 
 # Overview
 
