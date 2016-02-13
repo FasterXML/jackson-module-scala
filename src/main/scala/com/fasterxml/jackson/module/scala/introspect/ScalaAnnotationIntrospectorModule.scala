@@ -52,7 +52,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
   private def isScala(a: Annotated): Boolean = {
     a match {
       case ac: AnnotatedClass => isMaybeScalaBeanType(ac.getAnnotated)
-      case am: AnnotatedMember => isMaybeScalaBeanType(am.getContextClass.getAnnotated)
+      case am: AnnotatedMember => isMaybeScalaBeanType(am.getDeclaringClass)
     }
   }
 

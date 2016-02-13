@@ -134,7 +134,7 @@ class CaseClassSerializerTest extends SerializerTest {
 
   def propertyNamingStrategyMapper = new ObjectMapper() {
     registerModule(module)
-    setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
+    setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
   }
 
   it should "honor the property naming strategy" in {

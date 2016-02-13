@@ -27,16 +27,18 @@ private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: Iterable[E]
 }
 
 private object SeqDeserializer {
-  val COMPANIONS = new CompanionSorter[collection.Seq]()
+  val COMPANIONS = new CompanionSorter[collection.Iterable]()
     .add(IndexedSeq)
     .add(mutable.ArraySeq)
     .add(mutable.Buffer)
     .add(mutable.IndexedSeq)
     .add(mutable.LinearSeq)
     .add(mutable.ListBuffer)
+    .add(mutable.Iterable)
     .add(mutable.MutableList)
     .add(mutable.Queue)
     .add(mutable.ResizableArray)
+    .add(mutable.Seq)
     .add(Queue)
     .add(Stream)
     .toList

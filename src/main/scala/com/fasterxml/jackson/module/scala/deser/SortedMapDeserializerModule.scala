@@ -41,14 +41,14 @@ private class SortedMapDeserializer(
   with ContextualDeserializer {
   
   private val javaContainerType =
-    config.getTypeFactory.constructMapLikeType(classOf[MapBuilderWrapper[_,_]], collectionType.containedType(0), collectionType.containedType(1))
+    config.getTypeFactory.constructMapLikeType(classOf[MapBuilderWrapper[_,_]], collectionType.getKeyType, collectionType.getContentType)
 
   private val instantiator =
     new ValueInstantiator {
       def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
       override def canCreateUsingDefault = true
       override def createUsingDefault(ctx: DeserializationContext) =
-        new SortedMapBuilderWrapper[AnyRef,AnyRef](SortedMapDeserializer.builderFor(collectionType.getRawClass, collectionType.containedType(0)))
+        new SortedMapBuilderWrapper[AnyRef,AnyRef](SortedMapDeserializer.builderFor(collectionType.getRawClass, collectionType.getKeyType))
     }
 
   private val containerDeserializer =
@@ -85,7 +85,6 @@ private object SortedMapDeserializerResolver extends Deserializers.Base {
                               elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] =
     if (!SORTED_MAP.isAssignableFrom(theType.getRawClass)) null
     else new SortedMapDeserializer(theType,config,keyDeserializer,elementDeserializer,elementTypeDeserializer)
-
 }
 
 /**

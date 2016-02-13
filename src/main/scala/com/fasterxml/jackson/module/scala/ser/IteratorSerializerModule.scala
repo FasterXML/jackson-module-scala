@@ -74,7 +74,7 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
     
     val rawClass = collectionType.getRawClass
     if (!classOf[collection.Iterator[Any]].isAssignableFrom(rawClass)) null else
-    new UnresolvedIteratorSerializer(rawClass, collectionType.containedType(0), false, elementTypeSerializer, elementSerializer)
+    new UnresolvedIteratorSerializer(rawClass, collectionType.getContentType, false, elementTypeSerializer, elementSerializer)
   }
 }
 
