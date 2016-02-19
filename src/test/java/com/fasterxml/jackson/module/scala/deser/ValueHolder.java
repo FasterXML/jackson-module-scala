@@ -2,9 +2,6 @@ package com.fasterxml.jackson.module.scala.deser;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import java.util.Objects;
-
-
 public class ValueHolder {
 
     public final long internalValue;
