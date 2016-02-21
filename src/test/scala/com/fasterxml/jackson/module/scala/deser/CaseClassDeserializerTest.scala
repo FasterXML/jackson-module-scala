@@ -105,7 +105,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   def propertyNamingStrategyMapper = new ObjectMapper() {
     registerModule(module)
-    setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
+    setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
   }
 
   it should "honor the property naming strategy" in {
@@ -115,7 +115,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   it should "support serializing into instance var properties" in {
     val bean = new Bean("ctor")
-    val reader: ObjectReader = mapper.reader(bean.getClass)
+    val reader: ObjectReader = mapper.readerFor(bean.getClass)
     reader.withValueToUpdate(bean).readValue("""{"prop":"readValue"}""")
     bean.prop should be ("readValue")
   }

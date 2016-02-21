@@ -129,12 +129,12 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
   }
 
   it should "produce reader with type" in {
-    val result = mapper.reader[GenericTestClass[Int]].readValue(genericJson).asInstanceOf[GenericTestClass[Int]]
+    val result = mapper.readerFor[GenericTestClass[Int]].readValue(genericJson).asInstanceOf[GenericTestClass[Int]]
     result should equal(genericInt)
   }
 
   it should "produce reader with view" in {
-    val reader = mapper.readerWithView[PublicView].withType(classOf[Target])
+    val reader = mapper.readerWithView[PublicView].forType(classOf[Target])
     val result = reader.readValue("""{"foo":"foo","bar":42}""").asInstanceOf[Target]
     result should equal(Target.apply("foo", 0))
   }

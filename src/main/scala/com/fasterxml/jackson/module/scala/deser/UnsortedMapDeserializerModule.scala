@@ -47,7 +47,7 @@ private class UnsortedMapDeserializer(
   with ContextualDeserializer {
 
   private val javaContainerType =
-    config.getTypeFactory.constructMapLikeType(classOf[MapBuilderWrapper[_,_]], collectionType.containedType(0), collectionType.containedType(1))
+    config.getTypeFactory.constructMapLikeType(classOf[MapBuilderWrapper[_,_]], collectionType.getKeyType, collectionType.getContentType)
 
   private val instantiator =
     new ValueInstantiator {
@@ -73,7 +73,7 @@ private class UnsortedMapDeserializer(
     }
 
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): GenMap[_,_] = {
-    containerDeserializer.deserialize(jp,ctxt) match {
+    containerDeserializer.deserialize(jp, ctxt) match {
       case wrapper: MapBuilderWrapper[_,_] => wrapper.builder.result()
     }
   }
@@ -96,7 +96,6 @@ private object UnsortedMapDeserializerResolver extends Deserializers.Base {
     else if (SORTED_MAP.isAssignableFrom(rawClass)) null
     else new UnsortedMapDeserializer(theType, config, keyDeserializer, elementDeserializer, elementTypeDeserializer)
   }
-
 }
 
 /**

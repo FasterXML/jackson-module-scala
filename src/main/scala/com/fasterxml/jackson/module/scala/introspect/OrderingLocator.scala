@@ -24,7 +24,7 @@ object OrderingLocator {
     val ordering =
       found.getOrElse {
         if (matches(classOf[Option[_]])) {
-          val delegate = locate(javaType.containedType(0))
+          val delegate = locate(javaType.getContentType)
           Ordering.Option(delegate)
         }
         else if (matches(classOf[Comparable[_]]))

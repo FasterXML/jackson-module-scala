@@ -52,7 +52,7 @@ private class EitherSerializer(elementType: Option[JavaType],
     }
     def hasContentTypeAnnotation(provider: SerializerProvider, property: BeanProperty) =
       Option(property).exists { p =>
-        Option(provider.getAnnotationIntrospector.findSerializationContentType(p.getMember, p.getType)).isDefined
+        Option(provider.getAnnotationIntrospector.refineSerializationType(provider.getConfig, p.getMember, p.getType)).isDefined
       }
 
     def tryContentSerializer(serializerProvider: SerializerProvider, property: BeanProperty, currentSer: Option[JsonSerializer[_]]) = {

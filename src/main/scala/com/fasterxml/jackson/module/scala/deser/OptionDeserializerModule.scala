@@ -41,7 +41,7 @@ private class OptionDeserializer(elementType: JavaType,
     p <- Option(property)
     intr <- Option(ctxt.getAnnotationIntrospector)
   } yield {
-    intr.findDeserializationContentType(p.getMember, p.getType)
+    intr.refineDeserializationType(ctxt.getConfig, p.getMember, p.getType)
   }).isDefined
 
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext) = valueTypeDeser match {
@@ -73,7 +73,7 @@ private object OptionDeserializerResolver extends Deserializers.Base {
                                               elementValueDeserializer: JsonDeserializer[_]) =
     if (!OPTION.isAssignableFrom(theType.getRawClass)) null
     else {
-      val elementType = theType.containedType(0)
+      val elementType = theType.getContentType
       val typeDeser = Option(elementTypeDeserializer).orElse(Option(elementType.getTypeHandler.asInstanceOf[TypeDeserializer]))
       val valDeser: Option[JsonDeserializer[_]] = Option(elementValueDeserializer).orElse(Option(elementType.getValueHandler))
       new OptionDeserializer(elementType, typeDeser, None, valDeser)

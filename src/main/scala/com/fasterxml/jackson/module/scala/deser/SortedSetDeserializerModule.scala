@@ -110,7 +110,7 @@ private object SortedSetDeserializerResolver extends Deserializers.Base {
     if (!SORTED_SET.isAssignableFrom(rawClass)) null
     else {
       val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
-      val instantiator = new SortedSetInstantiator(config, rawClass, collectionType.containedType(0))
+      val instantiator = new SortedSetInstantiator(config, rawClass, collectionType.getContentType)
       new SortedSetDeserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
   }

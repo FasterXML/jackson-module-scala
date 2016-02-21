@@ -25,7 +25,7 @@ class NamingStrategyTest extends fixture.FlatSpec with Matchers {
   protected def withFixture(test: OneArgTest): Outcome = {
     val mapper = new ObjectMapper()
     mapper.registerModule(DefaultScalaModule)
-    mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
+    mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
     test(mapper)
   }
 

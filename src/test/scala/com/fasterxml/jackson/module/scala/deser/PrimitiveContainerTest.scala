@@ -12,8 +12,8 @@ object PrimitiveContainerTest
   case class OptionLong(value: Option[Long])
   case class AnnotatedOptionLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) value: Option[Long])
 
-  case class AnnotatedHashKeyLong(@JsonDeserialize(keyAs = classOf[java.lang.Long]) value: Map[Long,String])
-  case class AnnotatedHashValueLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) value: Map[String,Long])
+  case class AnnotatedHashKeyLong(@JsonDeserialize(keyAs = classOf[java.lang.Long]) value: Map[Long, String])
+  case class AnnotatedHashValueLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) value: Map[String, Long])
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -45,7 +45,7 @@ class PrimitiveContainerTest extends DeserializationFixture
     thrown.getMessage should startWith ("Numeric value (9223372036854775807) out of range")
   }
 
-  it should "support map keys" ignore { f =>
+  it should "support map keys" in { f =>
     val value = f.readValue[AnnotatedHashKeyLong]("""{"value":{"1":"one"}}""")
     value.value should contain key 1L
     value.value(1L) shouldBe "one"

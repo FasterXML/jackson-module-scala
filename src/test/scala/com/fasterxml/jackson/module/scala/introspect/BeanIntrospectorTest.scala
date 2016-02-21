@@ -1,13 +1,15 @@
 package com.fasterxml.jackson.module.scala.introspect
 
+import java.lang.reflect.Member
+
+import com.fasterxml.jackson.module.scala.BaseSpec
 import com.fasterxml.jackson.module.scala.introspect.BeanIntrospectorTest.DecodedNameMatcher
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{Inside, OptionValues, LoneElement, FlatSpec}
-import org.scalatest.matchers.{HavePropertyMatcher, HavePropertyMatchResult, ShouldMatchers}
-import reflect.NameTransformer
-import com.fasterxml.jackson.module.scala.BaseSpec
-import java.lang.reflect.Member
+import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
+import org.scalatest.{Inside, LoneElement, OptionValues}
+
+import scala.reflect.NameTransformer
 
 object BeanIntrospectorTest {
 

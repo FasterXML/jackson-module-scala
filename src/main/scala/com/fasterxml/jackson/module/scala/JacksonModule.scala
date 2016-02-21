@@ -53,7 +53,7 @@ trait JacksonModule extends Module {
     val MinorVersion = version.getMinorVersion
     context.getMapperVersion match {
       case version@VersionExtractor(MajorVersion, minor) if minor < MinorVersion =>
-        throw new JsonMappingException("Jackson version is too old " + version)
+        throw new JsonMappingException(null, "Jackson version is too old " + version)
       case version@VersionExtractor(MajorVersion, minor) =>
         // Under semantic versioning, this check would not be needed; however Jackson
         // occasionally has functionally breaking changes across minor versions
@@ -61,10 +61,10 @@ trait JacksonModule extends Module {
         // depending on implementation details, so for now we'll just declare ourselves
         // as incompatible and move on.
         if (minor > MinorVersion) {
-          throw new JsonMappingException("Incompatible Jackson version: " + version)
+          throw new JsonMappingException(null, "Incompatible Jackson version: " + version)
         }
       case version =>
-        throw new JsonMappingException("Incompatible Jackson version: " + version)
+        throw new JsonMappingException(null, "Incompatible Jackson version: " + version)
     }
 
     initializers result() foreach (_ apply context)
