@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.11.7"
 
-crossScalaVersions := Seq("2.10.5", "2.11.7")
+crossScalaVersions := Seq("2.10.6", "2.11.7")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
@@ -27,14 +27,14 @@ scalacOptions += "-target:jvm-1.6"
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "com.fasterxml.jackson.core" % "jackson-core" % "2.6.3",
-    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.6.3",
-    "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.3",
-    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % "2.6.3",
+    "com.fasterxml.jackson.core" % "jackson-core" % "2.6.4",
+    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.6.4",
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.4",
+    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % "2.6.4",
     // test dependencies
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.6.3" % "test",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.6.3" % "test",
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.6.3" % "test",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.6.4" % "test",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.6.4" % "test",
+    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.6.4" % "test",
     "org.scalatest" %% "scalatest" % "2.2.1" % "test",
     "junit" % "junit" % "4.11" % "test"
 )
