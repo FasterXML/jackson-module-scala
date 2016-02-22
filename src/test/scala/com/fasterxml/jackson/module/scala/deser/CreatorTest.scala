@@ -1,6 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import java.util.concurrent.TimeUnit
+
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
@@ -42,5 +45,19 @@ class CreatorTest extends DeserializationFixture {
   it should "honor the JsonCreator mode" in { f =>
     val bean = f.readValue[CreatorModeWrapper]("""{"a":"foo"}""")
     bean.a.s shouldEqual "foo"
+  }
+
+  it should "work with static method creator" in { f =>
+    val json = """{"valueHolder": "2"}"""
+
+    val regularObjectMapper = new ObjectMapper()
+
+    // Using regular objectMapper
+    val bean1 = regularObjectMapper.readValue(json, classOf[UserOfValueHolder])
+    bean1.getValueHolder.internalValue shouldEqual 2L
+
+    // Using objectMapper with DefaultScalaModule
+    val bean2 = f.readValue[UserOfValueHolder](json)
+    bean2.getValueHolder.internalValue shouldEqual 2L
   }
 }
