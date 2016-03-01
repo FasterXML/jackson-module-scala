@@ -91,9 +91,14 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
     }
   }
 
-  override def findCreatorBinding(a: Annotated): JsonCreator.Mode =
-    if (isScala(a) && hasCreatorAnnotation(a)) JsonCreator.Mode.PROPERTIES else null
-
+  override def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
+    val ann = _findAnnotation(a, classOf[JsonCreator])
+    if (ann != null) {
+      ann.mode()
+    } else if (isScala(a) && hasCreatorAnnotation(a)) {
+      JsonCreator.Mode.PROPERTIES
+    } else null
+  }
 }
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
