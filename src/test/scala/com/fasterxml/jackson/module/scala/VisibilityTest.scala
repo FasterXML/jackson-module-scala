@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.annotation.{JsonProperty, JsonAutoDetect}
-import com.fasterxml.jackson.module.scala.ser.SerializerTest
+import com.fasterxml.jackson.module.scala.ser.{JavaFieldVisibility, SerializerTest}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -51,6 +51,11 @@ class VisibilityTest extends SerializerTest {
 
   "An ObjectMapper" should "respect method visibility" in {
     val p = new MethodVisibility()
+    serialize(p) should be ("""{"bar":"visible","zip":"visible"}""")
+  }
+
+  "An ObjectMapper" should "respect java field visibility" in {
+    val p = new JavaFieldVisibility()
     serialize(p) should be ("""{"bar":"visible","zip":"visible"}""")
   }
 }
