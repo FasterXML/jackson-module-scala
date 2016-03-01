@@ -48,16 +48,16 @@ class CreatorTest extends DeserializationFixture {
   }
 
   it should "work with static method creator" in { f =>
-    val json = """{"valueHolder": "2"}"""
+    val json = "\"2\""
 
     val regularObjectMapper = new ObjectMapper()
 
     // Using regular objectMapper
-    val bean1 = regularObjectMapper.readValue(json, classOf[UserOfValueHolder])
-    bean1.getValueHolder.internalValue shouldEqual 2L
+    val v1 = regularObjectMapper.readValue(json, classOf[ValueHolder])
+    v1.internalValue shouldEqual 2L
 
     // Using objectMapper with DefaultScalaModule
-    val bean2 = f.readValue[UserOfValueHolder](json)
-    bean2.getValueHolder.internalValue shouldEqual 2L
+    val v2 = f.readValue[ValueHolder](json)
+    v2.internalValue shouldEqual 2L
   }
 }

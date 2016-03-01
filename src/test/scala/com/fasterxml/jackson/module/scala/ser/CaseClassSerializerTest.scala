@@ -106,7 +106,10 @@ class CaseClassSerializerTest extends SerializerTest {
   }
 
   it should "serialize a case class with unicode name properties" in {
-    serialize(UnicodeNameCaseClass(23, "the name of this")) should equal( """{"name":"the name of this","winning-id":23}""")
+    serialize(UnicodeNameCaseClass(23, "the name of this")) should (
+      equal( """{"name":"the name of this","winning-id":23}""") or
+      equal( """{"winning-id":23,"name":"the name of this"}""")
+    )
   }
 
   it should "seralize a generic case class" in {
