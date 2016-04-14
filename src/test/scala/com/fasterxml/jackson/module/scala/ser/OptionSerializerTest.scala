@@ -1,23 +1,22 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import java.util
-
+import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.node.JsonNodeType
+import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema
+import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.{RequiredPropertiesSchemaModule, ScalaObjectMapper}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.annotation._
+
 import scala.annotation.meta.{field, getter}
-import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
-import com.fasterxml.jackson.module.scala.experimental.{ScalaObjectMapper, RequiredPropertiesSchemaModule}
-import com.fasterxml.jackson.databind.{ObjectMapper, JsonNode}
 import scala.collection.JavaConverters._
 
-object OptionSerializerTest
-{
-  class NonEmptyOptions {
+import java.util
 
+object OptionSerializerTest {
+  class NonEmptyOptions {
     //@JsonProperty
     @(JsonInclude)(JsonInclude.Include.NON_EMPTY)
     val none = None
@@ -25,12 +24,13 @@ object OptionSerializerTest
     //@JsonProperty
     @(JsonInclude @getter)(JsonInclude.Include.NON_EMPTY)
     val some = Some(1)
-
   }
+
+  case class OptionGeneric[T](data: Option[T])
 
   case class OptionSchema(stringValue: Option[String])
 
-  case class MixedOptionSchema(@JsonProperty(required=true) nonOptionValue: String, stringValue: Option[String])
+  case class MixedOptionSchema(@JsonProperty(required = true) nonOptionValue: String, stringValue: Option[String])
   case class WrapperOfOptionOfJsonNode(jsonNode: Option[JsonNode])
 
   @JsonSubTypes(Array(new JsonSubTypes.Type(classOf[Impl])))
@@ -39,14 +39,13 @@ object OptionSerializerTest
   @JsonTypeName("impl")
   case class Impl() extends Base
 
-  class BaseHolder(
-    private var _base: Option[Base]
-  ) {
-    @(JsonTypeInfo @field)(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="$type")
+  class BaseHolder(private var _base: Option[Base]) {
+    @(JsonTypeInfo@field)(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "$type")
     def base = _base
-    def base_=(base:Option[Base]) { _base = base }
+    def base_=(base: Option[Base]) {
+      _base = base
+    }
   }
-
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -184,7 +183,7 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   it should "support default typing" in {
-    case class User(name: String, email:Option[String] = None)
+    case class User(name: String, email: Option[String] = None)
     val mapper = new ObjectMapper with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
     mapper.enableDefaultTyping()
@@ -192,10 +191,6 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   it should "serialize JsonTypeInfo info in Option[Seq[T]]" in {
-
-    val mapper = new ObjectMapper
-    mapper.registerModule(DefaultScalaModule)
-
     val apple = Apple("green")
 
     val basket = OrderedFruitBasket(fruits = Some(Seq(apple)))
@@ -204,10 +199,6 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   it should "serialize JsonTypeInfo info in Option[Set[T]]" in {
-
-    val mapper = new ObjectMapper
-    mapper.registerModule(DefaultScalaModule)
-
     val apple = Apple("green")
 
     val basket = NonOrderedFruitBasket(fruits = Some(Set(apple)))
@@ -216,10 +207,6 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   it should "serialize JsonTypeInfo info in Option[java.util.List[T]]" in {
-
-    val mapper = new ObjectMapper
-    mapper.registerModule(DefaultScalaModule)
-
     val apple = Apple("green")
 
     val javaFruits = new util.ArrayList[Fruit]()
@@ -229,8 +216,29 @@ class OptionSerializerTest extends SerializerTest {
     serialize(basket) should be ("""{"fruits":[{"type":"Apple","color":"green"}]}""")
   }
 
+  it should "serialize with content inclusion ALWAYS" in {
+    val mapper = newMapper
+      .setPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.ALWAYS))
+    serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
+  }
 
+  it should "serialize with content inclusion NON_NULL" in {
+    val mapper = newMapper
+      .setPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_NULL))
+    serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
+  }
 
+  it should "serialize with content inclusion NON_ABSENT" in {
+    val mapper = newMapper
+      .setPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_ABSENT))
+    serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
+  }
+
+  it should "serialize with content inclusion NON_EMPTY" in {
+    val mapper = newMapper
+      .setPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_EMPTY))
+    serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
+  }
 }
 
 class NonNullOption {
