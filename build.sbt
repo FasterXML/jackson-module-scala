@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8")
+crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M4")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
@@ -38,7 +38,7 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.7.2" % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.7.2" % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.7.2" % "test",
-    "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+    "org.scalatest" %% "scalatest" % "2.2.6" % "test",
     "junit" % "junit" % "4.11" % "test"
 )
 
