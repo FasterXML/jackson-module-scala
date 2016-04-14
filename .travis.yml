@@ -5,13 +5,21 @@ cache:
     - $HOME/.sbt
 
 language: scala
-jdk:
-   - oraclejdk8
-   - openjdk6
+matrix:
+  include:
+    # Test Scala 2.10 and 2.11 with both JDK 6 and 8
+    - scala: 2.10.6
+      jdk: openjdk6
+    - scala: 2.11.7
+      jdk: openjdk6
+    - scala: 2.10.6
+      jdk: oraclejdk8
+    - scala: 2.11.7
+      jdk: oraclejdk8
+    # Scala 2.12+ only supports JDK 8+
+    - scala: 2.12.0-M4
+      jdk: oraclejdk8
 
-scala:
-   - 2.10.6
-   - 2.11.7
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
 before_script:
@@ -21,7 +29,7 @@ before_script:
 
 after_success:
   - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'openjdk6' &&
+      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'openjdk6' -o "${TRAVIS_SCALA_VERSION}" = '2.12.0-M4' &&
       sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"'
       'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
       ++${TRAVIS_SCALA_VERSION}

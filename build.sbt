@@ -25,8 +25,15 @@ javacOptions ++= Seq(
   "-bootclasspath", Array((java6Home / "jre" / "lib" / "rt.jar").toString, (java6Home / ".." / "Classes"/ "classes.jar").toString).mkString(File.pathSeparator)
 )
 
-// Try to future-proof scala jvm targets, in case some future scala version makes 1.7 a default
-scalacOptions += "-target:jvm-1.6"
+scalacOptions ++= (
+  if (scalaVersion.value.startsWith("2.12")) {
+    // -target is deprecated as of Scala 2.12, which uses JVM 1.8 bytecode
+    Seq.empty
+  } else {
+    // Explicitly target 1.6 for scala < 2.12
+    Seq("-target:jvm-1.6")
+  }
+)
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
