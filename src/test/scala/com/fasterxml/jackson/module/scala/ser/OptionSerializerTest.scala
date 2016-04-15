@@ -90,9 +90,10 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   it should "honor JsonInclude.Include.NON_NULL" in {
-    val nonNullMapper = newMapper
-    nonNullMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    nonNullMapper.writeValueAsString(new NonNullOption()) should be ("{}")
+    // See https://github.com/FasterXML/jackson-datatype-jdk8/issues/1 for more information.
+    newMapper
+      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      .writeValueAsString(new NonNullOption()) should be ("""{"foo":null}""")
   }
 
   it should "generate correct schema for options" in {
