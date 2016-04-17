@@ -91,13 +91,13 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   it should "honor JsonInclude.Include.NON_NULL" in {
-    val nonNullMapper = mapper
+    val nonNullMapper = newMapper
     nonNullMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     nonNullMapper.writeValueAsString(new NonNullOption()) should be ("{}")
   }
 
   it should "generate correct schema for options" in {
-    val schema = mapper.generateJsonSchema(classOf[OptionSchema])
+    val schema = newMapper.generateJsonSchema(classOf[OptionSchema])
     val schemaNode = schema.getSchemaNode
 
     val typeNode = schemaNode.path("type")
@@ -117,7 +117,7 @@ class OptionSerializerTest extends SerializerTest {
 
   it should "generate correct schema for options using the new jsonSchema jackson module" in {
     val visitor = new SchemaFactoryWrapper()
-    mapper.acceptJsonFormatVisitor(mapper.constructType(classOf[OptionSchema]), visitor)
+    newMapper.acceptJsonFormatVisitor(newMapper.constructType(classOf[OptionSchema]), visitor)
 
     val schema = visitor.finalSchema
     schema should be an 'objectSchema
@@ -129,7 +129,7 @@ class OptionSerializerTest extends SerializerTest {
 
   it should "mark as required the non-Option fields" in {
     val visitor = new SchemaFactoryWrapper()
-    mapper.acceptJsonFormatVisitor(mapper.constructType(classOf[MixedOptionSchema]), visitor)
+    newMapper.acceptJsonFormatVisitor(newMapper.constructType(classOf[MixedOptionSchema]), visitor)
 
     val schema = visitor.finalSchema()
     schema should be an 'objectSchema
@@ -148,11 +148,11 @@ class OptionSerializerTest extends SerializerTest {
   it should "support reversing the default for required properties in schema" in {
     case class DefaultOptionSchema(nonOptionValue: String, stringValue: Option[String])
 
-    val m = mapper
+    val m = newMapper
     m.registerModule(new RequiredPropertiesSchemaModule{})
 
     val visitor = new SchemaFactoryWrapper()
-    m.acceptJsonFormatVisitor(mapper.constructType(classOf[DefaultOptionSchema]), visitor)
+    m.acceptJsonFormatVisitor(newMapper.constructType(classOf[DefaultOptionSchema]), visitor)
 
     val schema = visitor.finalSchema()
     schema should be an 'objectSchema
@@ -170,17 +170,17 @@ class OptionSerializerTest extends SerializerTest {
 
   it should "serialize contained JsonNode correctly" in {
     val json: String = """{"prop":"value"}"""
-    val tree: JsonNode = mapper.readTree(json)
+    val tree: JsonNode = newMapper.readTree(json)
     val wrapperOfOptionOfJsonNode = WrapperOfOptionOfJsonNode(Some(tree))
 
-    val actualJson: String = mapper.writeValueAsString(wrapperOfOptionOfJsonNode)
+    val actualJson: String = newMapper.writeValueAsString(wrapperOfOptionOfJsonNode)
 
     actualJson shouldBe """{"jsonNode":{"prop":"value"}}"""
   }
 
   it should "propagate type information" in {
     val json: String = """{"base":{"$type":"impl"}}"""
-    mapper.writeValueAsString(new BaseHolder(Some(Impl()))) shouldBe json
+    newMapper.writeValueAsString(new BaseHolder(Some(Impl()))) shouldBe json
   }
 
   it should "support default typing" in {

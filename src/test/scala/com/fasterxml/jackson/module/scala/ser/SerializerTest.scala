@@ -9,7 +9,7 @@ import com.fasterxml.jackson.module.scala.JacksonTest
 
 trait SerializerTest extends JacksonTest {
 
-  def serialize(value: Any): String = mapper.writeValueAsString(value)
+  def serialize(value: Any): String = newMapper.writeValueAsString(value)
 
-  def jsonOf(s: String): JsonNode = mapper.readTree(s)
+  def jsonOf(s: String): JsonNode = newMapper.readTree(s)
 }

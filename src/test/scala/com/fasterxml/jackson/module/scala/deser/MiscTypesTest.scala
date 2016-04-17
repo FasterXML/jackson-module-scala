@@ -15,7 +15,7 @@ class MiscTypesTest extends DeserializerTest {
   "Scala Module" should "deserialize UUID" in {
     val data: Seq[UUID] = Stream.continually(UUID.randomUUID).take(4).toList
 
-    val json = mapper.writeValueAsString(data)
+    val json = newMapper.writeValueAsString(data)
     val read = deserialize[List[UUID]](json)
 
     read shouldBe (data)

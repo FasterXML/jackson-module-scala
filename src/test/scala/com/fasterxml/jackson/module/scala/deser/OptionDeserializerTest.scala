@@ -73,9 +73,9 @@ class OptionDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialze defaulted parameters correctly (without defaults)" in {
-    val json = mapper.writeValueAsString(Defaulted(id = 1))
+    val json = newMapper.writeValueAsString(Defaulted(id = 1))
     json shouldBe """{"id":1,"name":""}"""
-    val d = mapper.readValue(json, classOf[Defaulted])
+    val d = newMapper.readValue(json, classOf[Defaulted])
     d.name should not be null
   }
 }

@@ -115,7 +115,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   it should "support serializing into instance var properties" in {
     val bean = new Bean("ctor")
-    val reader: ObjectReader = mapper.readerFor(bean.getClass)
+    val reader: ObjectReader = newMapper.readerFor(bean.getClass)
     reader.withValueToUpdate(bean).readValue("""{"prop":"readValue"}""")
     bean.prop should be ("readValue")
   }

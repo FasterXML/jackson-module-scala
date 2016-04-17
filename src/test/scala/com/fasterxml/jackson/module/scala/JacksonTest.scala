@@ -6,7 +6,7 @@ abstract class JacksonTest extends BaseSpec {
 
   def module: Module
 
-  def mapper = {
+  def newMapper = {
     val result = new ObjectMapper
     result.registerModule(module)
     result
