@@ -72,6 +72,12 @@ trait ScalaObjectMapper {
         throw new IllegalArgumentException("Need exactly 1 type parameter for collection like types ("+clazz.getName+")")
       }
       getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
+    } else if (isReference(clazz)) {
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if(typeArguments.length != 1) {
+        throw new IllegalArgumentException("Need exactly 1 type parameter for reference types ("+clazz.getName+")")
+      }
+      getTypeFactory.constructReferenceType(clazz, typeArguments(0))
     } else {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
       getTypeFactory.constructParametrizedType(clazz, clazz, typeArguments: _*)
@@ -333,10 +339,14 @@ trait ScalaObjectMapper {
     MAP.isAssignableFrom(c)
   }
 
-  private val ITERABLE = classOf[collection.Iterable[_]]
   private val OPTION = classOf[Option[_]]
+  private def isReference(c: Class[_]): Boolean = {
+     OPTION.isAssignableFrom(c)
+  }
+
+  private val ITERABLE = classOf[collection.Iterable[_]]
   private def isCollectionLike(c: Class[_]): Boolean = {
-    ITERABLE.isAssignableFrom(c) || OPTION.isAssignableFrom(c)
+    ITERABLE.isAssignableFrom(c)
   }
 
 }
