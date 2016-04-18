@@ -196,8 +196,15 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
     assert(result.isInstanceOf[collection.Map[_, _]])
   }
 
-  it should "read a option values from a JSON array" in {
-    val result = mapper.readValue[List[Option[String]]](toplevelOptionArrayJson)
+  it should "read option values into List from a JSON array" in {
+    val result = mapper.readValue[java.util.ArrayList[Option[String]]](toplevelOptionArrayJson)
+    import scala.collection.JavaConversions._
+    result(0) should equal(Some("some"))
+    result(1) should equal(None)
+  }
+
+  it should "read option values into Array from a JSON array" in {
+    val result = mapper.readValue[Array[Option[String]]](toplevelOptionArrayJson)
     result(0) should equal(Some("some"))
     result(1) should equal(None)
   }
