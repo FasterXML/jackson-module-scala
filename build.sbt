@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8")
+crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M4")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
@@ -25,8 +25,15 @@ javacOptions ++= Seq(
   "-bootclasspath", Array((java6Home / "jre" / "lib" / "rt.jar").toString, (java6Home / ".." / "Classes"/ "classes.jar").toString).mkString(File.pathSeparator)
 )
 
-// Try to future-proof scala jvm targets, in case some future scala version makes 1.7 a default
-scalacOptions += "-target:jvm-1.6"
+scalacOptions ++= (
+  if (scalaVersion.value.startsWith("2.12")) {
+    // -target is deprecated as of Scala 2.12, which uses JVM 1.8 bytecode
+    Seq.empty
+  } else {
+    // Explicitly target 1.6 for scala < 2.12
+    Seq("-target:jvm-1.6")
+  }
+)
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
@@ -38,7 +45,7 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.7.3" % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.7.3" % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % "2.7.3" % "test",
-    "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+    "org.scalatest" %% "scalatest" % "2.2.6" % "test",
     "junit" % "junit" % "4.11" % "test"
 )
 
