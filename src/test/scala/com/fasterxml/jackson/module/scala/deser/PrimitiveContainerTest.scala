@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-object PrimitiveContainerTest
-{
+object PrimitiveContainerTest {
+
   case class OptionInt(value: Option[Int])
   case class AnnotatedOptionInt(@JsonDeserialize(contentAs = classOf[java.lang.Integer]) value: Option[Int])
   case class OptionLong(value: Option[Long])
