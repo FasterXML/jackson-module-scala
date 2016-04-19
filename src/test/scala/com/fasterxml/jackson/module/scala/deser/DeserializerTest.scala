@@ -13,10 +13,10 @@ import com.fasterxml.jackson.module.scala.JacksonTest
 
 trait DeserializerTest extends JacksonTest {
 
-  def serialize(o: AnyRef) = mapper.writeValueAsString(o)
+  def serialize(o: AnyRef) = newMapper.writeValueAsString(o)
 
   def deserialize[T: Manifest](value: String) : T =
-    mapper.readValue(value, typeReference[T])
+    newMapper.readValue(value, typeReference[T])
 
   private [this] def typeReference[T: Manifest] = new TypeReference[T] {
     override def getType = typeFromManifest(manifest[T])

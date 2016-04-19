@@ -56,7 +56,6 @@ class OptionDeserializerTest extends DeserializerTest {
     deserialize[Option[Long]]("1") should be (Some(1L))
     deserialize[Option[Long]]("1").map(java.lang.Long.valueOf(_)) should be (Some(1L))
     deserialize[Option[Long]]("1").get.getClass should be (classOf[Long])
-
   }
 
   it should "sythensize None for optional fields that are non-existent" in {
@@ -73,9 +72,9 @@ class OptionDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialze defaulted parameters correctly (without defaults)" in {
-    val json = mapper.writeValueAsString(Defaulted(id = 1))
+    val json = newMapper.writeValueAsString(Defaulted(id = 1))
     json shouldBe """{"id":1,"name":""}"""
-    val d = mapper.readValue(json, classOf[Defaulted])
+    val d = newMapper.readValue(json, classOf[Defaulted])
     d.name should not be null
   }
 }

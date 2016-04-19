@@ -48,7 +48,7 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
   }
 
   it should "handle key type information" in {
-    val result: Map[UUID,Int] = mapper.readValue("""{"e79bf81e-3902-4801-831f-d161be435787":5}""", new TypeReference[Map[UUID,Int]]{})
+    val result: Map[UUID,Int] = newMapper.readValue("""{"e79bf81e-3902-4801-831f-d161be435787":5}""", new TypeReference[Map[UUID,Int]]{})
     result.keys.head shouldBe (UUID.fromString("e79bf81e-3902-4801-831f-d161be435787"))
   }
 

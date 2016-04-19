@@ -36,7 +36,7 @@ class TestInnerClass extends DeserializerTest {
 
   "Deserializer" should "support nested inner classes as values" in {
     val input = Dog("Smurf", thinking = true)
-    val json = mapper.writeValueAsString(input)
+    val json = newMapper.writeValueAsString(input)
     val output = deserialize[Dog](json)
 
     output should have ('name ("Smurf"))
