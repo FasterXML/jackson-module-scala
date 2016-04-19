@@ -118,7 +118,7 @@ class MapSerializerTest extends SerializerTest {
     val wrapper = new {
       val map = Map("key" -> None)
     }
-    val m = mapper.copy()
+    val m = newMapper.copy()
     m.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
     val v = m.writeValueAsString(wrapper)
     v shouldBe """{"map":{}}"""

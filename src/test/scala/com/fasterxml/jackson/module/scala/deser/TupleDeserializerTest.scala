@@ -71,14 +71,14 @@ class TupleDeserializerTest extends DeserializerTest {
 
   it should "deserialize using type information" in {
     val value = TupleContainer(TupleValueLong(1), TupleValueString("foo"))
-    val json = mapper.writeValueAsString(value)
+    val json = newMapper.writeValueAsString(value)
     val result = deserialize[TupleContainer](json)
     result should be (value)
   }
 
   it should "deserialize using type information outside of field" in {
     val value = (TupleValueLong(1), TupleValueString("foo"))
-    val json = mapper.writeValueAsString(value)
+    val json = newMapper.writeValueAsString(value)
     val result = deserialize[(TupleValueBase, TupleValueBase)](json)
     result should be (value)
   }

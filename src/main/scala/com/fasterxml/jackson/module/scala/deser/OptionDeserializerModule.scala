@@ -1,83 +1,95 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.{JsonToken, JsonParser}
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory, CollectionLikeType}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
-private class OptionDeserializer(elementType: JavaType,
-                                 valueTypeDeser: Option[TypeDeserializer],
-                                 beanProperty: Option[BeanProperty],
-                                 elementDeser: Option[JsonDeserializer[_]])
-  extends StdDeserializer[Option[AnyRef]](classOf[Option[AnyRef]]) with ContextualDeserializer {
-  
-  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
-    val typeDeser = valueTypeDeser.map(_.forProperty(property))
-    val deser: Option[JsonDeserializer[_]] =
-      (for {
-        p <- Option(property)
-        m <- Option(p.getMember)
-        deserDef <- Option(ctxt.getAnnotationIntrospector.findContentDeserializer(m))
-      } yield ctxt.deserializerInstance(m, deserDef)).orElse(elementDeser)
-    val deser1: Option[JsonDeserializer[_]] = Option(findConvertingContentDeserializer(ctxt, property, deser.orNull))
-    val deser2: Option[JsonDeserializer[_]] = if (deser1.isEmpty) {
-      if (hasContentTypeAnnotation(ctxt, property)) {
-        Option(ctxt.findContextualValueDeserializer(elementType, property))
-      } else {
-        deser1
+private class OptionDeserializer(fullType: JavaType,
+                                 valueTypeDeserializer: Option[TypeDeserializer],
+                                 valueDeserializer: Option[JsonDeserializer[AnyRef]],
+                                 beanProperty: Option[BeanProperty] = None)
+  extends StdDeserializer[Option[AnyRef]](fullType) with ContextualDeserializer {
+
+  override def getValueType: JavaType = fullType
+
+  override def getNullValue: Option[AnyRef] = None
+
+  private[this] def withResolved(fullType: JavaType,
+                                 typeDeser: Option[TypeDeserializer],
+                                 valueDeser: Option[JsonDeserializer[_]],
+                                 beanProperty: Option[BeanProperty]): OptionDeserializer = {
+    if (fullType == this.fullType &&
+      typeDeser == this.valueTypeDeserializer &&
+      valueDeser == this.valueDeserializer &&
+      beanProperty == this.beanProperty) {
+      return this
+    }
+    new OptionDeserializer(fullType, typeDeser, valueDeser.asInstanceOf[Option[JsonDeserializer[AnyRef]]], beanProperty)
+  }
+
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[Option[AnyRef]] = {
+    val typeDeser = valueTypeDeserializer.map(_.forProperty(property))
+    var deser = valueDeserializer
+    var typ = fullType
+
+    def refdType() = Option(typ.getContentType).getOrElse(TypeFactory.unknownType())
+
+    if (deser.isEmpty) {
+      if (property != null) {
+        val intr = ctxt.getAnnotationIntrospector
+        val member = property.getMember
+        if (intr != null && member != null) {
+          typ = intr.refineDeserializationType(ctxt.getConfig, member, typ)
+        }
+        deser = Option(ctxt.findContextualValueDeserializer(refdType(), property))
       }
+    } else { // otherwise directly assigned, probably not contextual yet:
+      deser = Option(ctxt.handleSecondaryContextualization(deser.get, property, refdType()).asInstanceOf[JsonDeserializer[AnyRef]])
+    }
+
+    withResolved(typ, typeDeser, deser, Option(property))
+  }
+
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): Option[AnyRef] = {
+    val deser = valueDeserializer.getOrElse(ctxt.findContextualValueDeserializer(fullType.getContentType, beanProperty.orNull))
+    val refd: AnyRef = valueTypeDeserializer match {
+      case None => deser.deserialize(p, ctxt)
+      case Some(vtd) => deser.deserializeWithType(p, ctxt, vtd)
+    }
+    Option(refd)
+  }
+
+  override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer): Option[AnyRef] = {
+    val t = jp.getCurrentToken
+    if (t == JsonToken.VALUE_NULL) {
+      getNullValue(ctxt)
     } else {
-      Option(ctxt.handleSecondaryContextualization(deser1.get, property, elementType))
-    }
-    if (deser2 != elementDeser || property != beanProperty.orNull || valueTypeDeser != typeDeser)
-      new OptionDeserializer(elementType, typeDeser, Option(property), deser2.asInstanceOf[Option[JsonDeserializer[AnyRef]]])
-    else this
-  }
-
-  def hasContentTypeAnnotation(ctxt: DeserializationContext, property: BeanProperty) = (for {
-    p <- Option(property)
-    intr <- Option(ctxt.getAnnotationIntrospector)
-  } yield {
-    intr.refineDeserializationType(ctxt.getConfig, p.getMember, p.getType)
-  }).isDefined
-
-  override def deserialize(jp: JsonParser, ctxt: DeserializationContext) = valueTypeDeser match {
-    case Some(d) => deserializeWithType(jp, ctxt, d)
-    case None => Option {
-      elementDeser.map(_.deserialize(jp, ctxt)).getOrElse {
-        ctxt.findContextualValueDeserializer(elementType, beanProperty.orNull).deserialize(jp, ctxt)
-      }
-    }.asInstanceOf[Option[AnyRef]]
-  }
-
-  override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer) = Option {
-    elementDeser.map(_.deserializeWithType(jp, ctxt, typeDeserializer)).getOrElse {
-      ctxt.findContextualValueDeserializer(elementType, beanProperty.orNull).deserializeWithType(jp, ctxt, typeDeserializer)
+      typeDeserializer.deserializeTypedFromAny(jp, ctxt).asInstanceOf[Option[AnyRef]]
     }
   }
-
-  override def getNullValue = None
 }
 
 private object OptionDeserializerResolver extends Deserializers.Base {
 
   private val OPTION = classOf[Option[AnyRef]]
 
-  override def findCollectionLikeDeserializer(theType: CollectionLikeType,
-                                              config: DeserializationConfig,
-                                              beanDesc: BeanDescription,
-                                              elementTypeDeserializer: TypeDeserializer,
-                                              elementValueDeserializer: JsonDeserializer[_]) =
-    if (!OPTION.isAssignableFrom(theType.getRawClass)) null
+  override def findReferenceDeserializer(refType: ReferenceType,
+                                         config: DeserializationConfig,
+                                         beanDesc: BeanDescription,
+                                         contentTypeDeserializer: TypeDeserializer,
+                                         contentDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+    if (!OPTION.isAssignableFrom(refType.getRawClass)) null
     else {
-      val elementType = theType.getContentType
-      val typeDeser = Option(elementTypeDeserializer).orElse(Option(elementType.getTypeHandler.asInstanceOf[TypeDeserializer]))
-      val valDeser: Option[JsonDeserializer[_]] = Option(elementValueDeserializer).orElse(Option(elementType.getValueHandler))
-      new OptionDeserializer(elementType, typeDeser, None, valDeser)
+      val elementType = refType.getContentType
+      val typeDeser = Option(contentTypeDeserializer).orElse(Option(elementType.getTypeHandler[TypeDeserializer]))
+      val valDeser = Option(contentDeserializer).orElse(Option(elementType.getValueHandler)).asInstanceOf[Option[JsonDeserializer[AnyRef]]]
+      new OptionDeserializer(refType, typeDeser, valDeser)
     }
+  }
 }
 
 trait OptionDeserializerModule extends OptionTypeModifierModule {
