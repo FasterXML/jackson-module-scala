@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala.modifiers
+package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.module.scala.deser.EitherDeserializerModule
 import com.fasterxml.jackson.module.scala.ser.EitherSerializerModule

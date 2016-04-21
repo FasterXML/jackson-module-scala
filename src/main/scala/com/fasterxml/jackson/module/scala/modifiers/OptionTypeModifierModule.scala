@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeBindings, TypeF
 import com.fasterxml.jackson.module.scala.JacksonModule
 
 private object OptionTypeModifier extends TypeModifier with GenTypeModifier {
-  def OPTION = classOf[Option[AnyRef]]
+  val OPTION = classOf[Option[AnyRef]]
 
   override def modifyType(typ: JavaType, jdkType: Type, context: TypeBindings, typeFactory: TypeFactory): JavaType = {
     if (typ.isReferenceType || typ.isContainerType) return typ

@@ -53,4 +53,8 @@ class EitherSerializerTest extends SerializerTest with EitherJsonTestSupport {
   it should "propagate type information on Left" in {
     serialize(BaseHolder(Left(Impl()))) shouldBe """{"base":{"l":{"$type":"impl"}}}"""
   }
+
+  it should "properly serialize null when using type info" in {
+    serialize(BaseHolder(null)) shouldBe """{"base":null}"""
+  }
 }
