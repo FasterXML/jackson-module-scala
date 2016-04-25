@@ -18,14 +18,15 @@ import com.fasterxml.jackson.databind.util.NameTransformer
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
-private object OptionSerializer {
-  def useStatic(provider: SerializerProvider, property: Option[BeanProperty], referredType: JavaType): Boolean = {
+object OptionSerializer {
+  def useStatic(provider: SerializerProvider, property: Option[BeanProperty], referredType: Option[JavaType]): Boolean = {
+    if (referredType.isEmpty) return false
     // First: no serializer for `Object.class`, must be dynamic
-    if (referredType.isJavaLangObject) return false
+    if (referredType.get.isJavaLangObject) return false
     // but if type is final, might as well fetch
-    if (referredType.isFinal) return true
+    if (referredType.get.isFinal) return true
     // also: if indicated by typing, should be considered static
-    if (referredType.useStaticType()) return true
+    if (referredType.get.useStaticType()) return true
     // if neither, maybe explicit annotation?
     for (
       ann <- property.flatMap(p => Option(p.getMember));
@@ -98,12 +99,11 @@ private class OptionSerializer(referredType: JavaType,
       case None => if (hasContentTypeAnnotation(prov, prop)) {
         Option(prov.findValueSerializer(referredType, prop)).filterNot(_.isInstanceOf[UnknownSerializer])
       } else None
-        // Why secondary why not primary?
-      case Some(s) => Option(prov.handleSecondaryContextualization(s, prop).asInstanceOf[JsonSerializer[AnyRef]])
+      case Some(s) => Option(prov.handlePrimaryContextualization(s, prop).asInstanceOf[JsonSerializer[AnyRef]])
     }
 
     // A few conditions needed to be able to fetch serializer here:
-    if (ser.isEmpty && useStatic(prov, propOpt, referredType)) {
+    if (ser.isEmpty && useStatic(prov, propOpt, Option(referredType))) {
       ser = Option(findSerializer(prov, referredType, propOpt))
     }
     // Also: may want to have more refined exclusion based on referenced value
