@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.{JsonCreator, JsonIgnore}
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -24,6 +24,18 @@ object CreatorTest
     override def equals(o: Any): Boolean = o match {
       case ac: AlternativeConstructor => script == ac.script
       case _ => false
+    }
+  }
+
+  case class MultipleConstructors(script: String, dummy: Int) {
+    def this(script: String) = {
+      this(script, 0)
+    }
+  }
+
+  case class MultipleConstructorsAnn @JsonCreator()(script: String, dummy: Int) {
+    def this(script: String) = {
+      this(script, 0)
     }
   }
 }
@@ -74,6 +86,22 @@ class CreatorTest extends DeserializationFixture {
     val bean = f.writeValueAsString(orig)
     bean shouldBe """{"script":"abc"}"""
     val roundTrip = f.readValue[AlternativeConstructor](bean)
+    roundTrip shouldEqual orig
+  }
+
+  it should "use primary constructor if no JsonCreator annotation" in { f =>
+    val orig = MultipleConstructors("abc", 42)
+    val bean = f.writeValueAsString(orig)
+    bean shouldBe """{"script":"abc","dummy":42}"""
+    val roundTrip = f.readValue[MultipleConstructors](bean)
+    roundTrip shouldEqual orig
+  }
+
+  it should "use primary constructor if primary is JsonCreator annotated" in { f =>
+    val orig = MultipleConstructorsAnn("abc", 42)
+    val bean = f.writeValueAsString(orig)
+    bean shouldBe """{"script":"abc","dummy":42}"""
+    val roundTrip = f.readValue[MultipleConstructorsAnn](bean)
     roundTrip shouldEqual orig
   }
 }

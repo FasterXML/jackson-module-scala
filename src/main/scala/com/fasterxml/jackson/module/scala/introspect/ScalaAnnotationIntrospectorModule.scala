@@ -1,15 +1,14 @@
-package com.fasterxml.jackson
-package module
-package scala
-package introspect
+package com.fasterxml.jackson.module.scala.introspect
 
-import annotation.JsonCreator
-import databind.`type`.ClassKey
-import databind.introspect._
-import databind.util.LRUMap
-import paranamer.ParanamerAnnotationIntrospector
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.databind.`type`.ClassKey
+import com.fasterxml.jackson.databind.introspect._
+import com.fasterxml.jackson.databind.util.LRUMap
+import com.fasterxml.jackson.module.paranamer.ParanamerAnnotationIntrospector
+import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.util.Implicits._
 
-import util.Implicits._
+import java.lang.annotation.Annotation
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
 {
@@ -83,10 +82,26 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
   }
 
   override def hasCreatorAnnotation(a: Annotated): Boolean = {
+    val jsonCreators = PartialFunction[Annotation, JsonCreator]({ case jc: JsonCreator => jc })
+
     a match {
       case ac: AnnotatedConstructor =>
-        isScala(ac) && _descriptorFor(ac.getDeclaringClass).
-          properties.view.flatMap(_.param).exists(_.constructor == ac.getAnnotated)
+        if (!isScala(ac)) return false
+        val annotatedFound = _descriptorFor(ac.getDeclaringClass)
+          .properties
+          .flatMap(_.param)
+          .exists(_.constructor == ac.getAnnotated)
+
+        // Ignore this annotation if there is another annotation that is actually annotated with @JsonCreator.
+        val annotatedConstructor = {
+          for (constructor <- ac.getDeclaringClass.getDeclaredConstructors;
+               annotation: JsonCreator <- constructor.getAnnotations.collect(jsonCreators) if annotation.mode() != JsonCreator.Mode.DISABLED) yield constructor
+        }.headOption
+
+        // Ignore this annotation if it is Mode.DISABLED.
+        val isDisabled = ac.getAnnotated.getAnnotations.collect(jsonCreators).exists(_.mode() == JsonCreator.Mode.DISABLED)
+
+        annotatedFound && annotatedConstructor.forall(_ == ac.getAnnotated) && !isDisabled
       case _ => false
     }
   }
