@@ -56,6 +56,6 @@ private object NumberDeserializers extends Deserializers.Base
     }
 }
 
-private [scala] trait ScalaNumberDeserializersModule extends JacksonModule {
+trait ScalaNumberDeserializersModule extends JacksonModule {
   this += NumberDeserializers
 }
