@@ -78,6 +78,10 @@ private class SeqDeserializer(collectionType: JavaType, containerDeserializer: C
     containerDeserializer.deserialize(jp, ctxt) match {
       case wrapper: BuilderWrapper[_] => wrapper.builder.result()
     }
+
+  override def getNullValue(ctxt: DeserializationContext): Iterable[_] = {
+    SeqDeserializer.companionFor(collectionType.getRawClass).empty
+  }
 }
 
 private object SeqDeserializerResolver extends Deserializers.Base {
