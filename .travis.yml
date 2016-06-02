@@ -9,9 +9,9 @@ matrix:
   include:
     # Test Scala 2.10 and 2.11 with both JDK 6 and 8
     - scala: 2.10.6
-      jdk: openjdk6
+      jdk: openjdk7
     - scala: 2.11.7
-      jdk: openjdk6
+      jdk: openjdk7
     - scala: 2.10.6
       jdk: oraclejdk8
     - scala: 2.11.7
@@ -38,9 +38,6 @@ after_success:
 branches:
   only:
     - master
-    - "2.3"
-    - "2.4"
-    - "2.5"
     - "2.6"
     - "2.7"
 
