@@ -8,6 +8,7 @@ package com.fasterxml.jackson.module
  *  - Tuple
  *  - Seq
  *  - Enumeration
+ *  - Symbol
  *
  *  Partial support exists for:
  *  - Map; all maps are serialized but only unsorted maps can currently be deserialized.
