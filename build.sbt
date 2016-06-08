@@ -20,9 +20,8 @@ lazy val java6Home = Option(System.getenv("JAVA6_HOME")).map(new File(_)).getOrE
 }
 
 javacOptions ++= Seq(
-  "-source", "1.6",
-  "-target", "1.6",
-  "-bootclasspath", Array((java6Home / "jre" / "lib" / "rt.jar").toString, (java6Home / ".." / "Classes"/ "classes.jar").toString).mkString(File.pathSeparator)
+  "-source", "1.7",
+  "-target", "1.7"
 )
 
 scalacOptions ++= (
@@ -31,7 +30,7 @@ scalacOptions ++= (
     Seq.empty
   } else {
     // Explicitly target 1.6 for scala < 2.12
-    Seq("-target:jvm-1.6")
+    Seq("-target:jvm-1.7")
   }
 )
 
