@@ -45,7 +45,7 @@ private class SortedMapDeserializer(
 
   private val instantiator =
     new ValueInstantiator {
-      def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
+      override def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
       override def canCreateUsingDefault = true
       override def createUsingDefault(ctx: DeserializationContext) =
         new SortedMapBuilderWrapper[AnyRef,AnyRef](SortedMapDeserializer.builderFor(collectionType.getRawClass, collectionType.getKeyType))
