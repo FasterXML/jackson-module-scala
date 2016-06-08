@@ -13,7 +13,7 @@ import collection.JavaConverters._
 import collection.mutable
 
 object JacksonModule {
-  private val VersionRegex = """(\d+)\.(\d+)(?:\.(\d+)(?:\-(.*))?)?""".r
+  private val VersionRegex = """(\d+)\.(\d+)(?:\.(\d+)(?:\.rc(\d+))(?:\-(.*))?)?""".r
   private val cls = classOf[JacksonModule]
   private val buildPropsFilename = cls.getPackage.getName.replace('.','/') + "/build.properties"
   lazy val buildProps: mutable.Map[String, String] = {
@@ -27,7 +27,7 @@ object JacksonModule {
     val groupId = buildProps("groupId")
     val artifactId = buildProps("artifactId")
     buildProps("version") match {
-      case VersionRegex(major,minor,patchOpt,snapOpt) => {
+      case VersionRegex(major,minor,patchOpt,_,snapOpt) => {
         val patch = Option(patchOpt) map (_.toInt) getOrElse 0
         new Version(major.toInt,minor.toInt,patch,snapOpt,groupId,artifactId)
       }
