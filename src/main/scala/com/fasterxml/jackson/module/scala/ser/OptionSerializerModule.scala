@@ -3,6 +3,7 @@ package module.scala
 package ser
 
 import java.lang.reflect.Type
+
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind._
@@ -96,7 +97,10 @@ private class OptionSerializer(referredType: JavaType,
     ser = ser.orElse(valueSerializer).map(prov.handlePrimaryContextualization(_, prop)).asInstanceOf[Option[JsonSerializer[AnyRef]]]
     ser = Option(findConvertingContentSerializer(prov, prop, ser.orNull).asInstanceOf[JsonSerializer[AnyRef]])
     ser = ser match {
-      case None => if (hasContentTypeAnnotation(prov, prop)) {
+      case None => if (hasContentTypeAnnotation(prov, prop) && referredType.isContainerType) {
+        // In some cases `findValueSerializer` will return a BeanSerializer instance
+        // if the value type is a trait. This results in empty objects if the concrete
+        // value is a case class.
         Option(prov.findValueSerializer(referredType, prop)).filterNot(_.isInstanceOf[UnknownSerializer])
       } else None
       case Some(s) => Option(prov.handlePrimaryContextualization(s, prop).asInstanceOf[JsonSerializer[AnyRef]])
