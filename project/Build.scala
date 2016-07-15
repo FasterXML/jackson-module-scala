@@ -1,8 +1,8 @@
 import sbt._
 import Keys._
-import sbtrelease._
 import com.typesafe.sbt.SbtSite.SiteKeys._
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
+import sbtrelease.ReleasePlugin.autoImport.ReleaseStep
 
 object Build extends Build {
   def executeTask(task: TaskKey[_], info: String): State => State = (st: State) => {
