@@ -14,14 +14,22 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 // Temporarily disable warnings as fatal until migrate Option to new features.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
-// Ensure jvm 1.6 for java
-lazy val java6Home = Option(System.getenv("JAVA6_HOME")).map(new File(_)).getOrElse {
-  sys.error("Please set JAVA6_HOME environment variable")
+// Ensure jvm 1.7 for java
+lazy val java7Home = Option(System.getenv("JAVA7_HOME")).map(new File(_)).getOrElse {
+  sys.error("Please set JAVA7_HOME environment variable")
 }
 
 javacOptions ++= Seq(
   "-source", "1.7",
   "-target", "1.7"
+) ++ (
+  // Because of 2.12, the build has to be driven with Java 8, but we should still do the right thing for
+  // the Java 7 bootclasspath to prevent standard library incompatibilities (and eliminate build warning)
+  if (scalaVersion.value.startsWith("2.12")) {
+    Seq.empty
+  } else {
+    Seq("-bootclasspath", Array((java7Home / "jre" / "lib" / "rt.jar").toString, (java7Home / ".." / "Classes"/ "classes.jar").toString).mkString(File.pathSeparator))
+  }
 )
 
 scalacOptions ++= (

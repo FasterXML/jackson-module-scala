@@ -9,12 +9,12 @@ matrix:
   include:
     # Test Scala 2.10 and 2.11 with both JDK 6 and 8
     - scala: 2.10.6
-      jdk: openjdk7
-    - scala: 2.11.7
-      jdk: openjdk7
+      jdk: oraclejdk7
+    - scala: 2.11.8
+      jdk: oraclejdk7
     - scala: 2.10.6
       jdk: oraclejdk8
-    - scala: 2.11.7
+    - scala: 2.11.8
       jdk: oraclejdk8
     # Scala 2.12+ only supports JDK 8+
     - scala: 2.12.0-M4
@@ -23,13 +23,11 @@ matrix:
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
 before_script:
-  - jdk_switcher use openjdk6
-  - export JAVA6_HOME=$JAVA_HOME
-  - jdk_switcher use $TRAVIS_JDK_VERSION
+  - export JAVA7_HOME=$(jdk_switcher home oraclejdk7)
 
 after_success:
   - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'openjdk6' -o "${TRAVIS_SCALA_VERSION}" = '2.12.0-M4' &&
+      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'oraclejdk7' -o "${TRAVIS_SCALA_VERSION}" = '2.12.0-M4' &&
       sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"'
       'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
       ++${TRAVIS_SCALA_VERSION}
