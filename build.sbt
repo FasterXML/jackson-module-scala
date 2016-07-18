@@ -39,11 +39,13 @@ scalacOptions ++= (
 
 val jacksonVersion = "2.8.0"
 
+val jacksonSnapshotVersion = "2.8.1-SNAPSHOT"
+
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonSnapshotVersion,
     "com.fasterxml.jackson.module" % "jackson-module-paranamer" % jacksonVersion,
     // test dependencies
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % "test",
