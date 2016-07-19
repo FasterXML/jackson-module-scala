@@ -55,25 +55,15 @@ trait JacksonModule extends Module {
     val requiredVersion = new Version(MajorVersion, MinorVersion, 0, null, "com.fasterxml.jackson.core", "jackson-databind")
     val incompatibleVersion = new Version(MajorVersion, MinorVersion + 1, 0, null, "com.fasterxml.jackson.core", "jackson-databind")
 
-    val databindOldError = "Scala module %s requires Jackson Databind %s or later".format(version, requiredVersion)
-    val databindNewError = "Scala module %s cannot work with Jackson Databind %s or later".format(version, incompatibleVersion)
+    val databindVersionError = "Scala module %s requires Jackson Databind version >= %s and < %s".format(version, requiredVersion, incompatibleVersion)
 
+    // Because of the Scala module's dependency on databind internals,
+    // major and minor versions must match exactly.
     context.getMapperVersion match {
-      case version@VersionExtractor(major, _) if major < MajorVersion =>
-        throw new JsonMappingException(null, databindOldError)
-      case version@VersionExtractor(MajorVersion, minor) if minor < MinorVersion =>
-        throw new JsonMappingException(null, databindOldError)
-      case version@VersionExtractor(MajorVersion, minor) =>
-        // Under semantic versioning, this check would not be needed; however Jackson
-        // occasionally has functionally breaking changes across minor versions
-        // (2.4 -> 2.5 as an example). This may be the fault of the Scala module
-        // depending on implementation details, so for now we'll just declare ourselves
-        // as incompatible and move on.
-        if (minor > MinorVersion) {
-          throw new JsonMappingException(null, databindNewError)
-        }
+      case version@VersionExtractor(MajorVersion, MinorVersion) =>
+        // success!
       case _ =>
-        throw new JsonMappingException(null, databindNewError)
+        throw new JsonMappingException(null, databindVersionError)
     }
 
     initializers result() foreach (_ apply context)
