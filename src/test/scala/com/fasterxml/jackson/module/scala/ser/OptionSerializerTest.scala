@@ -46,7 +46,19 @@ object OptionSerializerTest {
       _base = base
     }
   }
+
+  // For issue #240, for some reason it works fine when these classes are part
+  // of the object.
+  trait M1
+  case class F1(label: String) extends M1
+  case class C1(m: Option[M1])
 }
+
+// For issue #240, these need to be outside of the object to reproduce
+// the problem.
+trait M2
+case class F2(label: String) extends M2
+case class C2(m: Option[M2])
 
 @RunWith(classOf[JUnitRunner])
 class OptionSerializerTest extends SerializerTest {
@@ -73,6 +85,19 @@ class OptionSerializerTest extends SerializerTest {
     val someInt: Option[java.lang.Integer] = Some(1)
     serialize(someInt) should be ("1")
     serialize(noneOption) should be ("null")
+  }
+
+  it should "serialize concrete type when using Option[Trait] (in object)" in {
+    // Additional test case for #240, for some reason this test case works fine.
+    // However, if the classes are moved outside of the object then it starts
+    // breaking.
+    serialize(C1(Some(F1("foo")))) should be ("""{"m":{"label":"foo"}}""")
+  }
+
+  it should "serialize concrete type when using Option[Trait]" in {
+    // See https://github.com/FasterXML/jackson-module-scala/issues/240 for more information.
+    // This test case reproduces the problem in the ticket.
+    serialize(C2(Some(F2("foo")))) should be ("""{"m":{"label":"foo"}}""")
   }
 
   it should "serialize an Option[java.lang.Integer] when accessed on a class" in {
