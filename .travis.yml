@@ -17,7 +17,7 @@ matrix:
     - scala: 2.11.8
       jdk: oraclejdk8
     # Scala 2.12+ only supports JDK 8+
-    - scala: 2.12.0-M4
+    - scala: 2.12.0-M5
       jdk: oraclejdk8
 
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
@@ -27,7 +27,7 @@ before_script:
 
 after_success:
   - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'oraclejdk7' -o "${TRAVIS_SCALA_VERSION}" = '2.12.0-M4' &&
+      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'oraclejdk7' -o "${TRAVIS_SCALA_VERSION}" = '2.12.0-M5' &&
       sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"'
       'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
       ++${TRAVIS_SCALA_VERSION}
