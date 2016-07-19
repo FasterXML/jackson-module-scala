@@ -51,9 +51,18 @@ trait JacksonModule extends Module {
   def setupModule(context: SetupContext) {
     val MajorVersion = version.getMajorVersion
     val MinorVersion = version.getMinorVersion
+
+    val requiredVersion = new Version(MajorVersion, MinorVersion, 0, null, "com.fasterxml.jackson.core", "jackson-databind")
+    val incompatibleVersion = new Version(MajorVersion, MinorVersion + 1, 0, null, "com.fasterxml.jackson.core", "jackson-databind")
+
+    val databindOldError = "Scala module %s requires Jackson Databind %s or later".format(version, requiredVersion)
+    val databindNewError = "Scala module %s cannot work with Jackson Databind %s or later".format(version, incompatibleVersion)
+
     context.getMapperVersion match {
+      case version@VersionExtractor(major, _) if major < MajorVersion =>
+        throw new JsonMappingException(null, databindOldError)
       case version@VersionExtractor(MajorVersion, minor) if minor < MinorVersion =>
-        throw new JsonMappingException(null, "Jackson version is too old " + version)
+        throw new JsonMappingException(null, databindOldError)
       case version@VersionExtractor(MajorVersion, minor) =>
         // Under semantic versioning, this check would not be needed; however Jackson
         // occasionally has functionally breaking changes across minor versions
@@ -61,10 +70,10 @@ trait JacksonModule extends Module {
         // depending on implementation details, so for now we'll just declare ourselves
         // as incompatible and move on.
         if (minor > MinorVersion) {
-          throw new JsonMappingException(null, "Incompatible Jackson version: " + version)
+          throw new JsonMappingException(null, databindNewError)
         }
-      case version =>
-        throw new JsonMappingException(null, "Incompatible Jackson version: " + version)
+      case _ =>
+        throw new JsonMappingException(null, databindNewError)
     }
 
     initializers result() foreach (_ apply context)
