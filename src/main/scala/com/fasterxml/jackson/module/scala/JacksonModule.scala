@@ -60,7 +60,7 @@ trait JacksonModule extends Module {
     // Because of the Scala module's dependency on databind internals,
     // major and minor versions must match exactly.
     context.getMapperVersion match {
-      case version@VersionExtractor(MajorVersion, MinorVersion) =>
+      case VersionExtractor(MajorVersion, MinorVersion) =>
         // success!
       case _ =>
         throw new JsonMappingException(null, databindVersionError)
