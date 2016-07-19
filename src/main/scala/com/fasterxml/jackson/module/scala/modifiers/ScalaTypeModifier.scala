@@ -20,7 +20,7 @@ class ScalaTypeModifier extends TypeModifier {
     } else if (javaType.isTypeOrSubTypeOf(classOf[Option[_]])) {
       ReferenceType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
     } else if (javaType.isTypeOrSubTypeOf(classOf[Either[_,_]])) {
-      // I'm not sure this is the
+      // I'm not sure this is the right choice, but it's what the original module does
       ReferenceType.upgradeFrom(javaType, javaType)
     } else {
       javaType
