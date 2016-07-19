@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers
 
 class IterableDeserializerTest extends DeserializationFixture {
 
