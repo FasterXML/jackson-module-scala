@@ -65,13 +65,13 @@ private object SortedSetDeserializer {
   }
 }
 
-private class SortedSetInstantiator(config: DeserializationConfig, collectionType: Class[_], valueType: JavaType)
+private class SortedSetInstantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
   extends StdValueInstantiator(config, collectionType) {
 
   override def canCreateUsingDefault = true
 
   override def createUsingDefault(ctxt: DeserializationContext) =
-    new SortedSetBuilderWrapper[AnyRef](SortedSetDeserializer.builderFor(collectionType, valueType))
+    new SortedSetBuilderWrapper[AnyRef](SortedSetDeserializer.builderFor(collectionType.getRawClass, valueType))
 }
 
 
@@ -110,11 +110,10 @@ private object SortedSetDeserializerResolver extends Deserializers.Base {
     if (!SORTED_SET.isAssignableFrom(rawClass)) null
     else {
       val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
-      val instantiator = new SortedSetInstantiator(config, rawClass, collectionType.getContentType)
+      val instantiator = new SortedSetInstantiator(config, collectionType, collectionType.getContentType)
       new SortedSetDeserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
   }
-
 }
 
 trait SortedSetDeserializerModule extends SetTypeModifierModule {

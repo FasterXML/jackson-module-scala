@@ -49,13 +49,13 @@ private object SeqDeserializer {
   def builderFor[A](cls: Class[_]): mutable.Builder[A,Iterable[A]] = companionFor(cls).newBuilder[A]
 }
 
-private class SeqInstantiator(config: DeserializationConfig, valueType: Class[_])
+private class SeqInstantiator(config: DeserializationConfig, valueType: JavaType)
   extends StdValueInstantiator(config, valueType) {
 
   override def canCreateUsingDefault = true
 
   override def createUsingDefault(ctxt: DeserializationContext) =
-    new BuilderWrapper[AnyRef](SeqDeserializer.builderFor[AnyRef](valueType))  
+    new BuilderWrapper[AnyRef](SeqDeserializer.builderFor[AnyRef](valueType.getRawClass))
 }
 
 private class SeqDeserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)
@@ -94,7 +94,7 @@ private object SeqDeserializerResolver extends Deserializers.Base {
     if (!SEQ.isAssignableFrom(rawClass)) null
     else {
       val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
-      val instantiator = new SeqInstantiator(config, rawClass)
+      val instantiator = new SeqInstantiator(config, collectionType)
       new SeqDeserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
   }

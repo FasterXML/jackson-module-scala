@@ -37,13 +37,13 @@ private object UnsortedSetDeserializer {
   def builderFor[A](cls: Class[_]): mutable.Builder[A, collection.Set[A]] = companionFor(cls).newBuilder[A]
 }
 
-private class SetInstantiator(config: DeserializationConfig, valueType: Class[_])
+private class SetInstantiator(config: DeserializationConfig, valueType: JavaType)
   extends StdValueInstantiator(config, valueType) {
   
   override def canCreateUsingDefault = true
 
   override def createUsingDefault(ctxt: DeserializationContext) =
-    new SetBuilderWrapper[AnyRef](UnsortedSetDeserializer.builderFor[AnyRef](valueType))
+    new SetBuilderWrapper[AnyRef](UnsortedSetDeserializer.builderFor[AnyRef](valueType.getRawClass))
 
 }
 
@@ -85,10 +85,9 @@ private object UnsortedSetDeserializerResolver extends Deserializers.Base {
     else if (SORTED_SET.isAssignableFrom(rawClass)) null
     else {
       val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
-      val instantiator = new SetInstantiator(config, rawClass)
+      val instantiator = new SetInstantiator(config, collectionType)
       new UnsortedSetDeserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
-    
   }
 }
 
