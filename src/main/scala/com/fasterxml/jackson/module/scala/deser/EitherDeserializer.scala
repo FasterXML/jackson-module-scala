@@ -42,7 +42,7 @@ private class EitherDeserializer(javaType: JavaType,
       case (ElementDeserializerConfig(Some(ed), Some(td)), _) =>
         ed.deserializeWithType(jp, ctxt, td)
       case (ElementDeserializerConfig(Some(ed), _), _) => ed.deserialize(jp, ctxt)
-      case (_, _) => throw ctxt.mappingException(javaType.getRawClass)
+      case (_, _) => ctxt.handleUnexpectedToken(javaType.getRawClass, jp)
     }
 
   private def deserializeEither(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] = {
@@ -54,7 +54,7 @@ private class EitherDeserializer(javaType: JavaType,
     val result = key match {
       case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
       case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
-      case _ => throw ctxt.mappingException(javaType.getRawClass)
+      case _ => ctxt.handleUnexpectedToken(javaType.getRawClass, jp).asInstanceOf[Either[AnyRef, AnyRef]]
     }
 
     // consume END_OBJECT

@@ -46,26 +46,28 @@ private class TupleDeserializer(javaType: JavaType,
 
   def deserialize(jp: JsonParser, ctxt: DeserializationContext) = {
     // Ok: must point to START_ARRAY (or equivalent)
-    if (!jp.isExpectedStartArrayToken) {
-      throw ctxt.mappingException(javaType.getRawClass)
-    }
+    if (jp.isExpectedStartArrayToken) {
+      val params = (valueDeserializers zip typeDeserializers) map { case (deser, typeDeser) =>
+        jp.nextToken
+        if (typeDeser == null)
+          deser.deserialize(jp, ctxt)
+        else
+          deser.deserializeWithType(jp, ctxt, typeDeser)
+      }
 
-    val params = (valueDeserializers zip typeDeserializers) map { case (deser, typeDeser) =>
-      jp.nextToken
-      if (typeDeser == null)
-        deser.deserialize(jp, ctxt)
-      else
-        deser.deserializeWithType(jp, ctxt, typeDeser)
+      val t = jp.nextToken
+      if (t != JsonToken.END_ARRAY) {
+        ctxt.reportWrongTokenException(jp, JsonToken.END_ARRAY,
+          "expected closing END_ARRAY after deserialized value")
+        // never gets here
+        null
+      } else {
+        ctor.newInstance(params: _*).asInstanceOf[Product]
+      }
+    } else {
+      ctxt.handleUnexpectedToken(javaType.getRawClass, jp).asInstanceOf[Product]
     }
-
-    val t = jp.nextToken
-    if (t != JsonToken.END_ARRAY) {
-      throw ctxt.mappingException(javaType.getRawClass)
-    }
-
-    ctor.newInstance(params: _*).asInstanceOf[Product]
   }
-
 }
 
 private object TupleDeserializerResolver extends Deserializers.Base {

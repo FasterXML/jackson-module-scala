@@ -26,18 +26,24 @@ private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
 /**
  * This class is mostly legacy logic to be deprecated/removed in 3.0
  */
-private class EnumerationDeserializer(`type`:JavaType) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
+private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
 	override def deserialize(jp:JsonParser, ctxt:DeserializationContext): Enumeration#Value = {
-		if (jp.getCurrentToken != JsonToken.START_OBJECT)
-			throw ctxt.mappingException(`type`.getRawClass)
-		val (eclass,eclassName) = parsePair(jp)
-		if (eclass != "enumClass")
-			throw ctxt.mappingException(`type`.getRawClass)
-		val (value, valueValue) = parsePair(jp)
-		if (value != "value")
-			throw ctxt.mappingException(`type`.getRawClass)
-		jp.nextToken()
-		Class.forName(eclassName).getMethod("withName",classOf[String]).invoke(null,valueValue).asInstanceOf[Enumeration#Value]
+		if (jp.getCurrentToken != JsonToken.START_OBJECT) {
+      ctxt.handleUnexpectedToken(theType.getRawClass, jp).asInstanceOf[Enumeration#Value]
+    } else {
+      val (eclass, eclassName) = parsePair(jp)
+      if (eclass != "enumClass") {
+        ctxt.handleUnexpectedToken(theType.getRawClass, jp).asInstanceOf[Enumeration#Value]
+      } else {
+        val (value, valueValue) = parsePair(jp)
+        if (value != "value") {
+          ctxt.handleUnexpectedToken(theType.getRawClass, jp).asInstanceOf[Enumeration#Value]
+        } else {
+          jp.nextToken()
+          Class.forName(eclassName).getMethod("withName", classOf[String]).invoke(null, valueValue).asInstanceOf[Enumeration#Value]
+        }
+      }
+    }
 	}
 
 	private def parsePair( jp:JsonParser ) = ({jp.nextToken; jp.getText}, {jp.nextToken; jp.getText})
@@ -47,7 +53,7 @@ private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends JsonDese
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Enumeration#Value = {
     jp.getCurrentToken match {
       case JsonToken.VALUE_STRING => r.getEnum(jp.getValueAsString)
-      case _ => throw ctxt.mappingException(r.getEnumClass)
+      case _ => ctxt.handleUnexpectedToken(r.getEnumClass, jp).asInstanceOf[Enumeration#Value]
     }
   }
 }
