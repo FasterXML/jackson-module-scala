@@ -12,7 +12,7 @@ crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M5")
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
 // Temporarily disable warnings as fatal until migrate Option to new features.
-//scalacOptions in (Compile, compile) += "-Xfatal-warnings"
+scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
 // Ensure jvm 1.7 for java
 lazy val java7Home = Option(System.getenv("JAVA7_HOME")).map(new File(_)).getOrElse {
@@ -37,9 +37,9 @@ scalacOptions ++= (
   }
 )
 
-val jacksonVersion = "2.8.0"
+val jacksonVersion = "2.8.1"
 
-val jacksonSnapshotVersion = "2.8.1-SNAPSHOT"
+val jacksonSnapshotVersion = "2.8.2-SNAPSHOT"
 
 //scala 2.12.0-M5+ requires scalatest 3+
 val scalaTestVersion = Def.setting{
@@ -53,7 +53,7 @@ libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonSnapshotVersion,
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
     "com.fasterxml.jackson.module" % "jackson-module-paranamer" % jacksonVersion,
     // test dependencies
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % "test",
