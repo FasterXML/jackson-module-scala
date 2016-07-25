@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.scala.experimental
 
 import org.scalatest.{Matchers, FlatSpec}
-import org.scalatest.Matchers
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -10,6 +9,7 @@ import java.io.{ByteArrayInputStream, InputStreamReader}
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import scala.collection.JavaConverters._
 
 private class PublicView
 private class PrivateView extends PublicView
@@ -66,9 +66,8 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
   }
 
   it should "read values from json parser" in {
-    import scala.collection.JavaConversions._
     val parser = mapper.getFactory.createParser(listGenericJson)
-    val result = mapper.readValues[GenericTestClass[Int]](parser).toList
+    val result = mapper.readValues[GenericTestClass[Int]](parser).asScala.toList
     result should equal(listGenericInt)
   }
 
@@ -156,7 +155,7 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
 
   it should "read values as Seq from a JSON array" in {
     val result = mapper.readValue[Seq[GenericTestClass[Int]]](toplevelArrayJson)
-    result should equal(listGenericInt.toSeq)
+    result should equal(listGenericInt)
   }
 
   it should "read values as List from a JSON array" in {
@@ -197,8 +196,7 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
   }
 
   it should "read option values into List from a JSON array" in {
-    val result = mapper.readValue[java.util.ArrayList[Option[String]]](toplevelOptionArrayJson)
-    import scala.collection.JavaConversions._
+    val result = mapper.readValue[java.util.ArrayList[Option[String]]](toplevelOptionArrayJson).asScala
     result(0) should equal(Some("some"))
     result(1) should equal(None)
   }
