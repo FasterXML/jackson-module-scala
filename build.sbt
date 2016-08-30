@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M4")
+crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M5")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
@@ -35,9 +35,17 @@ scalacOptions ++= (
   }
 )
 
-val jacksonVersion = "2.7.5"
+val jacksonVersion = "2.7.6"
 
 val jacksonSnapshot = "2.7.6-SNAPSHOT"
+
+//scala 2.12.0-M5+ requires scalatest 3+
+val scalaTestVersion = Def.setting{
+  scalaVersion.value match {
+    case "2.12.0-M5" => "3.0.0-RC4"
+    case _ => "2.2.6"
+  }
+}
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
@@ -49,7 +57,7 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % "test",
-    "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+    "org.scalatest" %% "scalatest" % scalaTestVersion.value % "test",
     "junit" % "junit" % "4.11" % "test"
 )
 
