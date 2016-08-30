@@ -37,7 +37,7 @@ scalacOptions ++= (
   }
 )
 
-val jacksonVersion = "2.8.1"
+val jacksonVersion = "2.8.2"
 
 val jacksonSnapshotVersion = "2.8.2-SNAPSHOT"
 
