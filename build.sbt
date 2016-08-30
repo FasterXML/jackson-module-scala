@@ -35,9 +35,9 @@ scalacOptions ++= (
   }
 )
 
-val jacksonVersion = "2.7.6"
+val jacksonVersion = "2.7.7"
 
-val jacksonSnapshot = "2.7.6-SNAPSHOT"
+val jacksonSnapshot = "2.7.7-SNAPSHOT"
 
 //scala 2.12.0-M5+ requires scalatest 3+
 val scalaTestVersion = Def.setting{
