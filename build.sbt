@@ -17,9 +17,9 @@ scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 // Ensure jvm 1.7 for java
 lazy val java7Home =
   Option(System.getenv("JAVA7_HOME"))
-    .orElse(Option(System.getProperty("JAVA7_HOME")))
+    .orElse(Option(System.getProperty("java7.home")))
     .map(new File(_))
-    .getOrElse { sys.error("Please set JAVA7_HOME environment variable or system property") }
+    .getOrElse { sys.error("Please set JAVA7_HOME environment variable or java7.home system property") }
 
 javacOptions ++= Seq(
   "-source", "1.7",
