@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.org/FasterXML/jackson-module-scala.svg?branch=master)](https://travis-ci.org/FasterXML/jackson-module-scala)
+[![Build Status](https://travis-ci.org/FasterXML/jackson-module-scala.svg?branch=master)](https://travis-ci.org/FasterXML/jackson-module-scala) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.11)
 
 # IMPORTANT
 
-Please use versions 2.6.5, or 2.7.2; earlier released versions are known
+Please use at least versions 2.6.5, or 2.7.2; earlier released versions are known
 to contain significant bugs.
 
 # Overview
