@@ -39,7 +39,7 @@ scalacOptions ++= (
   }
 )
 
-val jacksonVersion = "2.8.5"
+val jacksonVersion = "2.8.6"
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
