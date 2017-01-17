@@ -15,6 +15,8 @@ publishMavenStyle := true
 
 releaseCrossBuild := true
 
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials_sonatype")
+
 publishTo <<= version { v =>
   val nexus = "https://oss.sonatype.org/"
   if (v.trim.endsWith("SNAPSHOT"))
