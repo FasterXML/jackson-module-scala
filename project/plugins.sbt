@@ -5,7 +5,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-osgi" % "0.7.0")
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.3")
 
 // For signing releases
-addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.8.2")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 
 // For creating the github site
 addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.8.1")
