@@ -13,6 +13,8 @@ OsgiKeys.privatePackage := Nil
 // publishing
 publishMavenStyle := true
 
+releaseCrossBuild := true
+
 publishTo <<= version { v =>
   val nexus = "https://oss.sonatype.org/"
   if (v.trim.endsWith("SNAPSHOT"))
