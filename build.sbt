@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-RC1")
+crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
@@ -22,6 +22,8 @@ lazy val java6Home = Option(System.getenv("JAVA6_HOME")).map(new File(_)).getOrE
 javacOptions ++= Seq(
   "-source", "1.6",
   "-target", "1.6",
+  // Because of 2.12, the build has to be driven with Java 8, but we should still do the right thing for
+  // the Java 6 bootclasspath to prevent standard library incompatibilities (and eliminate build warning)
   "-bootclasspath", Array((java6Home / "jre" / "lib" / "rt.jar").toString, (java6Home / ".." / "Classes"/ "classes.jar").toString).mkString(File.pathSeparator)
 )
 
