@@ -54,6 +54,11 @@ pomExtra := {
       <name>Christopher Currie</name>
       <email>christopher@currie.com</email>
     </developer>
+    <developer>
+      <id>mbknor</id>
+      <name>Morten Kjetland</name>
+      <email>mbk@kjetland.com</email>
+    </developer>
   </developers>
   <contributors>
     <contributor>
