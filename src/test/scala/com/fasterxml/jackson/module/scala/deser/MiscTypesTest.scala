@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import java.util.UUID

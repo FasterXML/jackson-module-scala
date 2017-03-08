@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.introspect
 
-import org.scalatest.{LoneElement, Inside, FlatSpec, ShouldMatchers}
+import org.scalatest.{LoneElement, Inside, FlatSpec}
 import com.fasterxml.jackson.module.scala.BaseSpec
 
 object TestSyntheticBridgeMethods {

@@ -1,9 +1,5 @@
-import sbtrelease.ReleasePlugin._
-import ReleaseKeys._
-import sbtrelease.ReleaseStateTransformations._
-import sbtrelease.Utilities._
+import ReleaseTransformations._
 import com.typesafe.sbt.osgi.OsgiKeys
-import com.typesafe.sbt.pgp.PgpKeys._
 
 // OSGI bundles
 osgiSettings
@@ -16,6 +12,10 @@ OsgiKeys.privatePackage := Nil
 
 // publishing
 publishMavenStyle := true
+
+releaseCrossBuild := true
+
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials_sonatype")
 
 publishTo <<= version { v =>
   val nexus = "https://oss.sonatype.org/"
@@ -65,16 +65,22 @@ pomExtra := {
   </contributors>
 }
 
-// release
-releaseSettings
-
-// bump bugfix on release
-nextVersion := { ver => sbtrelease.Version(ver).map(_.bumpBugfix.asSnapshot.string).getOrElse(sbtrelease.versionFormatError) }
-
 // use maven style tag name
-tagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
+releaseTagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
 
 // sign artifacts
 
-publishArtifactsAction := PgpKeys.publishSigned.value
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
+// don't push changes (so they can be verified first)
+releaseProcess := Seq(
+  checkSnapshotDependencies,
+  inquireVersions,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  publishArtifacts,
+  setNextVersion,
+  commitNextVersion
+)

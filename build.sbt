@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M4")
+crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
@@ -22,6 +22,8 @@ lazy val java6Home = Option(System.getenv("JAVA6_HOME")).map(new File(_)).getOrE
 javacOptions ++= Seq(
   "-source", "1.6",
   "-target", "1.6",
+  // Because of 2.12, the build has to be driven with Java 8, but we should still do the right thing for
+  // the Java 6 bootclasspath to prevent standard library incompatibilities (and eliminate build warning)
   "-bootclasspath", Array((java6Home / "jre" / "lib" / "rt.jar").toString, (java6Home / ".." / "Classes"/ "classes.jar").toString).mkString(File.pathSeparator)
 )
 
@@ -42,12 +44,15 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % jacksonVersion,
+    // Needed to use newer version of jackson-module-paranamer than 2.6.7 for it to work with scala 2.12
+    // Since it does not have any other dependencies to jackson 2.7.9, I think this should
+    // work just fine.
+    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % "2.7.9" exclude("com.fasterxml.jackson.core", "jackson-databind"),
     // test dependencies
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % "test",
-    "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+    "org.scalatest" %% "scalatest" % "3.0.0" % "test",
     "junit" % "junit" % "4.11" % "test"
 )
 

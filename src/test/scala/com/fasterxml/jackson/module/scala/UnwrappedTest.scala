@@ -3,7 +3,6 @@ package com.fasterxml.jackson.module.scala
 import com.fasterxml.jackson.annotation.{JsonUnwrapped, JsonProperty, JsonIgnore}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import com.fasterxml.jackson.databind.ObjectMapper
 

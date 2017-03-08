@@ -3,7 +3,6 @@ import com.fasterxml.jackson.module.scala.ser.SerializerTest
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers
 
 case class UnpackagedCaseClass(intValue: Int, stringValue: String)
 

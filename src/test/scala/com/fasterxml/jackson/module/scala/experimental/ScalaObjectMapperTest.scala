@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.scala.experimental
 
 import org.scalatest.{Matchers, FlatSpec}
-import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
