@@ -11,8 +11,10 @@ crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
-// Temporarily disable warnings as fatal until migrate Option to new features.
-scalacOptions in (Compile, compile) += "-Xfatal-warnings"
+// Temporarily disable warnings as error since SerializationFeature.WRITE_NULL_MAP_VALUES has been deprecated
+// and we use it.
+//scalacOptions in (Compile, compile) += "-Xfatal-warnings"
+
 
 // Ensure jvm 1.7 for java
 lazy val java7Home =
@@ -39,7 +41,7 @@ scalacOptions ++= (
   }
 )
 
-val jacksonVersion = "2.8.7"
+val jacksonVersion = "2.9.0.pr1"
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
