@@ -2,6 +2,7 @@ package com.fasterxml.jackson
 package module.scala
 package introspect
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -24,6 +25,11 @@ object ScalaAnnotationIntrospectorTest
   class BeanPropertyClass(@BeanProperty val param: Int)
   class AnnotatedBasicPropertyClass(@JsonScalaTestAnnotation val param: Token)
   class AnnotatedBeanPropertyClass(@JsonScalaTestAnnotation @BeanProperty val param: Token)
+  class JavaBeanPropertyClass {
+    private var value: Int = 0
+    @JsonProperty def getValue: Int = value
+    @JsonProperty def setValue(value: Int): Unit = { this.value = value }
+  }
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -116,6 +122,13 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
     param.getAnnotation(classOf[JsonScalaTestAnnotation]) shouldNot be (null)
 
     mapper.writeValueAsString(bean)
+  }
+
+  it should "correctly infer name(s) of un-named bean properties" in { mapper =>
+    val tree = mapper.valueToTree[databind.node.ObjectNode](new JavaBeanPropertyClass)
+    tree.has("value") shouldBe true
+    tree.has("setValue") shouldBe false
+    tree.has("getValue") shouldBe false
   }
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
