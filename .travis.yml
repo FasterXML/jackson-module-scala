@@ -10,11 +10,11 @@ matrix:
     # Test Scala 2.10 and 2.11 with both JDK 6 and 8
     - scala: 2.10.6
       jdk: oraclejdk7
-    - scala: 2.11.8
+    - scala: 2.11.11
       jdk: oraclejdk7
     - scala: 2.10.6
       jdk: oraclejdk8
-    - scala: 2.11.8
+    - scala: 2.11.11
       jdk: oraclejdk8
     # Scala 2.12+ only supports JDK 8+
     - scala: 2.12.0
