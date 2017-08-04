@@ -5,7 +5,7 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.3"
 
 crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.3")
 
@@ -58,13 +58,12 @@ libraryDependencies ++= Seq(
 )
 
 // build.properties
-resourceGenerators in Compile <+=
-  (resourceManaged in Compile, version, organization, name) map { (dir, v, o, n) =>
-    val file = dir / "com" / "fasterxml" / "jackson" / "module" / "scala" / "build.properties"
-    val contents = "version=%s\ngroupId=%s\nartifactId=%s\n".format(v, o, n)
+resourceGenerators in Compile += Def.task {
+    val file = (resourceManaged in Compile).value / "com" / "fasterxml" / "jackson" / "module" / "scala" / "build.properties"
+    val contents = "version=%s\ngroupId=%s\nartifactId=%s\n".format(version.value, organization.value, name.value)
     IO.write(file, contents)
     Seq(file)
-  }
+}.taskValue
 
 // site
 site.settings

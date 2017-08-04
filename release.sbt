@@ -17,9 +17,9 @@ releaseCrossBuild := true
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials_sonatype")
 
-publishTo <<= version { v =>
+publishTo := {
   val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT"))
+  if (version.value.trim.endsWith("SNAPSHOT"))
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
@@ -71,7 +71,7 @@ pomExtra := {
 }
 
 // use maven style tag name
-releaseTagName <<= (name, version in ThisBuild) map { (n,v) => n + "-" + v }
+releaseTagName := s"${name.value}-${(version in ThisBuild).value}"
 
 // sign artifacts
 
