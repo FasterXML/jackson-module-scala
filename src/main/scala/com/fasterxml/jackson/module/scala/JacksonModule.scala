@@ -1,19 +1,19 @@
 package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.Version
-
 import com.fasterxml.jackson.databind.{JsonMappingException, Module}
 import com.fasterxml.jackson.databind.Module.SetupContext
 import com.fasterxml.jackson.databind.deser.Deserializers
-import com.fasterxml.jackson.databind.ser.{Serializers, BeanSerializerModifier}
+import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
 import com.fasterxml.jackson.databind.`type`.TypeModifier
-
 import java.util.Properties
+
 import collection.JavaConverters._
 import collection.mutable
 
+import com.fasterxml.jackson.core.util.VersionUtil
+
 object JacksonModule {
-  private val VersionRegex = """(\d+)\.(\d+)(?:\.(\d+)(?:\.([\d\w]+)(?:[-.]rc(?:\d+)*)?(?:\-(.*))?)?)?""".r
   private val cls = classOf[JacksonModule]
   private val buildPropsFilename = cls.getPackage.getName.replace('.','/') + "/build.properties"
   lazy val buildProps: mutable.Map[String, String] = {
@@ -26,13 +26,8 @@ object JacksonModule {
   lazy val version: Version = {
     val groupId = buildProps("groupId")
     val artifactId = buildProps("artifactId")
-    buildProps("version") match {
-      case VersionRegex(major,minor,patchOpt,preOrRcOpt, snapOpt) => {
-        val patch = Option(patchOpt) map (_.toInt) getOrElse 0
-        new Version(major.toInt,minor.toInt,patch,snapOpt,groupId,artifactId)
-      }
-      case _ => Version.unknownVersion()
-    }
+    val version = buildProps("version")
+    VersionUtil.parseVersion(version, groupId, artifactId)
   }
 }
 
