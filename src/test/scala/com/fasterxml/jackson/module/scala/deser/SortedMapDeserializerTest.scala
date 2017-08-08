@@ -2,12 +2,13 @@ package com.fasterxml.jackson.module.scala.deser
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
 import scala.collection.SortedMap
 import scala.collection.immutable.TreeMap
 import java.util.UUID
+
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 
 /**
  * @author Christopher Currie <ccurrie@impresys.com>
@@ -43,10 +44,29 @@ class SortedMapDeserializerTest extends DeserializerTest {
     result.keys.head shouldBe UUID.fromString("e79bf81e-3902-4801-831f-d161be435787")
   }
 
-  val mapJson =  """{ "one": "1", "two": "2" }"""
-  val mapScala = SortedMap("one"->"1","two"->"2")
-  val variantMapJson = """{ "one": "1", "two": 2 }"""
-  val variantMapScala = SortedMap[String,Any]("one"->"1","two"->2)
-  val numericMapJson = """{ "1": "one", "2": "two" }"""
-  val numericMapScala = SortedMap[Integer,String](Integer.valueOf(1)->"one",Integer.valueOf(2)->"two")
+  it should "properly deserialize nullary values" in {
+    val result = deserialize[SortedMap[String, JsonNode]](nullValueMapJson)
+    result should equal (nullValueMapScala)
+  }
+
+  private val mapJson =  """{ "one": "1", "two": "2" }"""
+  private val mapScala = SortedMap("one"->"1","two"->"2")
+  private val variantMapJson = """{ "one": "1", "two": 2 }"""
+  private val variantMapScala = SortedMap[String,Any]("one"->"1","two"->2)
+  private val numericMapJson = """{ "1": "one", "2": "two" }"""
+  private val numericMapScala = SortedMap[Integer,String](Integer.valueOf(1)->"one",Integer.valueOf(2)->"two")
+  private val nullValueMapJson =
+    """
+      |{
+      | "foo": "bar",
+      | "nullValue": null,
+      | "intValue": 1234
+      |}
+    """.stripMargin
+  private val nullValueMapScala = SortedMap[String, JsonNode](
+    "foo" -> JsonNodeFactory.instance.textNode("bar"),
+    "nullValue" -> JsonNodeFactory.instance.nullNode(),
+    "intValue" -> JsonNodeFactory.instance.numberNode(1234)
+  )
+
 }

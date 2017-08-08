@@ -1,29 +1,22 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.util.AbstractMap
-import java.util.Map.Entry
-
 import scala.collection.{GenMap, mutable}
 import scala.collection.immutable.HashMap
 
-import com.fasterxml.jackson.core.JsonParser;
-
-import com.fasterxml.jackson.databind._;
-import com.fasterxml.jackson.databind.jsontype.{TypeDeserializer};
-
-import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, ContainerDeserializerBase};
-import com.fasterxml.jackson.databind.`type`.MapLikeType;
-
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
+import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 import deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
-
 import scala.language.existentials
 
-private class MapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), GenMap[K,V]]) extends AbstractMap[K,V] {
-  override def put(k: K, v: V) = { builder += ((k,v)); v }
+private class MapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), GenMap[K,V]]) extends java.util.AbstractMap[K,V] {
+  override def put(k: K, v: V): V = { builder += ((k,v)); v }
 
   // Isn't used by the deserializer
-  def entrySet(): java.util.Set[Entry[K, V]] = throw new UnsupportedOperationException
+  def entrySet(): java.util.Set[java.util.Map.Entry[K, V]] = throw new UnsupportedOperationException
 }
 
 private object UnsortedMapDeserializer {
@@ -36,41 +29,26 @@ private object UnsortedMapDeserializer {
     Map.newBuilder[AnyRef,AnyRef]
 }
 
-private class UnsortedMapDeserializer(
-    collectionType: MapLikeType,
-    config: DeserializationConfig,
-    keyDeser: KeyDeserializer,
-    valueDeser: JsonDeserializer[_],
-    valueTypeDeser: TypeDeserializer)
+private class UnsortedMapInstantiator(config: DeserializationConfig, valueType: MapLikeType) extends StdValueInstantiator(config, valueType) {
+  override def canCreateUsingDefault = true
+  override def createUsingDefault(ctxt: DeserializationContext) =
+    new MapBuilderWrapper[AnyRef,AnyRef](UnsortedMapDeserializer.builderFor(valueType.getRawClass))
+}
 
-  extends ContainerDeserializerBase[GenMap[_,_]](config.constructType(classOf[UnsortedMapDeserializer]))
-  with ContextualDeserializer {
+private class UnsortedMapDeserializer(collectionType: MapLikeType, containerDeserializer: MapDeserializer)
+  extends ContainerDeserializerBase[GenMap[_,_]](collectionType) with ContextualDeserializer {
 
-  private val javaContainerType =
-    config.getTypeFactory.constructMapLikeType(classOf[MapBuilderWrapper[_,_]], collectionType.getKeyType, collectionType.getContentType)
+  def this(collectionType: MapLikeType, valueInstantiator: ValueInstantiator, keyDeser: KeyDeserializer, valueDeser: JsonDeserializer[_], valueTypeDeser: TypeDeserializer) = {
+    this(collectionType, new MapDeserializer(collectionType, valueInstantiator, keyDeser, valueDeser.asInstanceOf[JsonDeserializer[AnyRef]], valueTypeDeser))
+  }
 
-  private val instantiator =
-    new ValueInstantiator {
-      override def getValueTypeDesc = collectionType.getRawClass.getCanonicalName
-      override def canCreateUsingDefault = true
-      override def createUsingDefault(ctxt: DeserializationContext) =
-        new MapBuilderWrapper[AnyRef,AnyRef](UnsortedMapDeserializer.builderFor(collectionType.getRawClass))
-    }
+  override def getContentType: JavaType = containerDeserializer.getContentType
+  override def getContentDeserializer: JsonDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
 
-  private val containerDeserializer =
-    new MapDeserializer(javaContainerType,instantiator,keyDeser,valueDeser.asInstanceOf[JsonDeserializer[AnyRef]],valueTypeDeser)
-
-  override def getContentType = containerDeserializer.getContentType
-
-  override def getContentDeserializer = containerDeserializer.getContentDeserializer
-  
-  override def createContextual(ctxt: DeserializationContext, property: BeanProperty) =
-    if (keyDeser != null && valueDeser != null) this
-    else {
-      val newKeyDeser = Option(keyDeser).getOrElse(ctxt.findKeyDeserializer(collectionType.getKeyType, property))
-      val newValDeser = Option(valueDeser).getOrElse(ctxt.findContextualValueDeserializer(collectionType.getContentType, property))
-      new UnsortedMapDeserializer(collectionType, config, newKeyDeser, newValDeser, valueTypeDeser)
-    }
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
+    val newDelegate = containerDeserializer.createContextual(ctxt, property).asInstanceOf[MapDeserializer]
+    new UnsortedMapDeserializer(collectionType, newDelegate)
+  }
 
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): GenMap[_,_] = {
     containerDeserializer.deserialize(jp, ctxt) match {
@@ -83,18 +61,21 @@ private object UnsortedMapDeserializerResolver extends Deserializers.Base {
 
   private val MAP = classOf[collection.Map[_,_]]
   private val SORTED_MAP = classOf[collection.SortedMap[_,_]]
-  
+
   override def findMapLikeDeserializer(theType: MapLikeType,
-                              config: DeserializationConfig,
-                              beanDesc: BeanDescription,
-                              keyDeserializer: KeyDeserializer,
-                              elementTypeDeserializer: TypeDeserializer,
-                              elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+                                       config: DeserializationConfig,
+                                       beanDesc: BeanDescription,
+                                       keyDeserializer: KeyDeserializer,
+                                       elementTypeDeserializer: TypeDeserializer,
+                                       elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
     val rawClass = theType.getRawClass
 
     if (!MAP.isAssignableFrom(rawClass)) null
     else if (SORTED_MAP.isAssignableFrom(rawClass)) null
-    else new UnsortedMapDeserializer(theType, config, keyDeserializer, elementDeserializer, elementTypeDeserializer)
+    else {
+      val instantiator = new UnsortedMapInstantiator(config, theType)
+      new UnsortedMapDeserializer(theType, instantiator, keyDeserializer, elementDeserializer, elementTypeDeserializer)
+    }
   }
 }
 

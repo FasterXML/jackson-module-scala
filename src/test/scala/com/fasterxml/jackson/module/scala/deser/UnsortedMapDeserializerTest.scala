@@ -5,9 +5,13 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 import scala.collection.immutable.HashMap
-import scala.collection.mutable
+import scala.collection.{SortedMap, mutable}
+
 import com.fasterxml.jackson.core.`type`.TypeReference
 import java.util.UUID
+
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 
 /**
  * @author Christopher Currie <ccurrie@impresys.com>
@@ -52,8 +56,27 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
     result.keys.head shouldBe (UUID.fromString("e79bf81e-3902-4801-831f-d161be435787"))
   }
 
-  val mapJson =  """{ "one": "1", "two": "2" }"""
-  val mapScala = Map("one"->"1","two"->"2")
-  val variantMapJson = """{ "one": "1", "two": 2 }"""
-  val variantMapScala = Map[String,Any]("one"->"1","two"->2)
+  it should "properly deserialize nullary values" in {
+    val result = deserialize[Map[String, JsonNode]](nullValueMapJson)
+    result should equal (nullValueMapScala)
+  }
+
+  private val mapJson =  """{ "one": "1", "two": "2" }"""
+  private val mapScala = Map("one"->"1","two"->"2")
+  private val variantMapJson = """{ "one": "1", "two": 2 }"""
+  private val variantMapScala = Map[String,Any]("one"->"1","two"->2)
+  private val nullValueMapJson =
+    """
+      |{
+      | "foo": "bar",
+      | "nullValue": null,
+      | "intValue": 1234
+      |}
+    """.stripMargin
+  private val nullValueMapScala = Map[String, JsonNode](
+    "foo" -> JsonNodeFactory.instance.textNode("bar"),
+    "nullValue" -> JsonNodeFactory.instance.nullNode(),
+    "intValue" -> JsonNodeFactory.instance.numberNode(1234)
+  )
+
 }
