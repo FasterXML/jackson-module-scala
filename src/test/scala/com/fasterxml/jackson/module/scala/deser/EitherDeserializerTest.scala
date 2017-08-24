@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.EitherField
 import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, Impl, PlainPojoObject}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -55,6 +56,10 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
   it should "deserialize a seq wrapped Either" in {
     deserialize[Seq[Either[String, String]]]("""[{"l":"left"}]""") shouldBe Seq(Left("left"))
   }
+
+  it should "deserialize class with a field with Either" in {
+    deserialize[EitherField]("""{"either":{"r":{"a":"1","b":null,"c":1}}}""") shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
+  }
 }
 
 
@@ -85,6 +90,8 @@ object EitherJsonTest {
     def base = _base
     def base_=(base:Either[Base, Base]) { _base = base }
   }
+
+  case class EitherField(either: Either[Int,PlainPojoObject])
 
   case class PlainPojoObject(a: String, b: Option[String], c: Long)
 }
