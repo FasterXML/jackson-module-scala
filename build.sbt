@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.3")
+crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.4")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
@@ -41,7 +41,7 @@ scalacOptions ++= (
   }
 )
 
-val jacksonVersion = "2.9.1"
+val jacksonVersion = "2.9.2"
 
 libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
