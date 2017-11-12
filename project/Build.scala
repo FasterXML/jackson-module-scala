@@ -4,7 +4,7 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseStep
 
-object Build extends Build {
+object Build {
   def executeTask(task: TaskKey[_], info: String): State => State = (st: State) => {
     st.log.info(info)
     val extracted = Project.extract(st)
