@@ -16,3 +16,6 @@ addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
 resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.3")
+
+// speedup dependency download
+addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-RC13")
