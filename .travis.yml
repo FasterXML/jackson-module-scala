@@ -9,9 +9,9 @@ matrix:
   include:
     # Test Scala 2.10 and 2.11 with both JDK 6 and 8
     - scala: 2.10.6
-      jdk: oraclejdk7
+      jdk: openjdk7
     - scala: 2.11.8
-      jdk: oraclejdk7
+      jdk: openjdk7
     - scala: 2.10.6
       jdk: oraclejdk8
     - scala: 2.11.8
@@ -23,7 +23,7 @@ matrix:
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
 before_script:
-  - export JAVA7_HOME=$(jdk_switcher home oraclejdk7)
+  - export JAVA7_HOME=$(jdk_switcher home openjdk7)
 
 after_success:
   - >
