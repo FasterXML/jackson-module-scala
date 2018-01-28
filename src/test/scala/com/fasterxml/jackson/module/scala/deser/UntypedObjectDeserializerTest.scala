@@ -4,7 +4,10 @@ import com.fasterxml.jackson.module.scala.{JacksonModule, DefaultScalaModule}
 import com.fasterxml.jackson.databind.{ObjectMapper, DeserializationConfig, JavaType, AbstractTypeResolver}
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.databind.`type`.{TypeFactory, MapLikeType}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class UntypedObjectDeserializerTest extends DeserializerTest {
   def module = DefaultScalaModule
 
@@ -29,7 +32,7 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
         val result = Some(javaType) collect {
           case mapLikeType: MapLikeType =>
             if (javaType.getRawClass.equals(classOf[collection.Map[_,_]])) {
-              TypeFactory.defaultInstance().constructSpecializedType(javaType, classOf[collection.immutable.TreeMap[_,_]])
+              config.getTypeFactory.constructSpecializedType(javaType, classOf[collection.immutable.TreeMap[_,_]])
             } else null
         }
         result.orNull
