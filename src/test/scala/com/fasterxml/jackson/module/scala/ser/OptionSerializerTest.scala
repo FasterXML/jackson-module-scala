@@ -12,7 +12,6 @@ import org.scalatest.junit.JUnitRunner
 
 import scala.annotation.meta.{field, getter}
 import scala.collection.JavaConverters._
-
 import java.util
 
 object OptionSerializerTest {
@@ -216,6 +215,14 @@ class OptionSerializerTest extends SerializerTest {
     mapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) shouldBe """{"name":"John Smith","email":"john.smith@unit.uk"}"""
   }
 
+  it should "serialize JsonTypeInfo info in Option[T]" in {
+    val apple = Apple("green")
+
+    val basket = SingleFruitBasket(fruit = Some(apple))
+
+    serialize(basket) should be ("""{"fruit":{"type":"Apple","color":"green"}}""")
+  }
+
   it should "serialize JsonTypeInfo info in Option[Seq[T]]" in {
     val apple = Apple("green")
 
@@ -244,26 +251,32 @@ class OptionSerializerTest extends SerializerTest {
 
   it should "serialize with content inclusion ALWAYS" in {
     val mapper = newMapper
-      .setPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.ALWAYS))
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.ALWAYS))
     serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
   }
 
   it should "serialize with content inclusion NON_NULL" in {
     val mapper = newMapper
-      .setPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_NULL))
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_NULL))
     serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
   }
 
   it should "serialize with content inclusion NON_ABSENT" in {
     val mapper = newMapper
-      .setPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_ABSENT))
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_ABSENT))
     serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
   }
 
   it should "serialize with content inclusion NON_EMPTY" in {
     val mapper = newMapper
-      .setPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_EMPTY))
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_EMPTY))
     serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
+  }
+
+  it should "emit [] for empty list with content inclusion NON_EMPTY" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.ALWAYS))
+    serialize(OptionGeneric(Option(List.empty)), mapper) should be ("""{"data":[]}""")
   }
 }
 
@@ -277,6 +290,7 @@ trait Fruit {
 }
 
 case class Apple(color: String) extends Fruit
+case class SingleFruitBasket(fruit: Option[Fruit])
 case class OrderedFruitBasket(fruits: Option[Seq[Fruit]])
 case class NonOrderedFruitBasket(fruits: Option[Set[Fruit]])
 case class JavaTypedFruitBasket(fruits: Option[java.util.List[Fruit]])

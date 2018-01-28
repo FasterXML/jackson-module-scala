@@ -2,23 +2,18 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-import java.lang.reflect.Type
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
-import com.fasterxml.jackson.databind.jsonschema.{JsonSchema, SchemaAware}
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.impl.{PropertySerializerMap, UnknownSerializer}
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.fasterxml.jackson.databind.ser.{ContextualSerializer, Serializers}
+import com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer
+import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.util.NameTransformer
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
-import com.fasterxml.jackson.module.scala.util.Implicits._
 
+// This is still here because it is used in other places like EitherSerializer, it is no
+// longer used for the Option serializer
 object OptionSerializer {
   def useStatic(provider: SerializerProvider, property: Option[BeanProperty], referredType: Option[JavaType]): Boolean = {
     if (referredType.isEmpty) return false
@@ -58,140 +53,119 @@ object OptionSerializer {
   }
 }
 
-private class OptionSerializer(referredType: JavaType,
-                               property: Option[BeanProperty],
-                               valueTypeSerializer: Option[TypeSerializer],
-                               valueSerializer: Option[JsonSerializer[AnyRef]],
-                               contentInclusion: Option[JsonInclude.Include],
-                               unwrapper: Option[NameTransformer],
-                               var dynamicSerializers: PropertySerializerMap = PropertySerializerMap.emptyForProperties())
-  extends StdSerializer[Option[AnyRef]](referredType)
-    with ContextualSerializer
-    with SchemaAware {
+class OptionSerializer(
+  refType: ReferenceType,
+  staticTyping: Boolean,
+  contentTypeSerializer: TypeSerializer,
+  contentValueSerializer: JsonSerializer[AnyRef]
+) extends ReferenceTypeSerializer[Option[_]](
+      refType,
+      staticTyping,
+      contentTypeSerializer,
+      contentValueSerializer
+    ) {
 
-  import OptionSerializer._
+  override def withResolved(
+    prop: BeanProperty,
+    vts: TypeSerializer,
+    valueSer: JsonSerializer[_],
+    unwrapper: NameTransformer
+  ): ReferenceTypeSerializer[Option[_]] = {
 
-  override def unwrappingSerializer(transformer: NameTransformer): JsonSerializer[Option[AnyRef]] = {
-    val ser = valueSerializer.map(_.unwrappingSerializer(transformer))
-    val unt = unwrapper.map(NameTransformer.chainedTransformer(transformer, _)).getOrElse(transformer)
-    withResolved(property, valueTypeSerializer, ser, Option(unt), contentInclusion)
+    new ResolvedOptionSerializer(
+      this,
+      prop,
+      vts,
+      valueSer,
+      unwrapper,
+      _suppressableValue,
+      _suppressNulls
+    )
   }
 
-  protected[this] def withResolved(prop: Option[BeanProperty], vts: Option[TypeSerializer],
-                                   valueSer: Option[JsonSerializer[AnyRef]], unt: Option[NameTransformer],
-                                   contentIncl: Option[JsonInclude.Include]): OptionSerializer = {
-    if (prop == property && vts == valueTypeSerializer && valueSer == valueSerializer &&
-      contentIncl == contentInclusion && unt == unwrapper) this
-    else new OptionSerializer(referredType, prop, vts, valueSer, contentIncl, unt, dynamicSerializers)
+  override def withContentInclusion(
+    suppressableValue: AnyRef,
+    suppressNulls: Boolean
+  ): ReferenceTypeSerializer[Option[_]] = {
+
+    new ResolvedOptionSerializer(
+      this,
+      _property,
+      _valueTypeSerializer,
+      _valueSerializer,
+      _unwrapper,
+      suppressableValue,
+      suppressNulls
+    )
   }
 
-  override def createContextual(prov: SerializerProvider, prop: BeanProperty): JsonSerializer[_] = {
-    val propOpt = Option(prop)
+  override protected def _isValuePresent(value: Option[_]): Boolean = value.isDefined
 
-    val vts = valueTypeSerializer.optMap(_.forProperty(prop))
-    var ser = for (
-      prop <- propOpt;
-      member <- Option(prop.getMember);
-      serDef <- Option(prov.getAnnotationIntrospector.findContentSerializer(member))
-    ) yield prov.serializerInstance(member, serDef)
-    ser = ser.orElse(valueSerializer).map(prov.handlePrimaryContextualization(_, prop)).asInstanceOf[Option[JsonSerializer[AnyRef]]]
-    ser = Option(findConvertingContentSerializer(prov, prop, ser.orNull).asInstanceOf[JsonSerializer[AnyRef]])
-    ser = ser match {
-      case None => if (hasContentTypeAnnotation(prov, prop) && referredType.isContainerType) {
-        // In some cases `findValueSerializer` will return a BeanSerializer instance
-        // if the value type is a trait. This results in empty objects if the concrete
-        // value is a case class.
-        Option(prov.findValueSerializer(referredType, prop)).filterNot(_.isInstanceOf[UnknownSerializer])
-      } else None
-      case Some(s) => Option(prov.handlePrimaryContextualization(s, prop).asInstanceOf[JsonSerializer[AnyRef]])
-    }
+  override protected def _getReferenced(value: Option[_]): AnyRef = value.get.asInstanceOf[AnyRef]
 
-    // A few conditions needed to be able to fetch serializer here:
-    if (ser.isEmpty && useStatic(prov, propOpt, Option(referredType))) {
-      ser = Option(findSerializer(prov, referredType, propOpt))
-    }
-    // Also: may want to have more refined exclusion based on referenced value
-    val newIncl = propOpt match {
-      case None => contentInclusion
-      case Some(p) =>
-        val pinc = p.findPropertyInclusion(prov.getConfig, classOf[Option[AnyRef]])
-        val incl = pinc.getContentInclusion
-        if (incl != JsonInclude.Include.USE_DEFAULTS) {
-          Some(incl)
-        } else contentInclusion
-    }
-    withResolved(propOpt, vts, ser, unwrapper, newIncl)
+  override protected def _getReferencedIfPresent(value: Option[_]): AnyRef = {
+    value.asInstanceOf[Option[AnyRef]].orNull
+  }
+}
+
+class ResolvedOptionSerializer(
+  base: ReferenceTypeSerializer[_],
+  property: BeanProperty,
+  vts: TypeSerializer,
+  valueSer: JsonSerializer[_],
+  unwrapper: NameTransformer,
+  suppressableValue: AnyRef,
+  suppressNulls: Boolean
+) extends ReferenceTypeSerializer[Option[_]](
+      base,
+      property,
+      vts,
+      valueSer,
+      unwrapper,
+      suppressableValue,
+      suppressNulls
+    ) {
+
+  override def withResolved(
+    prop: BeanProperty,
+    vts: TypeSerializer,
+    valueSer: JsonSerializer[_],
+    unwrapper: NameTransformer
+  ): ReferenceTypeSerializer[Option[_]] = {
+
+    new ResolvedOptionSerializer(
+      this,
+      prop,
+      vts,
+      valueSer,
+      unwrapper,
+      _suppressableValue,
+      _suppressNulls
+    )
   }
 
-  override def isEmpty(provider: SerializerProvider, value: Option[AnyRef]): Boolean = {
-    if (value == null || value.isEmpty) return true
-    if (contentInclusion.isEmpty) return false
-    val contents = value.get
-    valueSerializer
-      .getOrElse(findCachedSerializer(provider, contents.getClass))
-      .isEmpty(provider, contents)
+  override def withContentInclusion(
+    suppressableValue: AnyRef,
+    suppressNulls: Boolean
+  ): ReferenceTypeSerializer[Option[_]] = {
+
+    new ResolvedOptionSerializer(
+      this,
+      _property,
+      _valueTypeSerializer,
+      _valueSerializer,
+      _unwrapper,
+      suppressableValue,
+      suppressNulls
+    )
   }
 
-  override def isUnwrappingSerializer: Boolean = unwrapper.isDefined
+  override protected def _isValuePresent(value: Option[_]): Boolean = value.isDefined
 
-  override def serialize(opt: Option[AnyRef], gen: JsonGenerator, provider: SerializerProvider): Unit = {
-    if (opt.isEmpty) {
-      if (unwrapper.isEmpty) {
-        provider.defaultSerializeNull(gen)
-      }
-      return
-    }
+  override protected def _getReferenced(value: Option[_]): AnyRef = value.get.asInstanceOf[AnyRef]
 
-    val value = opt.get
-    val ser = valueSerializer.getOrElse(findCachedSerializer(provider, value.getClass))
-    valueTypeSerializer match {
-      case Some(vts) => ser.serializeWithType(value, gen, provider, vts)
-      case None => ser.serialize(value, gen, provider)
-    }
-  }
-
-  override def serializeWithType(opt: Option[AnyRef], gen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer): Unit = {
-    if (opt.isEmpty) {
-      if (unwrapper.isEmpty) {
-        provider.defaultSerializeNull(gen)
-      }
-      return
-    }
-    // Otherwise apply type-prefix/suffix, then std serialize:
-    typeSer.writeTypePrefixForScalar(opt, gen, classOf[Option[_]])
-    serialize(opt, gen, provider)
-    typeSer.writeTypeSuffixForScalar(opt, gen)
-  }
-
-  override def getSchema(provider: SerializerProvider, typeHint: Type): JsonNode =
-    getSchema(provider, typeHint, isOptional = true)
-
-  override def getSchema(provider: SerializerProvider, typeHint: Type, isOptional: Boolean): JsonNode = {
-    val contentSerializer = valueSerializer.getOrElse {
-      val javaType = provider.constructType(typeHint)
-      val componentType = javaType.getContentType
-      provider.findTypedValueSerializer(componentType, true, property.orNull)
-    }
-    contentSerializer match {
-      case cs: SchemaAware => cs.getSchema(provider, contentSerializer.handledType(), isOptional)
-      case _ => JsonSchema.getDefaultSchemaNode
-    }
-  }
-
-  override def acceptJsonFormatVisitor(visitor: JsonFormatVisitorWrapper, typeHint: JavaType): Unit = {
-    var ser = valueSerializer.getOrElse(findSerializer(visitor.getProvider, referredType, property))
-    ser = unwrapper.map(ser.unwrappingSerializer).getOrElse(ser)
-    ser.acceptJsonFormatVisitor(visitor, referredType)
-  }
-
-  protected[this] def findCachedSerializer(prov: SerializerProvider, typ: Class[_]): JsonSerializer[AnyRef] = {
-    var ser = dynamicSerializers.serializerFor(typ)
-    if (ser == null) {
-      ser = findSerializer(prov, typ, property)
-      ser = unwrapper.map(ser.unwrappingSerializer).getOrElse(ser)
-      dynamicSerializers = dynamicSerializers.newWith(typ, ser)
-    }
-    ser
+  override protected def _getReferencedIfPresent(value: Option[_]): AnyRef = {
+    value.asInstanceOf[Option[AnyRef]].orNull
   }
 }
 
@@ -205,10 +179,10 @@ private object OptionSerializerResolver extends Serializers.Base {
                                        contentTypeSerializer: TypeSerializer,
                                        contentValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
     if (!OPTION.isAssignableFrom(refType.getRawClass)) return null
-    new OptionSerializer(refType.getReferencedType, property = None,
-      valueTypeSerializer = Option(contentTypeSerializer).orElse(Option(refType.getTypeHandler[TypeSerializer])),
-      valueSerializer = Option(contentValueSerializer).orElse(Option(refType.getValueHandler[JsonSerializer[AnyRef]])),
-      contentInclusion = None, unwrapper = None)
+    val staticTyping = contentTypeSerializer == null && config.isEnabled(
+      MapperFeature.USE_STATIC_TYPING
+    )
+    new OptionSerializer(refType, staticTyping, contentTypeSerializer, contentValueSerializer)
   }
 }
 
