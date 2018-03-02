@@ -1,9 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import java.util.UUID
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+
+import scala.collection.JavaConverters._
 import scala.collection.{immutable, mutable}
 
 @RunWith(classOf[JUnitRunner])
@@ -35,10 +38,20 @@ class UnsortedSetDeserializerTest extends DeserializerTest {
     val result = deserialize[Set[Any]](variantSetJson)
     result should equal(variantSetScala)
   }
-  
+
   it should "deserialize an object into a ListSet" in {
     val result = deserialize[immutable.ListSet[String]](setJson)
-    result should equal (setScala)
+    result should equal(setScala)
+  }
+
+  it should "keep path index if error happened" in {
+    val uuidListJson = """["13dfbd92-dbc5-41cc-8d93-22079acc09c4", "foo"]"""
+    val exception = intercept[InvalidFormatException] {
+      deserialize[immutable.ListSet[UUID]](uuidListJson)
+    }
+
+    val exceptionPath = exception.getPath.asScala.map(_.getIndex)
+    exceptionPath should equal(List(1))
   }
 
   val setJson = """[ "one", "two" ]"""
