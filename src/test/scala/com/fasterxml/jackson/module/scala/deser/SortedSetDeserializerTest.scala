@@ -1,7 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import java.util.UUID
+
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -65,6 +68,17 @@ class SortedSetDeserializerTest extends DeserializationFixture {
     // NB: This is `java.lang.Integer`, because of GH-104
     val result = f.readValue[SortedSet[Option[Integer]]](intSetJson, new TypeReference[SortedSet[Option[Integer]]]{})
     result shouldBe optionIntSetScala
+  }
+
+  it should "keep path index if error happened" in { f =>
+    import scala.collection.JavaConverters._
+    val uuidListJson = """["13dfbd92-dbc5-41cc-8d93-22079acc09c4", "foo"]"""
+    val exception = intercept[InvalidFormatException] {
+      f.readValue[SortedSet[Option[UUID]]](uuidListJson, new TypeReference[SortedSet[Option[UUID]]]{})
+    }
+
+    val exceptionPath = exception.getPath.asScala.map(_.getIndex)
+    exceptionPath should equal (List(1))
   }
 
   val setJson = """[ "one", "two", "three" ]"""

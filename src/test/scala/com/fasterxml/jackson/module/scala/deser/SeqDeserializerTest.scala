@@ -1,5 +1,8 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import java.util.UUID
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.scala.JacksonModule
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -160,6 +163,17 @@ class SeqDeserializerTest extends DeserializerTest {
 //    val result = deserialize[mutable.ArraySeq[Int]](listJson)
 //    result should equal (listScala)
 //  }
+
+  it should "keep path index if error happened" in {
+    import scala.collection.JavaConverters._
+    val uuidListJson = """["13dfbd92-dbc5-41cc-8d93-22079acc09c4", "foo"]"""
+    val exception = intercept[InvalidFormatException] {
+      deserialize[List[UUID]](uuidListJson)
+    }
+
+    val exceptionPath = exception.getPath.asScala.map(_.getIndex)
+    exceptionPath should equal (List(1))
+  }
 
   val listJson =  "[1,2,3,4,5,6]"
   val listScala: Range.Inclusive = 1 to 6
