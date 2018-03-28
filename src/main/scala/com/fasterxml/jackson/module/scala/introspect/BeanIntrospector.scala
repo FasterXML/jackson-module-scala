@@ -194,7 +194,8 @@ object BeanIntrospector {
       if findField(cls, name).isEmpty
       if !name.contains('$')
       if !fields.exists(_.name == name)
-      setter = findSetter(cls, name) if setter.isDefined || getter.getAnnotation(classOf[JsonProperty]) != null
+      getterProperty = getter.getAnnotation(classOf[JsonProperty])
+      setter = findSetter(cls, name) if setter.isDefined || (getterProperty != null && getterProperty.value != JsonProperty.USE_DEFAULT_NAME)
       beanGetter = findBeanGetter(cls, name)
       beanSetter = findBeanSetter(cls, name)
     } yield PropertyDescriptor(name, None, None, Some(getter), setter, beanGetter, beanSetter)
