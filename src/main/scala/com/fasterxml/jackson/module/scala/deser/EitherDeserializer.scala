@@ -22,7 +22,7 @@ private class EitherDeserializer(javaType: JavaType,
       val containedType = javaType.containedType(param)
 
       val paramDeserializer = Option( ctxt.findContextualValueDeserializer(containedType, property) )
-      val typeDeserializer = Option(property).map(p => BeanDeserializerFactory.instance.findPropertyTypeDeserializer(ctxt.getConfig, containedType, p.getMember) )
+      val typeDeserializer = Option(property).flatMap(p => Option(BeanDeserializerFactory.instance.findPropertyTypeDeserializer(ctxt.getConfig, containedType, p.getMember)) )
 
       ElementDeserializerConfig( paramDeserializer, typeDeserializer )
     }
