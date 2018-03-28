@@ -255,10 +255,46 @@ class OptionSerializerTest extends SerializerTest {
     serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
   }
 
+  it should "serialize with content inclusion ALWAYS, when null" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.ALWAYS, JsonInclude.Include.ALWAYS))
+    serialize(OptionGeneric(null), mapper) should be ("""{"data":null}""")
+  }
+
+  it should "serialize with content inclusion ALWAYS, when None" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.ALWAYS, JsonInclude.Include.ALWAYS))
+    serialize(OptionGeneric(None), mapper) should be ("""{"data":null}""")
+  }
+
+  it should "serialize with content inclusion ALWAYS, when empty value" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.ALWAYS, JsonInclude.Include.ALWAYS))
+    serialize(OptionGeneric(Some("")), mapper) should be ("""{"data":""}""")
+  }
+
   it should "serialize with content inclusion NON_NULL" in {
     val mapper = newMapper
       .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_NULL))
     serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
+  }
+
+  it should "serialize with content inclusion NON_NULL, excludes null" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL))
+    serialize(OptionGeneric(null), mapper) should be ("""{}""")
+  }
+
+  it should "serialize with content inclusion NON_NULL, includes None" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL))
+    serialize(OptionGeneric(None), mapper) should be ("""{"data":null}""")
+  }
+
+  it should "serialize with content inclusion NON_NULL, includes empty value" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL))
+    serialize(OptionGeneric(Some("")), mapper) should be ("""{"data":""}""")
   }
 
   it should "serialize with content inclusion NON_ABSENT" in {
@@ -267,10 +303,46 @@ class OptionSerializerTest extends SerializerTest {
     serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
   }
 
+  it should "serialize with content inclusion NON_ABSENT, excludes null" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_ABSENT))
+    serialize(OptionGeneric(null), mapper) should be ("""{}""")
+  }
+
+  it should "serialize with content inclusion NON_ABSENT, excludes None" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_ABSENT))
+    serialize(OptionGeneric(None), mapper) should be ("""{}""")
+  }
+
+  it should "serialize with content inclusion NON_ABSENT, includes empty value" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_ABSENT))
+    serialize(OptionGeneric(Some("")), mapper) should be ("""{"data":""}""")
+  }
+
   it should "serialize with content inclusion NON_EMPTY" in {
     val mapper = newMapper
       .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_EMPTY))
     serialize(OptionGeneric(Option("green")), mapper) should be ("""{"data":"green"}""")
+  }
+
+  it should "serialize with content inclusion NON_EMPTY, excludes null" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY))
+    serialize(OptionGeneric(null), mapper) should be ("""{}""")
+  }
+
+  it should "serialize with content inclusion NON_EMPTY, excludes None" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY))
+    serialize(OptionGeneric(None), mapper) should be ("""{}""")
+  }
+
+  it should "serialize with content inclusion NON_EMPTY, excludes empty value" in {
+    val mapper = newMapper
+      .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY))
+    serialize(OptionGeneric(Some("")), mapper) should be ("""{}""")
   }
 
   it should "emit [] for empty list with content inclusion NON_EMPTY" in {
