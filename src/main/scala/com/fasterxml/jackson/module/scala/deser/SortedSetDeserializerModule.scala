@@ -17,12 +17,17 @@ import scala.collection.immutable
 import scala.language.postfixOps
 
 private class SortedSetBuilderWrapper[E](val builder: mutable.Builder[E, _ <: collection.SortedSet[E]]) extends AbstractCollection[E] {
+  var nbItem = 0
 
-  override def add(e: E) = { builder += e; true }
+  override def add(e: E) = {
+    builder += e
+    nbItem += 1
+    true
+  }
 
+  def size() = nbItem
   // Required by AbstractCollection, but the deserializer doesn't care about them.
   def iterator() = null
-  def size() = 0
 }
 
 private object SortedSetDeserializer {
