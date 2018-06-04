@@ -30,8 +30,9 @@ Scala Case Classes, Sequences, Maps, Tuples, Options, and Enumerations.
 
 ## Caveats
 
-Support for class constructor arguments currently depends upon [Paranamer]
-(http://paranamer.codehaus.org/), specifically an implementation that
+Support for class constructor arguments currently depends upon
+[Paranamer](https://github.com/paul-hammant/paranamer),
+specifically an implementation that
 depends upon constructor parameter names being present in the class debug
 information. Since this is the default in Scala, it is usually not an
 issue, but since it's possible to turn this off, be aware that the current
