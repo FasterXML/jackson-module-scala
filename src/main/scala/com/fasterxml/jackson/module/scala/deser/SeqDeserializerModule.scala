@@ -18,21 +18,23 @@ private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: Iterable[E]
   override def add(e: E): Boolean = { builder += e; true }
 
   // Required by AbstractCollection, but the deserializer doesn't care about them.
-  override def iterator() = null
+  override def iterator(): util.Iterator[E] = null
   override def size() = 0
 }
 
 private object SeqDeserializer {
   val COMPANIONS: Iterable[(Class[_], IterableFactory[Iterable])] = new CompanionSorter[collection.Iterable]()
-    .add(immutable.IndexedSeq)
+    .add(mutable.ArrayBuffer)
     .add(mutable.Buffer)
     .add(mutable.IndexedSeq)
     .add(mutable.ListBuffer)
     .add(mutable.Iterable)
     .add(mutable.Queue)
     .add(mutable.Seq)
-    .add(immutable.Queue)
+    .add(immutable.IndexedSeq)
     .add(immutable.LazyList)
+    .add(immutable.Stream)
+    .add(immutable.Queue)
     .toList
 
   def companionFor(cls: Class[_]): IterableFactory[collection.Iterable] =

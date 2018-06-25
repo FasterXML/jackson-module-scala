@@ -1,13 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.junit.runner.RunWith
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
-import org.scalatest.junit.JUnitRunner
-import collection.LinearSeq
-import collection.mutable
-import collection.immutable.Queue
 import com.fasterxml.jackson.module.scala.JacksonModule
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+
+import scala.collection.immutable.Queue
+import scala.collection.{LinearSeq, mutable}
 
 @RunWith(classOf[JUnitRunner])
 class SeqDeserializerTest extends DeserializerTest {
@@ -37,23 +35,19 @@ class SeqDeserializerTest extends DeserializerTest {
     result should equal (listScala)
   }
 
-  it should "deserialize a list into a ResizableArray" in {
-    val result = deserialize[mutable.ResizableArray[Int]](listJson)
-    result should equal (listScala)
-  }
-
-  it should "deserialize a list into an ArraySeq" in {
-    val result = deserialize[mutable.ArraySeq[Int]](listJson)
-    result should equal (listScala)
-  }
+// TODO: ArraySeq is an EvidenceIterableFactory
+//  it should "deserialize a list into an ArraySeq" in {
+//    val result = deserialize[mutable.ArraySeq[Int]](listJson)
+//    result should equal (listScala)
+//  }
 
   it should "deserialize a list into a LinearSeq" in {
     val result = deserialize[LinearSeq[Int]](listJson)
     result should equal (listScala)
   }
 
-  it should "deserialize a list into a mutable LinearSeq" in {
-    val result = deserialize[mutable.LinearSeq[Int]](listJson)
+  it should "deserialize a list into a mutable Seq" in {
+    val result = deserialize[mutable.Seq[Int]](listJson)
     result should equal (listScala)
   }
 
@@ -64,11 +58,6 @@ class SeqDeserializerTest extends DeserializerTest {
 
   it should "deserialize a list into a Stream" in {
     val result = deserialize[Stream[Int]](listJson)
-    result should equal (listScala)
-  }
-
-  it should "deserialize a list into a MutableList" in {
-    val result = deserialize[mutable.MutableList[Int]](listJson)
     result should equal (listScala)
   }
 
