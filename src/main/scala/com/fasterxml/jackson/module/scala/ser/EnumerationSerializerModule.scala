@@ -36,7 +36,7 @@ private class EnumerationSerializer extends JsonSerializer[scala.Enumeration#Val
 }
 
 private class AnnotatedEnumerationSerializer extends JsonSerializer[scala.Enumeration#Value] with ContextualEnumerationSerializer {
-  override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider) {
+  override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     jgen.writeString(value.toString)
   }
 }

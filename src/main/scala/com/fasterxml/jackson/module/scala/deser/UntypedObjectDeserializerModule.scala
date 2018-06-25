@@ -20,7 +20,7 @@ private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer(nu
   private var _mapDeser: JsonDeserializer[AnyRef] = _
   private var _listDeser: JsonDeserializer[AnyRef] = _
 
-  override def resolve(ctxt: DeserializationContext) {
+  override def resolve(ctxt: DeserializationContext): Unit = {
     super.resolve(ctxt)
     val anyRef = ctxt.constructType(classOf[AnyRef])
     val string = ctxt.constructType(classOf[String])
