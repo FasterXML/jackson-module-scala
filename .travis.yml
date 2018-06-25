@@ -19,6 +19,8 @@ matrix:
     # Scala 2.12+ only supports JDK 8+
     - scala: 2.12.4
       jdk: oraclejdk8
+    - scala: 2.12.6
+      jdk: oraclejdk10
 
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
