@@ -1,28 +1,29 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import scala.collection.generic.GenericCompanion
-import java.util.AbstractCollection
-import scala.collection.{immutable, mutable}
-import com.fasterxml.jackson.module.scala.modifiers.SetTypeModifierModule
-import com.fasterxml.jackson.databind.`type`.CollectionLikeType
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import java.util
+
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.deser.std.{StdValueInstantiator, CollectionDeserializer, ContainerDeserializerBase}
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializerBase, StdValueInstantiator}
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
-import com.fasterxml.jackson.databind.{BeanProperty, JavaType, BeanDescription, DeserializationContext, JsonDeserializer, DeserializationConfig}
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.module.scala.modifiers.SetTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.CompanionSorter
 
-private class SetBuilderWrapper[E](val builder: mutable.Builder[E, _ <: collection.Set[E]]) extends AbstractCollection[E] {
+import scala.collection.{IterableFactory, immutable, mutable}
 
-  override def add(e: E) = { builder += e; true }
+private class SetBuilderWrapper[E](val builder: mutable.Builder[E, _ <: collection.Set[E]]) extends util.AbstractCollection[E] {
+
+  override def add(e: E): Boolean = { builder += e; true }
 
   // Required by AbstractCollection, but the deserializer doesn't care about them.
-  def iterator() = null
-  def size() = 0
+  override def iterator(): util.Iterator[E] = null
+  override def size() = 0
 }
 
 private object UnsortedSetDeserializer {
-  val COMPANIONS = new CompanionSorter[collection.Set]()
+  val COMPANIONS: Iterable[(Class[_], IterableFactory[collection.Set])] = new CompanionSorter[collection.Set]()
     .add(immutable.HashSet)
     .add(immutable.ListSet)
     .add(immutable.Set)
@@ -31,7 +32,7 @@ private object UnsortedSetDeserializer {
     .add(mutable.Set)
     .toList
 
-  def companionFor(cls: Class[_]): GenericCompanion[collection.Set] =
+  def companionFor(cls: Class[_]): IterableFactory[collection.Set] =
     COMPANIONS find { _._1.isAssignableFrom(cls) } map { _._2 } getOrElse Set
 
   def builderFor[A](cls: Class[_]): mutable.Builder[A, collection.Set[A]] = companionFor(cls).newBuilder[A]
@@ -39,7 +40,7 @@ private object UnsortedSetDeserializer {
 
 private class SetInstantiator(config: DeserializationConfig, valueType: JavaType)
   extends StdValueInstantiator(config, valueType) {
-  
+
   override def canCreateUsingDefault = true
 
   override def createUsingDefault(ctxt: DeserializationContext) =
@@ -54,14 +55,14 @@ private class UnsortedSetDeserializer(collectionType: JavaType, containerDeseria
   def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) =
     this(collectionType, new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, valueInstantiator))
 
-  def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
+  def createContextual(ctxt: DeserializationContext, property: BeanProperty): UnsortedSetDeserializer = {
     val newDelegate = containerDeserializer.createContextual(ctxt, property)
     new UnsortedSetDeserializer(collectionType, newDelegate)
   }
 
-  override def getContentType = containerDeserializer.getContentType
+  override def getContentType: JavaType = containerDeserializer.getContentType
 
-  override def getContentDeserializer = containerDeserializer.getContentDeserializer
+  override def getContentDeserializer: JsonDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
 
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): collection.Set[_] =
     containerDeserializer.deserialize(jp, ctxt) match {

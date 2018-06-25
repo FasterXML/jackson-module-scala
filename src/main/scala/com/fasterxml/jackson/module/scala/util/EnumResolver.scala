@@ -28,7 +28,7 @@ object EnumResolver {
 
   def apply(e: Enumeration): EnumResolver = {
     val valueSet = e.values
-    val map: Map[String, e.type#Value] = valueSet.map(v => (v.toString, v)).toMap
+    val map: Map[String, e.type#Value] = valueSet.iterator.map(v => (v.toString, v)).toMap
     new EnumResolver(e.getClass, valueSet, map)
   }
 }

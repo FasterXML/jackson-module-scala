@@ -82,7 +82,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
   }
 
   override def hasCreatorAnnotation(a: Annotated): Boolean = {
-    val jsonCreators = PartialFunction[Annotation, JsonCreator]({ case jc: JsonCreator => jc })
+    val jsonCreators: PartialFunction[Annotation, JsonCreator] = { case jc: JsonCreator => jc }
 
     a match {
       case ac: AnnotatedConstructor =>

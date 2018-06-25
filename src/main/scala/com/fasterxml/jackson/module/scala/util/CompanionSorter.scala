@@ -1,35 +1,33 @@
 package com.fasterxml.jackson.module.scala.util
 
-import collection.mutable.{ArrayBuffer, ListBuffer}
-import collection.GenTraversable
-import collection.generic.GenericCompanion
-import scala.reflect.ClassTag
-
+import scala.collection.IterableFactory
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.language.higherKinds
+import scala.reflect.ClassTag
 
 /**
  * The CompanionSorter performs a topological sort on class hierarchy to ensure that the most specific builders
  * get registered first.
  */
-class CompanionSorter[CC[X] <: GenTraversable[X]] {
+class CompanionSorter[CC[X] <: Iterable[X]] {
   type HKClassManifest[CC2[_]] = ClassTag[CC2[_]]
 
-  private[this] val companions = new ArrayBuffer[(Class[_], GenericCompanion[CC])]()
+  private[this] val companions = new ArrayBuffer[(Class[_], IterableFactory[CC])]()
 
-  def add[T[X] <: CC[X] : HKClassManifest](companion: GenericCompanion[T]): CompanionSorter[CC] = {
+  def add[T[X] <: CC[X] : HKClassManifest](companion: IterableFactory[T]): CompanionSorter[CC] = {
     companions += implicitly[HKClassManifest[T]].runtimeClass -> companion
     this
   }
 
-  def toList: List[(Class[_], GenericCompanion[CC])] = {
+  def toList: List[(Class[_], IterableFactory[CC])] = {
     val cs = companions.toArray
-    val output = new ListBuffer[(Class[_], GenericCompanion[CC])]()
+    val output = new ListBuffer[(Class[_], IterableFactory[CC])]()
 
     val remaining = cs.map(_ => 1)
     val adjMatrix = Array.ofDim[Int](cs.length, cs.length)
 
     // Build the adjacency matrix. Only mark the in-edges.
-    for (i <- 0 until cs.length; j <- 0 until cs.length) {
+    for (i <- cs.indices; j <- cs.indices) {
       val (ic, _) = cs(i)
       val (jc, _) = cs(j)
 
@@ -42,7 +40,7 @@ class CompanionSorter[CC[X] <: GenTraversable[X]] {
     while (output.length < cs.length) {
       val startLength = output.length
 
-      for (i <- 0 until cs.length) {
+      for (i <- cs.indices) {
         if (remaining(i) == 1 && dotProduct(adjMatrix(i), remaining) == 0) {
           output += companions(i)
           remaining(i) = 0
@@ -61,6 +59,6 @@ class CompanionSorter[CC[X] <: GenTraversable[X]] {
   private[this] def dotProduct(a: Array[Int], b: Array[Int]): Int = {
     if (a.length != b.length) throw new IllegalArgumentException()
 
-    (0 until a.length).map(i => a(i) * b(i)).sum
+    a.indices.map(i => a(i) * b(i)).sum
   }
 }

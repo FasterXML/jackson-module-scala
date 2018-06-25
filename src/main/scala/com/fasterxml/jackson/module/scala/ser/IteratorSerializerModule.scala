@@ -2,27 +2,25 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-import core.JsonGenerator
+import java.{lang => jl}
 
-import databind.{BeanDescription, BeanProperty, JavaType, JsonSerializer, SerializationConfig, SerializerProvider}
-import databind.`type`.CollectionLikeType
-import databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.{impl, Serializers}
-import databind.ser.std.AsArraySerializerBase
-
-import modifiers.IteratorTypeModifierModule
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase
+import com.fasterxml.jackson.databind.ser.{Serializers, impl}
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.module.scala.modifiers.IteratorTypeModifierModule
 
 import scala.collection.JavaConverters._
-
-import java.{lang => jl}
 
 private trait IteratorSerializer
   extends AsArraySerializerBase[collection.Iterator[Any]]
 {
   def iteratorSerializer: impl.IteratorSerializer
 
-  override def hasSingleElement(p1: collection.Iterator[Any]) =
-    p1.hasDefiniteSize && p1.size == 1
+  override def hasSingleElement(p1: collection.Iterator[Any]): Boolean =
+    p1.knownSize == 1
 
   def serializeContents(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     iteratorSerializer.serializeContents(value.asJava, jgen, provider)
@@ -71,7 +69,7 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
                                             beanDescription: BeanDescription,
                                             elementTypeSerializer: TypeSerializer,
                                             elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
-    
+
     val rawClass = collectionType.getRawClass
     if (!classOf[collection.Iterator[Any]].isAssignableFrom(rawClass)) null else
     new UnresolvedIteratorSerializer(rawClass, collectionType.getContentType, false, elementTypeSerializer, elementSerializer)
@@ -81,5 +79,3 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
 trait IteratorSerializerModule extends IteratorTypeModifierModule {
   this += ScalaIteratorSerializerResolver
 }
-
-
