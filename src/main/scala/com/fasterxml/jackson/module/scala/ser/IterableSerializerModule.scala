@@ -24,7 +24,7 @@ private trait IterableSerializer
   override def hasSingleElement(value: collection.Iterable[Any]): Boolean =
     value.hasDefiniteSize && value.size == 1
 
-  override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider) {
+  override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
     collectionSerializer.serializeContents(value.asJavaCollection, gen, provider)
   }
 

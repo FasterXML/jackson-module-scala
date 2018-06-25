@@ -326,7 +326,7 @@ trait ScalaObjectMapper {
    *
    * @since 2.1
    */
-  def acceptJsonFormatVisitor[T: Manifest](visitor: JsonFormatVisitorWrapper) {
+  def acceptJsonFormatVisitor[T: Manifest](visitor: JsonFormatVisitorWrapper): Unit = {
     acceptJsonFormatVisitor(manifest[T].runtimeClass, visitor)
   }
 

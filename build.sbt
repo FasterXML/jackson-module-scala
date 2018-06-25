@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.12.6"
 
-crossScalaVersions := Seq("2.10.7", "2.11.11", "2.12.6")
+crossScalaVersions := Seq("2.10.7", "2.11.11", "2.12.6", "2.13.0-M4")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
@@ -32,7 +32,7 @@ javacOptions ++= Seq(
 )
 
 scalacOptions ++= (
-  if (scalaVersion.value.startsWith("2.12")) {
+  if (scalaVersion.value.startsWith("2.12") || scalaVersion.value.startsWith("2.13")) {
     // -target is deprecated as of Scala 2.12, which uses JVM 1.8 bytecode
     Seq.empty
   } else {
@@ -53,8 +53,8 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % "test",
-    "org.scalatest" %% "scalatest" % "3.0.5" % "test",
-    "junit" % "junit" % "4.11" % "test"
+    "org.scalatest" %% "scalatest" % "3.0.6-SNAP1" % "test",
+    "junit" % "junit" % "4.12" % "test"
 )
 
 // build.properties
