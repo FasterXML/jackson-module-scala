@@ -1,27 +1,29 @@
 package com.fasterxml.jackson.module.scala.util
 
-import scala.collection.IterableFactory
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.language.higherKinds
 import scala.reflect.ClassTag
 
 /**
- * The CompanionSorter performs a topological sort on class hierarchy to ensure that the most specific builders
+ * The FactorySorter performs a topological sort on class hierarchy to ensure that the most specific builders
  * get registered first.
  */
-class CompanionSorter[CC[X] <: Iterable[X]] {
+class FactorySorter[CC[_], CF[+X[_]]] {
   type HKClassManifest[CC2[_]] = ClassTag[CC2[_]]
 
-  private[this] val companions = new ArrayBuffer[(Class[_], IterableFactory[CC])]()
+  private[this] val companions = new ArrayBuffer[(Class[_], CF[CC])]()
 
-  def add[T[X] <: CC[X] : HKClassManifest](companion: IterableFactory[T]): CompanionSorter[CC] = {
+  // This overload allows us to alias newly added types to Nil. This reduces backwards compatibility overhead.
+  def add(nil: Nil.type): FactorySorter[CC, CF] = this
+
+  def add[T[X] <: CC[X] : HKClassManifest](companion: CF[T]): FactorySorter[CC, CF] = {
     companions += implicitly[HKClassManifest[T]].runtimeClass -> companion
     this
   }
 
-  def toList: List[(Class[_], IterableFactory[CC])] = {
+  def toList: List[(Class[_], CF[CC])] = {
     val cs = companions.toArray
-    val output = new ListBuffer[(Class[_], IterableFactory[CC])]()
+    val output = new ListBuffer[(Class[_], CF[CC])]()
 
     val remaining = cs.map(_ => 1)
     val adjMatrix = Array.ofDim[Int](cs.length, cs.length)

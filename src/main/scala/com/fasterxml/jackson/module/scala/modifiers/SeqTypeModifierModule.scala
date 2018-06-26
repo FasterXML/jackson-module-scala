@@ -1,3 +1,0 @@
-package com.fasterxml.jackson.module.scala.modifiers
-
-trait SeqTypeModifierModule extends ScalaTypeModifierModule
