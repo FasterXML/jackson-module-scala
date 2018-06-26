@@ -19,12 +19,12 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
   // Subclasses need to implement the following:
   val CLASS_DOMAIN: Class[Collection[_]]
   val factories: Iterable[(Class[_], Factory)]
-  def builderFor[A](cf: Factory): mutable.Builder[A, Collection[A]]
+  def builderFor[A](cf: Factory, valueType: JavaType): mutable.Builder[A, Collection[A]]
 
   private def factoryFor(cls: Class[_]): CF[CC] = factories
     .find(_._1.isAssignableFrom(cls))
     .map(_._2)
-    .getOrElse(throw new IllegalStateException(s"Could not find deserializer for ${cls.toString}. File issue on github:fasterxml/jackson-scala-module"))
+    .getOrElse(throw new IllegalStateException(s"Could not find deserializer for ${cls.getCanonicalName}. File issue on github:fasterxml/jackson-scala-module"))
 
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                                               config: DeserializationConfig,
@@ -36,7 +36,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
     if (!CLASS_DOMAIN.isAssignableFrom(rawClass)) null
     else {
       val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
-      val instantiator = new GenericFactoryInstantiator(config, collectionType)
+      val instantiator = new GenericFactoryInstantiator(config, collectionType, collectionType.getContentType)
       new GenericFactoryDeserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
   }
@@ -50,13 +50,13 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
     override def iterator(): util.Iterator[E] = null
   }
 
-  private class GenericFactoryInstantiator(config: DeserializationConfig, valueType: JavaType)
-    extends StdValueInstantiator(config, valueType) {
+  private class GenericFactoryInstantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
+    extends StdValueInstantiator(config, collectionType) {
 
     override def canCreateUsingDefault = true
 
     override def createUsingDefault(ctxt: DeserializationContext) =
-      new BuilderWrapper[AnyRef](builderFor[AnyRef](factoryFor(valueType.getRawClass)))
+      new BuilderWrapper[AnyRef](builderFor[AnyRef](factoryFor(collectionType.getRawClass), valueType))
   }
 
   private class GenericFactoryDeserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)

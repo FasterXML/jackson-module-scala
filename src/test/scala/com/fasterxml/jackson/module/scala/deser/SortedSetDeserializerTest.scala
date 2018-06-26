@@ -1,16 +1,13 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.Matchers
-import scala.collection.mutable
-import scala.collection.SortedSet
-import scala.collection.immutable.TreeSet
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.core.`type`.TypeReference
 
-object SortedSetDeserializerTest
-{
+import scala.collection._
+
+object SortedSetDeserializerTest {
   case class LongSetHolder(@JsonDeserialize(contentAs = classOf[java.lang.Long]) value: SortedSet[Long])
 
   case class ComparableBean(value: Long) extends Comparable[ComparableBean] {
@@ -29,13 +26,18 @@ class SortedSetDeserializerTest extends DeserializationFixture {
     result shouldBe setScala
   }
 
+  it should "deserialize a list into an immutable SortedSet" in { f =>
+    val result = f.readValue[immutable.SortedSet[String]](setJson)
+    result shouldBe setScala
+  }
+
   it should "deserialize a list into a mutable SortedSet" in { f =>
     val result = f.readValue[mutable.SortedSet[String]](setJson)
     result shouldBe setScala
   }
 
-  it should "deserialize a list into a TreeSet" in { f =>
-    val result = f.readValue[TreeSet[String]](setJson)
+  it should "deserialize a list into an immutable TreeSet" in { f =>
+    val result = f.readValue[immutable.TreeSet[String]](setJson)
     result shouldBe setScala
   }
 
@@ -74,5 +76,4 @@ class SortedSetDeserializerTest extends DeserializationFixture {
   val comparableSetJson = """[{"value": 3},{"value": 1},{"value": 2}]"""
   val comparableSetScala = SortedSet(ComparableBean(2), ComparableBean(3), ComparableBean(1))
   val optionIntSetScala = SortedSet(Option(2), Option(3), Option(1))
-
 }
