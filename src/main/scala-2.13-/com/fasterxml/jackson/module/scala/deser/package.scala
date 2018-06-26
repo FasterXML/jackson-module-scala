@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
 import scala.collection.generic.{GenericCompanion, SortedSetFactory}
-import scala.collection.{GenTraversable, GenTraversableOnce, SortedSet, SortedSetLike}
+import scala.collection.{GenTraversable, SortedSet, SortedSetLike}
 import scala.language.higherKinds
 
 /**

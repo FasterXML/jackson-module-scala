@@ -42,10 +42,9 @@ scalacOptions ++= {
   if (scalaMajorVersion.value >= 12) Seq.empty else Seq("-target:jvm-1.7")
 }
 
-unmanagedSourceDirectories in Compile ++= {
-  if (scalaMajorVersion.value >= 13) Seq.empty else Seq(
-    (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.13-"
-  )
+unmanagedSourceDirectories in Compile += {
+  val s = if (scalaMajorVersion.value >= 13) "+" else "-"
+  (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.13$s"
 }
 
 val jacksonVersion = "2.9.6"

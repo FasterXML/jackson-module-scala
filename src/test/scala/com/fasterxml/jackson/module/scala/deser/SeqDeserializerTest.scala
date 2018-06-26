@@ -144,12 +144,14 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a mutable MutableList" in {
-    val result = deserialize[mutable.MutableList[Int]](listJson)
+    import mutable._
+    val result = deserialize[MutableList[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable ResizableArray" in {
-    val result = deserialize[mutable.ResizableArray[Int]](listJson)
+    import mutable._
+    val result = deserialize[ResizableArray[Int]](listJson)
     result should equal (listScala)
   }
 
