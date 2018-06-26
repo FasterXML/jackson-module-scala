@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.introspect.OrderingLocator
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
+import scala.collection._
 import scala.collection.immutable.TreeMap
-import scala.collection.{SortedMap, mutable}
 import scala.language.existentials
 
 private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), SortedMap[K,V]]) extends java.util.AbstractMap[K,V] {
@@ -73,9 +73,6 @@ private object SortedMapDeserializerResolver extends Deserializers.Base {
     }
 }
 
-/**
- * @author Christopher Currie <christopher@currie.com>
- */
 trait SortedMapDeserializerModule extends MapTypeModifierModule {
   this += (_ addDeserializers SortedMapDeserializerResolver)
 }

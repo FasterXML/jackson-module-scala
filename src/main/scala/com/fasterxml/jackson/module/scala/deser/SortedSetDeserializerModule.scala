@@ -8,11 +8,11 @@ import com.fasterxml.jackson.module.scala.util.FactorySorter
 import scala.collection._
 
 trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
-  this += (_ addDeserializers new GenericFactoryDeserializerResolver[collection.SortedSet, collection.SortedIterableFactory] {
+  this += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory] {
 
-    override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Collection[_]]
+    override val CLASS_DOMAIN: Class[Collection[_]] = classOf[SortedSet[_]]
 
-    override val factories: Iterable[(Class[_], Factory)] = new FactorySorter[Collection, collection.SortedIterableFactory]()
+    override val factories: Iterable[(Class[_], Factory)] = new FactorySorter[Collection, SortedIterableFactory]()
       .add(SortedSet)
       .add(immutable.TreeSet)
       .add(immutable.SortedSet)

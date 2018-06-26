@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.`type`._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import scala.collection._
+
 class ScalaTypeModifier extends TypeModifier {
   override def modifyType(javaType: JavaType,
                           jdkType: Type,
@@ -13,9 +15,9 @@ class ScalaTypeModifier extends TypeModifier {
                           typeFactory: TypeFactory): JavaType = {
 
 
-    if (javaType.isTypeOrSubTypeOf(classOf[collection.Map[_, _]])) {
+    if (javaType.isTypeOrSubTypeOf(classOf[Map[_, _]])) {
       MapLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0), javaType.containedTypeOrUnknown(1))
-    } else if (javaType.isTypeOrSubTypeOf(classOf[collection.IterableOnce[_]])) {
+    } else if (javaType.isTypeOrSubTypeOf(classOf[IterableOnce[_]])) {
       CollectionLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
     } else if (javaType.isTypeOrSubTypeOf(classOf[Option[_]])) {
       ReferenceType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))

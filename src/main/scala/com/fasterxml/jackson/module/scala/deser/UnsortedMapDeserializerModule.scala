@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
 import scala.collection.immutable.HashMap
-import scala.collection.{GenMap, mutable}
+import scala.collection._
 import scala.language.existentials
 
 private class MapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), GenMap[K,V]]) extends java.util.AbstractMap[K,V] {

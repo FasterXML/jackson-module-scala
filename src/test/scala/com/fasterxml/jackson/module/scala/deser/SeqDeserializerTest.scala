@@ -47,7 +47,8 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into an immutable LazyList" in {
-    val result = deserialize[immutable.LazyList[Int]](listJson)
+    import immutable._
+    val result = deserialize[LazyList[Int]](listJson)
     result should equal (listScala)
   }
 
@@ -122,7 +123,8 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a mutable ArrayDeque" in {
-    val result = deserialize[mutable.ArrayDeque[Int]](listJson)
+    import scala.collection.mutable._
+    val result = deserialize[ArrayDeque[Int]](listJson)
     result should equal (listScala)
   }
 
@@ -138,6 +140,16 @@ class SeqDeserializerTest extends DeserializerTest {
 
   it should "deserialize a list into a mutable Stack" in {
     val result = deserialize[mutable.Stack[Int]](listJson)
+    result should equal (listScala)
+  }
+
+  it should "deserialize a list into a mutable MutableList" in {
+    val result = deserialize[mutable.MutableList[Int]](listJson)
+    result should equal (listScala)
+  }
+
+  it should "deserialize a list into a mutable ResizableArray" in {
+    val result = deserialize[mutable.ResizableArray[Int]](listJson)
     result should equal (listScala)
   }
 
