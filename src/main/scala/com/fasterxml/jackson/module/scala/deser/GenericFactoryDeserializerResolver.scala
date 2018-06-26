@@ -33,13 +33,11 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
                                               beanDesc: BeanDescription,
                                               elementTypeDeserializer: TypeDeserializer,
                                               elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    val rawClass = collectionType.getRawClass
-
-    if (!CLASS_DOMAIN.isAssignableFrom(rawClass)) null
+    if (!CLASS_DOMAIN.isAssignableFrom(collectionType.getRawClass)) null
     else {
       val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
-      val instantiator = new GenericFactoryInstantiator(config, collectionType, collectionType.getContentType)
-      new GenericFactoryDeserializer(collectionType, deser, elementTypeDeserializer, instantiator)
+      val instantiator = new Instantiator(config, collectionType, collectionType.getContentType)
+      new Deserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
   }
 
@@ -52,7 +50,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
     override def iterator(): util.Iterator[A] = null
   }
 
-  private class GenericFactoryInstantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
+  private class Instantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
     extends StdValueInstantiator(config, collectionType) {
 
     override def canCreateUsingDefault = true
@@ -61,16 +59,17 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       new BuilderWrapper[AnyRef](builderFor[AnyRef](collectionType.getRawClass, valueType))
   }
 
-  private class GenericFactoryDeserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)
+  private class Deserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)
     extends ContainerDeserializerBase[CC[_]](collectionType)
       with ContextualDeserializer {
 
-    def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) =
+    def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) {
       this(collectionType, new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, valueInstantiator))
+    }
 
-    def createContextual(ctxt: DeserializationContext, property: BeanProperty): GenericFactoryDeserializer = {
+    override def createContextual(ctxt: DeserializationContext, property: BeanProperty): Deserializer = {
       val newDelegate = containerDeserializer.createContextual(ctxt, property)
-      new GenericFactoryDeserializer(collectionType, newDelegate)
+      new Deserializer(collectionType, newDelegate)
     }
 
     override def getContentType: JavaType = containerDeserializer.getContentType

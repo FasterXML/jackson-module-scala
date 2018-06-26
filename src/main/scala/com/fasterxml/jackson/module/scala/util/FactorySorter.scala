@@ -8,22 +8,33 @@ import scala.reflect.ClassTag
  * The FactorySorter performs a topological sort on class hierarchy to ensure that the most specific builders
  * get registered first.
  */
-class FactorySorter[CC[_], CF[+X[_]]] {
+class FactorySorter[CM[_], CF[+X[_]]] extends TopologicalSorter[CM[_], CF[CM]] {
   type HKClassManifest[CC2[_]] = ClassTag[CC2[_]]
 
-  private[this] val companions = new ArrayBuffer[(Class[_], CF[CC])]()
-
-  // This overload allows us to alias newly added types to Nil. This reduces backwards compatibility overhead.
-  def add(nil: Nil.type): FactorySorter[CC, CF] = this
-
-  def add[T[X] <: CC[X] : HKClassManifest](companion: CF[T]): FactorySorter[CC, CF] = {
+  def add[T[A] <: CM[A] : HKClassManifest](companion: CF[T]): FactorySorter[CM, CF] = {
     companions += implicitly[HKClassManifest[T]].runtimeClass -> companion
     this
   }
+}
 
-  def toList: List[(Class[_], CF[CC])] = {
+class MapFactorySorter[CM[_, _], CF[+X[_, _]]] extends TopologicalSorter[CM[_, _], CF[CM]] {
+  type HKClassManifest[CC2[_, _]] = ClassTag[CC2[_, _]]
+
+  def add[T[K, V] <: CM[K, V] : HKClassManifest](companion: CF[T]): MapFactorySorter[CM, CF] = {
+    companions += implicitly[HKClassManifest[T]].runtimeClass -> companion
+    this
+  }
+}
+
+class TopologicalSorter[CC, CF] {
+  protected[this] val companions = new ArrayBuffer[(Class[_], CF)]()
+
+  // This overload allows us to alias newly added types to Nil. This reduces backwards compatibility overhead.
+  def add(nil: Nil.type): TopologicalSorter[CC, CF] = this
+
+  def toList: List[(Class[_], CF)] = {
     val cs = companions.toArray
-    val output = new ListBuffer[(Class[_], CF[CC])]()
+    val output = new ListBuffer[(Class[_], CF)]()
 
     val remaining = cs.map(_ => 1)
     val adjMatrix = Array.ofDim[Int](cs.length, cs.length)

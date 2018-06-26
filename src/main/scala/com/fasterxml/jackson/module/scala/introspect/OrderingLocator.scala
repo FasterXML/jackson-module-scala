@@ -18,25 +18,25 @@ object OrderingLocator {
     classOf[String] -> Ordering.String
   )
 
-  def locate(javaType: JavaType): Ordering[AnyRef] = {
+  def locate[T](javaType: JavaType): Ordering[T] = {
     def matches(other: Class[_]) = other.isAssignableFrom(javaType.getRawClass)
     val found: Option[Ordering[_]] = ORDERINGS.find(_._1.isAssignableFrom(javaType.getRawClass)).map(_._2)
     val ordering =
       found.getOrElse {
         if (matches(classOf[Option[_]])) {
-          val delegate = locate(javaType.getContentType)
+          val delegate = locate[AnyRef](javaType.getContentType)
           Ordering.Option(delegate)
         }
         else if (matches(classOf[Comparable[_]]))
-          new Ordering[AnyRef] {
-            def compare(x: AnyRef, y: AnyRef): Int = {
-              x.asInstanceOf[Comparable[AnyRef]].compareTo(y)
+          new Ordering[T] {
+            def compare(x: T, y: T): Int = {
+              x.asInstanceOf[Comparable[T]].compareTo(y)
             }
           }
 
         else throw new IllegalArgumentException("Unsupported value type: " + javaType.getRawClass.getCanonicalName)
       }
 
-    ordering.asInstanceOf[Ordering[AnyRef]]
+    ordering.asInstanceOf[Ordering[T]]
   }
 }
