@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.FactorySorter
 
 import scala.collection._
+import scala.reflect.ClassTag
 
 trait SeqDeserializerModule extends ScalaTypeModifierModule {
   this += (_ addDeserializers new GenericFactoryDeserializerResolver[Iterable, IterableFactory] {
@@ -25,7 +26,6 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
       .add(immutable.Seq)
       .add(immutable.Vector)
       .add(mutable.ArrayBuffer)
-      // .add(mutable.ArraySeq) TODO
       .add(mutable.ArrayDeque)
       .add(mutable.Buffer)
       .add(mutable.IndexedSeq)
@@ -36,6 +36,26 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
       .add(mutable.Stack)
       .toList
 
-    override def builderFor[A](cf: Factory, valueType: JavaType): mutable.Builder[A, Collection[A]] = cf.newBuilder[A]
+    override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] = cf.newBuilder[A]
+
+    // A few types need class tags and therefore do not use IterableFactory.
+    type TagFactory = ClassTagIterableFactory[Collection]
+
+    val tagFactories: Iterable[(Class[_], TagFactory)] =
+      new FactorySorter[Collection, ClassTagIterableFactory]()
+        .add(mutable.ArraySeq)
+        .add(mutable.UnrolledBuffer)
+        .toList
+
+    def builderFor[A](cf: TagFactory, valueType: JavaType): Builder[A] =
+      cf.newBuilder[A](ClassTag(valueType.getRawClass))
+
+    def tryTagFactory[A](cls: Class[_], valueType: JavaType): Option[Builder[A]] = tagFactories
+      .find(_._1.isAssignableFrom(cls))
+      .map(_._2)
+      .map(builderFor[A](_, valueType))
+
+    override def builderFor[A](cls: Class[_], valueType: JavaType): Builder[A] = tryTagFactory[A](cls, valueType)
+        .getOrElse(super.builderFor[A](cls, valueType))
   })
 }

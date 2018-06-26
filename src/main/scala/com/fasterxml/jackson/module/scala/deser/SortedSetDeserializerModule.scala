@@ -20,7 +20,7 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
       .add(mutable.SortedSet)
       .toList
 
-    override def builderFor[A](cf: Factory, valueType: JavaType): mutable.Builder[A, Collection[A]] =
+    override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] =
       cf.newBuilder[A](OrderingLocator.locate(valueType).asInstanceOf[Ordering[A]])
   })
 }

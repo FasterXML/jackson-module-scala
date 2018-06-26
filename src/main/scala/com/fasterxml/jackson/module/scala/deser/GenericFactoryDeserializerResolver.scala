@@ -13,18 +13,20 @@ import scala.collection.mutable
 import scala.language.higherKinds
 
 abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deserializers.Base {
-  type Collection[X] = CC[X]
+  type Collection[A] = CC[A]
   type Factory = CF[CC]
+  type Builder[A] = mutable.Builder[A, _ <: Collection[A]]
 
   // Subclasses need to implement the following:
   val CLASS_DOMAIN: Class[Collection[_]]
   val factories: Iterable[(Class[_], Factory)]
-  def builderFor[A](cf: Factory, valueType: JavaType): mutable.Builder[A, Collection[A]]
+  def builderFor[A](cf: Factory, valueType: JavaType): Builder[A]
 
-  private def factoryFor(cls: Class[_]): CF[CC] = factories
+  def builderFor[A](cls: Class[_], valueType: JavaType): Builder[A] = factories
     .find(_._1.isAssignableFrom(cls))
     .map(_._2)
-    .getOrElse(throw new IllegalStateException(s"Could not find deserializer for ${cls.getCanonicalName}. File issue on github:fasterxml/jackson-scala-module"))
+    .map(builderFor[A](_, valueType))
+    .getOrElse(throw new IllegalStateException(s"Could not find deserializer for ${cls.getCanonicalName}. File issue on github:fasterxml/jackson-scala-module."))
 
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                                               config: DeserializationConfig,
@@ -41,13 +43,13 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
     }
   }
 
-  private class BuilderWrapper[E](val builder: mutable.Builder[E, _ <: CC[E]]) extends util.AbstractCollection[E] {
+  private class BuilderWrapper[A](val builder: Builder[A]) extends util.AbstractCollection[A] {
     var size = 0
 
-    override def add(e: E): Boolean = { builder += e; size += 1; true }
+    override def add(e: A): Boolean = { builder += e; size += 1; true }
 
     // Required by AbstractCollection, but not implemented
-    override def iterator(): util.Iterator[E] = null
+    override def iterator(): util.Iterator[A] = null
   }
 
   private class GenericFactoryInstantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
@@ -56,7 +58,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
     override def canCreateUsingDefault = true
 
     override def createUsingDefault(ctxt: DeserializationContext) =
-      new BuilderWrapper[AnyRef](builderFor[AnyRef](factoryFor(collectionType.getRawClass), valueType))
+      new BuilderWrapper[AnyRef](builderFor[AnyRef](collectionType.getRawClass, valueType))
   }
 
   private class GenericFactoryDeserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)

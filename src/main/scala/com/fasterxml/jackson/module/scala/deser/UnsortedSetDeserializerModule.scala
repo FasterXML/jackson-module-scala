@@ -20,6 +20,6 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
       .add(mutable.Set)
       .toList
 
-    override def builderFor[A](cf: Factory, javaType: JavaType): mutable.Builder[A, Collection[A]] = cf.newBuilder[A]
+    override def builderFor[A](cf: Factory, javaType: JavaType): Builder[A] = cf.newBuilder[A]
   })
 }

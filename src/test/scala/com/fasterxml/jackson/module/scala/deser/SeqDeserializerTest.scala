@@ -158,11 +158,15 @@ class SeqDeserializerTest extends DeserializerTest {
     result should equal (listScala)
   }
 
-// TODO: ArraySeq is an EvidenceIterableFactory
-//  it should "deserialize a list into an ArraySeq" in {
-//    val result = deserialize[mutable.ArraySeq[Int]](listJson)
-//    result should equal (listScala)
-//  }
+  it should "deserialize a list into an ArraySeq" in {
+    val result = deserialize[mutable.ArraySeq[Int]](listJson)
+    result should equal (listScala)
+  }
+
+  it should "deserialize a list into an UnrolledBuffer" in {
+    val result = deserialize[mutable.UnrolledBuffer[Int]](listJson)
+    result should equal (listScala)
+  }
 
   it should "keep path index if error happened" in {
     import scala.collection.JavaConverters._
