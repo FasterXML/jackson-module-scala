@@ -1,12 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.{util => ju}
-
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.`type`.{CollectionType, MapType}
 import com.fasterxml.jackson.databind.deser.{Deserializers, std}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, DeserializationFeature, JavaType, JsonDeserializer}
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
 object UntypedObjectDeserializer
@@ -50,7 +47,7 @@ private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer(nu
 private object UntypedObjectDeserializerResolver extends Deserializers.Base {
 
   lazy val OBJECT = classOf[AnyRef]
-  
+
   override def findBeanDeserializer(javaType: JavaType,
                                     config: DeserializationConfig,
                                     beanDesc: BeanDescription) =

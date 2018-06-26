@@ -2,10 +2,9 @@ package com.fasterxml.jackson
 package module.scala
 package deser
 
-import annotation.JsonProperty
-import databind.{ObjectReader, JsonMappingException, ObjectMapper, PropertyNamingStrategy}
-import databind.annotation.JsonDeserialize
-
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -17,7 +16,7 @@ object CaseClassDeserializerTest
 
   case class PropertiesTestCaseClass() {
     var intProperty: Int = 0
-    var stringProperty: String = null
+    var stringProperty: String = _
   }
 
   case class JacksonAnnotationTestCaseClass(@JsonProperty("foo") oof:String, bar: String)
@@ -47,7 +46,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
   import com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerTest._
 
 
-  def module = DefaultScalaModule
+  def module: DefaultScalaModule.type = DefaultScalaModule
 
   "An ObjectMapper with CaseClassDeserializer" should "deserialize a case class with a single constructor" in {
     deserialize[ConstructorTestCaseClass]("""{"intValue":1,"stringValue":"foo"}""") should be (ConstructorTestCaseClass(1,"foo"))
@@ -103,7 +102,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
     result.small.get.getClass should be (classOf[Long])
   }
 
-  def propertyNamingStrategyMapper = new ObjectMapper() {
+  def propertyNamingStrategyMapper: ObjectMapper = new ObjectMapper() {
     registerModule(module)
     setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
   }

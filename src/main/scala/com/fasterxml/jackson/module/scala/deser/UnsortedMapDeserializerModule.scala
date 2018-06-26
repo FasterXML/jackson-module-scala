@@ -1,15 +1,15 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import scala.collection.{GenMap, mutable}
-import scala.collection.immutable.HashMap
-
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
-import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.`type`.MapLikeType
+import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
+import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
-import deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
+
+import scala.collection.immutable.HashMap
+import scala.collection.{GenMap, mutable}
 import scala.language.existentials
 
 private class MapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), GenMap[K,V]]) extends java.util.AbstractMap[K,V] {
@@ -79,9 +79,6 @@ private object UnsortedMapDeserializerResolver extends Deserializers.Base {
   }
 }
 
-/**
- * @author Christopher Currie <ccurrie@impresys.com>
- */
 trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
   this += { _.addDeserializers(UnsortedMapDeserializerResolver) }
 }

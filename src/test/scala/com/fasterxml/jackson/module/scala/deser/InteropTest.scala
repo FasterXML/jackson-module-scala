@@ -1,13 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.databind.{ObjectMapper, DeserializationContext, JsonDeserializer}
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.scalatest.{Matchers, FlatSpec}
-import org.scalatest.Matchers
-import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
+import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.junit.JUnitRunner
 
 abstract class A
 
@@ -15,7 +14,7 @@ case class A1(prop1: String) extends A
 case class A2(prop1: String, prop2: String) extends A
 
 class ADeserializer extends JsonDeserializer[A] {
-  def deserialize(jp: JsonParser, c: DeserializationContext) = {
+  def deserialize(jp: JsonParser, c: DeserializationContext): A1 = {
     jp.skipChildren()
     jp.nextToken()
     A1("qwer")
@@ -25,7 +24,7 @@ class ADeserializer extends JsonDeserializer[A] {
 case class B(prop1: String, @JsonDeserialize(using = classOf[ADeserializer]) prop2: A)
 
 object Util {
-  def mapper = {
+  def mapper: ObjectMapper = {
     val m = new ObjectMapper()
     m.registerModule(DefaultScalaModule)
     m
@@ -33,7 +32,7 @@ object Util {
 
   val jsonString = """{"prop1":"asdf","prop2":{"prop1":"qwer"}}"""
 
-  def fromJson(str:String) = mapper.readValue(str,classOf[B])
+  def fromJson(str:String): B = mapper.readValue(str,classOf[B])
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -44,4 +43,3 @@ class InteropTest extends FlatSpec with Matchers
     v shouldBe B("asdf", A1("qwer"))
   }
 }
-

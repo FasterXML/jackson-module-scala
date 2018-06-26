@@ -1,27 +1,24 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonTypeInfo}
-import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.Matcher
 
 import scala.collection.{Iterator, immutable, mutable}
 
 class NonEmptyCollections {
-
   @JsonProperty
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  def emptyIterable = Iterable.empty[Int]
+  def emptyIterable: Iterable[Int] = Iterable.empty[Int]
 
   @JsonProperty
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   def nonEmptyIterable = Iterable(1,2,3)
-
 }
 
-object IterableSerializerTest
-{
+object IterableSerializerTest {
   @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY)
   trait C
   case class X(data:String) extends C
@@ -35,7 +32,7 @@ class IterableSerializerTest extends SerializerTest {
 
   import IterableSerializerTest._
 
-  lazy val module = DefaultScalaModule
+  lazy val module: JacksonModule = DefaultScalaModule
 
   "An ObjectMapper with IterableSerializer" should "serialize an Iterable[Int]" in {
     val iterable = new Iterable[Int] {
@@ -64,7 +61,7 @@ class IterableSerializerTest extends SerializerTest {
   it should "serialize a mutable Set[Int]" in {
     serialize(mutable.Set(1,2,3)) should matchUnorderedSet
   }
-  
+
   it should "serialize a mutable HashSet[Int]" in {
     serialize(mutable.HashSet(1,2,3)) should matchUnorderedSet
   }
@@ -85,7 +82,7 @@ class IterableSerializerTest extends SerializerTest {
     serialize(CHolder(Seq[C](X("1"), X("2")))) shouldBe """{"c":[{"@class":"com.fasterxml.jackson.module.scala.ser.IterableSerializerTest$X","data":"1"},{"@class":"com.fasterxml.jackson.module.scala.ser.IterableSerializerTest$X","data":"2"}]}"""
   }
 
-  val matchUnorderedSet = {
+  val matchUnorderedSet: Matcher[Any] = {
     be ("[1,2,3]") or
     be ("[1,3,2]") or
     be ("[2,1,3]") or
@@ -94,7 +91,7 @@ class IterableSerializerTest extends SerializerTest {
     be ("[3,2,1]")
   }
 
-  val matchUnorderedMap = {
+  val matchUnorderedMap: Matcher[Any] = {
     be ("{\"1\":2,\"3\":4}") or
     be ("{\"3\":4,\"1\":2}")
   }

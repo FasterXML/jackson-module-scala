@@ -4,13 +4,12 @@ package deser
 
 import com.fasterxml.jackson.core.JsonToken.{START_ARRAY, VALUE_NUMBER_FLOAT, VALUE_NUMBER_INT, VALUE_STRING}
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
-import com.fasterxml.jackson.databind.{JsonDeserializer, BeanDescription, DeserializationConfig, JavaType, DeserializationContext}
 import com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
+import com.fasterxml.jackson.databind._
 
-import scala.reflect.ClassTag
-import scala.reflect.classTag
+import scala.reflect.{ClassTag, classTag}
 
 private abstract class BigNumberDeserializer[T >: Null : ClassTag](creator: (String) => T)
   extends StdScalarDeserializer[T](classTag[T].runtimeClass)

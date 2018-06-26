@@ -56,5 +56,4 @@ class PrimitiveContainerTest extends DeserializationFixture
     value.value should contain key "key"
     value.value("key") shouldBe 1L
   }
-
 }

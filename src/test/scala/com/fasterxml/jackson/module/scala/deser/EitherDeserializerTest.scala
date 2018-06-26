@@ -3,8 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.EitherField
-import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, Impl, PlainPojoObject}
+import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, EitherField, Impl, PlainPojoObject}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -14,7 +13,7 @@ import scala.util.Random
 @RunWith(classOf[JUnitRunner])
 class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport {
 
-  val module = DefaultScalaModule
+  val module: DefaultScalaModule.type = DefaultScalaModule
 
 
   "DefaultScalaModule" should "be able to deserialize right with string" in {
@@ -65,7 +64,7 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
 
 trait EitherJsonTestSupport {
 
-  val str = randomStr
+  val str: String = randomStr
   val obj = PlainPojoObject(randomStr, randomStrOpt, Random.nextLong())
 
 
@@ -87,8 +86,8 @@ object EitherJsonTest {
 
   case class BaseHolder(private var _base: Either[Base, Base]) {
     @(JsonTypeInfo @field)(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="$type")
-    def base = _base
-    def base_=(base:Either[Base, Base]) { _base = base }
+    def base: Either[Base, Base] = _base
+    def base_=(base:Either[Base, Base]): Unit = { _base = base }
   }
 
   case class EitherField(either: Either[Int,PlainPojoObject])

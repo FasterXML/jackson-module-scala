@@ -4,22 +4,19 @@ package introspect
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
-import com.fasterxml.jackson.databind.{SerializerProvider, JsonSerializer, BeanDescription, ObjectMapper}
-import experimental.ScalaObjectMapper
-
+import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import org.junit.runner.RunWith
-import org.scalatest.{fixture, Matchers}
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.LoneElement._
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.{Matchers, Outcome, fixture}
 
-import beans.BeanProperty
-import collection.JavaConverters._
+import scala.beans.BeanProperty
+import scala.collection.JavaConverters._
 
-object ScalaAnnotationIntrospectorTest
-{
+object ScalaAnnotationIntrospectorTest {
   class Token
   class BasicPropertyClass(val param: Int)
   class BeanPropertyClass(@BeanProperty val param: Int)
@@ -38,7 +35,7 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
 
   type FixtureParam = ObjectMapper with ScalaObjectMapper
 
-  override def withFixture(test: OneArgTest) = {
+  override def withFixture(test: OneArgTest): Outcome = {
     val mapper = new ObjectMapper with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
     withFixture(test.toNoArgTest(mapper))
@@ -65,7 +62,7 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
   it should "detect annotations on a val property" in { mapper =>
     mapper.registerModule(new SimpleModule() {
       addSerializer(new JsonSerializer[Token] with ContextualSerializer {
-        override val handledType = classOf[Token]
+        override val handledType: Class[Token] = classOf[Token]
         override def serialize(value: Token, gen: JsonGenerator, serializers: SerializerProvider): Unit =
           gen.writeString("")
         override def createContextual(prov: SerializerProvider, property: databind.BeanProperty): JsonSerializer[_] = {
@@ -98,7 +95,7 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
   it should "detect annotations on a bean property" in { mapper =>
     mapper.registerModule(new SimpleModule() {
       addSerializer(new JsonSerializer[Token] with ContextualSerializer {
-        override val handledType = classOf[Token]
+        override val handledType: Class[Token] = classOf[Token]
         override def serialize(value: Token, gen: JsonGenerator, serializers: SerializerProvider): Unit =
           gen.writeString("")
         override def createContextual(prov: SerializerProvider, property: databind.BeanProperty): JsonSerializer[_] = {

@@ -15,7 +15,7 @@ object BeanIntrospectorTest {
 
   class PlainCtorBean(`field-name`: Int) {
     // This needs to exist otherwise it gets optimized away
-    def x = `field-name`
+    def x: Int = `field-name`
   }
 
   class ValCtorBean(val `field-name`: Int)
@@ -29,7 +29,7 @@ object BeanIntrospectorTest {
   class MethodBean {
     def `field-name` = 0
 
-    def `field-name_=`(v: Int) {}
+    def `field-name_=`(v: Int): Unit = {}
   }
 
   //adding @SerialVersionUID puts a public static final int field on the generated class
@@ -73,8 +73,8 @@ object BeanIntrospectorTest {
     var firstName: String = ""
     var lastName: String = ""
 
-    def firstName(firstName: String) {}
-    def lastName(lastName: String) {}
+    def firstName(firstName: String): Unit = {}
+    def lastName(lastName: String): Unit = {}
   }
 }
 
@@ -142,7 +142,7 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
 
     class Bean {
       private def `field-name` = 0
-      private def `field-name_=`(int: Int) {}
+      private def `field-name_=`(int: Int): Unit = {}
     }
 
     val beanDesc = BeanIntrospector[Bean](classOf[Bean])
@@ -307,5 +307,3 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     props.forall ( _.getter.isDefined ) shouldBe true
   }
 }
-
-

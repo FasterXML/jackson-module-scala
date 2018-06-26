@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.introspect
 
-import org.scalatest.{LoneElement, Inside, FlatSpec, Matchers}
 import com.fasterxml.jackson.module.scala.BaseSpec
+import org.scalatest.{Inside, LoneElement}
 
 object TestSyntheticBridgeMethods {
   trait Outer {
@@ -33,5 +33,4 @@ class TestSyntheticBridgeMethods extends BaseSpec with LoneElement with Inside {
       s shouldBe empty
     }
   }
-
 }

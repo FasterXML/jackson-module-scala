@@ -1,8 +1,9 @@
 package com.fasterxml.jackson.module.scala
 package introspect
 
-import util.Implicits._
 import java.lang.reflect.{AccessibleObject, Constructor, Field, Method}
+
+import com.fasterxml.jackson.module.scala.util.Implicits._
 
 import scala.language.existentials
 

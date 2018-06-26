@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.modifiers
 
-import java.lang.reflect.{ParameterizedType, Type}
+import java.lang.reflect.Type
 
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.`type`._
@@ -15,7 +15,7 @@ class ScalaTypeModifier extends TypeModifier {
 
     if (javaType.isTypeOrSubTypeOf(classOf[collection.Map[_, _]])) {
       MapLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0), javaType.containedTypeOrUnknown(1))
-    } else if (javaType.isTypeOrSubTypeOf(classOf[collection.TraversableOnce[_]])) {
+    } else if (javaType.isTypeOrSubTypeOf(classOf[collection.IterableOnce[_]])) {
       CollectionLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
     } else if (javaType.isTypeOrSubTypeOf(classOf[Option[_]])) {
       ReferenceType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))

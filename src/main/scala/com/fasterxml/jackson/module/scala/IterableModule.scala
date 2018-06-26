@@ -1,9 +1,8 @@
 package com.fasterxml.jackson.module.scala
 
-import ser.{IterableSerializerModule}
+import com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
 
 /**
  * Adds support for serializing Scala Iterables.
  */
-trait IterableModule extends IterableSerializerModule {
-}
+trait IterableModule extends IterableSerializerModule

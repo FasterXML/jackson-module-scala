@@ -1,15 +1,15 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.module.scala.{JacksonModule, DefaultScalaModule}
-import com.fasterxml.jackson.databind.{ObjectMapper, DeserializationConfig, JavaType, AbstractTypeResolver}
+import com.fasterxml.jackson.databind.`type`.MapLikeType
+import com.fasterxml.jackson.databind.{AbstractTypeResolver, DeserializationConfig, JavaType, ObjectMapper}
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
-import com.fasterxml.jackson.databind.`type`.{TypeFactory, MapLikeType}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class UntypedObjectDeserializerTest extends DeserializerTest {
-  def module = DefaultScalaModule
+  def module: JacksonModule = DefaultScalaModule
 
   val jsonString = """{"sKey":"sValue","mKey":{"mData":"mValue"}}"""
 
@@ -56,8 +56,5 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
     val typedMKeyValue = mKeyValue.asInstanceOf[collection.immutable.TreeMap[String,Any]]
     typedMKeyValue should contain key "mData"
     typedMKeyValue("mData") shouldBe "mValue"
-
   }
-
-
 }

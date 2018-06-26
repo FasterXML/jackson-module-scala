@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.deser.EitherDeserializer.ElementDeserializerConfig
 
-
 private class EitherDeserializer(javaType: JavaType,
                                  config: DeserializationConfig,
                                  leftDeserializerConfig: ElementDeserializerConfig,

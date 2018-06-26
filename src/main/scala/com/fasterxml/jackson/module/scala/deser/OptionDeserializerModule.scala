@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.{JsonToken, JsonParser}
+import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory, CollectionLikeType}
+import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer

@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, Impl}
 import com.fasterxml.jackson.module.scala.deser.EitherJsonTestSupport
 import org.junit.runner.RunWith
@@ -9,10 +10,9 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class EitherSerializerTest extends SerializerTest with EitherJsonTestSupport {
 
-  val module = DefaultScalaModule
+  val module: JacksonModule = DefaultScalaModule
 
-  val json = jsonOf(s"""{"prop":"$str"}""")
-
+  val json: JsonNode = jsonOf(s"""{"prop":"$str"}""")
 
   "EitherSerializer" should "be able to serialize right with string" in {
     serialize(Right(str)) should be (s"""{"r":"$str"}""")

@@ -1,24 +1,25 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import java.util
+
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import com.fasterxml.jackson.module.scala.experimental.{RequiredPropertiesSchemaModule, ScalaObjectMapper}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import scala.annotation.meta.{field, getter}
 import scala.collection.JavaConverters._
-import java.util
 
 object OptionSerializerTest {
   class NonEmptyOptions {
     //@JsonProperty
     @(JsonInclude)(JsonInclude.Include.NON_EMPTY)
-    val none = None
+    val none: None.type = None
 
     //@JsonProperty
     @(JsonInclude @getter)(JsonInclude.Include.NON_EMPTY)
@@ -40,8 +41,8 @@ object OptionSerializerTest {
 
   class BaseHolder(private var _base: Option[Base]) {
     @(JsonTypeInfo@field)(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "$type")
-    def base = _base
-    def base_=(base: Option[Base]) {
+    def base: Option[Base] = _base
+    def base_=(base: Option[Base]): Unit = {
       _base = base
     }
   }
@@ -63,7 +64,7 @@ case class C2(m: Option[M2])
 class OptionSerializerTest extends SerializerTest {
   import OptionSerializerTest._
 
-  lazy val module = DefaultScalaModule
+  lazy val module: JacksonModule = DefaultScalaModule
 
   "An ObjectMapper with OptionSerializer" should "serialize an Option[Int]" in {
     val noneOption: Option[Int] = None

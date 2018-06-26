@@ -1,10 +1,9 @@
 package com.fasterxml.jackson.module.scala
 
-import deser.SeqDeserializerModule
-import ser.IterableSerializerModule
+import com.fasterxml.jackson.module.scala.deser.SeqDeserializerModule
+import com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
 
 /**
  * Adds support for serializing and deserializing Scala sequences.
  */
-trait SeqModule extends IterableSerializerModule with SeqDeserializerModule {
-}
+trait SeqModule extends IterableSerializerModule with SeqDeserializerModule

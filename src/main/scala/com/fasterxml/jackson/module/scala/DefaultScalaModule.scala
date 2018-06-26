@@ -12,7 +12,6 @@ import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
  *
  * @see [[com.fasterxml.jackson.module.scala.JacksonModule]]
  *
- * @author Christopher Currie <christopher@currie.com>
  * @since 1.9.0
  */
 class DefaultScalaModule

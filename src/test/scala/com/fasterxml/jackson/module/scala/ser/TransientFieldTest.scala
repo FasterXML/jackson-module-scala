@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.annotation.{JsonProperty, JsonPropertyOrder}
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -12,7 +12,7 @@ object TransientFieldTest {
     val x = 42
     @transient
     val value = 3
-    def getValue = value
+    def getValue: Int = value
   }
 
   class IgnoredTransient {
@@ -26,7 +26,7 @@ object TransientFieldTest {
 class TransientFieldTest extends SerializerTest {
   import TransientFieldTest._
 
-  val module = DefaultScalaModule
+  val module: JacksonModule = DefaultScalaModule
 
   "DefaultScalaModule" should "normally ignore @transient annotations" in {
     serialize(new ClassyTransient) shouldBe """{"x":42,"value":3}"""

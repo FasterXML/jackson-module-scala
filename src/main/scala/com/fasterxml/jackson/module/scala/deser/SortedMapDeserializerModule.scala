@@ -1,16 +1,16 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import scala.collection.{SortedMap, mutable}
-import scala.collection.immutable.TreeMap
-
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.databind.`type`.MapLikeType
-import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
-import deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
+import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
+import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.introspect.OrderingLocator
+import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+
+import scala.collection.immutable.TreeMap
+import scala.collection.{SortedMap, mutable}
 import scala.language.existentials
 
 private class SortedMapBuilderWrapper[K,V](val builder: mutable.Builder[(K,V), SortedMap[K,V]]) extends java.util.AbstractMap[K,V] {

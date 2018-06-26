@@ -8,11 +8,9 @@ class BaseFixture extends fixture.FlatSpec with Matchers {
 
   type FixtureParam = ObjectMapper with ScalaObjectMapper
 
-  def withFixture(test: OneArgTest): Outcome =
-  {
+  def withFixture(test: OneArgTest): Outcome = {
     val mapper = new ObjectMapper() with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
     test(mapper)
   }
-
 }

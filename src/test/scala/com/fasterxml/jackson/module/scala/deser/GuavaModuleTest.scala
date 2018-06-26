@@ -1,21 +1,17 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
-import com.google.common.collect.Multimap
-
-import org.junit.Test
-import org.junit.Assert.assertNotNull
-import com.fasterxml.jackson.databind.{ObjectReader, DeserializationFeature, ObjectMapper}
+import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, ObjectReader}
 import com.fasterxml.jackson.datatype.guava.GuavaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.google.common.collect.Multimap
+import org.junit.Assert.assertNotNull
+import org.junit.Test
 
 class PojoWithMultiMap(val headers: Multimap[String, String])
 
 class GuavaModuleTest {
-
   @Test
-  def testScalaIsSecond() = {
+  def testScalaIsSecond(): Unit = {
     val objectMapper = new ObjectMapper
     objectMapper.registerModule(new GuavaModule)
     objectMapper.registerModule(new DefaultScalaModule)
@@ -26,8 +22,9 @@ class GuavaModuleTest {
       objectMapper.getTypeFactory.constructType(classOf[PojoWithMultiMap]))
     assertNotNull(pojoWithMultiMap)
   }
+
   @Test
-  def testScalaIsFirst() = {
+  def testScalaIsFirst(): Unit = {
     val objectMapper = new ObjectMapper
     objectMapper.registerModule(new DefaultScalaModule)
     objectMapper.registerModule(new GuavaModule)
@@ -38,8 +35,9 @@ class GuavaModuleTest {
       objectMapper.getTypeFactory.constructType(classOf[PojoWithMultiMap]))
     assertNotNull(pojoWithMultiMap)
   }
+
   @Test
-  def testNotPropertyBased() = {
+  def testNotPropertyBased(): Unit = {
     val objectMapper = new ObjectMapper
     objectMapper.registerModule(new DefaultScalaModule)
     objectMapper.registerModule(new GuavaModule)
@@ -50,5 +48,4 @@ class GuavaModuleTest {
       objectMapper.getTypeFactory.constructMapLikeType(classOf[com.google.common.collect.Multimap[String,String]],classOf[String],classOf[String]))
     assertNotNull(multiMap)
   }
-
 }

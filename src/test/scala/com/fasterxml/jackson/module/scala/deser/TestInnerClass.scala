@@ -1,14 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.scalatest.Matchers
-import org.scalatest.FlatSpec
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
-object Dog
-{
-  def apply(n: String, thinking: Boolean) = {
+object Dog {
+  def apply(n: String, thinking: Boolean): Dog = {
     val dog = new Dog
     dog.name = n
     dog.brain = new dog.Brain
@@ -16,8 +13,8 @@ object Dog
     dog
   }
 }
-class Dog
-{
+
+class Dog {
   var name: String = _
   var brain: Brain = _
 
@@ -32,7 +29,7 @@ class Dog
 @RunWith(classOf[JUnitRunner])
 class TestInnerClass extends DeserializerTest {
 
-  def module = DefaultScalaModule
+  def module: JacksonModule = DefaultScalaModule
 
   "Deserializer" should "support nested inner classes as values" in {
     val input = Dog("Smurf", thinking = true)
@@ -46,5 +43,4 @@ class TestInnerClass extends DeserializerTest {
     output.name = "Foo"
     output.brain should have ('parentName ("Foo"))
   }
-
 }

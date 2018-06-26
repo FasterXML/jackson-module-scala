@@ -2,19 +2,17 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-import core.JsonGenerator
+import java.{lang => jl}
 
-import databind.{BeanDescription, BeanProperty, JavaType, JsonSerializer, SerializationConfig, SerializerProvider}
-import databind.`type`.CollectionLikeType
-import databind.jsontype.TypeSerializer
-import databind.ser.{ContainerSerializer, Serializers}
-import databind.ser.std.{AsArraySerializerBase, CollectionSerializer}
-
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, CollectionSerializer}
+import com.fasterxml.jackson.databind.ser.{ContainerSerializer, Serializers}
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
 
-import collection.JavaConverters._
-
-import java.{lang => jl}
+import scala.collection.JavaConverters._
 
 private trait IterableSerializer
   extends AsArraySerializerBase[collection.Iterable[Any]]
@@ -22,7 +20,7 @@ private trait IterableSerializer
   def collectionSerializer: CollectionSerializer
 
   override def hasSingleElement(value: collection.Iterable[Any]): Boolean =
-    value.hasDefiniteSize && value.size == 1
+    value.knownSize == 1
 
   override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
     collectionSerializer.serializeContents(value.asJavaCollection, gen, provider)

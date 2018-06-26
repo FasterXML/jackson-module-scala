@@ -1,25 +1,21 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
-import scala.collection.immutable.HashMap
-import scala.collection.{SortedMap, mutable}
-
-import com.fasterxml.jackson.core.`type`.TypeReference
 import java.util.UUID
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.module.scala.JacksonModule
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
-/**
- * @author Christopher Currie <ccurrie@impresys.com>
- */
+import scala.collection.immutable.HashMap
+import scala.collection.mutable
+
 @RunWith(classOf[JUnitRunner])
 class UnsortedMapDeserializerTest extends DeserializerTest {
 
-  lazy val module = new UnsortedMapDeserializerModule {}
+  lazy val module: JacksonModule = new UnsortedMapDeserializerModule {}
 
   "An ObjectMapper with the UnsortedMapDeserializerModule" should "deserialize an object into an Map" in {
     val result = deserialize[Map[String,String]](mapJson)
@@ -78,5 +74,4 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
     "nullValue" -> JsonNodeFactory.instance.nullNode(),
     "intValue" -> JsonNodeFactory.instance.numberNode(1234)
   )
-
 }

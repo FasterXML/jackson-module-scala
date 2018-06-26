@@ -3,6 +3,7 @@ package module.scala
 package ser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest.OptionType
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -17,9 +18,9 @@ object EnumerationSerializerTest {
   case class AnnotationOptionHolder(@JsonScalaEnumeration(classOf[WeekdayType]) weekday: Option[Weekday.Weekday])
 
   object OptionType extends Enumeration {
-    val STRING = Value("string")
-    val NUMBER = Value("number")
-    val BOOLEAN = Value("boolean")
+    val STRING: OptionType.Value = Value("string")
+    val NUMBER: OptionType.Value = Value("number")
+    val BOOLEAN: OptionType.Value = Value("boolean")
   }
 
   class OptionTypeReference extends TypeReference[OptionType.type]
@@ -27,7 +28,7 @@ object EnumerationSerializerTest {
 
   case class OptionTypeKeyedMapHolder(
     @JsonScalaEnumeration(classOf[OptionTypeReference]) @BeanProperty map: Map[OptionType.Value, String]
-                                 )
+  )
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -35,7 +36,7 @@ class EnumerationSerializerTest extends SerializerTest {
 
   import EnumerationSerializerTest._
 
-  lazy val module = DefaultScalaModule
+  lazy val module: JacksonModule = DefaultScalaModule
 
   behavior of "EnumerationSerializer"
 
@@ -62,5 +63,4 @@ class EnumerationSerializerTest extends SerializerTest {
     val holder = OptionTypeKeyedMapHolder(Map(OptionType.STRING -> "foo"))
     serialize(holder) shouldBe """{"map":{"string":"foo"}}"""
   }
-  
 }

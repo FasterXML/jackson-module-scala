@@ -1,14 +1,16 @@
 package com.fasterxml.jackson.module.scala.experimental
 
-import org.scalatest.{Matchers, FlatSpec}
-import org.scalatest.junit.JUnitRunner
-import org.junit.runner.RunWith
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper}
 import java.io.{ByteArrayInputStream, InputStreamReader}
-import com.fasterxml.jackson.core.TreeNode
+
 import com.fasterxml.jackson.annotation.JsonView
+import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.{FlatSpec, Matchers}
+
 import scala.collection.JavaConverters._
 
 private class PublicView
@@ -220,5 +222,4 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
   private val genericMixedFieldJson = """{"first":"firstVal","second":2}"""
   private val toplevelArrayJson = """[{"t":42},{"t":31}]"""
   private val toplevelOptionArrayJson = """["some",null]"""
-
 }

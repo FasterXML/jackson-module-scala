@@ -1,5 +1,7 @@
 package com.fasterxml.jackson.module.scala.introspect
 
+import java.lang.annotation.Annotation
+
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.`type`.ClassKey
 import com.fasterxml.jackson.databind.introspect._
@@ -7,8 +9,6 @@ import com.fasterxml.jackson.databind.util.LRUMap
 import com.fasterxml.jackson.module.paranamer.ParanamerAnnotationIntrospector
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
-
-import java.lang.annotation.Annotation
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
 {

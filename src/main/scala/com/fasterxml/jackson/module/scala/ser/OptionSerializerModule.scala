@@ -2,13 +2,12 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
+import com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer
 import com.fasterxml.jackson.databind.util.NameTransformer
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 

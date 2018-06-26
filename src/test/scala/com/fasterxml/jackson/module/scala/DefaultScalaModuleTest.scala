@@ -1,7 +1,5 @@
 package com.fasterxml.jackson.module.scala
 
-import org.scalatest.Matchers
-import org.scalatest.FlatSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -14,5 +12,4 @@ class DefaultScalaModuleTest extends BaseSpec {
     version.getArtifactId should be ("jackson-module-scala")
     version.getGroupId should be ("com.fasterxml.jackson.module")
   }
-
 }

@@ -33,5 +33,4 @@ class NamingStrategyTest extends fixture.FlatSpec with Matchers {
     val bytes = new ByteArrayOutputStream()
     mapper.writeValue(bytes, new PojoWrittenInScala)
   }
-
 }

@@ -5,11 +5,11 @@ package ser
 import java.{lang => jl}
 
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase
 import com.fasterxml.jackson.databind.ser.{Serializers, impl}
-import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.modifiers.IteratorTypeModifierModule
 
 import scala.collection.JavaConverters._

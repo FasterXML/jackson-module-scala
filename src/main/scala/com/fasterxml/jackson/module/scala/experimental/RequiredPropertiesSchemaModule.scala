@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.scala.experimental
 
-import com.fasterxml.jackson.module.scala.JacksonModule
-import com.fasterxml.jackson.databind.introspect.{AnnotatedMember, NopAnnotationIntrospector}
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.introspect.{AnnotatedMember, NopAnnotationIntrospector}
+import com.fasterxml.jackson.module.scala.JacksonModule
 
 object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
 

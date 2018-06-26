@@ -1,18 +1,10 @@
 package com.fasterxml.jackson.module.scala
 package deser
 
-import util.EnumResolver
-import util.Implicits._
-
-import com.fasterxml.jackson
-import jackson.core
-import core.{JsonToken, JsonParser}
-
-import jackson.databind
-import databind.{deser, KeyDeserializer, BeanDescription, DeserializationConfig, JavaType, BeanProperty, DeserializationContext, JsonDeserializer}
-import deser.{ContextualKeyDeserializer, KeyDeserializers, ContextualDeserializer, Deserializers}
-
-import java.lang.reflect.ParameterizedType
+import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, ContextualKeyDeserializer, Deserializers, KeyDeserializers}
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.module.scala.util.EnumResolver
 
 private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
   self: JsonDeserializer[Enumeration#Value] =>
@@ -73,7 +65,6 @@ private object EnumerationDeserializerResolver extends Deserializers.Base {
 
 		deserializer
 	}
-
 }
 
 private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDeserializer with ContextualKeyDeserializer {
@@ -90,7 +81,6 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
 
     throw ctxt.mappingException("Need @JsonScalaEnumeration to determine key type")
   }
-
 }
 
 private object EnumerationKeyDeserializers extends KeyDeserializers {

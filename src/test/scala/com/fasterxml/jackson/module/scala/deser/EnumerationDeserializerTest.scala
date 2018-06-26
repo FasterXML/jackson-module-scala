@@ -8,28 +8,22 @@ import org.scalatest.junit.JUnitRunner
 import scala.beans.BeanProperty
 
 class EnumContainer {
-
-	var day = Weekday.Fri
+	var day: Weekday.Value = Weekday.Fri
 }
-
 
 class WeekdayType extends TypeReference[Weekday.type]
 case class AnnotatedEnumHolder(@JsonScalaEnumeration(classOf[WeekdayType]) weekday: Weekday.Weekday)
 
 class EnumMapHolder {
-
   @JsonScalaEnumeration(classOf[WeekdayType])
   var weekdayMap: Map[Weekday.Value, String] = Map.empty
-
 }
 
 object EnumerationDeserializerTest  {
   trait BeanPropertyEnumMapHolder {
-
     @BeanProperty
     @JsonScalaEnumeration(classOf[WeekdayType])
     var weekdayMap: Map[Weekday.Value, String] = Map.empty
-
   }
 
   class HolderImpl extends BeanPropertyEnumMapHolder
@@ -39,7 +33,7 @@ object EnumerationDeserializerTest  {
 class EnumerationDeserializerTest extends DeserializerTest {
   import com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerTest._
 
-  lazy val module = DefaultScalaModule
+  lazy val module: DefaultScalaModule.type = DefaultScalaModule
 
 	"An ObjectMapper with EnumDeserializerModule" should "deserialize a value into a scala Enumeration as a bean property" in {
 		val expectedDay = Weekday.Fri
@@ -67,6 +61,4 @@ class EnumerationDeserializerTest extends DeserializerTest {
   val annotatedFridayJson = """{"weekday":"Fri"}"""
 
   val weekdayMapJson = """{"weekdayMap":{"Mon":"Boo","Fri":"Hooray!"}}"""
-
-
 }

@@ -348,5 +348,4 @@ trait ScalaObjectMapper {
   private def isCollectionLike(c: Class[_]): Boolean = {
     ITERABLE.isAssignableFrom(c)
   }
-
 }

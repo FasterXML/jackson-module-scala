@@ -1,13 +1,12 @@
 package com.fasterxml.jackson.module.scala.ser
 
-
-import com.fasterxml.jackson.databind.{BeanDescription, JavaType, SerializationConfig, SerializerProvider, JsonSerializer, BeanProperty}
-import com.fasterxml.jackson.databind.ser.{Serializers, ContextualSerializer}
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.module.scala.JacksonModule;
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.ser.Serializers
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.module.scala.JacksonModule
 
 private class TupleSerializer extends JsonSerializer[Product] {
-  
+
   def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     jgen.writeStartArray()
     value.productIterator.foreach(jgen.writeObject _)

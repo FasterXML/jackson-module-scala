@@ -1,18 +1,16 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.datatype.joda.JodaModule
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.Matchers
-import org.scalatest.FlatSpec
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.datatype.joda.JodaModule
 
 private case class OptionalInt(x: Option[Int])
 
 @RunWith(classOf[JUnitRunner])
 class OptionWithJodaTimeDeserializerTest extends DeserializerTest {
 
-  def module = DefaultScalaModule
+  def module: DefaultScalaModule.type = DefaultScalaModule
 
   "DefaultScalaModule" should "deserialize a case class with Option without JodaModule" in {
     deserialize[OptionalInt](stringValue) should be (OptionalInt(Some(123)))

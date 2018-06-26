@@ -1,10 +1,8 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import com.fasterxml.jackson.module.scala.JacksonModule
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.fasterxml.jackson.module.scala.JacksonModule
 
 @RunWith(classOf[JUnitRunner])
 class TupleSerializerTest extends SerializerTest {
@@ -19,5 +17,4 @@ class TupleSerializerTest extends SerializerTest {
     val result = serialize((3.0, "A", 1))
     result should be ("""[3.0,"A",1]""")
   }
-
 }

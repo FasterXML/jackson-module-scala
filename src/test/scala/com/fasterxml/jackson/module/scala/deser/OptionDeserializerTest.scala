@@ -1,11 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.{JsonTypeName, JsonSubTypes, JsonTypeInfo}
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo, JsonTypeName}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.annotation.meta.field
 
@@ -22,8 +20,8 @@ object OptionDeserializerTest {
     private var _base: Option[Base]
   ) {
     @(JsonTypeInfo @field)(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="$type")
-    def base = _base
-    def base_=(base:Option[Base]) { _base = base }
+    def base: Option[Base] = _base
+    def base_=(base:Option[Base]): Unit = { _base = base }
   }
 
   case class Defaulted(id: Int, name: String = "") {
@@ -34,7 +32,7 @@ object OptionDeserializerTest {
 @RunWith(classOf[JUnitRunner])
 class OptionDeserializerTest extends DeserializerTest {
   import OptionDeserializerTest._
-  lazy val module = DefaultScalaModule
+  lazy val module: DefaultScalaModule.type = DefaultScalaModule
 
   "An ObjectMapper with OptionDeserializer" should "deserialize an Option[Int]" in {
     deserialize[Option[Int]]("1") should be (Some(1))

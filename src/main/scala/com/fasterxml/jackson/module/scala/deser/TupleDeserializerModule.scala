@@ -1,16 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.lang.IllegalStateException
-
-import com.fasterxml.jackson.core.{JsonParser, JsonToken};
-
-import com.fasterxml.jackson.databind._;
-
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-
+import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, ContextualDeserializer, Deserializers}
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.JacksonModule
-import deser.{BeanDeserializerFactory, ContextualDeserializer, Deserializers}
-import jsontype.TypeDeserializer
 
 private class TupleDeserializer(javaType: JavaType,
                                 config: DeserializationConfig,

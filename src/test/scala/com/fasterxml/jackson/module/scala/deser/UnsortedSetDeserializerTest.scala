@@ -1,15 +1,15 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.module.scala.JacksonModule
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+
 import scala.collection.{immutable, mutable}
 
 @RunWith(classOf[JUnitRunner])
 class UnsortedSetDeserializerTest extends DeserializerTest {
 
-  lazy val module = new UnsortedSetDeserializerModule {}
+  lazy val module: JacksonModule = new UnsortedSetDeserializerModule {}
 
   "An ObjectMapper with the SetDeserializerModule" should "deserialize an object into a Set" in {
     val result = deserialize[Set[String]](setJson)
@@ -35,7 +35,7 @@ class UnsortedSetDeserializerTest extends DeserializerTest {
     val result = deserialize[Set[Any]](variantSetJson)
     result should equal(variantSetScala)
   }
-  
+
   it should "deserialize an object into a ListSet" in {
     val result = deserialize[immutable.ListSet[String]](setJson)
     result should equal (setScala)
@@ -44,5 +44,5 @@ class UnsortedSetDeserializerTest extends DeserializerTest {
   val setJson = """[ "one", "two" ]"""
   val setScala = Set("one", "two")
   val variantSetJson = """[ "1", 2 ]"""
-  val variantSetScala = Set[Any]("1", 2)
+  val variantSetScala: Set[Any] = Set[Any]("1", 2)
 }

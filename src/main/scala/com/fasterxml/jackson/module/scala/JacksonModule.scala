@@ -1,17 +1,17 @@
 package com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.{JsonMappingException, Module}
-import com.fasterxml.jackson.databind.Module.SetupContext
-import com.fasterxml.jackson.databind.deser.Deserializers
-import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
-import com.fasterxml.jackson.databind.`type`.TypeModifier
 import java.util.Properties
 
-import collection.JavaConverters._
-import collection.mutable
-
+import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.core.util.VersionUtil
+import com.fasterxml.jackson.databind.Module.SetupContext
+import com.fasterxml.jackson.databind.`type`.TypeModifier
+import com.fasterxml.jackson.databind.deser.Deserializers
+import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
+import com.fasterxml.jackson.databind.{JsonMappingException, Module}
+
+import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 object JacksonModule {
   private val cls = classOf[JacksonModule]
@@ -69,5 +69,4 @@ trait JacksonModule extends Module {
   protected def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
   protected def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
   protected def +=(beanSerMod: BeanSerializerModifier): this.type = this += (_ addBeanSerializerModifier beanSerMod)
-
 }

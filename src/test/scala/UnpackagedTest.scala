@@ -8,7 +8,7 @@ case class UnpackagedCaseClass(intValue: Int, stringValue: String)
 @RunWith(classOf[JUnitRunner])
 class UnpackagedTest extends SerializerTest {
 
-  def module = DefaultScalaModule
+  def module: DefaultScalaModule.type = DefaultScalaModule
 
   behavior of "DefaultScalaModule"
 
@@ -16,5 +16,4 @@ class UnpackagedTest extends SerializerTest {
     val result = serialize(UnpackagedCaseClass(1, "foo"))
     result should be ("""{"intValue":1,"stringValue":"foo"}""")
   }
-
 }

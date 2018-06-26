@@ -1,29 +1,24 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
+import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonSubTypes, JsonTypeInfo}
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.{JsonSerializer, SerializationFeature, SerializerProvider}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-import scala.collection._
-import JavaConverters._
+import scala.annotation.meta.getter
 import scala.beans.BeanProperty
-import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo, JsonInclude, JsonProperty}
-import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
+import scala.collection._
 import scala.collection.immutable.ListMap
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import annotation.meta.getter
-import com.fasterxml.jackson.databind.{SerializationFeature, SerializerProvider, JsonSerializer}
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 class BeanieWeenie(@BeanProperty @JsonProperty("a") var a: Int,
-                   @BeanProperty @JsonProperty("b") var b: String, 
-                   @BeanProperty @JsonProperty("c") var c: Boolean) {
-  
-}
+                   @BeanProperty @JsonProperty("b") var b: String,
+                   @BeanProperty @JsonProperty("c") var c: Boolean)
 
 class NonEmptyMaps {
-
   @JsonProperty
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   def emptyMap = Map.empty[String,Int]
@@ -31,11 +26,10 @@ class NonEmptyMaps {
   @JsonProperty
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   def nonEmptyMap = Map("x"->1)
-
 }
 
 class TupleKeySerializer extends JsonSerializer[Product] {
-  def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider) {
+  def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     val stringWriter = new java.io.StringWriter()
     val valueJgen = jgen.getCodec.getFactory.createJsonGenerator(stringWriter)
 
@@ -46,7 +40,7 @@ class TupleKeySerializer extends JsonSerializer[Product] {
 
 case class KeySerializerMap(
   @(JsonSerialize @getter)(keyUsing = classOf[TupleKeySerializer])
-  keySerializerMap: Map[(String,String),Int] )
+  keySerializerMap: Map[(String,String),Int])
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
 @JsonSubTypes(Array(
@@ -61,7 +55,7 @@ case class MapValueString(value: String) extends MapValueBase
 @RunWith(classOf[JUnitRunner])
 class MapSerializerTest extends SerializerTest {
 
-  lazy val module = DefaultScalaModule
+  lazy val module: JacksonModule = DefaultScalaModule
 
   "MapSerializerModule" should "serialize a map" in {
     val result = serialize(Map("a" -> 1, "b" -> "two", "c" -> false))
@@ -86,7 +80,7 @@ class MapSerializerTest extends SerializerTest {
       be ("""{"c":false,"b":"two","a":1}""")
     )
   }
-  
+
   it should "serialize a map of beans-like objects" in {
     val result = serialize(Map("bean" -> new BeanieWeenie(1,"two",false)))
     result should be ("""{"bean":{"a":1,"b":"two","c":false}}""")

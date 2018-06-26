@@ -1,43 +1,37 @@
 package com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.annotation.{JsonUnwrapped, JsonProperty, JsonIgnore}
+import com.fasterxml.jackson.annotation.{JsonIgnore, JsonUnwrapped}
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.Matchers
-import org.scalatest.FlatSpec
-import com.fasterxml.jackson.databind.ObjectMapper
-
 
 case class Address(address1: Option[String], city: Option[String], state: Option[String])
 
-class NonCreatorPerson
-{
+class NonCreatorPerson {
   var name: String = _
   @JsonUnwrapped var location: Address = _
   var alias: Option[String] = _
 }
 
-case class Person(name: String, @JsonIgnore location: Address, alias: Option[String])
-{
+case class Person(name: String, @JsonIgnore location: Address, alias: Option[String]) {
   private def this() = this("", Address(None, None, None), None)
 
-  def address1 = location.address1
-  private def address1_=(value: Option[String]) {
+  def address1: Option[String] = location.address1
+  private def address1_=(value: Option[String]): Unit = {
     setAddressField("address1", value)
   }
 
-  def city = location.city
-  private def city_=(value: Option[String]) {
+  def city: Option[String] = location.city
+  private def city_=(value: Option[String]): Unit = {
     setAddressField("city", value)
   }
 
-  def state = location.state
-  private def state_= (value: Option[String]) {
+  def state: Option[String] = location.state
+  private def state_= (value: Option[String]): Unit = {
     setAddressField("state", value)
   }
 
-  private def setAddressField(name: String, value: Option[String])
-  {
+  private def setAddressField(name: String, value: Option[String]): Unit = {
     val f = location.getClass.getDeclaredField(name)
     f.setAccessible(true)
     f.set(location, value)

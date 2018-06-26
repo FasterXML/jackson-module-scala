@@ -148,5 +148,5 @@ class SeqDeserializerTest extends DeserializerTest {
 //  }
 
   val listJson =  "[1,2,3,4,5,6]"
-  val listScala = (1 to 6)
+  val listScala: Range.Inclusive = 1 to 6
 }

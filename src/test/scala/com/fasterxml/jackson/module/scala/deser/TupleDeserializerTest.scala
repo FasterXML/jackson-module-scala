@@ -1,13 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import org.scalatest.Matchers
-import org.scalatest.FlatSpec
+import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
-import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
 @JsonSubTypes(Array(
@@ -22,7 +19,7 @@ case class TupleContainer(tuple: (TupleValueBase,TupleValueBase))
 @RunWith(classOf[JUnitRunner])
 class TupleDeserializerTest extends DeserializerTest {
 
-  lazy val module = DefaultScalaModule
+  lazy val module: JacksonModule = DefaultScalaModule
 
   "ObjectMapper with TupleDeserialzier" should "deserialize a Tuple[Int]" in {
     val result = deserialize[Tuple1[Int]]("[1]")
