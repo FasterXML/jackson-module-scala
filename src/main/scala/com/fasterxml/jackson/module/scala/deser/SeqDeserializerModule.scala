@@ -14,17 +14,21 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
       .add(immutable.Iterable)
       .add(immutable.IndexedSeq)
       .add(immutable.LazyList)
+      .add(immutable.LinearSeq)
       .add(immutable.List)
       .add(immutable.Queue)
       .add(immutable.Stream)
       .add(immutable.Seq)
+      .add(immutable.Vector)
       .add(mutable.ArrayBuffer)
+      .add(mutable.ArrayDeque)
       .add(mutable.Buffer)
       .add(mutable.IndexedSeq)
       .add(mutable.ListBuffer)
       .add(mutable.Iterable)
       .add(mutable.Queue)
       .add(mutable.Seq)
+      .add(mutable.Stack)
       .toList
 
     override def builderFor[A](cf: Factory): mutable.Builder[A, Collection[A]] = cf.newBuilder[A]
