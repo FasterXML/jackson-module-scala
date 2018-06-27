@@ -56,10 +56,11 @@ trait ScalaObjectMapper {
   def constructType[T](implicit m: Manifest[T]): JavaType = {
     val clazz = m.runtimeClass
     if(isArray(clazz)) {
-      //It looks like getting the component type is the best we can do, at
-      //least if we also want to support 2.9.x - scala 2.10.x adds full
-      //type info in the typeArguments field of an Array's manifest.
-      getTypeFactory.constructArrayType(clazz.getComponentType)
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if(typeArguments.length != 1) {
+        throw new IllegalArgumentException("Need exactly 1 type parameter for array like types ("+clazz.getName+")")
+      }
+      getTypeFactory.constructArrayType(typeArguments(0))
     } else if(isMapLike(clazz)) {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
       if(typeArguments.length != 2) {
