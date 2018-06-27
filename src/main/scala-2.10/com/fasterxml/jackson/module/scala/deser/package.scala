@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
 import scala.collection.generic.{GenericCompanion, SortedSetFactory}
-import scala.collection.{GenTraversable, SortedSet, SortedSetLike}
+import scala.collection.{GenTraversable, SortedSet, SortedSetLike, immutable}
 import scala.language.higherKinds
 
 /**
@@ -17,4 +17,8 @@ package object deser {
   // added in 2.13
   type ArrayDeque[+A] = Iterable[A]
   val ArrayDeque: Nil.type = Nil
+
+  // mutable versions of these were added in 2.12
+  type SortedMap[A, +B] = immutable.SortedMap[A, B]
+  type TreeMap[A, +B] = immutable.TreeMap[A, B]
 }
