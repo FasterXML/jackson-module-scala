@@ -45,12 +45,13 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a LazyList" in {
+    import overrides._
     val result = deserialize[LazyList[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable LazyList" in {
-    import immutable._
+    import overrides._
     val result = deserialize[LazyList[Int]](listJson)
     result should equal (listScala)
   }
@@ -126,7 +127,7 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a mutable ArrayDeque" in {
-    import scala.collection.mutable._
+    import overrides._
     val result = deserialize[ArrayDeque[Int]](listJson)
     result should equal (listScala)
   }
@@ -147,13 +148,13 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a mutable MutableList" in {
-    import mutable._
+    import overrides._
     val result = deserialize[MutableList[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable ResizableArray" in {
-    import mutable._
+    import overrides._
     val result = deserialize[ResizableArray[Int]](listJson)
     result should equal (listScala)
   }

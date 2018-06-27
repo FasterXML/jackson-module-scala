@@ -27,7 +27,7 @@ class SortedMapDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize an object into a mutable SortedMap" in {
-    import mutable._
+    import overrides._
     val result = deserialize[SortedMap[String,String]](mapJson)
     result should equal (mapScala)
   }
@@ -38,7 +38,7 @@ class SortedMapDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize an object into a mutable TreeMap" in {
-    import mutable._
+    import overrides._
     val result = deserialize[TreeMap[String,String]](mapJson)
     result should equal (mapScala)
   }

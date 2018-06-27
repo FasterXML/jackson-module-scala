@@ -29,9 +29,6 @@ class MapFactorySorter[CM[_, _], CF[+X[_, _]]] extends TopologicalSorter[CM[_, _
 class TopologicalSorter[CC, CF] {
   protected[this] val companions = new ArrayBuffer[(Class[_], CF)]()
 
-  // This overload allows us to alias newly added types to Nil. This reduces backwards compatibility overhead.
-  def add(nil: Nil.type): TopologicalSorter[CC, CF] = this
-
   def toList: List[(Class[_], CF)] = {
     val cs = companions.toArray
     val output = new ListBuffer[(Class[_], CF)]()

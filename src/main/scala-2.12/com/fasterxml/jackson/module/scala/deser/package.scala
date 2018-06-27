@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
 import scala.collection.generic.{GenericCompanion, SortedSetFactory}
-import scala.collection.{GenTraversable, SortedSet, SortedSetLike}
+import scala.collection.{GenTraversable, SortedSet, SortedSetLike, mutable}
 import scala.language.higherKinds
 
 /**
@@ -11,10 +11,18 @@ package object deser {
   type IterableFactory[+CC[X] <: GenTraversable[X]] = GenericCompanion[CC]
   type SortedIterableFactory[CC[A] <: SortedSet[A] with SortedSetLike[A, CC[A]]] = SortedSetFactory[CC]
 
-  type LazyList[+A] = Stream[A]
-  val LazyList: Nil.type = Nil
+  object overrides {
+    // Added in 2.13
+    type ArrayDeque[+A] = Iterable[A]
+    type ChampHashSet[A] = Set[A]
+    type LazyList[+A] = Stream[A]
 
-  // added in 2.13
-  type ArrayDeque[+A] = Iterable[A]
-  val ArrayDeque: Nil.type = Nil
+    // Mutable versions of these were added in 2.12
+    type SortedMap[A, B] = mutable.SortedMap[A, B]
+    type TreeMap[A, B] = mutable.TreeMap[A, B]
+
+    // Removed in 2.13
+    type MutableList[A] = mutable.MutableList[A]
+    type ResizableArray[A] = mutable.ResizableArray[A]
+  }
 }
