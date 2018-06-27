@@ -81,7 +81,7 @@ trait ScalaObjectMapper {
       getTypeFactory.constructReferenceType(clazz, typeArguments(0))
     } else {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
-      getTypeFactory.constructParametrizedType(clazz, clazz, typeArguments: _*)
+      getTypeFactory.constructParametricType(clazz, typeArguments: _*)
     }
   }
 
