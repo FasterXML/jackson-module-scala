@@ -19,13 +19,34 @@ class UnsortedSetDeserializerTest extends DeserializerTest {
     result should equal(setScala)
   }
 
-  it should "deserialize an object into a HashSet" in {
+  it should "deserialize an object into an immutable Set" in {
+    val result = deserialize[immutable.Set[String]](setJson)
+    result should equal(setScala)
+  }
+
+  it should "deserialize an object into a mutable Set" in {
+    val result = deserialize[mutable.Set[String]](setJson)
+    result should equal(setScala)
+  }
+
+  it should "deserialize an object into an immutable HashSet" in {
     val result = deserialize[immutable.HashSet[String]](setJson)
     result should equal(setScala)
   }
 
   it should "deserialize an object into a mutable HashSet" in {
     val result = deserialize[mutable.HashSet[String]](setJson)
+    result should equal(setScala)
+  }
+
+  it should "deserialize an object into an immutable ChampHashSet" in {
+    import overrides._
+    val result = deserialize[ChampHashSet[String]](setJson)
+    result should equal(setScala)
+  }
+
+  it should "deserialize an object into an immutable ListSet" in {
+    val result = deserialize[immutable.ListSet[String]](setJson)
     result should equal(setScala)
   }
 
