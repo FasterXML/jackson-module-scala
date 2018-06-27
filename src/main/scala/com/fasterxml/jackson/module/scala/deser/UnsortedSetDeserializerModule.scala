@@ -12,6 +12,7 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
     override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Set[_]]
 
     override val factories: Iterable[(Class[_], Factory)] = new FactorySorter[Collection, IterableFactory]()
+      .add(Set)
       .add(immutable.HashSet)
       .add(immutable.ListSet)
       .add(immutable.Set)

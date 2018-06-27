@@ -43,8 +43,7 @@ scalacOptions ++= {
 }
 
 unmanagedSourceDirectories in Compile += {
-  val s = if (scalaMajorVersion.value >= 13) "+" else "-"
-  (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.13$s"
+  (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
 }
 
 val jacksonVersion = "2.9.6"
