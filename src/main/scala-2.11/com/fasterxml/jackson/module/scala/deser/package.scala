@@ -14,8 +14,10 @@ package object deser {
   object overrides {
     // Added in 2.13
     type ArrayDeque[+A] = Iterable[A]
+    type ChampHashMap[A, B] = Map[A, B]
     type ChampHashSet[A] = Set[A]
     type LazyList[+A] = Stream[A]
+    type TrieMap[A, B] = Map[A, B]
 
     // mutable versions of these were added in 2.12
     type SortedMap[A, +B] = immutable.SortedMap[A, B]

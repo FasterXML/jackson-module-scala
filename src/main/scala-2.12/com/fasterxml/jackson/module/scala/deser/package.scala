@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
 import scala.collection.generic.{GenericCompanion, SortedSetFactory}
-import scala.collection.{GenTraversable, SortedSet, SortedSetLike, mutable}
+import scala.collection.{GenTraversable, SortedSet, SortedSetLike, mutable, immutable}
 import scala.language.higherKinds
 
 /**
@@ -14,8 +14,10 @@ package object deser {
   object overrides {
     // Added in 2.13
     type ArrayDeque[+A] = Iterable[A]
+    type ChampHashMap[A, B] = Map[A, B]
     type ChampHashSet[A] = Set[A]
     type LazyList[+A] = Stream[A]
+    type TrieMap[A, B] = Map[A, B]
 
     // Mutable versions of these were added in 2.12
     type SortedMap[A, B] = mutable.SortedMap[A, B]
