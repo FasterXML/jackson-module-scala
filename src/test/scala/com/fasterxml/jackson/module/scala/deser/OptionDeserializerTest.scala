@@ -1,7 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo, JsonTypeName}
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -27,6 +29,9 @@ object OptionDeserializerTest {
   case class Defaulted(id: Int, name: String = "") {
     def this() = this(1,"")
   }
+
+  case class Foo(bar: String)
+  case class Wrapper[T](t: T)
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -69,10 +74,21 @@ class OptionDeserializerTest extends DeserializerTest {
     deserialize[BaseHolder]("""{"base":null}""") should be(BaseHolder(None))
   }
 
-  it should "deserialze defaulted parameters correctly (without defaults)" in {
+  it should "deserialize defaulted parameters correctly (without defaults)" in {
     val json = newMapper.writeValueAsString(Defaulted(id = 1))
     json shouldBe """{"id":1,"name":""}"""
     val d = newMapper.readValue(json, classOf[Defaulted])
     d.name should not be null
+  }
+
+  it should "deserialize a type param wrapped option" in {
+    val json: String = """{"t": {"bar": "baz"}}"""
+    var result = deserialize[Wrapper[Option[Foo]]](json)
+    result.t.get.isInstanceOf[Foo] should be(true)
+
+    val m = new ObjectMapper with ScalaObjectMapper
+    m.registerModule(DefaultScalaModule)
+    result = m.readValue[Wrapper[Option[Foo]]](json)
+    result.t.get.isInstanceOf[Foo] should be(true)
   }
 }

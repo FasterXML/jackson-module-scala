@@ -55,27 +55,27 @@ trait ScalaObjectMapper {
    */
   def constructType[T](implicit m: Manifest[T]): JavaType = {
     val clazz = m.runtimeClass
-    if(isArray(clazz)) {
+    if (isArray(clazz)) {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
-      if(typeArguments.length != 1) {
+      if (typeArguments.length != 1) {
         throw new IllegalArgumentException("Need exactly 1 type parameter for array like types ("+clazz.getName+")")
       }
       getTypeFactory.constructArrayType(typeArguments(0))
-    } else if(isMapLike(clazz)) {
+    } else if (isMapLike(clazz)) {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
-      if(typeArguments.length != 2) {
+      if (typeArguments.length != 2) {
         throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
       }
       getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
-    } else if(isCollectionLike(clazz)) {
+    } else if (isCollectionLike(clazz)) {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
-      if(typeArguments.length != 1) {
+      if (typeArguments.length != 1) {
         throw new IllegalArgumentException("Need exactly 1 type parameter for collection like types ("+clazz.getName+")")
       }
       getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
     } else if (isReference(clazz)) {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
-      if(typeArguments.length != 1) {
+      if (typeArguments.length != 1) {
         throw new IllegalArgumentException("Need exactly 1 type parameter for reference types ("+clazz.getName+")")
       }
       getTypeFactory.constructReferenceType(clazz, typeArguments(0))

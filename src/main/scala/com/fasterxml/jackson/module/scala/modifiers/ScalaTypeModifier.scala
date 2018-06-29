@@ -20,6 +20,7 @@ class ScalaTypeModifier extends TypeModifier {
     } else if (javaType.isTypeOrSubTypeOf(classOf[IterableOnce[_]])) {
       CollectionLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
     } else if (javaType.isTypeOrSubTypeOf(classOf[Option[_]])) {
+      if (javaType.isInstanceOf[ReferenceType]) return javaType
       ReferenceType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
     } else if (javaType.isTypeOrSubTypeOf(classOf[Either[_,_]])) {
       // I'm not sure this is the right choice, but it's what the original module does
