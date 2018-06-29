@@ -351,6 +351,10 @@ class OptionSerializerTest extends SerializerTest {
       .setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.ALWAYS))
     serialize(OptionGeneric(Option(List.empty)), mapper) should be ("""{"data":[]}""")
   }
+
+  it should "serialize Some(null) to null" in {
+    serialize(Some(null), newMapper) should be("null")
+  }
 }
 
 class NonNullOption {
