@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo, JsonTypeNam
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import com.fasterxml.jackson.module.scala.ser.SerializerTest
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -32,6 +33,10 @@ object OptionDeserializerTest {
 
   case class Foo(bar: String)
   case class Wrapper[T](t: T)
+
+  trait TraitWithoutAnnotations
+  case class TraitImplementation(i: Int) extends TraitWithoutAnnotations
+  case class TraitOptionHolder(x: Option[TraitWithoutAnnotations])
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -90,5 +95,16 @@ class OptionDeserializerTest extends DeserializerTest {
     m.registerModule(DefaultScalaModule)
     result = m.readValue[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
+  }
+
+  it should "deserialize an un-annotated trait object serialized by OptionSerializer" in {
+    val om = new ObjectMapper with ScalaObjectMapper {
+      registerModule(module)
+      enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, "_t")
+    }
+    val expected = TraitOptionHolder(Some(TraitImplementation(1)))
+    val json = om.writeValueAsString(expected)
+    val actual = om.readValue[TraitOptionHolder](json)
+    actual shouldBe expected
   }
 }
