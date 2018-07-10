@@ -11,8 +11,8 @@ object OrderingLocator {
     classOf[Short] -> Ordering.Short,
     classOf[Int] -> Ordering.Int,
     classOf[Long] -> Ordering.Long,
-    classOf[Float] -> Ordering.Float,
-    classOf[Double] -> Ordering.Double,
+    classOf[Float] -> implicitly[Ordering[Float]],
+    classOf[Double] -> implicitly[Ordering[Double]],
     classOf[BigInt] -> Ordering.BigInt,
     classOf[BigDecimal] -> Ordering.BigDecimal,
     classOf[String] -> Ordering.String
