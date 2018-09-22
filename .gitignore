@@ -29,9 +29,6 @@ logs
 # SBT
 /.history
 
-# snapshots
-sonatype.sbt
-
 # Vagrant
 /.vagrant/
 
