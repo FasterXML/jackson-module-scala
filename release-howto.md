@@ -9,15 +9,6 @@ Make sure the following file has the correct oss.sonatype.org-credentials:
 
 	~/.ivy2/.credentials_sonatype
 
-Perform the release:
+Perform the release (This will do everything, push to git, and promote artifacts in sonatype-system):
 
 	sbt release
-
-Log into oss.sonatype.org and inspect the artifacts in staging, then close and release them
-
-
-push local changes with tags
-
-	git push
-	git push --tags
-
