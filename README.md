@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/FasterXML/jackson-module-scala.svg?branch=master)](https://travis-ci.org/FasterXML/jackson-module-scala) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.11)
+[![Build Status](https://travis-ci.org/FasterXML/jackson-module-scala.svg?branch=master)](https://travis-ci.org/FasterXML/jackson-module-scala) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.12)
 
 # IMPORTANT
 
