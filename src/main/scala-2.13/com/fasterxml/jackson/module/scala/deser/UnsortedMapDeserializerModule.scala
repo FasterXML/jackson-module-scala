@@ -14,7 +14,6 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
 
     override val factories: List[(Class[_], Factory)] = new MapFactorySorter[Collection, MapFactory]()
       .add(Map)
-      .add(immutable.ChampHashMap)
       .add(immutable.HashMap)
       .add(immutable.ListMap)
       .add(immutable.Map)

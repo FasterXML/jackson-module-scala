@@ -9,8 +9,8 @@ package object deser {
   object overrides {
     // Added in 2.13
     type ArrayDeque[A] = mutable.ArrayDeque[A]
-    type ChampHashMap[A, B] = immutable.ChampHashMap[A, B]
-    type ChampHashSet[A] = immutable.ChampHashSet[A]
+    type ChampHashMap[A, B] = immutable.HashMap[A, B]
+    type ChampHashSet[A] = immutable.HashSet[A]
     type TrieMap[A, B] = concurrent.TrieMap[A, B]
 
     // Mutable versions of these were added in 2.12
