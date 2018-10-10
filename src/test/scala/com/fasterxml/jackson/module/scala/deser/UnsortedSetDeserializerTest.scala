@@ -39,12 +39,6 @@ class UnsortedSetDeserializerTest extends DeserializerTest {
     result should equal(setScala)
   }
 
-  it should "deserialize an object into an immutable ChampHashSet" in {
-    import overrides._
-    val result = deserialize[ChampHashSet[String]](setJson)
-    result should equal(setScala)
-  }
-
   it should "deserialize an object into an immutable ListSet" in {
     val result = deserialize[immutable.ListSet[String]](setJson)
     result should equal(setScala)

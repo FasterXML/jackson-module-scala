@@ -61,12 +61,6 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
     result should equal (mapScala)
   }
 
-  it should "deserialize an object into an immutable ChampHashMap" in {
-    import overrides._
-    val result = deserialize[ChampHashMap[String, String]](mapJson)
-    result should equal (mapScala)
-  }
-
   it should "deserialize an object into a concurrent TrieMap" in {
     import overrides._
     val result = deserialize[TrieMap[String, String]](mapJson)
