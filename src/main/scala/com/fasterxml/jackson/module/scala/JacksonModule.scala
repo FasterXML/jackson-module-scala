@@ -61,7 +61,7 @@ trait JacksonModule extends Module {
         throw new JsonMappingException(null, databindVersionError)
     }
 
-    initializers result() foreach (_ apply context)
+    initializers.result.foreach(_ apply context)
   }
 
   protected def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
