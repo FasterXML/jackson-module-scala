@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration, Weekday}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -41,6 +42,12 @@ class EnumerationDeserializerTest extends DeserializerTest {
     result.day should be (expectedDay)
 	}
 
+	"An ObjectMapper with EnumDeserializerModule" should "deserialize a value of an inner Enumeration class into a scala Enumeration as a bean property" in {
+		val expectedDay = InnerWeekday.Fri
+    val result = deserialize[EnumContainer](fridayInnerEnumJson)
+    result.day should be (expectedDay)
+	}
+
   it should "deserialize an annotated Enumeration value" in {
     val result = deserialize[AnnotatedEnumHolder](annotatedFridayJson)
     result.weekday should be (Weekday.Fri)
@@ -57,6 +64,8 @@ class EnumerationDeserializerTest extends DeserializerTest {
   }
 
 	val fridayEnumJson = """{"day": {"enumClass":"com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}}"""
+
+  val fridayInnerEnumJson = """{"day": {"enumClass":"com.fasterxml.jackson.module.scala.OuterWeekday$InnerWeekday","value":"Fri"}}"""
 
   val annotatedFridayJson = """{"weekday":"Fri"}"""
 
