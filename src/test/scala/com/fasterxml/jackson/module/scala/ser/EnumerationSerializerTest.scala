@@ -53,10 +53,9 @@ class EnumerationSerializerTest extends SerializerTest {
 	}
 
   it should "serialize an inner Enumeration" in {
-		val day = InnerWeekday.Fri
-    println(serialize(day))
-		serialize(day) should be ("""{"enumClass":"com.fasterxml.jackson.module.scala.OuterWeekday$InnerWeekday","value":"Fri"}""")
-	}
+    val day = InnerWeekday.Fri
+    serialize(day) should be ("""{"enumClass":"com.fasterxml.jackson.module.scala.OuterWeekday$InnerWeekday","value":"Fri"}""")
+  }
 
   it should "serialize an annotated Enumeration with custom values" in {
     serialize(OptionTypeHolder(OptionType.STRING)) should be ("""{"optionType":"string"}""")
