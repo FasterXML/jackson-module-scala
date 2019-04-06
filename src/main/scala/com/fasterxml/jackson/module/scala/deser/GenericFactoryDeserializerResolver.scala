@@ -80,5 +80,8 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       containerDeserializer.deserialize(jp, ctxt) match {
         case wrapper: BuilderWrapper[_] => wrapper.builder.result().asInstanceOf[CC[_]]
       }
+
+    // Crazy workaround for https://github.com/scala/scala-dev/issues/623
+    override def getNullValue(ctx: DeserializationContext): CC[_] with Object = super.getNullValue.asInstanceOf[CC[_] with Object]
   }
 }

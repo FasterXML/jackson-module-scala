@@ -72,5 +72,8 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
         case wrapper: BuilderWrapper[_, _] => wrapper.builder.result().asInstanceOf[CC[_, _]]
       }
     }
+
+    // Crazy workaround for https://github.com/scala/scala-dev/issues/623
+    override def getNullValue(ctx: DeserializationContext): CC[_, _] with Object = super.getNullValue.asInstanceOf[CC[_, _] with Object]
   }
 }
