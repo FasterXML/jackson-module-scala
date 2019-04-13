@@ -21,6 +21,8 @@ matrix:
       jdk: oraclejdk8
     - scala: 2.12.8
       jdk: openjdk11
+    - scala: 2.13.0-RC1
+      jdk: openjdk11
 
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
