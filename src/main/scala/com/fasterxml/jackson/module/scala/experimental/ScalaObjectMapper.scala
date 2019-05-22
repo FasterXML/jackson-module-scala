@@ -67,18 +67,18 @@ trait ScalaObjectMapper {
         throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
       }
       getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
+    } else if (isReference(clazz)) { // Option is a subclss of IterableOnce, so check it first
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if (typeArguments.length != 1) {
+        throw new IllegalArgumentException("Need exactly 1 type parameter for reference types ("+clazz.getName+")")
+      }
+      getTypeFactory.constructReferenceType(clazz, typeArguments(0))
     } else if (isCollectionLike(clazz)) {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
       if (typeArguments.length != 1) {
         throw new IllegalArgumentException("Need exactly 1 type parameter for collection like types ("+clazz.getName+")")
       }
       getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
-    } else if (isReference(clazz)) {
-      val typeArguments = m.typeArguments.map(constructType(_)).toArray
-      if (typeArguments.length != 1) {
-        throw new IllegalArgumentException("Need exactly 1 type parameter for reference types ("+clazz.getName+")")
-      }
-      getTypeFactory.constructReferenceType(clazz, typeArguments(0))
     } else {
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
       getTypeFactory.constructParametricType(clazz, typeArguments: _*)
