@@ -63,9 +63,6 @@ private class TupleDeserializer(javaType: JavaType,
       ctxt.handleUnexpectedToken(javaType.getRawClass, jp).asInstanceOf[Product]
     }
   }
-
-  // Crazy workaround for https://github.com/scala/scala-dev/issues/623
-  override def getNullValue(ctx: DeserializationContext): Product with Object = super.getNullValue.asInstanceOf[Product with Object]
 }
 
 private object TupleDeserializerResolver extends Deserializers.Base {

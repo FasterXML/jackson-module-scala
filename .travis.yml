@@ -21,6 +21,10 @@ matrix:
       jdk: oraclejdk8
     - scala: 2.12.8
       jdk: openjdk11
+    - scala: 2.13.0-RC3
+      jdk: oraclejdk8
+    - scala: 2.13.0-RC3
+      jdk: openjdk11
 
 sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
 
@@ -29,7 +33,7 @@ before_script:
 
 after_success:
   - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'oraclejdk7' -o "${TRAVIS_SCALA_VERSION}" = '2.12.4' &&
+      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'oraclejdk7' -o "${TRAVIS_SCALA_VERSION}" = '2.12.8' &&
       sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"'
       'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
       ++${TRAVIS_SCALA_VERSION}
