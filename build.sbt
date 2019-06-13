@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.12.8"
 
-crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-RC3")
+crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0")
 
 val scalaMajorVersion = SettingKey[Int]("scalaMajorVersion")
 scalaMajorVersion := {
@@ -57,7 +57,7 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % "test",
-    "org.scalatest" %% "scalatest" % "3.0.8-RC5" % "test",
+    "org.scalatest" %% "scalatest" % "3.0.8" % "test",
     "junit" % "junit" % "4.12" % "test"
 )
 
