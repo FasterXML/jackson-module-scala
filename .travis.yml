@@ -1,4 +1,7 @@
 sudo: false
+os:
+  - linux
+  - linux-ppc64le
 cache:
   directories:
     - $HOME/.ivy2
