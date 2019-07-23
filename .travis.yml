@@ -7,22 +7,18 @@ cache:
 language: scala
 matrix:
   include:
-    # Test Scala 2.10 and 2.11 with both JDK 6 and 8
+    # Test Scala 2.10 and 2.11 with JDK 8
     - scala: 2.10.7
-      jdk: openjdk7
+      jdk: openjdk8
     - scala: 2.11.8
-      jdk: openjdk7
-    - scala: 2.10.7
-      jdk: oraclejdk8
-    - scala: 2.11.8
-      jdk: oraclejdk8
+      jdk: openjdk8
     # Scala 2.12+ only supports JDK 8+
     - scala: 2.12.8
-      jdk: oraclejdk8
+      jdk: openjdk8
     - scala: 2.12.8
       jdk: openjdk11
     - scala: 2.13.0
-      jdk: oraclejdk8
+      jdk: openjdk8
     - scala: 2.13.0
       jdk: openjdk11
 
@@ -42,9 +38,7 @@ after_success:
 branches:
   only:
     - master
-    - "2.6"
-    - "2.7"
-    - "2.8"
+    - "2.9"
 
 env:
   global:
