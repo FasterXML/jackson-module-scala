@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMa
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import org.junit.runner.RunWith
 import org.scalatest.LoneElement._
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 import org.scalatest.{Matchers, Outcome, fixture}
 
 import scala.beans.BeanProperty

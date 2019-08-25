@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.{AbstractTypeResolver, DeserializationConf
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class UntypedObjectDeserializerTest extends DeserializerTest {

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer,
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatest.{FlatSpec, Matchers}
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 abstract class A
 

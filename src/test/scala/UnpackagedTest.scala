@@ -1,7 +1,7 @@
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.ser.SerializerTest
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 case class UnpackagedCaseClass(intValue: Int, stringValue: String)
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, Impl}
 import com.fasterxml.jackson.module.scala.deser.EitherJsonTestSupport
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class EitherSerializerTest extends SerializerTest with EitherJsonTestSupport {
