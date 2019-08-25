@@ -5,9 +5,9 @@ import java.lang.reflect.Member
 import com.fasterxml.jackson.module.scala.BaseSpec
 import com.fasterxml.jackson.module.scala.introspect.BeanIntrospectorTest.DecodedNameMatcher
 import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 import org.scalatest.{Inside, LoneElement, OptionValues}
+import org.scalatestplus.junit.JUnitRunner
 
 import scala.reflect.NameTransformer
 

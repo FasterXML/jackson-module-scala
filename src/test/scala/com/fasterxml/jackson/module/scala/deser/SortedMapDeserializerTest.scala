@@ -9,7 +9,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
-import scala.collection.{immutable, mutable}
+import scala.collection.immutable
 
 @RunWith(classOf[JUnitRunner])
 class SortedMapDeserializerTest extends DeserializerTest {
