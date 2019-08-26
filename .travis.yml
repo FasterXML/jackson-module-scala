@@ -22,8 +22,6 @@ matrix:
     - scala: 2.13.0
       jdk: openjdk11
 
-sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
-
 before_script:
   - export JAVA7_HOME=$(jdk_switcher home openjdk7)
 
