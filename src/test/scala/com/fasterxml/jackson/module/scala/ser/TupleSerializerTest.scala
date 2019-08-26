@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.module.scala.JacksonModule
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class TupleSerializerTest extends SerializerTest {
