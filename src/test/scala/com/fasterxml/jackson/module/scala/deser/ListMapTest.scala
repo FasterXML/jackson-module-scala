@@ -9,7 +9,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatestplus.junit.JUnitRunner
 
-import scala.collection.immutable.{ListMap, Queue, Stack, TreeMap}
+import scala.collection.immutable.{ListMap, Queue, TreeMap}
 
 // taken from https://github.com/dejanlokar1/serialization_problem/blob/master/src/test/scala/SerializationTest.scala
 // test for https://github.com/FasterXML/jackson-databind/issues/2422
@@ -54,7 +54,6 @@ class ListMapTest extends FlatSpec with Matchers with TableDrivenPropertyChecks 
     val sequences = Table(
       "Sequence implementations",
       List("foo"),
-      Stack("foo"),
       Stream("foo"),
       Queue("foo"),
       Vector("foo")
