@@ -23,25 +23,6 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 // and we use it.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
-// Explicitly target 1.7 for scala < 2.12
-lazy val java7Home =
-  Option(System.getenv("JAVA7_HOME"))
-    .orElse(Option(System.getProperty("java7.home")))
-    .map(new File(_))
-    .getOrElse { sys.error("Please set JAVA7_HOME environment variable or java7.home system property") }
-
-javacOptions ++= {
-  if (scalaMajorVersion.value >= 12) Seq.empty else Seq(
-    "-source", "1.7",
-    "-target", "1.7",
-    "-bootclasspath", Array((java7Home / "jre" / "lib" / "rt.jar").toString, (java7Home / ".." / "Classes"/ "classes.jar").toString).mkString(File.pathSeparator)
-  )
-}
-
-scalacOptions ++= {
-  if (scalaMajorVersion.value >= 12) Seq.empty else Seq("-target:jvm-1.7")
-}
-
 unmanagedSourceDirectories in Compile += {
   (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
 }
