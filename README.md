@@ -1,32 +1,27 @@
 [![Build Status](https://travis-ci.org/FasterXML/jackson-module-scala.svg?branch=master)](https://travis-ci.org/FasterXML/jackson-module-scala) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.12)
 
-# IMPORTANT
-
-Please use at least versions 2.6.5, or 2.7.2; earlier released versions are known
-to contain significant bugs.
-
 # Overview
 
-[Jackson][] is a fast JSON processor for Java that supports three models:
+[Jackson](../../../jackson) is a fast JSON processor for Java that supports three models:
 streaming, node, and object mapping (akin to the three independent models
-[SAX][], [DOM][], and [JAXB][] in XML).
+`SAX`/`Stax`, `DOM` and `JAXB` for XML processing).
 
 The object mapping model is a high-level processing model that allows the
 user to project JSON data onto a domain-specific data model appropriate
 for their application, without having to deal with the low-level mechanics
 of JSON parsing. It is the standard object mapping parser implementaton
-in [Jersey][], the reference implementation for JSR-311 (Java API for
+in [Jersey](https://jersey.github.io/), the reference implementation for JSR-311
+(Java API for
 Restful Web Services).
 
-[Scala][] is a functional programming language for the JVM that supports
+[Scala](https://www.scala-lang.org/) is a functional programming language for the JVM that supports
 Java interoperability. Its standard library is quite distinct from Java,
 and does not fulfill the expectations of Jacksons default mappings.
 Notably, Scala collections do not derive from `java.util.Collection` or
-its subclasses, and Scala properties do not (by default) look like [Java
-Bean][] properties.
+its subclasses, and Scala properties do not (by default) look like `Java Bean` properties.
 
 The Scala Module supports serialization and limited deserialization of
-Scala Case Classes, Sequences, Maps, Tuples, Options, and Enumerations.
+Scala Case Classes, `Sequence`s, `Map`s, `Tuple`s, `Option`s, and Enumerations.
 
 ## Caveats
 
