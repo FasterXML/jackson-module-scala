@@ -2,19 +2,19 @@
 
 # Overview
 
-[Jackson](../../../jackson) is a fast JSON processor for Java that supports three models:
+[Jackson] is a fast JSON processor for Java that supports three models:
 streaming, node, and object mapping (akin to the three independent models
-`SAX`/`Stax`, `DOM` and `JAXB` for XML processing).
+[SAX]/[Stax], [DOM] and [JAXB] for XML processing).
 
 The object mapping model is a high-level processing model that allows the
 user to project JSON data onto a domain-specific data model appropriate
 for their application, without having to deal with the low-level mechanics
 of JSON parsing. It is the standard object mapping parser implementaton
-in [Jersey](https://jersey.github.io/), the reference implementation for JSR-311
+in [Jersey], the reference implementation for JSR-311
 (Java API for
 Restful Web Services).
 
-[Scala](https://www.scala-lang.org/) is a functional programming language for the JVM that supports
+[Scala] is a functional programming language for the JVM that supports
 Java interoperability. Its standard library is quite distinct from Java,
 and does not fulfill the expectations of Jacksons default mappings.
 Notably, Scala collections do not derive from `java.util.Collection` or
@@ -80,11 +80,38 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 Check out [Wiki]. API Scaladocs can be found [on the project site][API] but they are not really
 well suited to end users, as most classes are implementation details of the module.
 
+# Contributing
+
+The main mechanisms for contribution are:
+
+* Reporting issues, suggesting improved functionality on Github issue tracker
+* Participating in discussions on mailing lists, Gitter (see [Jackson portal](https://github.com/FasterXML/jackson#participation) for details)
+* Submitting Pull Requests (PRs) to fix issues, improve functionality.
+
+## Core Development Team
+
+Currently active core developers (ones who can review, accept and merge Pull Requests) are:
+
+* Morten Kjetland (@mbknor)
+* Nate Bauernfeind (@nbauernfeind)
+* PJ Fanning (@pjfanning)
+
+If you have questions on issues, implementation strategies, you may refer to core developers
+(and this is recommended if you are in doubt!), but keep in mind that these are voluntary
+positions: everyone is doing this because they want to, not because they are paid or
+contractually obligated to. This also means that time availability changes over time
+so getting answers may take time.
+
+In addition other Jackson developers with similar access (but less active) include
+
+* Christopher Currie (@christophercurrie) -- original author of Scala module
+* Tatu Saloranta (@cowtowncoder) -- main author of core Jackson components
+
 # Acknowledgements
 
 [![Developed with IntelliJ IDEA](http://www.jetbrains.com/img/logos/logo_intellij_idea.png "Developed with IntelliJ IDEA")](http://www.jetbrains.com/idea/features/scala.html)
 
-[Jackson]: http://jackson.codehaus.org/
+[Jackson]: https://github.com/FasterXML/jackson
 [SAX]: http://www.saxproject.org/
 [DOM]: http://www.w3.org/TR/DOM-Level-3-Core/
 [JAXB]: http://jaxb.java.net/
