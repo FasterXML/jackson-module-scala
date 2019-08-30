@@ -5,9 +5,11 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.9"
 
-crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0")
+crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.9", "2.13.0")
+
+resolvers += Resolver.sonatypeRepo("snapshots")
 
 val scalaMajorVersion = SettingKey[Int]("scalaMajorVersion")
 scalaMajorVersion := {
@@ -27,17 +29,18 @@ unmanagedSourceDirectories in Compile += {
   (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
 }
 
-val jacksonVersion = "2.10.0.pr1"
+val jacksonVersion = "2.10.0.pr2-SNAPSHOT"
+val jacksonDependencyVersion = "2.10.0.pr1"
 
 libraryDependencies ++= Seq(
-    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonDependencyVersion,
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonDependencyVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % jacksonVersion,
+    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % jacksonDependencyVersion,
     // test dependencies
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % "test",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % "test",
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % "test",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonDependencyVersion % "test",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonDependencyVersion % "test",
+    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonDependencyVersion % "test",
     "org.scalatest" %% "scalatest" % "3.0.8" % "test",
     "junit" % "junit" % "4.12" % "test"
 )
