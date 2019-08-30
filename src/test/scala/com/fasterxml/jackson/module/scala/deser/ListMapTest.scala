@@ -27,7 +27,7 @@ class ListMapTest extends FlatSpec with Matchers with TableDrivenPropertyChecks 
 
   case class SampleCaseClass(map: Map[String, String] = Map(), seq: Seq[String] = List())
 
-  "Map Serialization" should "handle problematic list map" ignore {
+  "Map Serialization" should "handle problematic list map" in {
     val sampleListMap = ListMap("foo" -> "bar")
     val sampleCaseClass = SampleCaseClass(map = sampleListMap)
 
