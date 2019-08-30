@@ -1,3 +1,4 @@
+dist: trusty 
 sudo: false
 cache:
   directories:
@@ -7,9 +8,13 @@ cache:
 language: scala
 matrix:
   include:
-    # Test Scala 2.10 and 2.11 with JDK 8
+    # Test Scala 2.10 and 2.11 with JDK 7&8
+    - scala: 2.10.7
+      jdk: openjdk7
     - scala: 2.10.7
       jdk: openjdk8
+    - scala: 2.11.8
+      jdk: openjdk7
     - scala: 2.11.8
       jdk: openjdk8
     # Scala 2.12+ only supports JDK 8+
