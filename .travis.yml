@@ -11,25 +11,33 @@ matrix:
     # Test Scala 2.10 and 2.11 with JDK 7&8
     - scala: 2.10.7
       jdk: openjdk7
-    #- scala: 2.10.7
-    #  jdk: openjdk8
+      env: SONATYPE_PUBLISH=true
+    - scala: 2.10.7
+      jdk: openjdk8
+      env: SONATYPE_PUBLISH=false
     - scala: 2.11.8
       jdk: openjdk7
-    #- scala: 2.11.8
-    #  jdk: openjdk8
+      env: SONATYPE_PUBLISH=true
+    - scala: 2.11.8
+      jdk: openjdk8
+      env: SONATYPE_PUBLISH=false
     # Scala 2.12+ only supports JDK 8+
     - scala: 2.12.9
       jdk: openjdk8
-    #- scala: 2.12.9
-    #  jdk: openjdk11
+      env: SONATYPE_PUBLISH=true
+    - scala: 2.12.9
+      jdk: openjdk11
+      env: SONATYPE_PUBLISH=false
     - scala: 2.13.0
       jdk: openjdk8
-    #- scala: 2.13.0
-    #  jdk: openjdk11
+      env: SONATYPE_PUBLISH=true
+    - scala: 2.13.0
+      jdk: openjdk11
+      env: SONATYPE_PUBLISH=false
 
 after_success:
   - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' &&
+      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${SONATYPE_PUBLISH}" = 'true' &&
       sbt 'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
       ++${TRAVIS_SCALA_VERSION}
       publish
