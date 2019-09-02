@@ -34,14 +34,14 @@ pomExtra := {
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
   <scm>
     <connection>scm:git:git@github.com:FasterXML/jackson-module-scala.git</connection>
     <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-scala.git</developerConnection>
-    <url>http://github.com/FasterXML/jackson-module-scala</url>
+    <url>https://github.com/FasterXML/jackson-module-scala</url>
   </scm>
   <developers>
     <developer>
