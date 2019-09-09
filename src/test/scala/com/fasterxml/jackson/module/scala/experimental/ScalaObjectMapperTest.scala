@@ -51,9 +51,13 @@ class ScalaObjectMapperTest extends FlatSpec with Matchers {
   mapper.registerModule(DefaultScalaModule)
 
   "An ObjectMapper with the ScalaObjectMapper mixin" should "add mixin annotations" in {
-    mapper.addMixInAnnotations[Target, Mixin]()
+    mapper.addMixin[Target, Mixin]()
     val result = mapper.findMixInClassFor[Target]
     result should equal(classOf[Mixin])
+    val json = """{"foo":"value"}"""
+    mapper.readValue[Target](json) shouldEqual new Target {
+      foo = "value"
+    }
   }
 
   it should "construct the proper java type" in {
