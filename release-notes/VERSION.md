@@ -65,8 +65,13 @@ of the upstream Jackson projects.
 
 # Version: 2.4.0
 
-This patch release tracks Jackson 2.4. The 2.4 series adds support for
-Scala 2.11, and drops support for Scala 2.9.
+This minor release tracks Jackson 2.4. It is the first version of the
+module to support Scala 2.11, and drops support for Scala 2.9. Support
+for Scala 2.9 remains in the 2.3.x series, which will receive critical
+bug fixes for the foreseeable future, but new features will only be
+applied to 2.4.0 and beyond.
+
+Release 2.4 also fixes a number of issues.
 
 ## Fixes
 
@@ -144,6 +149,13 @@ This patch release tracks Jackson 2.3 and fixes a number of issues.
 
 * [[gh-100]](https://github.com/FasterXML/jackson-module-scala/issues/100)
   Deserializing SortedSets
+  
+## Known issues
+
+[|#105| Deserialization fails for Array[T] in case class](https://github.com/FasterXML/jackson-module-scala/issues/105)
+
+This issue should have been resolved in 2.3, but due to a release error did not get merged into the release. It is
+fixed in 2.3.1.
 
 # Version: 2.2.3
 
@@ -187,6 +199,9 @@ This patch release tracks Jackson 2.3 and fixes a number of issues.
   Option JsonSchema generation with jackson-module-jsonSchema
 
 # Version: 2.2.1
+
+This release fixes a number of bugs in the 2.2.0 release. Many thanks to
+[David Pratt](https://github.com/dpratt) for significant contributions to this release.
 
 ## Fixes
 
