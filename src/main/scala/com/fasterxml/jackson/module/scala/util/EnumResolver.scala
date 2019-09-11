@@ -10,8 +10,7 @@ object EnumResolver {
 
   def apply(property: BeanProperty): Option[EnumResolver] = {
     Option(property)
-      .flatMap(p => ScalaAnnotationIntrospector.propertyFor(p.getMember))
-      .flatMap(_.findAnnotation[JsonScalaEnumeration])
+      .flatMap(p => Option(p.getAnnotation(classOf[JsonScalaEnumeration])))
       .map(a => apply(a))
   }
 

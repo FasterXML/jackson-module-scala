@@ -38,7 +38,17 @@ class EnumMixinTest extends FlatSpec with Matchers {
   it should "handle mixin annotations for an enum" in {
     val mixinResult = mapper.findMixInClassFor[TestObject2]
     mixinResult shouldEqual classOf[TestObject2Mixin]
-    //val obj = mapper.readValue[TestObject2](json)
-    //obj shouldEqual TestObject2(TestEnum.Value1)
+    val obj = mapper.readValue[TestObject2](json)
+    obj shouldEqual TestObject2(TestEnum.Value1)
+  }
+
+  it should "handle mixin annotations for an enum (case class mixin)" in {
+    val m1 = new ObjectMapper() with ScalaObjectMapper
+    m1.registerModule(DefaultScalaModule)
+    m1.addMixin[TestObject2, TestObject1]()
+    val mixinResult = m1.findMixInClassFor[TestObject2]
+    mixinResult shouldEqual classOf[TestObject1]
+    val obj = m1.readValue[TestObject2](json)
+    obj shouldEqual TestObject2(TestEnum.Value1)
   }
 }
