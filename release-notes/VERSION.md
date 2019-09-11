@@ -1,5 +1,8 @@
 # Version: 2.10.0
 
+This patch release tracks Jackson 2.10. The 2.10 series adds full support for
+Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
+
 ## Fixes
 
 * [[gh-399]](https://github.com/FasterXML/jackson-module-scala/issues/399)
@@ -7,10 +10,222 @@
 * [[databind-2422]](https://github.com/FasterXML/jackson-databind/issues/2422)
   `scala.collection.immutable.ListMap` fails to serialize since 2.9.3 (fix in jackson-databind that is useful for Scala developers)
   
-# Versions 2.2.0 - 2.9.9
+# Versions 2.6.0 - 2.9.9
 
-Version notes for this and future versions can be found in the `notes`
-subdirectory.
+Version notes for these versions were not produced and will need to be
+updated retrospectively.
+
+Most releases were just to keep the jackson-module-scala release number
+in sync with the rest of the jackson jars.
+
+# Version: 2.5.0
+
+This minor release tracks Jackson 2.5 and fixes a number of issues.
+
+## Fixes
+
+* [[gh-153]](https://github.com/FasterXML/jackson-module-scala/issues/153)
+  Ramp up to guava 17.0
+
+* [[gh-134]](https://github.com/FasterXML/jackson-module-scala/issues/134)
+  Instantiation of a Scala class with a single val from a string fails
+
+# Version: 2.4.4
+
+## Fixes
+
+* [[gh-149]](https://github.com/FasterXML/jackson-module-scala/issues/149)
+  Use type information to deser `Option` (courtesy of @orac)
+
+* [[gh-148]](https://github.com/FasterXML/jackson-module-scala/issues/148)
+  Performance regression in 2.2.3
+
+* [[gh-145]](https://github.com/FasterXML/jackson-module-scala/issues/145)
+  readValue for `Map[String, Any]` or `List[Any]` is very slow
+
+# Version: 2.4.3
+
+## Fixes
+
+* [[gh-157]](https://github.com/FasterXML/jackson-module-scala/pull/157)
+  Use type information to deser `Option` (courtesy of @orac)
+
+* [[gh-154]](https://github.com/FasterXML/jackson-module-scala/issues/154)
+  Omitting `null` in `Map("key" -> None)`
+
+# Version: 2.4.2
+
+There are no new fixes in this release; it serves to track the 2.4.2 release
+of the upstream Jackson projects.
+
+# Version: 2.4.1
+
+There are no new fixes in this release; it serves to track the 2.4.1 release
+of the upstream Jackson projects.
+
+# Version: 2.4.0
+
+This patch release tracks Jackson 2.4. The 2.4 series adds support for
+Scala 2.11, and drops support for Scala 2.9.
+
+## Fixes
+
+* [[gh-134]](https://github.com/FasterXML/jackson-module-scala/issues/134)
+  Instantiation of a Scala class with a single val from a string fails
+
+* [[gh-133]](https://github.com/FasterXML/jackson-module-scala/issues/133)
+  2.11 build
+
+* [[gh-132]](https://github.com/FasterXML/jackson-module-scala/pull/132)
+  treat Option as CollectionLike in ScalaObjectMapper (courtesy of @wpalmeri)
+
+# Version: 2.3.3
+
+## Fixes in 2.3.3
+
+* [[gh-139]](https://github.com/FasterXML/jackson-module-scala/issues/139)
+  Failed serialization of objects with collections of objects when using a custom `TypeResolverBuilder`
+
+* [[gh-138]](https://github.com/FasterXML/jackson-module-scala/issues/138)
+  `JsonTypeInfo` for classes inside a Seq
+
+* [[gh-135]](https://github.com/FasterXML/jackson-module-scala/issues/135)
+  `@JsonScalaEnumeration` doesn't apply inside an `Option`
+
+# Version: 2.3.2
+
+## Fixes
+
+* [[gh-131]](https://github.com/FasterXML/jackson-module-scala/issues/131)
+  `Map` deserialization loses key type information
+
+* [[gh-130]](https://github.com/FasterXML/jackson-module-scala/issues/130)
+  jackson-module-scala don't include the license file
+
+* [[gh-127]](https://github.com/FasterXML/jackson-module-scala/issues/127)
+  `BigDecimal` fails to deserialize an integer
+
+* [[gh-126]](https://github.com/FasterXML/jackson-module-scala/issues/126)
+  Serializing `Option` with `enableDefaultTyping` fails
+
+* [[gh-125]](https://github.com/FasterXML/jackson-module-scala/issues/125)
+  `JsonTypeInfo` on `Option` doesn't work
+
+* [[gh-124]](https://github.com/FasterXML/jackson-module-scala/issues/124)
+  `@JsonValue` annotation doesn't work with Scala `val` definitions
+
+* [[gh-120]](https://github.com/FasterXML/jackson-module-scala/issues/120)
+  Serializing a concrete class inheriting a trait randomly fails
+
+# Version: 2.3.1
+
+## Fixes
+
+* [[gh-116]](https://github.com/FasterXML/jackson-module-scala/issues/116)
+  Deserializing Iterable
+
+* [[gh-105]](https://github.com/FasterXML/jackson-module-scala/issues/105)
+  Deserialization fails for Array[T] in case class
+
+# Version: 2.3.0
+
+This patch release tracks Jackson 2.3 and fixes a number of issues.
+
+## Fixes
+
+* [[gh-103]](https://github.com/FasterXML/jackson-module-scala/issues/103)
+  (Regression) Serialization of a class containing Option[JsonNode] fails
+
+* [[gh-102]](https://github.com/FasterXML/jackson-module-scala/issues/102)
+  (Regression) JsonMappingException Argument of constructor has no property name annotation
+
+* [[gh-101]](https://github.com/FasterXML/jackson-module-scala/issues/101)
+  version 2.2.3 can't deserialize some class that verision 2.2.2 can
+
+* [[gh-100]](https://github.com/FasterXML/jackson-module-scala/issues/100)
+  Deserializing SortedSets
+
+# Version: 2.2.3
+
+## Fixes
+
+* [[gh-98]](https://github.com/FasterXML/jackson-module-scala/issues/98)
+  OSGI Export
+
+* [[gh-97]](https://github.com/FasterXML/jackson-module-scala/issues/97)
+  Non symmetric serialize/deserialize behavior
+
+* [[gh-95]](https://github.com/FasterXML/jackson-module-scala/issues/95)
+  Error deserializing pojo with multi-map when guava and scala modules are used
+
+* [[gh-93]](https://github.com/FasterXML/jackson-module-scala/issues/93)
+  Enumerations and Java enums deserialize into strings when being used as Scala map keys
+
+* [[gh-91]](https://github.com/FasterXML/jackson-module-scala/issues/91)
+  setPropertyNamingStrategy results in NullPointerException when serializing
+
+* [[gh-89]](https://github.com/FasterXML/jackson-module-scala/issues/89)
+  Customizing untyped object deserialization
+
+* [[gh-88]](https://github.com/FasterXML/jackson-module-scala/issues/88)
+  Conflicting setter definitions for property
+
+* [[gh-85]](https://github.com/FasterXML/jackson-module-scala/issues/85)
+  Java style getters still broken
+
+* [[gh-83]](https://github.com/FasterXML/jackson-module-scala/issues/83)
+  value update problem
+
+# Version: 2.2.2
+
+## Fixes
+
+* [[gh-80]](https://github.com/FasterXML/jackson-module-scala/issues/80)
+  Option fields not marked as optional in JSON schema
+
+* [[gh-81]](https://github.com/FasterXML/jackson-module-scala/pull/81)
+  Option JsonSchema generation with jackson-module-jsonSchema
+
+# Version: 2.2.1
+
+## Fixes
+
+* [[gh-71]](https://github.com/FasterXML/jackson-module-scala/issues/71)
+  Support private fields in scala classes when default values are present
+
+* [[gh-73]](https://github.com/FasterXML/jackson-module-scala/issues/73)
+  "Conflicting getter definitions" with @BeanProperty
+
+* [[gh-74]](https://github.com/FasterXML/jackson-module-scala/pull/74)
+  Serialization of nested case classes, from [David Pratt](https://github.com/dpratt)
+
+* [[gh-75]](https://github.com/FasterXML/jackson-module-scala/pull/75)
+  General fixes for less-common field types, from [David Pratt](https://github.com/dpratt)
+
+* [[gh-76]](https://github.com/FasterXML/jackson-module-scala/pull/76)
+  Improvement to ScalaObjectMapper, from [David Pratt](https://github.com/dpratt)
+
+# Version: 2.2.0
+
+Property detection has been completely rewritten in 2.2. In many common cases,
+`@JsonProperty` annotations will be unnecessary, as the property names will
+be read from debugging information contained in the jar file.
+
+New users should be careful not to remove 'vars' debugging information from
+their jar files. `javac` includes it by default, so this will not affect
+most users, but for size-sensitive projects it is often omitted in not-debug
+scenarios. Doing so will break the Scala module which relies on the
+presence of constructor parameter name debugging information to correctly
+detect Scala property names.
+
+## Known issues
+
+[|#73| "Conflicting getter definitions" with @BeanProperty](https://github.com/FasterXML/jackson-module-scala/issues/73):
+
+In cases where `@BeanProperty` annotations are used, the annotations conflict
+with the default properties detected from the class. The current workaround
+is to create a custom `JacksonModule` that does not include the `ScalaClassIntrospectorModule`.
+
 
 # Version: 2.1.3
 
