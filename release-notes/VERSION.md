@@ -1,4 +1,13 @@
-# Version 2.2.0
+# Version: 2.10.0
+
+## Fixes
+
+* [[gh-399]](https://github.com/FasterXML/jackson-module-scala/issues/399)
+  JsonScalaEnumeration annotation not picked up when using a Mixin
+* [[databind-2422]](https://github.com/FasterXML/jackson-databind/issues/2422)
+  `scala.collection.immutable.ListMap` fails to serialize since 2.9.3 (fix in jackson-databind that is useful for Scala developers(
+  
+# Versions 2.2.0 - 2.9.9
 
 Version notes for this and future versions can be found in the `notes`
 subdirectory.
