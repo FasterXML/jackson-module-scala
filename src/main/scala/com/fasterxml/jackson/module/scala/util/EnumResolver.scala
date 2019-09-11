@@ -4,7 +4,6 @@ package util
 import java.lang.reflect.ParameterizedType
 
 import com.fasterxml.jackson.databind.BeanProperty
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 
 object EnumResolver {
 
