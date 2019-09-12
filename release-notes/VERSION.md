@@ -31,11 +31,13 @@ This minor release included support for Scala 2.13 milestone releases.
 
 ## Fixes
 
+* [[gh-372]](https://github.com/FasterXML/jackson-module-scala/issues/372)
+  Remove dependency on scala-reflect
 * [[gh-353]](https://github.com/FasterXML/jackson-module-scala/issues/353)
   path not computed on collection
-* [[gh-314]](https://github.com/FasterXML/jackson-module-scala/issues/314)  
-  Serialize Some(null)
-* [[gh-299]](https://github.com/FasterXML/jackson-module-scala/issues/299)  
+* [[gh-314]](https://github.com/FasterXML/jackson-module-scala/issues/314)
+  Serialize Some(null)  
+* [[gh-299]](https://github.com/FasterXML/jackson-module-scala/issues/299)
   unable to handle Option of a case class
 
 # Version: 2.9.6
