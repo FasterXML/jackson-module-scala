@@ -9,8 +9,41 @@ Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
   JsonScalaEnumeration annotation not picked up when using a Mixin
 * [[databind-2422]](https://github.com/FasterXML/jackson-databind/issues/2422)
   `scala.collection.immutable.ListMap` fails to serialize since 2.9.3 (fix in jackson-databind that is useful for Scala developers)
-  
-# Versions 2.6.0 - 2.9.9
+
+# Version: 2.9.9
+
+The first release to support Scala 2.13. Thanks to Adriaan Moors and Seth Tisue.
+
+## Fixes
+
+* [[gh-401]](https://github.com/FasterXML/jackson-module-scala/issues/401)
+  Deserialization of inner Enumeration class fails. Thanks to Stefan Endrullis.
+* [[gh-400]](https://github.com/FasterXML/jackson-module-scala/issues/400)
+  Remove unused http resolver in build
+
+# Version: 2.9.8
+
+This minor release included support for Scala 2.13 milestone releases.
+
+# Version: 2.9.7
+
+This minor release included support for Scala 2.13 milestone releases.
+
+## Fixes
+
+* [[gh-353]](https://github.com/FasterXML/jackson-module-scala/issues/353)
+  path not computed on collection
+* [[gh-314]](https://github.com/FasterXML/jackson-module-scala/issues/314)  
+  Serialize Some(null)
+* [[gh-299]](https://github.com/FasterXML/jackson-module-scala/issues/299)  
+  unable to handle Option of a case class
+
+# Version: 2.9.6
+
+This minor release included support for Scala 2.13 milestone releases.
+Thanks to Kenji Yoshida.
+
+# Versions 2.6.0 - 2.9.5
 
 Version notes for these versions were not produced and will need to be
 updated retrospectively.
@@ -86,7 +119,7 @@ Release 2.4 also fixes a number of issues.
 
 # Version: 2.3.3
 
-## Fixes in 2.3.3
+## Fixes
 
 * [[gh-139]](https://github.com/FasterXML/jackson-module-scala/issues/139)
   Failed serialization of objects with collections of objects when using a custom `TypeResolverBuilder`
