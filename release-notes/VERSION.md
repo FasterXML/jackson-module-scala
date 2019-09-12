@@ -45,7 +45,23 @@ This minor release included support for Scala 2.13 milestone releases.
 This minor release included support for Scala 2.13 milestone releases.
 Thanks to Kenji Yoshida.
 
-# Versions 2.6.0 - 2.9.5
+# Version: 2.9.5
+
+## Fixes
+
+* [[gh-287]](https://github.com/FasterXML/jackson-module-scala/issues/287)
+  Null pointer exception when trying to deserialize into Either[]. Thanks to staffanstockholm.
+* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324) 
+  Fix bean accessors being used for field names. Thanks to Nick Telford.
+
+# Version: 2.9.4
+
+## Fixes
+
+* [[gh-346]](https://github.com/FasterXML/jackson-module-scala/issues/346)
+  `@JsonInclude` content inclusion does not work. Thanks to brharrington.
+
+# Versions 2.6.0 - 2.9.3
 
 Version notes for these versions were not produced and will need to be
 updated retrospectively.
