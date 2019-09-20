@@ -17,7 +17,7 @@ class CaseObjectSerializerTest extends SerializerTest {
   "An ObjectMapper with the DefaultScalaModule" should "serialize a case object as a bean" in {
     serialize(CaseObjectExample) should (
        equal ("""{"field1":"test","field2":42}""") or
-       equal ("""{"field2":42, field1":"test"}""")
+       equal ("""{"field2":42,"field1":"test"}""")
     )
   }
 }
