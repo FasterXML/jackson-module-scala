@@ -1,3 +1,4 @@
+dist: trusty
 sudo: false
 cache:
   directories:
@@ -7,44 +8,43 @@ cache:
 language: scala
 matrix:
   include:
-    # Test Scala 2.10 and 2.11 with both JDK 6 and 8
+    # Test Scala 2.10 and 2.11 with JDK 7&8
     - scala: 2.10.7
       jdk: openjdk7
-    - scala: 2.11.8
-      jdk: openjdk7
+      env: SONATYPE_PUBLISH=true
     - scala: 2.10.7
-      jdk: oraclejdk8
-    - scala: 2.11.8
-      jdk: oraclejdk8
+      jdk: openjdk8
+      env: SONATYPE_PUBLISH=false
+    - scala: 2.11.12
+      jdk: openjdk7
+      env: SONATYPE_PUBLISH=true
+    - scala: 2.11.12
+      jdk: openjdk8
+      env: SONATYPE_PUBLISH=false
     # Scala 2.12+ only supports JDK 8+
-    - scala: 2.12.8
-      jdk: oraclejdk8
-    - scala: 2.12.8
+    - scala: 2.12.10
+      jdk: openjdk8
+      env: SONATYPE_PUBLISH=true
+    - scala: 2.12.10
       jdk: openjdk11
-    - scala: 2.13.0
-      jdk: oraclejdk8
-    - scala: 2.13.0
+      env: SONATYPE_PUBLISH=false
+    - scala: 2.13.1
+      jdk: openjdk8
+      env: SONATYPE_PUBLISH=true
+    - scala: 2.13.1
       jdk: openjdk11
-
-sbt_args: "'set resolvers += \"Sonatype OSS Snapshots\" at \"https://oss.sonatype.org/content/repositories/snapshots\"'"
-
-before_script:
-  - export JAVA7_HOME=$(jdk_switcher home openjdk7)
+      env: SONATYPE_PUBLISH=false
 
 after_success:
   - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${TRAVIS_JDK_VERSION}" = 'oraclejdk7' -o "${TRAVIS_SCALA_VERSION}" = '2.12.8' &&
-      sbt 'set resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"'
-      'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
-      ++${TRAVIS_SCALA_VERSION}
-      publish
-
+    test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${SONATYPE_PUBLISH}" = 'true' &&
+    sbt 'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))'
+    ++${TRAVIS_SCALA_VERSION}
+    publish
 branches:
   only:
     - master
-    - "2.6"
-    - "2.7"
-    - "2.8"
+    - "2.9"
 
 env:
   global:
@@ -53,4 +53,3 @@ env:
 
 notifications:
   email: travis-ci@fasterxml.com
-
