@@ -39,6 +39,7 @@ import scala.reflect.NameTransformer
 object BeanIntrospector {
 
   private [this] val paranamer = new CachingParanamer(new BytecodeReadingParanamer)
+  private val productClass = classOf[Product]
 
   private def getCtorParams(ctor: Constructor[_]): Array[String] =
     paranamer.lookupParameterNames(ctor, false).map(NameTransformer.decode)
@@ -155,6 +156,10 @@ object BeanIntrospector {
 
     }
 
+    def isScalaCaseObject(cls: Class[_]): Boolean = {
+      productClass.isAssignableFrom(cls) && cls.getName.endsWith("$")
+    }
+
     //TODO - as we walk the classes, it would be nice to use a language specific introspector
     //for example, a scala class can inherit from a java class - when we're examining
     //a scala class, we should use the behavior defined here, but if the base class is a Java
@@ -170,7 +175,7 @@ object BeanIntrospector {
       field <- cls.getDeclaredFields
       name = maybePrivateName(field)
       if !name.contains('$')
-      if isAcceptableField(field)
+      if (isScalaCaseObject(cls) || isAcceptableField(field))
       beanGetter = findBeanGetter(cls, name)
       beanSetter = findBeanSetter(cls, name)
     } yield PropertyDescriptor(name, findConstructorParam(hierarchy.head, name), Some(field), findGetter(cls, name), findSetter(cls, name), beanGetter, beanSetter)
