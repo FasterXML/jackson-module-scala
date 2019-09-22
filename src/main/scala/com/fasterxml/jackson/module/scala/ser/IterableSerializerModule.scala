@@ -4,6 +4,7 @@ package ser
 
 import java.{lang => jl}
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
@@ -22,8 +23,12 @@ private trait IterableSerializer
   override def hasSingleElement(value: collection.Iterable[Any]): Boolean =
     value.knownSize == 1
 
-  override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serialize(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
     collectionSerializer.serializeContents(value.asJavaCollection, gen, provider)
+  }
+
+  override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
+    serialize(value, gen, provider)
   }
 
   override def withResolved(property: BeanProperty,
@@ -32,7 +37,7 @@ private trait IterableSerializer
                             unwrapSingle: jl.Boolean): ResolvedIterableSerializer =
     new ResolvedIterableSerializer(this, property, vts, elementSerializer, unwrapSingle)
 
-  override def isEmpty(prov: SerializerProvider, value: collection.Iterable[Any]): Boolean = value.isEmpty
+  override def isEmpty(provider: SerializerProvider, value: collection.Iterable[Any]): Boolean = value.isEmpty
 }
 
 private class ResolvedIterableSerializer( src: IterableSerializer,
@@ -60,7 +65,7 @@ private class UnresolvedIterableSerializer( cls: Class[_],
   with IterableSerializer
 {
   val collectionSerializer =
-    new CollectionSerializer(et, staticTyping, vts, elementSerializer)
+    new CollectionSerializer(et, staticTyping, vts, elementSerializer.asInstanceOf[JsonSerializer[Object]])
 
   override def _withValueTypeSerializer(newVts: TypeSerializer): ContainerSerializer[_] =
     new UnresolvedIterableSerializer(cls, et, staticTyping, newVts, elementSerializer)
@@ -72,6 +77,7 @@ private object IterableSerializerResolver extends Serializers.Base {
   override def findCollectionLikeSerializer(config: SerializationConfig,
                    collectionType: CollectionLikeType,
                    beanDescription: BeanDescription,
+                   formatOverrides: JsonFormat.Value,
                    elementTypeSerializer: TypeSerializer,
                    elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
     val rawClass = collectionType.getRawClass

@@ -2,6 +2,7 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
@@ -177,6 +178,7 @@ private object OptionSerializerResolver extends Serializers.Base {
   override def findReferenceSerializer(config: SerializationConfig,
                                        refType: ReferenceType,
                                        beanDesc: BeanDescription,
+                                       formatOverrides: JsonFormat.Value,
                                        contentTypeSerializer: TypeSerializer,
                                        contentValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
     if (!OPTION.isAssignableFrom(refType.getRawClass)) return null

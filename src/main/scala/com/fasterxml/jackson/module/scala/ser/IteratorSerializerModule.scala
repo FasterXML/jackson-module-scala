@@ -4,6 +4,7 @@ package ser
 
 import java.{lang => jl}
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
@@ -22,15 +23,19 @@ private trait IteratorSerializer
   override def hasSingleElement(p1: collection.Iterator[Any]): Boolean =
     p1.knownSize == 1
 
-  def serializeContents(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serialize(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     iteratorSerializer.serializeContents(value.asJava, jgen, provider)
+  }
+
+  override def serializeContents(value: collection.Iterator[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
+    serialize(value, gen, provider)
   }
 
   override def withResolved(property: BeanProperty, vts: TypeSerializer, elementSerializer: JsonSerializer[_], unwrapSingle: jl.Boolean) =
     new ResolvedIteratorSerializer(this, property, vts, elementSerializer, unwrapSingle)
 
 
-  override def isEmpty(value: collection.Iterator[Any]): Boolean = value.hasNext
+  override def isEmpty(provider: SerializerProvider, value: collection.Iterator[Any]): Boolean = value.hasNext
 }
 
 private class ResolvedIteratorSerializer( src: IteratorSerializer,
@@ -67,6 +72,7 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
   override def findCollectionLikeSerializer(config: SerializationConfig,
                                             collectionType: CollectionLikeType,
                                             beanDescription: BeanDescription,
+                                            formatOverrides: JsonFormat.Value,
                                             elementTypeSerializer: TypeSerializer,
                                             elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
 

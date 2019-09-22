@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.{JsonFormat, JsonInclude}
 import com.fasterxml.jackson.core.{JsonGenerator, JsonToken}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
@@ -132,7 +132,7 @@ private class EitherSerializer(left: EitherDetails,
     var ser = dynamicSerializers.serializerFor(typ).asInstanceOf[JsonSerializer[AnyRef]]
     if (ser == null) {
       ser = findSerializer(prov, typ, property)
-      dynamicSerializers = dynamicSerializers.newWith(typ, ser.asInstanceOf[JsonSerializer[Any]])
+      dynamicSerializers = dynamicSerializers.newWith(typ, ser.asInstanceOf[JsonSerializer[Object]])
     }
     ser
   }
@@ -147,6 +147,7 @@ private object EitherSerializerResolver extends Serializers.Base {
   override def findReferenceSerializer(config: SerializationConfig,
                                        refType: ReferenceType,
                                        beanDesc: BeanDescription,
+                                       formatOverrides: JsonFormat.Value,
                                        contentTypeSerializer: TypeSerializer,
                                        contentValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
     if (!EITHER.isAssignableFrom(refType.getRawClass)) null

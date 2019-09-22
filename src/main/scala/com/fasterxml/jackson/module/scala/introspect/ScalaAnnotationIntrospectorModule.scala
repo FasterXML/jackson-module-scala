@@ -81,7 +81,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
     }
   }
 
-  override def hasCreatorAnnotation(a: Annotated): Boolean = {
+  def hasCreatorAnnotation(a: Annotated): Boolean = {
     val jsonCreators: PartialFunction[Annotation, JsonCreator] = { case jc: JsonCreator => jc }
 
     a match {
@@ -106,7 +106,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
     }
   }
 
-  override def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
+  def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
     val ann = _findAnnotation(a, classOf[JsonCreator])
     if (ann != null) {
       ann.mode()

@@ -4,6 +4,8 @@ package introspect
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.json.JsonFactory
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
 import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
@@ -36,8 +38,8 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
   type FixtureParam = ObjectMapper with ScalaObjectMapper
 
   override def withFixture(test: OneArgTest): Outcome = {
-    val mapper = new ObjectMapper with ScalaObjectMapper
-    mapper.registerModule(DefaultScalaModule)
+    val builder = new JsonMapper.Builder(new JsonFactory).addModule(DefaultScalaModule)
+    val mapper = builder.build()
     withFixture(test.toNoArgTest(mapper))
   }
 
@@ -60,7 +62,7 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
   }
 
   it should "detect annotations on a val property" in { mapper =>
-    mapper.registerModule(new SimpleModule() {
+    val builder = new JsonMapper.Builder(new JsonFactory).addModule(new SimpleModule() {
       addSerializer(new JsonSerializer[Token] with ContextualSerializer {
         override val handledType: Class[Token] = classOf[Token]
         override def serialize(value: Token, gen: JsonGenerator, serializers: SerializerProvider): Unit =
@@ -73,7 +75,7 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
     })
 
     val bean = new AnnotatedBasicPropertyClass(new Token)
-    mapper.writeValueAsString(bean)
+    builder.build().writeValueAsString(bean)
   }
 
   it should "detect a bean property" in { mapper =>
@@ -93,7 +95,7 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
   }
 
   it should "detect annotations on a bean property" in { mapper =>
-    mapper.registerModule(new SimpleModule() {
+    val builder = new JsonMapper.Builder(new JsonFactory).addModule(new SimpleModule() {
       addSerializer(new JsonSerializer[Token] with ContextualSerializer {
         override val handledType: Class[Token] = classOf[Token]
         override def serialize(value: Token, gen: JsonGenerator, serializers: SerializerProvider): Unit =
@@ -118,7 +120,7 @@ class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
     val param = prop.getConstructorParameter
     param.getAnnotation(classOf[JsonScalaTestAnnotation]) shouldNot be (null)
 
-    mapper.writeValueAsString(bean)
+    builder.build().writeValueAsString(bean)
   }
 
   it should "correctly infer name(s) of un-named bean properties" in { mapper =>
