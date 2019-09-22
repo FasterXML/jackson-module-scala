@@ -66,7 +66,7 @@ private class OptionDeserializer(fullType: JavaType,
   override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer): Option[AnyRef] = {
     val t = jp.getCurrentToken
     if (t == JsonToken.VALUE_NULL) {
-      getNullValue(ctxt)
+      getNullValue(ctxt).asInstanceOf[Option[AnyRef]]
     } else {
       typeDeserializer.deserializeTypedFromAny(jp, ctxt).asInstanceOf[Option[AnyRef]]
     }

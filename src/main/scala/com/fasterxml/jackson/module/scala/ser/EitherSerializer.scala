@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.{JsonGenerator, JsonToken}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
@@ -51,7 +51,7 @@ private class EitherSerializer(left: EitherDetails,
     var ser = for (
       prop <- Option(prop);
       member <- Option(prop.getMember);
-      serDef <- Option(prov.getAnnotationIntrospector.findContentSerializer(member))
+      serDef <- Option(prov.getAnnotationIntrospector.findContentSerializer(prov.getConfig, member))
     ) yield prov.serializerInstance(member, serDef)
     ser = ser
       .orElse(details.valueSerializer)
@@ -105,7 +105,7 @@ private class EitherSerializer(left: EitherDetails,
     jgen.writeStartObject()
     jgen.writeFieldName(field)
     if (content == null) {
-      provider.defaultSerializeNull(jgen)
+      provider.defaultSerializeNullValue(jgen)
       return
     }
     val ser = details.valueSerializer.getOrElse(findCachedSerializer(provider, content.getClass))
@@ -118,21 +118,21 @@ private class EitherSerializer(left: EitherDetails,
 
   override def serializeWithType(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer): Unit = {
     if (value == null) {
-      provider.defaultSerializeNull(jgen)
+      provider.defaultSerializeNullValue(jgen)
       return
     }
 
     // Otherwise apply type-prefix/suffix, then std serialize:
-    typeSer.writeTypePrefixForObject(value, jgen, classOf[Either[AnyRef, AnyRef]])
+    typeSer.writeTypePrefix(jgen, typeSer.typeId(value, JsonToken.START_OBJECT))
     serialize(value, jgen, provider, Some(typeSer))
-    typeSer.writeTypeSuffixForObject(value, jgen)
+    typeSer.writeTypeSuffix(jgen, typeSer.typeId(value, JsonToken.END_OBJECT))
   }
 
   protected[this] def findCachedSerializer(prov: SerializerProvider, typ: Class[_]): JsonSerializer[AnyRef] = {
-    var ser = dynamicSerializers.serializerFor(typ)
+    var ser = dynamicSerializers.serializerFor(typ).asInstanceOf[JsonSerializer[AnyRef]]
     if (ser == null) {
       ser = findSerializer(prov, typ, property)
-      dynamicSerializers = dynamicSerializers.newWith(typ, ser)
+      dynamicSerializers = dynamicSerializers.newWith(typ, ser.asInstanceOf[JsonSerializer[Any]])
     }
     ser
   }
