@@ -68,7 +68,8 @@ private class OptionDeserializer(fullType: JavaType,
     if (t == JsonToken.VALUE_NULL) {
       getNullValue(ctxt)
     } else {
-      typeDeserializer.deserializeTypedFromAny(jp, ctxt).asInstanceOf[Option[AnyRef]]
+      val value = valueTypeDeserializer.get.deserializeTypedFromAny(jp, ctxt)
+      Some(value)
     }
   }
 }
