@@ -4,10 +4,8 @@ package ser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
-import com.fasterxml.jackson.module.scala.Weekday.Value
-import com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest.OptionType
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
 

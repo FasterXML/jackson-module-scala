@@ -7,8 +7,8 @@ import java.io.ByteArrayOutputStream
 import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
 import com.google.common.base.Optional
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.{Matchers, Outcome, fixture}
+import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
 

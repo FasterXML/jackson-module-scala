@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 private case class OptionalInt(x: Option[Int])
 

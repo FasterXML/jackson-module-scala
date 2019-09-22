@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 object PrimitiveContainerTest {
 

@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala
 import com.fasterxml.jackson.annotation.{JsonIgnore, JsonUnwrapped}
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 case class Address(address1: Option[String], city: Option[String], state: Option[String])
 

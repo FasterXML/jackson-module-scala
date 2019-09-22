@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.external
 
 import com.fasterxml.jackson.module.scala.BaseSpec
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class CustomScalaModuleTest extends BaseSpec {
