@@ -23,7 +23,6 @@ private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer(nu
     val anyRef = ctxt.constructType(classOf[AnyRef])
     val string = ctxt.constructType(classOf[String])
     val tf = ctxt.getTypeFactory
-    ctxt.getConfig
     _mapDeser = ctxt.findRootValueDeserializer(
       ctxt.getConfig.mapAbstractType(
         tf.constructMapLikeType(classOf[collection.Map[_,_]], string, anyRef))).asInstanceOf[JsonDeserializer[AnyRef]]
