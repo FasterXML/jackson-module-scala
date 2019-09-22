@@ -28,6 +28,7 @@ class DefaultScalaModule
      with ScalaAnnotationIntrospectorModule
      with UntypedObjectDeserializerModule
      with EitherModule
+     with SymbolModule
 {
   override def getModuleName = "DefaultScalaModule"
 }
