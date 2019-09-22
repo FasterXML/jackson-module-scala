@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.ser.{ContextualSerializer, Serializers}
@@ -42,7 +43,8 @@ private object EnumerationSerializerResolver extends Serializers.Base {
 
   override def findSerializer(config: SerializationConfig,
                               javaType: JavaType,
-                              beanDescription: BeanDescription): JsonSerializer[_] = {
+                              beanDescription: BeanDescription,
+                              formatOverrides: JsonFormat.Value): JsonSerializer[_] = {
 		val clazz = javaType.getRawClass
 
     if (classOf[scala.Enumeration#Value].isAssignableFrom(clazz)) {

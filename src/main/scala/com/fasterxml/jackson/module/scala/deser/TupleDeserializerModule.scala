@@ -20,7 +20,7 @@ private class TupleDeserializer(javaType: JavaType,
   if (ctors.length > 1) throw new IllegalStateException("Tuple should have only one constructor")
   val ctor = ctors.head
 
-  def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): TupleDeserializer = {
     // For now, the dumb and simple route of assuming we don't have the right deserializers.
     // This will probably result in duplicate deserializers, but it's safer than assuming
     // a current non-empty seqeunce of valueDeserializers is correct.
@@ -54,7 +54,7 @@ private class TupleDeserializer(javaType: JavaType,
 
       val t = jp.nextToken
       if (t != JsonToken.END_ARRAY) {
-        ctxt.reportWrongTokenException(jp, JsonToken.END_ARRAY,
+        ctxt.reportWrongTokenException(ctxt.getContextualType, JsonToken.END_ARRAY,
           "expected closing END_ARRAY after deserialized value")
         // never gets here
         null
@@ -69,7 +69,7 @@ private class TupleDeserializer(javaType: JavaType,
 
 private object TupleDeserializerResolver extends Deserializers.Base {
 
-  def PRODUCT = classOf[Product]
+  private val PRODUCT = classOf[Product]
 
   override def findBeanDeserializer(javaType: JavaType,
                                     config: DeserializationConfig,

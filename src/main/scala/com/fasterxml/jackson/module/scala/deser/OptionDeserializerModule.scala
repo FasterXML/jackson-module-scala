@@ -16,7 +16,7 @@ private class OptionDeserializer(fullType: JavaType,
 
   override def getValueType: JavaType = fullType
 
-  override def getNullValue: Option[AnyRef] = None
+  override def getNullValue(ctxt: DeserializationContext): Option[AnyRef] = None
 
   private[this] def withResolved(fullType: JavaType,
                                  typeDeser: Option[TypeDeserializer],

@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.experimental
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.cfg.MapperBuilder
 
 /**
@@ -7,7 +8,7 @@ import com.fasterxml.jackson.databind.cfg.MapperBuilder
  * @tparam B
  * @since 3.0.0
  */
-trait ScalaMapperBuilder[M,B] {
+trait ScalaMapperBuilder[M <: ObjectMapper,B <: MapperBuilder[M,B]] {
   self: MapperBuilder[M,B] =>
 
   /**

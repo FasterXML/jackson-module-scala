@@ -3,38 +3,37 @@ package util
 
 import java.lang.reflect.ParameterizedType
 
-import com.fasterxml.jackson.databind.BeanProperty
+import com.fasterxml.jackson.databind.{BeanProperty, JavaType}
 
 object EnumResolver {
 
-  def apply(property: BeanProperty): Option[EnumResolver] = {
+  def apply(javaType: JavaType, property: BeanProperty): Option[EnumResolver] = {
     Option(property)
       .flatMap(p => Option(p.getAnnotation(classOf[JsonScalaEnumeration])))
-      .map(a => apply(a))
+      .map(a => apply(javaType, a))
   }
 
-  def apply(a: JsonScalaEnumeration): EnumResolver = {
-    val pt = a.value().getGenericSuperclass.asInstanceOf[ParameterizedType]
+  def apply(javaType: JavaType, annotation: JsonScalaEnumeration): EnumResolver = {
+    val pt = annotation.value().getGenericSuperclass.asInstanceOf[ParameterizedType]
     val args = pt.getActualTypeArguments
-    apply(args(0).asInstanceOf[Class[Enumeration]])
+    apply(javaType, args(0).asInstanceOf[Class[Enumeration]])
   }
 
-  def apply[T <: Enumeration](cls: Class[T]): EnumResolver = {
+  def apply[T <: Enumeration](javaType: JavaType, cls: Class[T]): EnumResolver = {
     val enum = cls.getField("MODULE$").get(null).asInstanceOf[T]
-    apply(enum)
+    apply(javaType, enum)
   }
 
-  def apply(e: Enumeration): EnumResolver = {
+  def apply(javaType: JavaType, e: Enumeration): EnumResolver = {
     val valueSet = e.values
     val map: Map[String, e.type#Value] = valueSet.iterator.map(v => (v.toString, v)).toMap
-    new EnumResolver(e.getClass, valueSet, map)
+    new EnumResolver(javaType, valueSet, map)
   }
 }
 
-class EnumResolver(cls: Class[_], valueSet: Enumeration#ValueSet, enumsByName: Map[String, Enumeration#Value]) {
+class EnumResolver(javaType: JavaType, valueSet: Enumeration#ValueSet, enumsByName: Map[String, Enumeration#Value]) {
 
   def getEnum(key: String): Enumeration#Value = enumsByName(key)
 
-  def getEnumClass = cls
-
+  def getJavaType: JavaType = javaType
 }

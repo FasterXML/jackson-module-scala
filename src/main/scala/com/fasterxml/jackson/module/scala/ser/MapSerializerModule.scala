@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.{MapLikeType, TypeFactory}
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
@@ -26,15 +27,15 @@ private class MapConverter(inputType: JavaType, config: SerializationConfig)
 
 private object MapSerializerResolver extends Serializers.Base {
 
-  val BASE = classOf[collection.Map[_,_]]
+  private val BASE = classOf[collection.Map[_,_]]
 
   override def findMapLikeSerializer(config: SerializationConfig,
                                      mapLikeType : MapLikeType,
                                      beanDesc: BeanDescription,
+                                     formatOverrides: JsonFormat.Value,
                                      keySerializer: JsonSerializer[AnyRef],
                                      elementTypeSerializer: TypeSerializer,
                                      elementValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
-
 
     val rawClass = mapLikeType.getRawClass
 

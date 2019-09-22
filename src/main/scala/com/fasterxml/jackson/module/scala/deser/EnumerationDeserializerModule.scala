@@ -10,7 +10,7 @@ private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
   self: JsonDeserializer[Enumeration#Value] =>
 
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty) : JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer = {
-    EnumResolver(property).map(r => new AnnotatedEnumerationDeserializer(r)).getOrElse(this)
+    EnumResolver(ctxt.getContextualType, property).map(r => new AnnotatedEnumerationDeserializer(r)).getOrElse(this)
   }
 
 }
@@ -45,7 +45,7 @@ private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends JsonDese
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Enumeration#Value = {
     jp.getCurrentToken match {
       case JsonToken.VALUE_STRING => r.getEnum(jp.getValueAsString)
-      case _ => ctxt.handleUnexpectedToken(r.getEnumClass, jp).asInstanceOf[Enumeration#Value]
+      case _ => ctxt.handleUnexpectedToken(r.getJavaType, jp).asInstanceOf[Enumeration#Value]
     }
   }
 }
@@ -70,7 +70,7 @@ private object EnumerationDeserializerResolver extends Deserializers.Base {
 private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDeserializer with ContextualKeyDeserializer {
 
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
-    val newResolver = EnumResolver(property)
+    val newResolver = EnumResolver(ctxt.getContextualType, property)
     if (newResolver != r) new EnumerationKeyDeserializer(newResolver) else this
   }
 
@@ -79,7 +79,7 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
       return r.get.getEnum(s)
     }
 
-    throw ctxt.mappingException("Need @JsonScalaEnumeration to determine key type")
+    throw JsonMappingException.from(ctxt, "Need @JsonScalaEnumeration to determine key type")
   }
 }
 

@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.ser
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind._
@@ -15,7 +16,8 @@ private object SymbolSerializer extends JsonSerializer[Symbol] {
 private object SymbolSerializerResolver extends Serializers.Base {
   private val SYMBOL = classOf[Symbol]
 
-  override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription): JsonSerializer[Symbol] =
+  override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
+                              formatOverrides: JsonFormat.Value): JsonSerializer[Symbol] =
     if (SYMBOL isAssignableFrom javaType.getRawClass)
       SymbolSerializer
     else null

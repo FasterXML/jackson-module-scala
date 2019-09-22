@@ -48,18 +48,18 @@ private class EitherSerializer(left: EitherDetails,
                                               prop: BeanProperty,
                                               details: EitherDetails): EitherDetails = {
     val vts = details.valueTypeSerializer.optMap(_.forProperty(prov, prop))
-    var ser = for (
+    val serializer1 = for (
       prop <- Option(prop);
       member <- Option(prop.getMember);
       serDef <- Option(prov.getAnnotationIntrospector.findContentSerializer(prov.getConfig, member))
     ) yield prov.serializerInstance(member, serDef)
-    ser = ser
+    val serializer2 = serializer1
       .orElse(details.valueSerializer)
       .map(prov.handlePrimaryContextualization(_, prop))
       .asInstanceOf[Option[JsonSerializer[AnyRef]]]
-    ser = Option(findConvertingContentSerializer(prov, prop, ser.orNull))
+    val serializer3 = Option(findContextualConvertingSerializer(prov, prop, serializer2.orNull))
       .asInstanceOf[Option[JsonSerializer[AnyRef]]]
-    ser = ser match {
+    var serializerOption = serializer3 match {
       case None => if (details.typ.isDefined && hasContentTypeAnnotation(prov, prop)) {
         Option(prov.findValueSerializer(details.typ.get)).filterNot(_.isInstanceOf[UnknownSerializer])
       } else None
@@ -67,11 +67,11 @@ private class EitherSerializer(left: EitherDetails,
     }
 
     // A few conditions needed to be able to fetch serializer here:
-    if (ser.isEmpty && useStatic(prov, Option(prop), details.typ)) {
-      ser = Option(findSerializer(prov, details.typ.orNull, Option(prop)))
+    if (serializerOption.isEmpty && useStatic(prov, Option(prop), details.typ)) {
+      serializerOption = Option(findSerializer(prov, details.typ.orNull, Option(prop)))
     }
 
-    details.copy(valueTypeSerializer = vts, valueSerializer = ser)
+    details.copy(valueTypeSerializer = vts, valueSerializer = serializerOption)
   }
 
   override def createContextual(prov: SerializerProvider, prop: BeanProperty): JsonSerializer[_] = {
