@@ -69,7 +69,7 @@ private class EitherDeserializer(javaType: JavaType,
 }
 
 private object EitherDeserializer {
-  case class ElementDeserializerConfig(deserializer: Option[JsonDeserializer[AnyRef]], typeDeseriazlier: Option[TypeDeserializer])
+  case class ElementDeserializerConfig(deserializer: Option[JsonDeserializer[AnyRef]], typeDeserializer: Option[TypeDeserializer])
 
   object ElementDeserializerConfig {
     val empty = ElementDeserializerConfig(None, None)
