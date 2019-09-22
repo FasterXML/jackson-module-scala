@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer
 import com.fasterxml.jackson.databind.util.NameTransformer
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
+import scala.languageFeature.postfixOps
+
 // This is still here because it is used in other places like EitherSerializer, it is no
 // longer used for the Option serializer
 object OptionSerializer {
@@ -37,12 +39,12 @@ object OptionSerializer {
 
   def findSerializer(provider: SerializerProvider, typ: Class[_], prop: Option[BeanProperty]): JsonSerializer[AnyRef] = {
     // Important: ask for TYPED serializer, in case polymorphic handling is needed!
-    provider.findTypedValueSerializer(typ, true, prop.orNull)
+    provider.findTypedValueSerializer(typ, true).asInstanceOf[JsonSerializer[AnyRef]]
   }
 
   def findSerializer(provider: SerializerProvider, typ: JavaType, prop: Option[BeanProperty]): JsonSerializer[AnyRef] = {
     // Important: ask for TYPED serializer, in case polymorphic handling is needed!
-    provider.findTypedValueSerializer(typ, true, prop.orNull)
+    provider.findTypedValueSerializer(typ, true).asInstanceOf[JsonSerializer[AnyRef]]
   }
 
   def hasContentTypeAnnotation(provider: SerializerProvider, property: BeanProperty): Boolean = {

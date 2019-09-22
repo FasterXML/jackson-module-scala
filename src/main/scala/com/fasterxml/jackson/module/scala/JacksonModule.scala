@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.{JsonMappingException, Module}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.languageFeature.postfixOps
 
 object JacksonModule {
   private val cls = classOf[JacksonModule]
@@ -68,5 +69,5 @@ trait JacksonModule extends Module {
   protected def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
   protected def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
   protected def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
-  protected def +=(beanSerMod: BeanSerializerModifier): this.type = this += (_ addBeanSerializerModifier beanSerMod)
+  protected def +=(beanSerMod: BeanSerializerModifier): this.type = this += (_ addSerializerModifier beanSerMod)
 }

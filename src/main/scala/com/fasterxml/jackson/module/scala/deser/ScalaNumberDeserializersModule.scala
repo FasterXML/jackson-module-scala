@@ -34,7 +34,7 @@ private abstract class BigNumberDeserializer[T >: Null : ClassTag](creator: (Str
         }
         value
       case _ =>
-        ctxt.handleUnexpectedToken(_valueClass, jp).asInstanceOf[T]
+        ctxt.handleUnexpectedToken(_valueType, jp).asInstanceOf[T]
     }
   }
 }

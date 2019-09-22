@@ -47,7 +47,7 @@ private class EitherSerializer(left: EitherDetails,
   protected[this] def createContextualDetails(prov: SerializerProvider,
                                               prop: BeanProperty,
                                               details: EitherDetails): EitherDetails = {
-    val vts = details.valueTypeSerializer.optMap(_.forProperty(prop))
+    val vts = details.valueTypeSerializer.optMap(_.forProperty(prov, prop))
     var ser = for (
       prop <- Option(prop);
       member <- Option(prop.getMember);
@@ -61,7 +61,7 @@ private class EitherSerializer(left: EitherDetails,
       .asInstanceOf[Option[JsonSerializer[AnyRef]]]
     ser = ser match {
       case None => if (details.typ.isDefined && hasContentTypeAnnotation(prov, prop)) {
-        Option(prov.findValueSerializer(details.typ.get, prop)).filterNot(_.isInstanceOf[UnknownSerializer])
+        Option(prov.findValueSerializer(details.typ.get)).filterNot(_.isInstanceOf[UnknownSerializer])
       } else None
       case Some(s) => Option(prov.handlePrimaryContextualization(s, prop).asInstanceOf[JsonSerializer[AnyRef]])
     }

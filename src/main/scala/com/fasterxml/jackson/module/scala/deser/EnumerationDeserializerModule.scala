@@ -21,15 +21,15 @@ private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
 private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
 	override def deserialize(jp:JsonParser, ctxt:DeserializationContext): Enumeration#Value = {
 		if (jp.getCurrentToken != JsonToken.START_OBJECT) {
-      ctxt.handleUnexpectedToken(theType.getRawClass, jp).asInstanceOf[Enumeration#Value]
+      ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
     } else {
       val (eclass, eclassName) = parsePair(jp)
       if (eclass != "enumClass") {
-        ctxt.handleUnexpectedToken(theType.getRawClass, jp).asInstanceOf[Enumeration#Value]
+        ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
       } else {
         val (value, valueValue) = parsePair(jp)
         if (value != "value") {
-          ctxt.handleUnexpectedToken(theType.getRawClass, jp).asInstanceOf[Enumeration#Value]
+          ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
         } else {
           jp.nextToken()
           Class.forName(eclassName + "$").getField("MODULE$").get(null).asInstanceOf[Enumeration].withName(valueValue)
@@ -84,8 +84,9 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
 }
 
 private object EnumerationKeyDeserializers extends KeyDeserializers {
+  private val valueClass = classOf[scala.Enumeration#Value]
   def findKeyDeserializer(tp: JavaType, cfg: DeserializationConfig, desc: BeanDescription): KeyDeserializer = {
-    if (classOf[scala.Enumeration#Value].isAssignableFrom(tp.getRawClass)) {
+    if (valueClass.isAssignableFrom(tp.getRawClass)) {
       new EnumerationKeyDeserializer(None)
     }
     else null

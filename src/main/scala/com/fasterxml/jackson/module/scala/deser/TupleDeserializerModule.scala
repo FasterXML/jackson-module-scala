@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, Contextual
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import scala.languageFeature.postfixOps
+
 private class TupleDeserializer(javaType: JavaType,
                                 config: DeserializationConfig,
                                 valueDeserializers: Seq[JsonDeserializer[Object]] = Nil,
@@ -29,9 +31,9 @@ private class TupleDeserializer(javaType: JavaType,
     val typeDesers: Seq[TypeDeserializer] = {
       val factory = BeanDeserializerFactory.instance
       if (property != null) {
-        paramTypes map (factory.findPropertyTypeDeserializer(ctxt.getConfig, _, property.getMember))
+        paramTypes map (ctxt.findPropertyTypeDeserializer(_, property.getMember))
       } else {
-        paramTypes map (factory.findTypeDeserializer(config, _))
+        paramTypes map (ctxt.findTypeDeserializer)
       }
     }
 
@@ -60,7 +62,7 @@ private class TupleDeserializer(javaType: JavaType,
         ctor.newInstance(params: _*).asInstanceOf[Product]
       }
     } else {
-      ctxt.handleUnexpectedToken(javaType.getRawClass, jp).asInstanceOf[Product]
+      ctxt.handleUnexpectedToken(javaType, jp).asInstanceOf[Product]
     }
   }
 }

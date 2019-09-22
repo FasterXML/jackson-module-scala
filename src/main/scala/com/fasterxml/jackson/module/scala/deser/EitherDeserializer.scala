@@ -21,9 +21,9 @@ private class EitherDeserializer(javaType: JavaType,
       val containedType = javaType.containedType(param)
 
       val paramDeserializer = Option( ctxt.findContextualValueDeserializer(containedType, property) )
-      val typeDeserializer = Option(property).flatMap(p => Option(BeanDeserializerFactory.instance.findPropertyTypeDeserializer(ctxt.getConfig, containedType, p.getMember)) )
+      val typeDeserializer = Option(property).flatMap(p => Option(ctxt.findPropertyTypeDeserializer(containedType, p.getMember)) )
 
-      ElementDeserializerConfig( paramDeserializer, typeDeserializer )
+      ElementDeserializerConfig( paramDeserializer.map(_.asInstanceOf[JsonDeserializer[AnyRef]]), typeDeserializer )
     }
 
     javaType.containedTypeCount match {
@@ -41,7 +41,7 @@ private class EitherDeserializer(javaType: JavaType,
       case (ElementDeserializerConfig(Some(ed), Some(td)), _) =>
         ed.deserializeWithType(jp, ctxt, td)
       case (ElementDeserializerConfig(Some(ed), _), _) => ed.deserialize(jp, ctxt)
-      case (_, _) => ctxt.handleUnexpectedToken(javaType.getRawClass, jp)
+      case (_, _) => ctxt.handleUnexpectedToken(javaType, jp)
     }
 
   private def deserializeEither(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] = {
@@ -53,7 +53,7 @@ private class EitherDeserializer(javaType: JavaType,
     val result = key match {
       case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
       case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
-      case _ => ctxt.handleUnexpectedToken(javaType.getRawClass, jp).asInstanceOf[Either[AnyRef, AnyRef]]
+      case _ => ctxt.handleUnexpectedToken(javaType, jp).asInstanceOf[Either[AnyRef, AnyRef]]
     }
 
     // consume END_OBJECT
