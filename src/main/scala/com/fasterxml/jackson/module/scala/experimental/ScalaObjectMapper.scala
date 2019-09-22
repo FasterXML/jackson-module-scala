@@ -6,7 +6,6 @@ import java.net.URL
 import com.fasterxml.jackson.core._
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
-import com.fasterxml.jackson.databind.jsonschema.JsonSchema
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>
@@ -17,30 +16,32 @@ trait ScalaObjectMapper {
    **********************************************************
    */
 
-  /**
-   * Method to use for adding mix-in annotations to use for augmenting
-   * specified class or interface. All annotations from
-   * <code>mixinSource</code> are taken to override annotations
-   * that <code>target</code> (or its supertypes) has.
-   *
-   * @tparam Target Class (or interface) whose annotations to effectively override
-   * @tparam MixinSource Class (or interface) whose annotations are to
-   *                     be "added" to target's annotations, overriding as necessary
-   */
-  final def addMixin[Target: Manifest, MixinSource: Manifest]() = {
-    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
-  }
+  // TODO work out how to fix these mixin functions
 
-  /**
-   * @deprecated Since 2.5: replaced by a fluent form of the method; { @link #addMixIn(Class, Class)}.
-   */
-  final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() = {
-    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
-  }
+//  /**
+//   * Method to use for adding mix-in annotations to use for augmenting
+//   * specified class or interface. All annotations from
+//   * <code>mixinSource</code> are taken to override annotations
+//   * that <code>target</code> (or its supertypes) has.
+//   *
+//   * @tparam Target Class (or interface) whose annotations to effectively override
+//   * @tparam MixinSource Class (or interface) whose annotations are to
+//   *                     be "added" to target's annotations, overriding as necessary
+//   */
+//  final def addMixin[Target: Manifest, MixinSource: Manifest]() = {
+//    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
+//  }
 
-  final def findMixInClassFor[T: Manifest]: Class[_] = {
-    findMixInClassFor(manifest[T].runtimeClass)
-  }
+//  /**
+//   * @deprecated Since 2.5: replaced by a fluent form of the method; { @link #addMixIn(Class, Class)}.
+//   */
+//  final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() = {
+//    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
+//  }
+
+//  final def findMixInClassFor[T: Manifest]: Class[_] = {
+//    findMixInClassFor(manifest[T].runtimeClass)
+//  }
 
   /*
    **********************************************************
@@ -145,33 +146,35 @@ trait ScalaObjectMapper {
    **********************************************************
    */
 
-  /**
-   * Method that can be called to check whether mapper thinks
-   * it could serialize an instance of given Class.
-   * Check is done
-   * by checking whether a serializer can be found for the type.
-   *
-   * @return True if mapper can find a serializer for instances of
-   *         given class (potentially serializable), false otherwise (not
-   *         serializable)
-   */
-  def canSerialize[T: Manifest]: Boolean = {
-    canSerialize(manifest[T].runtimeClass)
-  }
+  // TODO find new ways to implement these functions
 
-  /**
-   * Method that can be called to check whether mapper thinks
-   * it could deserialize an Object of given type.
-   * Check is done
-   * by checking whether a deserializer can be found for the type.
-   *
-   * @return True if mapper can find a serializer for instances of
-   *         given class (potentially serializable), false otherwise (not
-   *         serializable)
-   */
-  def canDeserialize[T: Manifest]: Boolean = {
-    canDeserialize(constructType[T])
-  }
+//  /**
+//   * Method that can be called to check whether mapper thinks
+//   * it could serialize an instance of given Class.
+//   * Check is done
+//   * by checking whether a serializer can be found for the type.
+//   *
+//   * @return True if mapper can find a serializer for instances of
+//   *         given class (potentially serializable), false otherwise (not
+//   *         serializable)
+//   */
+//  def canSerialize[T: Manifest]: Boolean = {
+//    canSerialize(manifest[T].runtimeClass)
+//  }
+//
+//  /**
+//   * Method that can be called to check whether mapper thinks
+//   * it could deserialize an Object of given type.
+//   * Check is done
+//   * by checking whether a deserializer can be found for the type.
+//   *
+//   * @return True if mapper can find a serializer for instances of
+//   *         given class (potentially serializable), false otherwise (not
+//   *         serializable)
+//   */
+//  def canDeserialize[T: Manifest]: Boolean = {
+//    canDeserialize(constructType[T])
+//  }
 
   /*
    **********************************************************
@@ -255,15 +258,6 @@ trait ScalaObjectMapper {
    * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
    * read or update instances of specified type
    */
-  @deprecated(message = "Replaced with readerFor", since = "2.6")
-  def reader[T: Manifest]: ObjectReader = {
-    reader(constructType[T])
-  }
-
-  /**
-   * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
-   * read or update instances of specified type
-   */
   def readerFor[T: Manifest]: ObjectReader = {
     readerFor(constructType[T])
   }
@@ -303,18 +297,6 @@ trait ScalaObjectMapper {
    * Extended Public API: JSON Schema generation
    **********************************************************
    */
-
-  /**
-   * Generate <a href="http://json-schema.org/">Json-schema</a>
-   * instance for specified class.
-   *
-   * @tparam T The class to generate schema for
-   * @return Constructed JSON schema.
-   */
-  @deprecated("JsonSchema is deprecated in favor of JsonFormatVisitor", "2.2.2")
-  def generateJsonSchema[T: Manifest]: JsonSchema = {
-    generateJsonSchema(manifest[T].runtimeClass)
-  }
 
   /**
    * Method for visiting type hierarchy for given type, using specified visitor.
