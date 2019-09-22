@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.deser.{Deserializers, std}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
-object UntypedObjectDeserializer
-{
+import scala.languageFeature.postfixOps
+
+object UntypedObjectDeserializer {
   lazy val SEQ = new TypeReference[collection.Seq[Any]] {}
   lazy val MAP = new TypeReference[collection.Map[String,Any]] {}
 }
@@ -21,12 +22,14 @@ private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer(nu
     super.resolve(ctxt)
     val anyRef = ctxt.constructType(classOf[AnyRef])
     val string = ctxt.constructType(classOf[String])
-    val factory = ctxt.getFactory
     val tf = ctxt.getTypeFactory
+    ctxt.getConfig
     _mapDeser = ctxt.findRootValueDeserializer(
-      factory.mapAbstractType(ctxt.getConfig, tf.constructMapLikeType(classOf[collection.Map[_,_]], string, anyRef)))
+      ctxt.getConfig.mapAbstractType(
+        tf.constructMapLikeType(classOf[collection.Map[_,_]], string, anyRef))).asInstanceOf[JsonDeserializer[AnyRef]]
     _listDeser = ctxt.findRootValueDeserializer(
-      factory.mapAbstractType(ctxt.getConfig, tf.constructCollectionLikeType(classOf[collection.Seq[_]], anyRef)))
+      ctxt.getConfig.mapAbstractType(
+        tf.constructCollectionLikeType(classOf[collection.Seq[_]], anyRef))).asInstanceOf[JsonDeserializer[AnyRef]]
   }
 
   override def mapArray(jp: JsonParser, ctxt: DeserializationContext): AnyRef = {
@@ -46,12 +49,12 @@ private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer(nu
 
 private object UntypedObjectDeserializerResolver extends Deserializers.Base {
 
-  lazy val OBJECT = classOf[AnyRef]
+  private val objectClass = classOf[AnyRef]
 
   override def findBeanDeserializer(javaType: JavaType,
                                     config: DeserializationConfig,
                                     beanDesc: BeanDescription) =
-    if (!OBJECT.equals(javaType.getRawClass)) null
+    if (!objectClass.equals(javaType.getRawClass)) null
     else new UntypedObjectDeserializer
 }
 
