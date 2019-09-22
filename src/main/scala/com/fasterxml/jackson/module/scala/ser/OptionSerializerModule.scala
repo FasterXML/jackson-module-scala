@@ -29,7 +29,7 @@ object OptionSerializer {
       ann <- property.flatMap(p => Option(p.getMember));
       intr <- Option(provider.getAnnotationIntrospector)
     ) {
-      val typing = intr.findSerializationTyping(ann)
+      val typing = intr.findSerializationTyping(provider.getConfig, ann)
       if (typing == JsonSerialize.Typing.STATIC) return true
       if (typing == JsonSerialize.Typing.DYNAMIC) return false
     }

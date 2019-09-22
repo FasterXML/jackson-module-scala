@@ -14,15 +14,7 @@ import scala.collection.Map
 private class MapConverter(inputType: JavaType, config: SerializationConfig)
   extends StdConverter[Map[_,_],java.util.Map[_,_]]
 {
-  def convert(value: Map[_,_]): java.util.Map[_,_] = {
-    val m = if (config.isEnabled(SerializationFeature.WRITE_NULL_MAP_VALUES)) {
-      value
-    } else {
-      value.filter(_._2 != None)
-    }
-    m.asJava
-  }
-
+  def convert(value: Map[_,_]): java.util.Map[_,_] = value.asJava
 
   override def getInputType(factory: TypeFactory) = inputType
 
