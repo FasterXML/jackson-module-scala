@@ -1,9 +1,7 @@
 
+For Scala 2.10 and 2.11 releases, use JDK7 to do the build and release.
 
-Set correct JAVA7_HOME on mac:
-
-	export JAVA7_HOME=$(/usr/libexec/java_home -v 1.7)
-
+For Scala 2.12 and 2.13 releases, use JDK7 to do the build and release.
 
 Make sure the following file has the correct oss.sonatype.org-credentials:
 

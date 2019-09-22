@@ -4,14 +4,12 @@ package util
 import java.lang.reflect.ParameterizedType
 
 import com.fasterxml.jackson.databind.BeanProperty
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 
 object EnumResolver {
 
   def apply(property: BeanProperty): Option[EnumResolver] = {
     Option(property)
-      .flatMap(p => ScalaAnnotationIntrospector.propertyFor(p.getMember))
-      .flatMap(_.findAnnotation[JsonScalaEnumeration])
+      .flatMap(p => Option(p.getAnnotation(classOf[JsonScalaEnumeration])))
       .map(a => apply(a))
   }
 
