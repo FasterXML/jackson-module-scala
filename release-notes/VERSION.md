@@ -3,8 +3,12 @@
 This patch release tracks Jackson 2.10. The 2.10 series adds full support for
 Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
 
+The addition of a SymbolModule to DefaultScalaModule might lead to some behaviour changes for some users.
+
 ## Fixes
 
+* [[gh-pr-264]](https://github.com/FasterXML/jackson-module-scala/pull/264)
+  Add SymbolModule to support Scala symbols
 * [[gh-399]](https://github.com/FasterXML/jackson-module-scala/issues/399)
   JsonScalaEnumeration annotation not picked up when using a Mixin
 * [[gh-429]](https://github.com/FasterXML/jackson-module-scala/issues/429)
