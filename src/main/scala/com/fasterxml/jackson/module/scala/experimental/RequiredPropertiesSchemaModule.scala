@@ -1,21 +1,19 @@
 package com.fasterxml.jackson.module.scala.experimental
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.introspect.{AnnotatedMember, NopAnnotationIntrospector}
-import com.fasterxml.jackson.module.scala.JacksonModule
 
+/**
+ * @deprecated use {@link com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector}
+ */
+@Deprecated
 object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
-
-  private val OPTION = classOf[Option[_]]
-
-  private def isOptionType(cls: Class[_]) = OPTION.isAssignableFrom(cls)
-
-  override def hasRequiredMarker(m: AnnotatedMember) = boolean2Boolean(
-    Option(m.getAnnotation(classOf[JsonProperty])).map(_.required).getOrElse(!isOptionType(m.getRawType))
-  )
+  override def hasRequiredMarker(m: AnnotatedMember) =
+    com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.hasRequiredMarker(m)
 
 }
 
-trait RequiredPropertiesSchemaModule extends JacksonModule {
-  this += { _.insertAnnotationIntrospector(DefaultRequiredAnnotationIntrospector) }
-}
+/**
+ * @deprecated use {@link com.fasterxml.jackson.module.scala.RequiredPropertiesSchemaModule}
+ */
+@Deprecated
+trait RequiredPropertiesSchemaModule extends com.fasterxml.jackson.module.scala.RequiredPropertiesSchemaModule
