@@ -5,8 +5,12 @@ Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
 
 The addition of a SymbolModule to DefaultScalaModule might lead to some behaviour changes for some users.
 
+Some items are only in 2.10.0.pr4-SNAPSHOT.
+
 ## Fixes
 
+* [[gh-432]](https://github.com/FasterXML/jackson-module-scala/issues/432)
+  move experimental classes to main package
 * [[gh-pr-264]](https://github.com/FasterXML/jackson-module-scala/pull/264)
   Add SymbolModule to support Scala symbols
 * [[gh-399]](https://github.com/FasterXML/jackson-module-scala/issues/399)
