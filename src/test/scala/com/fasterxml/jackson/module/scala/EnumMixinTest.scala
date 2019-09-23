@@ -1,8 +1,7 @@
-package com.fasterxml.jackson.module.scala.experimental
+package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration}
 import org.junit.runner.RunWith
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatestplus.junit.JUnitRunner
