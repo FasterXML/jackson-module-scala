@@ -1,11 +1,11 @@
-package com.fasterxml.jackson.module.scala.experimental
+package com.fasterxml.jackson.module.scala
 
-import java.io._
+import java.io.{File, InputStream, Reader}
 import java.net.URL
 
-import com.fasterxml.jackson.core._
-import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
+import com.fasterxml.jackson.databind._
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>

@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala.experimental
+package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.cfg.MapperBuilder

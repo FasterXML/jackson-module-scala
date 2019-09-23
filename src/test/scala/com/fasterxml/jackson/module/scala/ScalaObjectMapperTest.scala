@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala.experimental
+package com.fasterxml.jackson.module.scala
 
 import java.io.{ByteArrayInputStream, InputStreamReader}
 
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatestplus.junit.JUnitRunner
