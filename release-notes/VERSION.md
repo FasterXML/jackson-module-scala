@@ -22,8 +22,6 @@ Some items are only in 2.10.0.pr4-SNAPSHOT.
 
 # Version: 2.9.10
 
-The first release to support Scala 2.13. Thanks to Adriaan Moors and Seth Tisue.
-
 ## Fixes
 
 * [[gh-399]](https://github.com/FasterXML/jackson-module-scala/issues/399)
