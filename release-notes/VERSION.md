@@ -1,11 +1,9 @@
-# Version: 2.10.0 (pre-release 3)
+# Version: 2.10.0
 
 This patch release tracks Jackson 2.10. The 2.10 series adds full support for
 Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
 
 The addition of a SymbolModule to DefaultScalaModule might lead to some behaviour changes for some users.
-
-Some items are only in 2.10.0.pr4-SNAPSHOT.
 
 ## Fixes
 
