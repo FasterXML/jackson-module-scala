@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import java.io.StringWriter
 
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{DeserializationFeature, MapperFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
@@ -17,8 +18,8 @@ import scala.collection.immutable.{ListMap, Queue, TreeMap}
 @RunWith(classOf[JUnitRunner])
 class ListMapTest extends FlatSpec with Matchers with TableDrivenPropertyChecks {
   private val mapper = {
-    val _mapper = new ObjectMapper
-    _mapper.registerModule(DefaultScalaModule)
+    val builder = JsonMapper.builder().addModule(new DefaultScalaModule)
+    val _mapper = builder.build()
     _mapper.disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
     _mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
     _mapper.disable(SerializationFeature.INDENT_OUTPUT)

@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
@@ -17,8 +18,9 @@ class OptionWithJodaTimeDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a case class with Option with JodaModule" in {
-    newMapper.registerModule(new JodaModule)
-    deserialize[OptionalInt](stringValue) should be (OptionalInt(Some(123)))
+    val builder = JsonMapper.builder().addModules(new DefaultScalaModule, new JodaModule)
+    val mapper = builder.build()
+    mapper.readValue(stringValue, typeReference[OptionalInt]) should be (OptionalInt(Some(123)))
   }
 
   val stringValue = """{"x":123}"""

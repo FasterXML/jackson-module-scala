@@ -102,7 +102,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
     result.small.get.getClass should be (classOf[Long])
   }
 
-  def propertyNamingStrategyMapper: ObjectMapper = new ObjectMapper() {
+  def propertyNamingStrategyMapper: ObjectMapper =  {
     registerModule(module)
     setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
   }
