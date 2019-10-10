@@ -9,8 +9,6 @@ class BaseFixture extends fixture.FlatSpec with Matchers {
   type FixtureParam = ObjectMapper with ScalaObjectMapper
 
   object ScalaObjectMapper {
-    //implicit def innerObj(o: Mixin) = o.obj
-
     def ::(o: JsonMapper) = new Mixin(o)
     final class Mixin private[ScalaObjectMapper](val obj: JsonMapper) extends JsonMapper with ScalaObjectMapper
   }
