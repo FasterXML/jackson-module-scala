@@ -16,6 +16,9 @@ class TrySerializerTest extends SerializerTest {
   val json: JsonNode = jsonOf(s"""{"prop":"$str"}""")
 
   "TrySerializer" should "be able to serialize success with string" in {
-    serialize(Success(str)) should be (s"""{"value":"$str","failure":false,"success":true}""")
+    val result = serialize(Success(str))
+    result should include(s""""value":"$str"""")
+    result should include(""""failure":false""")
+    result should include(""""success":true""")
   }
 }
