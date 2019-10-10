@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
@@ -25,9 +26,8 @@ case class B(prop1: String, @JsonDeserialize(using = classOf[ADeserializer]) pro
 
 object Util {
   def mapper: ObjectMapper = {
-    val m = new ObjectMapper()
-    m.registerModule(DefaultScalaModule)
-    m
+    val builder = JsonMapper.builder().addModule(new DefaultScalaModule)
+    builder.build()
   }
 
   val jsonString = """{"prop1":"asdf","prop2":{"prop1":"qwer"}}"""

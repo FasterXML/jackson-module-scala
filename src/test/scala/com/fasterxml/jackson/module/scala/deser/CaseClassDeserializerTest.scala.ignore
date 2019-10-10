@@ -4,7 +4,9 @@ package deser
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
+import com.fasterxml.jackson.datatype.joda.JodaModule
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -102,9 +104,11 @@ class CaseClassDeserializerTest extends DeserializerTest {
     result.small.get.getClass should be (classOf[Long])
   }
 
-  def propertyNamingStrategyMapper: ObjectMapper =  {
-    registerModule(module)
-    setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+  def propertyNamingStrategyMapper: ObjectMapper = {
+    val builder = JsonMapper.builder().addModule(module)
+    val mapper = builder.build()
+    mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    mapper
   }
 
   it should "honor the property naming strategy" in {

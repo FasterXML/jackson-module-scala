@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.annotation.{JsonIgnore, JsonUnwrapped}
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.json.JsonMapper
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -42,8 +43,8 @@ case class Person(name: String, @JsonIgnore location: Address, alias: Option[Str
 class UnwrappedTest extends BaseSpec {
 
   "mapper" should "handle ignored fields correctly" in {
-    val mapper = new ObjectMapper()
-    mapper.registerModule(DefaultScalaModule)
+    val builder = JsonMapper.builder().addModule(new DefaultScalaModule)
+    val mapper = builder.build()
 
     val p = Person("Snoopy", Address(Some("123 Main St"), Some("Anytown"), Some("WA")), Some("Joe Cool"))
     val json = mapper.writeValueAsString(p)
@@ -61,8 +62,8 @@ class UnwrappedTest extends BaseSpec {
   }
 
   it should "handle JsonUnwrapped for non-creators" in {
-    val mapper = new ObjectMapper()
-    mapper.registerModule(DefaultScalaModule)
+    val builder = JsonMapper.builder().addModule(new DefaultScalaModule)
+    val mapper = builder.build()
 
     val p = new NonCreatorPerson
     p.name = "Snoopy"
