@@ -123,10 +123,9 @@ private class EitherSerializer(left: EitherDetails,
     }
 
     // Otherwise apply type-prefix/suffix, then std serialize:
-    val typedId = typeSer.typeId(value, JsonToken.START_OBJECT)
-    typeSer.writeTypePrefix(jgen, typedId)
+    typeSer.writeTypePrefix(jgen, typeSer.typeId(value, JsonToken.START_OBJECT))
     serialize(value, jgen, provider, Some(typeSer))
-    typeSer.writeTypeSuffix(jgen, typedId)
+    typeSer.writeTypeSuffix(jgen, typeSer.typeId(value, JsonToken.END_OBJECT))
   }
 
   protected[this] def findCachedSerializer(prov: SerializerProvider, typ: Class[_]): JsonSerializer[AnyRef] = {
