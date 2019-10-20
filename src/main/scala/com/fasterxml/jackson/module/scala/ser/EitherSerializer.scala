@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.{JsonGenerator, JsonToken}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
@@ -123,9 +123,10 @@ private class EitherSerializer(left: EitherDetails,
     }
 
     // Otherwise apply type-prefix/suffix, then std serialize:
-    typeSer.writeTypePrefixForObject(value, jgen, classOf[Either[AnyRef, AnyRef]])
+    val typedId = typeSer.typeId(value, JsonToken.START_OBJECT)
+    typeSer.writeTypePrefix(jgen, typedId)
     serialize(value, jgen, provider, Some(typeSer))
-    typeSer.writeTypeSuffixForObject(value, jgen)
+    typeSer.writeTypeSuffix(jgen, typedId)
   }
 
   protected[this] def findCachedSerializer(prov: SerializerProvider, typ: Class[_]): JsonSerializer[AnyRef] = {
