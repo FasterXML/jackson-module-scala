@@ -52,7 +52,9 @@ private class EitherDeserializer(javaType: JavaType,
 
     val result = key match {
       case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+      case ("left") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
       case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+      case ("right") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
       case _ => ctxt.handleUnexpectedToken(javaType.getRawClass, jp).asInstanceOf[Either[AnyRef, AnyRef]]
     }
 
