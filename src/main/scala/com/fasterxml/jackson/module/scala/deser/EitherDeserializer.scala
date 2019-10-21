@@ -45,23 +45,41 @@ private class EitherDeserializer(javaType: JavaType,
     }
 
   private def deserializeEither(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] = {
-    jp.nextToken()
+    jp.currentToken() match {
+      case JsonToken.START_OBJECT =>
+        val key = jp.nextFieldName()
+        val `type` = jp.nextToken()
 
-    val key = jp.getCurrentName
-    val `type` = jp.nextToken()
+        val result = key match {
+          case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+          case ("left") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+          case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+          case ("right") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+          case _ => ctxt.handleUnexpectedToken(javaType, jp).asInstanceOf[Either[AnyRef, AnyRef]]
+        }
 
-    val result = key match {
-      case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
-      case ("left") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
-      case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
-      case ("right") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
-      case _ => ctxt.handleUnexpectedToken(javaType.getRawClass, jp).asInstanceOf[Either[AnyRef, AnyRef]]
+        // consume END_OBJECT
+        jp.nextToken()
+
+        result
+      case JsonToken.START_ARRAY =>
+        val key = jp.nextTextValue()
+        val `type` = jp.nextToken()
+
+        val result = key match {
+          case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+          case ("left") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+          case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+          case ("right") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+          case _ => ctxt.handleUnexpectedToken(javaType, jp).asInstanceOf[Either[AnyRef, AnyRef]]
+        }
+
+        // consume END_ARRAY
+        jp.nextToken()
+
+        result
+      case _ => ctxt.handleUnexpectedToken(javaType, jp).asInstanceOf[Either[AnyRef, AnyRef]]
     }
-
-    // consume END_OBJECT
-    jp.nextToken()
-
-    result
   }
 
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] =
