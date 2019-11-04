@@ -3,7 +3,7 @@ import com.typesafe.sbt.osgi.OsgiKeys
 
 // OSGI bundles
 lazy val jacksonApiOsgiSettings = osgiSettings ++ Seq(
-  OsgiKeys.exportPackage := Seq("sangria.streaming.*;version=${Bundle-Version}"),
+  OsgiKeys.exportPackage := Seq("com.fasterxml.jackson.module.scala.*"),
   OsgiKeys.privatePackage := Seq()
 )
 
