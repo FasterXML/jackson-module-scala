@@ -2,13 +2,12 @@ import ReleaseTransformations._
 import com.typesafe.sbt.osgi.OsgiKeys
 
 // OSGI bundles
-osgiSettings
-
-OsgiKeys.exportPackage := Seq(
-  "com.fasterxml.jackson.module.scala.*"
+lazy val jacksonApiOsgiSettings = osgiSettings ++ Seq(
+  OsgiKeys.exportPackage := Seq("sangria.streaming.*;version=${Bundle-Version}"),
+  OsgiKeys.privatePackage := Seq()
 )
 
-OsgiKeys.privatePackage := Nil
+lazy val sangriaStreamingApiProject = project.in(file(".")).enablePlugins(SbtOsgi).settings(jacksonApiOsgiSettings:_*)
 
 // publishing
 publishMavenStyle := true
