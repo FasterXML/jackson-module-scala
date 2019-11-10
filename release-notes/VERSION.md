@@ -1,3 +1,8 @@
+# Version: 2.10.1
+
+There are no new fixes in this release; it serves to track the 2.10.1 release
+of the upstream Jackson projects.
+
 # Version: 2.10.0
 
 This patch release tracks Jackson 2.10. The 2.10 series adds full support for
@@ -79,8 +84,36 @@ Thanks to Kenji Yoshida.
 
 * [[gh-346]](https://github.com/FasterXML/jackson-module-scala/issues/346)
   `@JsonInclude` content inclusion does not work. Thanks to brharrington.
+  
+# Version: 2.9.3
 
-# Versions 2.6.0 - 2.9.3
+There are no new fixes in this release; it serves to track the 2.9.3 release
+of the upstream Jackson projects.
+
+# Version: 2.9.2
+
+There are no new fixes in this release; it serves to track the 2.9.2 release
+of the upstream Jackson projects.
+
+# Version: 2.9.1
+
+## Fixes
+
+* [[gh-338]](https://github.com/FasterXML/jackson-module-scala/issues/338)
+  Deserialization of JSON object with null values into a `Map[String, JsonNode]` causes a NullPointerException. Thanks to David Pratt.
+* [[gh-287]](https://github.com/FasterXML/jackson-module-scala/issues/287)
+  Null pointer exception when trying to deserialize into `Either[]`. Thanks to Jonathan Stearnes.
+
+# Version: 2.9.0
+
+This minor release tracks Jackson 2.9 and fixes a number of issues.
+
+## Fixes
+
+* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324)
+  Fix bean accessors being used for field names. Thanks to Nick Telford.
+
+# Versions 2.6.0 - 2.8.x
 
 Version notes for these versions were not produced and will need to be
 updated retrospectively.
