@@ -38,7 +38,10 @@ object CreatorTest
       this(script, 0)
     }
   }
+
+  case class ConstructorWithDefaultValues(s: String = "some string", i: Int = 10, dummy: String)
 }
+
 
 @RunWith(classOf[JUnitRunner])
 class CreatorTest extends DeserializationFixture {
@@ -103,5 +106,15 @@ class CreatorTest extends DeserializationFixture {
     bean shouldBe """{"script":"abc","dummy":42}"""
     val roundTrip = f.readValue[MultipleConstructorsAnn](bean)
     roundTrip shouldEqual orig
+  }
+
+  it should "support default values" in { f =>
+    val deser = f.readValue[ConstructorWithDefaultValues]("""{}""")
+    deser.s shouldEqual "some string"
+    deser.i shouldEqual 10
+    deser.dummy shouldEqual null
+    val deser2 = f.readValue[ConstructorWithDefaultValues]("""{"s":"passed","i":5}""")
+    deser2.s shouldEqual "passed"
+    deser2.i shouldEqual 5
   }
 }
