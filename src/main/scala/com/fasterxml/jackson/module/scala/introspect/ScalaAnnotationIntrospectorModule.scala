@@ -3,14 +3,17 @@ package com.fasterxml.jackson.module.scala.introspect
 import java.lang.annotation.Annotation
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
 import com.fasterxml.jackson.databind.`type`.ClassKey
+import com.fasterxml.jackson.databind.deser.{CreatorProperty, NullValueProvider, SettableBeanProperty, ValueInstantiator, ValueInstantiators}
+import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
-import com.fasterxml.jackson.databind.util.SimpleLookupCache
+import com.fasterxml.jackson.databind.util.{AccessPattern, SimpleLookupCache}
 import com.fasterxml.jackson.module.paranamer.ParanamerAnnotationIntrospector
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
-object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
+object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators
 {
   private [this] val _descriptorCache = new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
 
@@ -114,9 +117,54 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
       JsonCreator.Mode.PROPERTIES
     } else null
   }
+
+  class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor) extends StdValueInstantiator(delegate) {
+
+    private val overriddenConstructorArguments = {
+      val args = delegate.getFromObjectArguments(None.orNull)
+
+      args.map {
+        case creator: CreatorProperty =>
+          // Locate the constructor param that matches it
+          descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
+            case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
+              creator.withNullProvider(new NullValueProvider {
+                override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
+
+                override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
+              })
+            case _ => creator
+          }
+        case other => other
+      }
+    }
+
+    override def getFromObjectArguments(context: DeserializationContext): Array[SettableBeanProperty] = {
+      overriddenConstructorArguments
+    }
+  }
+
+  override def findValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription,
+    defaultInstantiator: ValueInstantiator): ValueInstantiator = {
+
+    if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
+
+      val descriptor = _descriptorFor(beanDesc.getBeanClass)
+      if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
+        defaultInstantiator match {
+          case std: StdValueInstantiator =>
+            new ScalaValueInstantiator(std, config, descriptor)
+          case other =>
+            throw new IllegalArgumentException("Cannot customise a non StdValueInstantiatiator: " + other.getClass)
+        }
+      } else defaultInstantiator
+
+    } else defaultInstantiator
+  }
 }
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   this += { _.appendAnnotationIntrospector(new ParanamerAnnotationIntrospector()) }
   this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
+  this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
 }
