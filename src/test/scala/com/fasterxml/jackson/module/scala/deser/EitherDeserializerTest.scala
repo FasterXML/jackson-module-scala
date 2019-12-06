@@ -13,7 +13,7 @@ import scala.util.Random
 @RunWith(classOf[JUnitRunner])
 class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport {
 
-  val module: DefaultScalaModule.type = DefaultScalaModule
+  val module = DefaultScalaModule
 
 
   "DefaultScalaModule" should "be able to deserialize right with string" in {
