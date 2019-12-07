@@ -58,10 +58,27 @@ object BeanIntrospector {
       val primaryConstructor = c.getConstructors.headOption
       val debugCtorParamNames = primaryConstructor.toIndexedSeq.flatMap(getCtorParams)
       val index = debugCtorParamNames.indexOf(name)
+      val companion = findCompanionObject(c)
       if (index >= 0) {
-        Some(ConstructorParameter(primaryConstructor.get, index, None))
+        Some(ConstructorParameter(primaryConstructor.get, index, findConstructorDefaultValue(companion, index)))
       } else {
         findConstructorParam(c.getSuperclass, name)
+      }
+    }
+
+    def findConstructorDefaultValue(maybeCompanion: Option[AnyRef], index: Int): Option[() => AnyRef] = {
+      val methodName = "$lessinit$greater$default$" + (index + 1)
+      maybeCompanion.flatMap(companion => companion.getClass.getMethods.toStream.collectFirst {
+        case method if method.getName == methodName && method.getParameterTypes.length == 0 =>
+          () => method.invoke(companion)
+      })
+    }
+
+    def findCompanionObject(c: Class[_]): Option[AnyRef] = {
+      try {
+        Some(c.getClassLoader.loadClass(c.getName + "$").getDeclaredField("MODULE$").get(null))
+      } catch {
+        case e: Exception => None
       }
     }
 

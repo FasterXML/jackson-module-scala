@@ -7,7 +7,7 @@ import com.fasterxml.jackson.module.scala.util.Implicits._
 
 import scala.language.existentials
 
-case class ConstructorParameter(constructor: Constructor[_], index: Int, defaultValueMethod: Option[Method])
+case class ConstructorParameter(constructor: Constructor[_], index: Int, defaultValue: Option[() => AnyRef])
 
 case class PropertyDescriptor(name: String,
                               param: Option[ConstructorParameter],
