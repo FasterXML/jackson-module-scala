@@ -57,7 +57,7 @@ private class EitherSerializer(left: EitherDetails,
       .orElse(details.valueSerializer)
       .map(prov.handlePrimaryContextualization(_, prop))
       .asInstanceOf[Option[JsonSerializer[AnyRef]]]
-    ser = Option(findConvertingContentSerializer(prov, prop, ser.orNull))
+    ser = Option(findContextualConvertingSerializer(prov, prop, ser.orNull))
       .asInstanceOf[Option[JsonSerializer[AnyRef]]]
     ser = ser match {
       case None => if (details.typ.isDefined && hasContentTypeAnnotation(prov, prop)) {
