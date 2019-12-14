@@ -104,7 +104,7 @@ private object EitherDeserializerResolver extends Deserializers.Base {
   override def findBeanDeserializer(`type`: JavaType, config: DeserializationConfig, beanDesc: BeanDescription) = {
     val rawClass = `type`.getRawClass
 
-    if (!EITHER.isAssignableFrom(rawClass)) null
+    if (!EITHER.isAssignableFrom(rawClass)) None.orNull
     else new EitherDeserializer( `type`, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty )
   }
 }
