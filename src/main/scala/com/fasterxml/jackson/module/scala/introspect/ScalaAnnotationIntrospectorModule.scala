@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
 import com.fasterxml.jackson.databind.`type`.ClassKey
+import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.{CreatorProperty, NullValueProvider, SettableBeanProperty, ValueInstantiator, ValueInstantiators}
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
@@ -75,7 +76,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
-  override def findImplicitPropertyName(member: AnnotatedMember): String = {
+  override def findImplicitPropertyName(mapperConfig: MapperConfig[_], member: AnnotatedMember): String = {
     member match {
       case af: AnnotatedField => fieldName(af).orNull
       case am: AnnotatedMethod => methodName(am).orNull
