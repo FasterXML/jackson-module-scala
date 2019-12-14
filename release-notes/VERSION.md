@@ -1,3 +1,13 @@
+# Version: 2.11.0 (not released)
+
+This patch release tracks Jackson 2.11. The 2.11 series has full support for
+Scala 2.10, 2.11 and 2.12 and 2.13.
+
+## Fixes
+
+* [[gh-87]](https://github.com/FasterXML/jackson-module-scala/issues/87)
+  support default values in case class parameter lists
+
 # Version: 2.10.1
 
 There are no new fixes in this release; it serves to track the 2.10.1 release
