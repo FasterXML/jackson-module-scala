@@ -41,6 +41,11 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
     }
   }
 
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    // TODO add implementation
+    ???
+  }
+
   private class BuilderWrapper[A](val builder: Builder[A]) extends util.AbstractCollection[A] {
     var size = 0
 

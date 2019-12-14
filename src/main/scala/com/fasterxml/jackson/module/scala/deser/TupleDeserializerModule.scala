@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.deser.OptionDeserializerResolver.OPTION
 
 import scala.languageFeature.postfixOps
 
@@ -78,9 +79,21 @@ private object TupleDeserializerResolver extends Deserializers.Base {
     if (!PRODUCT.isAssignableFrom(cls)) null else
     // If it's not *actually* a tuple, it's either a case class or a custom Product
     // which either way we shouldn't handle here.
-    if (!cls.getName.startsWith("scala.Tuple")) null else
-    new TupleDeserializer(javaType, config)
+    if (isOption(cls)) {
+      new TupleDeserializer(javaType, config)
+    } else {
+      super.findBeanDeserializer(javaType, config, beanDesc)
+    }
   }
+
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = isOption(valueType)
+
+  private def isOption(cls: Class[_]): Boolean = {
+    // If it's not *actually* a tuple, it's either a case class or a custom Product
+    // which either way we shouldn't handle here.
+    PRODUCT.isAssignableFrom(cls) && cls.getName.startsWith("scala.Tuple")
+  }
+
 }
 
 /**

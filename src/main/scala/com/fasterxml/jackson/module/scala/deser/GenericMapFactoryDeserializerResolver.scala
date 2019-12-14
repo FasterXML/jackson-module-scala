@@ -39,6 +39,11 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
     }
   }
 
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    // TODO add implementation
+    ???
+  }
+
   private class BuilderWrapper[K,V](val builder: Builder[K, V]) extends java.util.AbstractMap[K, V] {
     override def put(k: K, v: V): V = { builder += ((k, v)); v }
 

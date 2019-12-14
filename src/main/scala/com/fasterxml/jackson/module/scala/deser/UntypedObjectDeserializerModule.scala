@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.deser.{Deserializers, std}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.deser.TupleDeserializerResolver.isOption
 
 import scala.languageFeature.postfixOps
 
@@ -55,6 +56,10 @@ private object UntypedObjectDeserializerResolver extends Deserializers.Base {
                                     beanDesc: BeanDescription) =
     if (!objectClass.equals(javaType.getRawClass)) null
     else new UntypedObjectDeserializer
+
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    objectClass == valueType
+  }
 }
 
 trait UntypedObjectDeserializerModule extends JacksonModule {

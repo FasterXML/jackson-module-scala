@@ -4,6 +4,7 @@ package deser
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, ContextualKeyDeserializer, Deserializers, KeyDeserializers}
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.module.scala.deser.EitherDeserializerResolver.EITHER
 import com.fasterxml.jackson.module.scala.util.EnumResolver
 
 private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
@@ -65,6 +66,10 @@ private object EnumerationDeserializerResolver extends Deserializers.Base {
       None.orNull
     }
 	}
+
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    ENUMERATION.isAssignableFrom(valueType)
+  }
 }
 
 private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDeserializer with ContextualKeyDeserializer {

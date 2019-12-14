@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerResolver.ENUMERATION
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 private class OptionDeserializer(fullType: JavaType,
@@ -89,6 +90,10 @@ private object OptionDeserializerResolver extends Deserializers.Base {
       val valDeser = Option(contentDeserializer).orElse(Option(elementType.getValueHandler)).asInstanceOf[Option[JsonDeserializer[AnyRef]]]
       new OptionDeserializer(refType, typeDeser, valDeser)
     }
+  }
+
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    OPTION.isAssignableFrom(valueType)
   }
 }
 

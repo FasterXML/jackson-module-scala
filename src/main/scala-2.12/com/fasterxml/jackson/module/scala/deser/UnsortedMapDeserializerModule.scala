@@ -27,5 +27,10 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
       .toList
 
     override def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V] = factory.newBuilder[K, V]
+
+    override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+      // TODO add implementation
+      ???
+    }
   })
 }

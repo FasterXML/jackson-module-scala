@@ -108,7 +108,7 @@ private object EitherDeserializerResolver extends Deserializers.Base {
     if (!EITHER.isAssignableFrom(rawClass)) {
       super.findBeanDeserializer(`type`, config, beanDesc)
     } else {
-      new EitherDeserializer( `type`, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty )
+      new EitherDeserializer(`type`, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty)
     }
   }
 
@@ -120,8 +120,12 @@ private object EitherDeserializerResolver extends Deserializers.Base {
     if (!EITHER.isAssignableFrom(rawClass)) {
       super.findReferenceDeserializer(refType, config, beanDesc, contentTypeDeserializer, contentDeserializer)
     } else {
-      new EitherDeserializer( refType, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty )
+      new EitherDeserializer(refType, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty)
     }
+  }
+
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    EITHER.isAssignableFrom(valueType)
   }
 }
 

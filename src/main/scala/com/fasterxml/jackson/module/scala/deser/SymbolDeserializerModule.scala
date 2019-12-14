@@ -20,6 +20,11 @@ private object SymbolDeserializerResolver extends Deserializers.Base {
     if (SYMBOL isAssignableFrom javaType.getRawClass)
       SymbolDeserializer
     else null
+
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    SYMBOL isAssignableFrom valueType
+  }
+
 }
 
 trait SymbolDeserializerModule extends JacksonModule {

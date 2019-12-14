@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.{DeserializationConfig, JavaType}
 import com.fasterxml.jackson.module.scala.introspect.OrderingLocator
 import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.FactorySorter
@@ -22,5 +22,10 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
 
     override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] =
       cf.newBuilder[A](OrderingLocator.locate(valueType).asInstanceOf[Ordering[A]])
+
+    override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+      // TODO add implementation
+      ???
+    }
   })
 }

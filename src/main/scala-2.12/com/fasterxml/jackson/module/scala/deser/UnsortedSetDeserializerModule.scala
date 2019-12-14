@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.{DeserializationConfig, JavaType}
 import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.FactorySorter
 
@@ -22,5 +22,10 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
       .toList
 
     override def builderFor[A](cf: Factory, javaType: JavaType): Builder[A] = cf.newBuilder[A]
+
+    override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+      // TODO add implementation
+      ???
+    }
   })
 }

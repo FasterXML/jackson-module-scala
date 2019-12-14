@@ -53,8 +53,16 @@ private object NumberDeserializers extends Deserializers.Base
     tpe.getRawClass match {
       case BigDecimalClass => BigDecimalDeserializer
       case BigIntClass => BigIntDeserializer
-      case _ => null
+      case _ => None.orNull
     }
+
+  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    valueType match {
+      case BigDecimalClass => true
+      case BigIntClass => true
+      case _ => false
+    }
+  }
 }
 
 trait ScalaNumberDeserializersModule extends JacksonModule {
