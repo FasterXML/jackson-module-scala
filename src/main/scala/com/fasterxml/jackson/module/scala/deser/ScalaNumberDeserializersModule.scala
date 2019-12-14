@@ -20,7 +20,7 @@ private abstract class BigNumberDeserializer[T >: Null : ClassTag](creator: (Str
       case VALUE_NUMBER_INT | VALUE_NUMBER_FLOAT => creator(jp.getText.trim)
       case VALUE_STRING =>
         val text = jp.getText.trim
-        if (text.isEmpty) null else try {
+        if (text.isEmpty) None.orNull else try {
           creator(text)
         }
         catch {
