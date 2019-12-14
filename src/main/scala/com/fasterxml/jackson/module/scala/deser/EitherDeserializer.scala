@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
@@ -101,11 +102,26 @@ private object EitherDeserializerResolver extends Deserializers.Base {
 
   private val EITHER = classOf[Either[_, _]]
 
-  override def findBeanDeserializer(`type`: JavaType, config: DeserializationConfig, beanDesc: BeanDescription) = {
+  override def findBeanDeserializer(`type`: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): JsonDeserializer[_] = {
     val rawClass = `type`.getRawClass
 
-    if (!EITHER.isAssignableFrom(rawClass)) None.orNull
-    else new EitherDeserializer( `type`, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty )
+    if (!EITHER.isAssignableFrom(rawClass)) {
+      super.findBeanDeserializer(`type`, config, beanDesc)
+    } else {
+      new EitherDeserializer( `type`, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty )
+    }
+  }
+
+  override def findReferenceDeserializer(refType: ReferenceType, config: DeserializationConfig,
+                                         beanDesc: BeanDescription, contentTypeDeserializer: TypeDeserializer,
+                                         contentDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+    val rawClass = refType.getRawClass
+
+    if (!EITHER.isAssignableFrom(rawClass)) {
+      super.findReferenceDeserializer(refType, config, beanDesc, contentTypeDeserializer, contentDeserializer)
+    } else {
+      new EitherDeserializer( refType, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty )
+    }
   }
 }
 
