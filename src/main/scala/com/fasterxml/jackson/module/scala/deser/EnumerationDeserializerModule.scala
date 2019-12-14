@@ -52,18 +52,18 @@ private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends JsonDese
 
 private object EnumerationDeserializerResolver extends Deserializers.Base {
 
+  private val ENUMERATION = classOf[scala.Enumeration#Value]
+
   override def findBeanDeserializer(javaType: JavaType,
           config: DeserializationConfig,
           beanDesc: BeanDescription) = {
 
 		val clazz = javaType.getRawClass
-		var deserializer : JsonDeserializer[_] = null
-
-		if (classOf[scala.Enumeration#Value].isAssignableFrom(clazz)) {
-			deserializer = new EnumerationDeserializer(javaType)
-		}
-
-		deserializer
+		if (ENUMERATION.isAssignableFrom(clazz)) {
+			new EnumerationDeserializer(javaType)
+		} else {
+      None.orNull
+    }
 	}
 }
 
@@ -89,13 +89,13 @@ private object EnumerationKeyDeserializers extends KeyDeserializers {
     if (valueClass.isAssignableFrom(tp.getRawClass)) {
       new EnumerationKeyDeserializer(None)
     }
-    else null
+    else None.orNull
   }
 }
 
 trait EnumerationDeserializerModule extends JacksonModule {
-  this += { ctxt => {
+  this += { ctxt =>
     ctxt.addDeserializers(EnumerationDeserializerResolver)
     ctxt.addKeyDeserializers(EnumerationKeyDeserializers)
-  } }
+  }
 }

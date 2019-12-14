@@ -82,7 +82,7 @@ private object OptionDeserializerResolver extends Deserializers.Base {
                                          beanDesc: BeanDescription,
                                          contentTypeDeserializer: TypeDeserializer,
                                          contentDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    if (!OPTION.isAssignableFrom(refType.getRawClass)) null
+    if (!OPTION.isAssignableFrom(refType.getRawClass)) None.orNull
     else {
       val elementType = refType.getContentType
       val typeDeser = Option(contentTypeDeserializer).orElse(Option(elementType.getTypeHandler[TypeDeserializer]))
