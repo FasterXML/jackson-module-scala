@@ -149,7 +149,7 @@ private object EitherSerializerResolver extends Serializers.Base {
                                        beanDesc: BeanDescription,
                                        contentTypeSerializer: TypeSerializer,
                                        contentValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
-    if (!EITHER.isAssignableFrom(refType.getRawClass)) null
+    if (!EITHER.isAssignableFrom(refType.getRawClass)) None.orNull
     else {
       val javaType = if (LEFT.isAssignableFrom(refType.getRawClass) || RIGHT.isAssignableFrom(refType.getRawClass)) {
         refType.getReferencedType.getSuperClass
