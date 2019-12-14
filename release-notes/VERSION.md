@@ -1,10 +1,31 @@
-# Version: 2.10.0 (pre-release 3)
+# Version: 2.11.0 (not released)
+
+This patch release tracks Jackson 2.11. The 2.11 series has full support for
+Scala 2.10, 2.11 and 2.12 and 2.13.
+
+## Fixes
+
+* [[gh-87]](https://github.com/FasterXML/jackson-module-scala/issues/87)
+  support default values in case class parameter lists
+
+# Version: 2.10.1
+
+There are no new fixes in this release; it serves to track the 2.10.1 release
+of the upstream Jackson projects.
+
+# Version: 2.10.0
 
 This patch release tracks Jackson 2.10. The 2.10 series adds full support for
 Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
 
+The addition of a SymbolModule to DefaultScalaModule might lead to some behaviour changes for some users.
+
 ## Fixes
 
+* [[gh-432]](https://github.com/FasterXML/jackson-module-scala/issues/432)
+  move experimental classes to main package
+* [[gh-pr-264]](https://github.com/FasterXML/jackson-module-scala/pull/264)
+  Add SymbolModule to support Scala symbols
 * [[gh-399]](https://github.com/FasterXML/jackson-module-scala/issues/399)
   JsonScalaEnumeration annotation not picked up when using a Mixin
 * [[gh-429]](https://github.com/FasterXML/jackson-module-scala/issues/429)
@@ -13,8 +34,6 @@ Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
   `scala.collection.immutable.ListMap` fails to serialize since 2.9.3 (fix in jackson-databind that is useful for Scala developers)
 
 # Version: 2.9.10
-
-The first release to support Scala 2.13. Thanks to Adriaan Moors and Seth Tisue.
 
 ## Fixes
 
@@ -51,7 +70,7 @@ This minor release included support for Scala 2.13 milestone releases.
 * [[gh-353]](https://github.com/FasterXML/jackson-module-scala/issues/353)
   path not computed on collection
 * [[gh-314]](https://github.com/FasterXML/jackson-module-scala/issues/314)
-  Serialize Some(null)  
+  Serialize Some(null)
 * [[gh-299]](https://github.com/FasterXML/jackson-module-scala/issues/299)
   unable to handle Option of a case class
 
@@ -66,7 +85,7 @@ Thanks to Kenji Yoshida.
 
 * [[gh-287]](https://github.com/FasterXML/jackson-module-scala/issues/287)
   Null pointer exception when trying to deserialize into Either[]. Thanks to staffanstockholm.
-* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324) 
+* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324)
   Fix bean accessors being used for field names. Thanks to Nick Telford.
 
 # Version: 2.9.4
@@ -76,7 +95,35 @@ Thanks to Kenji Yoshida.
 * [[gh-346]](https://github.com/FasterXML/jackson-module-scala/issues/346)
   `@JsonInclude` content inclusion does not work. Thanks to brharrington.
 
-# Versions 2.6.0 - 2.9.3
+# Version: 2.9.3
+
+There are no new fixes in this release; it serves to track the 2.9.3 release
+of the upstream Jackson projects.
+
+# Version: 2.9.2
+
+There are no new fixes in this release; it serves to track the 2.9.2 release
+of the upstream Jackson projects.
+
+# Version: 2.9.1
+
+## Fixes
+
+* [[gh-338]](https://github.com/FasterXML/jackson-module-scala/issues/338)
+  Deserialization of JSON object with null values into a `Map[String, JsonNode]` causes a NullPointerException. Thanks to David Pratt.
+* [[gh-287]](https://github.com/FasterXML/jackson-module-scala/issues/287)
+  Null pointer exception when trying to deserialize into `Either[]`. Thanks to Jonathan Stearnes.
+
+# Version: 2.9.0
+
+This minor release tracks Jackson 2.9 and fixes a number of issues.
+
+## Fixes
+
+* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324)
+  Fix bean accessors being used for field names. Thanks to Nick Telford.
+
+# Versions 2.6.0 - 2.8.x
 
 Version notes for these versions were not produced and will need to be
 updated retrospectively.
