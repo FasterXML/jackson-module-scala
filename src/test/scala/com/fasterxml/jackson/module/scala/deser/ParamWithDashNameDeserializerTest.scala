@@ -9,6 +9,8 @@ import org.scalatestplus.junit.JUnitRunner
 object ParamWithDashNameDeserializerTest {
   case class AnnotatedOptionLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) valueLong: Option[Long])
 
+  case class OptionLongWithDash(`value-long`: Option[Long])
+
   case class AnnotatedOptionLongWithDash(@JsonDeserialize(contentAs = classOf[java.lang.Long]) `value-long`: Option[Long])
 
   case class AnnotatedOptionLongWithDashButChangeToCamelCase(@JsonProperty("value-long") @JsonDeserialize(contentAs = classOf[java.lang.Long]) valueLong: Option[Long])
@@ -35,6 +37,20 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
   }
 
   it should "support param names with dashes" in {
+    // check deserialization
+    val v1 = deserialize[OptionLongWithDash]("""{"value-long":251}""")
+    v1 shouldBe OptionLongWithDash(Some(251L))
+    v1.`value-long`.get shouldBe 251L
+
+    // serialize from case class then deserialize and then apply the method that will fail
+    val v2 = deserialize[OptionLongWithDash](serialize(OptionLongWithDash(Some(252))))
+    v2 shouldBe OptionLongWithDash(Some(252L))
+    v2.`value-long`.get shouldBe 252L
+    //TODO last assert fails due to unboxing issue
+    //useOptionLong(v2.`value-long`) shouldBe 504L
+  }
+
+  it should "support param names with dashes (annotated case)" in {
     // check deserialization
     val v1 = deserialize[AnnotatedOptionLongWithDash]("""{"value-long":251}""")
     v1 shouldBe AnnotatedOptionLongWithDash(Some(251L))
