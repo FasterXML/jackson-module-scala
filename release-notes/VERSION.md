@@ -8,6 +8,11 @@ Scala 2.10, 2.11 and 2.12 and 2.13.
 * [[gh-87]](https://github.com/FasterXML/jackson-module-scala/issues/87)
   support default values in case class parameter lists
 
+# Version: 2.10.2
+
+There are no new fixes in this release; it serves to track the 2.10.2 release
+of the upstream Jackson projects.
+
 # Version: 2.10.1
 
 There are no new fixes in this release; it serves to track the 2.10.1 release
