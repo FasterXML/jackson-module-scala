@@ -25,6 +25,9 @@ class OverrideValSerializerTest extends SerializerTest {
     val id = UUID.randomUUID()
     //TODO https://github.com/FasterXML/jackson-module-scala/issues/218
     //the json should also include "id":"<idAsString>"
-    serialize(Sub(id, "something")) shouldBe """{"type":"baseclass","something":"something"}"""
+    val json = serialize(Sub(id, "something"))
+    //json should include (s""""id":"${id.toString}"""")
+    json should include (""""type":"baseclass"""")
+    json should include (""""something":"something"""")
   }
 }
