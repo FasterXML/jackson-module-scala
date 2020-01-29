@@ -14,8 +14,7 @@ import com.fasterxml.jackson.module.paranamer.ParanamerAnnotationIntrospector
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
-object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators
-{
+object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] val _descriptorCache = new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
 
   private def _descriptorFor(clz: Class[_]): BeanDescriptor = {
@@ -36,7 +35,11 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
 
   private def methodName(am: AnnotatedMethod): Option[String] = {
     val d = _descriptorFor(am.getDeclaringClass)
-    d.properties.find(p => (p.getter ++ p.setter).exists(_ == am.getAnnotated)).map(_.name)
+    val getterSetter = d.properties.find(p => (p.getter ++ p.setter).exists(_ == am.getAnnotated)).map(_.name)
+    getterSetter match {
+      case Some(s) => Some(s)
+      case _ => d.properties.find(p => p.name == am.getName).map(_.name)
+    }
   }
 
   private def paramName(ap: AnnotatedParameter): Option[String] = {
