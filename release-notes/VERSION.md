@@ -5,6 +5,13 @@ Scala 2.10, 2.11 and 2.12 and 2.13.
 
 ## Fixes
 
+* [[gh-218]](https://github.com/FasterXML/jackson-module-scala/issues/218)
+  Fix issue with serialization of case class with overridden attributes
+
+# Version: 2.10.3 (not released)
+
+## Fixes
+
 * [[gh-87]](https://github.com/FasterXML/jackson-module-scala/issues/87)
   support default values in case class parameter lists
 
