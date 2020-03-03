@@ -30,7 +30,7 @@ unmanagedSourceDirectories in Compile += {
 }
 
 val jacksonVersion = "2.11.0-SNAPSHOT"
-val jacksonLegacyVersion = "2.10.2"
+val jacksonLegacyVersion = "2.10.3"
 
 libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
@@ -42,7 +42,7 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonLegacyVersion % "test",
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonLegacyVersion % "test",
     "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-    "junit" % "junit" % "4.12" % "test"
+    "junit" % "junit" % "4.13" % "test"
 )
 
 // build.properties
