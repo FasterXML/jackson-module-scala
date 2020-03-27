@@ -40,6 +40,8 @@ object CreatorTest
   }
 
   case class ConstructorWithDefaultValues(s: String = "some string", i: Int = 10, dummy: String)
+
+  case class ConstructorWithOptionDefaultValues(s: Option[String] = None, i: Option[Int] = None, dummy: String)
 }
 
 
@@ -116,5 +118,15 @@ class CreatorTest extends DeserializationFixture {
     val deser2 = f.readValue[ConstructorWithDefaultValues]("""{"s":"passed","i":5}""")
     deser2.s shouldEqual "passed"
     deser2.i shouldEqual 5
+  }
+
+  it should "support options with default values" in { f =>
+    val deser = f.readValue[ConstructorWithOptionDefaultValues]("""{}""")
+    deser.s shouldBe empty
+    deser.i shouldBe empty
+    deser.dummy shouldEqual null
+    val deser2 = f.readValue[ConstructorWithOptionDefaultValues]("""{"s":"passed","i":5}""")
+    deser2.s shouldEqual Some("passed")
+    deser2.i shouldEqual Some(5)
   }
 }
