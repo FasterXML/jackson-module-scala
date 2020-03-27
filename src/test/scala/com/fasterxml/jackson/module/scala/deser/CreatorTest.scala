@@ -42,6 +42,8 @@ object CreatorTest
   case class ConstructorWithDefaultValues(s: String = "some string", i: Int = 10, dummy: String)
 
   case class ConstructorWithOptionDefaultValues(s: Option[String] = None, i: Option[Int] = None, dummy: String)
+
+  case class ConstructorWithOptionSeqDefaultValues(s: Option[Seq[String]] = None)
 }
 
 
@@ -128,5 +130,12 @@ class CreatorTest extends DeserializationFixture {
     val deser2 = f.readValue[ConstructorWithOptionDefaultValues]("""{"s":"passed","i":5}""")
     deser2.s shouldEqual Some("passed")
     deser2.i shouldEqual Some(5)
+  }
+
+  it should "support optional seqs with default values" in { f =>
+    val deser = f.readValue[ConstructorWithOptionSeqDefaultValues]("""{}""")
+    deser.s shouldBe empty
+    val deser2 = f.readValue[ConstructorWithOptionSeqDefaultValues]("""{"s":["a", "b"]}""")
+    deser2.s shouldEqual Some(Seq("a", "b"))
   }
 }
