@@ -130,6 +130,7 @@ class CreatorTest extends DeserializationFixture {
     val deser2 = f.readValue[ConstructorWithOptionDefaultValues]("""{"s":"passed","i":5}""")
     deser2.s shouldEqual Some("passed")
     deser2.i shouldEqual Some(5)
+    f.writeValueAsString(ConstructorWithOptionDefaultValues(dummy="d")) shouldEqual """{"s":null,"i":null,"dummy":"d"}"""
   }
 
   it should "support optional seqs with default values" in { f =>
@@ -137,5 +138,6 @@ class CreatorTest extends DeserializationFixture {
     deser.s shouldBe empty
     val deser2 = f.readValue[ConstructorWithOptionSeqDefaultValues]("""{"s":["a", "b"]}""")
     deser2.s shouldEqual Some(Seq("a", "b"))
+    f.writeValueAsString(ConstructorWithOptionSeqDefaultValues()) shouldEqual """{"s":null}"""
   }
 }
