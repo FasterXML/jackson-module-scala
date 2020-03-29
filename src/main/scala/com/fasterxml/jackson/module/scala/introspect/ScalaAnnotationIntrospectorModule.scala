@@ -123,22 +123,26 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
 
   class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor) extends StdValueInstantiator(delegate) {
 
-    private val overriddenConstructorArguments = {
+    private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
       val args = delegate.getFromObjectArguments(config)
+      Option(args) match {
+        case Some(array) => {
+          array.map {
+            case creator: CreatorProperty =>
+              // Locate the constructor param that matches it
+              descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
+                case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
+                  creator.withNullProvider(new NullValueProvider {
+                    override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
 
-      args.map {
-        case creator: CreatorProperty =>
-          // Locate the constructor param that matches it
-          descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
-            case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
-              creator.withNullProvider(new NullValueProvider {
-                override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
-
-                override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
-              })
-            case _ => creator
+                    override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
+                  })
+                case _ => creator
+              }
+            case other => other
           }
-        case other => other
+        }
+        case _ => Array.empty
       }
     }
 

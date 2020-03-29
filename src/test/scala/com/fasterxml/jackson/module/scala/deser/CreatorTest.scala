@@ -39,11 +39,17 @@ object CreatorTest
     }
   }
 
+  sealed abstract class Struct1(val name: String, val classifier: String = "my_default_string") {
+    override def toString: String = name
+  }
+
   case class ConstructorWithDefaultValues(s: String = "some string", i: Int = 10, dummy: String)
 
   case class ConstructorWithOptionDefaultValues(s: Option[String] = None, i: Option[Int] = None, dummy: String)
 
   case class ConstructorWithOptionSeqDefaultValues(s: Option[Seq[String]] = None)
+
+  case class ConstructorWithOptionStruct(s: Option[Struct1] = None)
 }
 
 
@@ -139,5 +145,13 @@ class CreatorTest extends DeserializationFixture {
     val deser2 = f.readValue[ConstructorWithOptionSeqDefaultValues]("""{"s":["a", "b"]}""")
     deser2.s shouldEqual Some(Seq("a", "b"))
     f.writeValueAsString(ConstructorWithOptionSeqDefaultValues()) shouldEqual """{"s":null}"""
+  }
+
+  it should "support optional structs with default values" ignore { f =>
+    val deser = f.readValue[ConstructorWithOptionStruct]("""{}""")
+    deser.s shouldBe empty
+    val deser2 = f.readValue[ConstructorWithOptionStruct]("""{"s":{"name":"name"}}""")
+    deser2.s shouldEqual Some(new Struct1("name"){})
+    f.writeValueAsString(ConstructorWithOptionStruct()) shouldEqual """{"s":null}"""
   }
 }
