@@ -1,4 +1,4 @@
-# Version: 2.11.0 (not released)
+# Version: 2.11.0 (rc1 released)
 
 This patch release tracks Jackson 2.11. The 2.11 series has full support for
 Scala 2.10, 2.11 and 2.12 and 2.13.
@@ -7,6 +7,9 @@ Scala 2.10, 2.11 and 2.12 and 2.13.
 
 * [[gh-87]](https://github.com/FasterXML/jackson-module-scala/issues/87)
   support default values in case class parameter lists
+* [[gh-445]](https://github.com/FasterXML/jackson-module-scala/issues/445) fix NullPointerException that can happen
+  with some case classes (caused by gh-87 fix) - issue still appears in 2.11.0.rc1 but will be fixed in subsequent release
+  candidates
 
 # Version: 2.10.3
 
