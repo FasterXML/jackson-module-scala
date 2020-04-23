@@ -7,7 +7,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.12.11"
 
-crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.11", "2.13.1")
+crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.11", "2.13.2")
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
