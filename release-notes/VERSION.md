@@ -1,4 +1,4 @@
-# Version: 2.11.0 (not released)
+# Version: 2.11.0
 
 This patch release tracks Jackson 2.11. The 2.11 series has full support for
 Scala 2.10, 2.11 and 2.12 and 2.13.
@@ -7,6 +7,20 @@ Scala 2.10, 2.11 and 2.12 and 2.13.
 
 * [[gh-87]](https://github.com/FasterXML/jackson-module-scala/issues/87)
   support default values in case class parameter lists
+* [[gh-445]](https://github.com/FasterXML/jackson-module-scala/issues/445) fix NullPointerException that can happen
+  with some case classes (caused by gh-87 fix) - issue still appears in 2.11.0.rc1 but is fixed in 2.11.0
+
+# Version: 2.10.3
+
+## Fixes
+
+* [[gh-218]](https://github.com/FasterXML/jackson-module-scala/issues/218)
+  Fix issue with serialization of case class with overridden attributes
+
+# Version: 2.10.2
+
+There are no new fixes in this release; it serves to track the 2.10.2 release
+of the upstream Jackson projects.
 
 # Version: 2.10.1
 
@@ -70,7 +84,7 @@ This minor release included support for Scala 2.13 milestone releases.
 * [[gh-353]](https://github.com/FasterXML/jackson-module-scala/issues/353)
   path not computed on collection
 * [[gh-314]](https://github.com/FasterXML/jackson-module-scala/issues/314)
-  Serialize Some(null)
+  Serialize Some(null)  
 * [[gh-299]](https://github.com/FasterXML/jackson-module-scala/issues/299)
   unable to handle Option of a case class
 
@@ -85,7 +99,7 @@ Thanks to Kenji Yoshida.
 
 * [[gh-287]](https://github.com/FasterXML/jackson-module-scala/issues/287)
   Null pointer exception when trying to deserialize into Either[]. Thanks to staffanstockholm.
-* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324)
+* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324) 
   Fix bean accessors being used for field names. Thanks to Nick Telford.
 
 # Version: 2.9.4
@@ -94,7 +108,7 @@ Thanks to Kenji Yoshida.
 
 * [[gh-346]](https://github.com/FasterXML/jackson-module-scala/issues/346)
   `@JsonInclude` content inclusion does not work. Thanks to brharrington.
-
+  
 # Version: 2.9.3
 
 There are no new fixes in this release; it serves to track the 2.9.3 release
