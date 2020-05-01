@@ -1,9 +1,9 @@
-package com.fasterxml.jackson.module.scala.introspect
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect
 
 import java.lang.reflect.Member
 
-import com.fasterxml.jackson.module.scala.BaseSpec
-import com.fasterxml.jackson.module.scala.introspect.BeanIntrospectorTest.DecodedNameMatcher
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.BaseSpec
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect.BeanIntrospectorTest.DecodedNameMatcher
 import org.junit.runner.RunWith
 import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 import org.scalatest.{Inside, LoneElement, OptionValues}

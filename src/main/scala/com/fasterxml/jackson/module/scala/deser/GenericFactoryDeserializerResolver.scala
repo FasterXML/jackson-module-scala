@@ -1,13 +1,13 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
 import java.util
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.CollectionLikeType
-import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializerBase, StdValueInstantiator}
-import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonParser
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializerBase, StdValueInstantiator}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
 import scala.collection.mutable
 import scala.language.higherKinds

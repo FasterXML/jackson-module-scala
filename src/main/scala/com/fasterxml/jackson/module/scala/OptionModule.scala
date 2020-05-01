@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.module.scala.deser.OptionDeserializerModule
-import com.fasterxml.jackson.module.scala.ser.OptionSerializerModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.OptionDeserializerModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.OptionSerializerModule
 
 /**
  * Adds support for serializing and deserializing Scala Options.

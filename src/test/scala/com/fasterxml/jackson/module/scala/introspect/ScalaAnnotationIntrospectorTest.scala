@@ -1,13 +1,13 @@
-package com.fasterxml.jackson
+package __foursquare_shaded__.com.fasterxml.jackson
 package module.scala
 package introspect
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.ser.ContextualSerializer
-import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
-import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonProperty
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonGenerator
+import __foursquare_shaded__.com.fasterxml.jackson.databind.module.SimpleModule
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.ContextualSerializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import org.junit.runner.RunWith
 import org.scalatest.LoneElement._
 import org.scalatest.{Matchers, Outcome, fixture}

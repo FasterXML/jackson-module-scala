@@ -21,12 +21,12 @@
  *    limitations under the License.
  */
 
-package com.fasterxml.jackson.module.scala.introspect
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect
 
 import java.lang.reflect.{Constructor, Field, Method, Modifier}
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.thoughtworks.paranamer.{BytecodeReadingParanamer, CachingParanamer}
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonProperty
+import __foursquare_shaded__.com.thoughtworks.paranamer.{BytecodeReadingParanamer, CachingParanamer}
 
 import scala.annotation.tailrec
 import scala.reflect.NameTransformer

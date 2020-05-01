@@ -1,9 +1,9 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, ObjectMapper}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonParser
+import __foursquare_shaded__.com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, ObjectMapper}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatestplus.junit.JUnitRunner

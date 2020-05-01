@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 
 import scala.collection.generic.{GenericCompanion, SortedSetFactory}
 import scala.collection.{GenTraversable, SortedSet, SortedSetLike, mutable, immutable}

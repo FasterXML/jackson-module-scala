@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module
+package __foursquare_shaded__.com.fasterxml.jackson.module
 
 /**
  * Provides Scala support for the [[http://jackson.codehaus.org Jackson JSON Processor]].

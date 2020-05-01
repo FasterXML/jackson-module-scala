@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala;
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation;
-import com.fasterxml.jackson.core.type.TypeReference;
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JacksonAnnotation;
+import __foursquare_shaded__.com.fasterxml.jackson.core.type.TypeReference;
 import scala.Enumeration;
 
 import java.lang.annotation.ElementType;

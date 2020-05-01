@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.annotation.JsonValue
-import com.fasterxml.jackson.module.scala.BaseFixture
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonValue
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.BaseFixture
 
 import scala.annotation.meta.getter
 

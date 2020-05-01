@@ -1,8 +1,8 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, ObjectReader}
-import com.fasterxml.jackson.datatype.guava.GuavaModule
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, ObjectReader}
+import __foursquare_shaded__.com.fasterxml.jackson.datatype.guava.GuavaModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.google.common.collect.Multimap
 import org.junit.Assert.assertNotNull
 import org.junit.Test

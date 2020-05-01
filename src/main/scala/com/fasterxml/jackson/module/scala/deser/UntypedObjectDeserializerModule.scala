@@ -1,10 +1,10 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.deser.{Deserializers, std}
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.module.scala.JacksonModule
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonParser
+import __foursquare_shaded__.com.fasterxml.jackson.core.`type`.TypeReference
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.{Deserializers, std}
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.JacksonModule
 
 object UntypedObjectDeserializer
 {

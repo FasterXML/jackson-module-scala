@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonTypeInfo}
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonTypeInfo}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatest.matchers.Matcher
 import org.scalatestplus.junit.JUnitRunner
@@ -79,7 +79,7 @@ class IterableSerializerTest extends SerializerTest {
   }
 
   it should "honor JsonTypeInfo" in {
-    serialize(CHolder(Seq[C](X("1"), X("2")))) shouldBe """{"c":[{"@class":"com.fasterxml.jackson.module.scala.ser.IterableSerializerTest$X","data":"1"},{"@class":"com.fasterxml.jackson.module.scala.ser.IterableSerializerTest$X","data":"2"}]}"""
+    serialize(CHolder(Seq[C](X("1"), X("2")))) shouldBe """{"c":[{"@class":"__foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.IterableSerializerTest$X","data":"1"},{"@class":"__foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.IterableSerializerTest$X","data":"2"}]}"""
   }
 
   val matchUnorderedSet: Matcher[Any] = {

@@ -1,10 +1,10 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 package deser
 
-import com.fasterxml.jackson.core.{JsonParser, JsonToken}
-import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, ContextualKeyDeserializer, Deserializers, KeyDeserializers}
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.module.scala.util.EnumResolver
+import __foursquare_shaded__.com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.{ContextualDeserializer, ContextualKeyDeserializer, Deserializers, KeyDeserializers}
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.util.EnumResolver
 
 private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
   self: JsonDeserializer[Enumeration#Value] =>

@@ -1,6 +1,6 @@
-package com.fasterxml.jackson.module.scala.deser;
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonCreator;
 
 public class ValueHolder {
     public final long internalValue;

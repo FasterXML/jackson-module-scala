@@ -1,12 +1,12 @@
-package com.fasterxml.jackson.module.scala.experimental
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.experimental
 
 import java.io._
 import java.net.URL
 
-import com.fasterxml.jackson.core._
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
-import com.fasterxml.jackson.databind.jsonschema.JsonSchema
+import __foursquare_shaded__.com.fasterxml.jackson.core._
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsonschema.JsonSchema
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>

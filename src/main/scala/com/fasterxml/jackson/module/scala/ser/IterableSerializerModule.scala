@@ -1,16 +1,16 @@
-package com.fasterxml.jackson
+package __foursquare_shaded__.com.fasterxml.jackson
 package module.scala
 package ser
 
 import java.{lang => jl}
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.`type`.CollectionLikeType
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, CollectionSerializer}
-import com.fasterxml.jackson.databind.ser.{ContainerSerializer, Serializers}
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonGenerator
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, CollectionSerializer}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.{ContainerSerializer, Serializers}
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
 
 import scala.collection.JavaConverters._
 

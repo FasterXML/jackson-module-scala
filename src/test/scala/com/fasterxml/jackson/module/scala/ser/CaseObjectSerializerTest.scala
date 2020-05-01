@@ -1,6 +1,6 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 

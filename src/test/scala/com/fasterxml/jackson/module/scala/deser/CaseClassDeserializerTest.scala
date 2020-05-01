@@ -1,10 +1,10 @@
-package com.fasterxml.jackson
+package __foursquare_shaded__.com.fasterxml.jackson
 package module.scala
 package deser
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonProperty
+import __foursquare_shaded__.com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -43,7 +43,7 @@ object CaseClassDeserializerTest
 
 @RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest {
-  import com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerTest._
+  import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerTest._
 
 
   def module: DefaultScalaModule.type = DefaultScalaModule

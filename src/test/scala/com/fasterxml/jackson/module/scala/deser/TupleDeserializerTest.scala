@@ -1,8 +1,8 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
-import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 

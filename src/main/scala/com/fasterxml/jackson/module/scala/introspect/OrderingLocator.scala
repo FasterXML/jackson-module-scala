@@ -1,6 +1,6 @@
-package com.fasterxml.jackson.module.scala.introspect
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect
 
-import com.fasterxml.jackson.databind.JavaType
+import __foursquare_shaded__.com.fasterxml.jackson.databind.JavaType
 
 object OrderingLocator {
   val ORDERINGS = Map.apply[Class[_],Ordering[_]](

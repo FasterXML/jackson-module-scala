@@ -1,14 +1,14 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 
 import java.util.Properties
 
-import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.core.util.VersionUtil
-import com.fasterxml.jackson.databind.Module.SetupContext
-import com.fasterxml.jackson.databind.`type`.TypeModifier
-import com.fasterxml.jackson.databind.deser.Deserializers
-import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
-import com.fasterxml.jackson.databind.{JsonMappingException, Module}
+import __foursquare_shaded__.com.fasterxml.jackson.core.Version
+import __foursquare_shaded__.com.fasterxml.jackson.core.util.VersionUtil
+import __foursquare_shaded__.com.fasterxml.jackson.databind.Module.SetupContext
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`.TypeModifier
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.Deserializers
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{JsonMappingException, Module}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable

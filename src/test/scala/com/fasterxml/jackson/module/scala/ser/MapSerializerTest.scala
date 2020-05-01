@@ -1,11 +1,11 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
-import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonSubTypes, JsonTypeInfo}
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.{JsonSerializer, SerializationFeature, SerializerProvider}
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonSubTypes, JsonTypeInfo}
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonGenerator
+import __foursquare_shaded__.com.fasterxml.jackson.databind.annotation.JsonSerialize
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{JsonSerializer, SerializationFeature, SerializerProvider}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 

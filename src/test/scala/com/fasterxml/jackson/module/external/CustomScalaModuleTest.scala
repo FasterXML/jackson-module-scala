@@ -1,6 +1,6 @@
-package com.fasterxml.jackson.module.external
+package __foursquare_shaded__.com.fasterxml.jackson.module.external
 
-import com.fasterxml.jackson.module.scala.BaseSpec
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.BaseSpec
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -10,9 +10,9 @@ class CustomScalaModuleTest extends BaseSpec {
     "A custom scala module" should "be buildable outside of the module package" in {
         """
           |
-          |import com.fasterxml.jackson.module.scala._
-          |import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
-          |import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
+          |import __foursquare_shaded__.com.fasterxml.jackson.module.scala._
+          |import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
+          |import __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
           |
           |class CustomScalaModule
           |  extends JacksonModule

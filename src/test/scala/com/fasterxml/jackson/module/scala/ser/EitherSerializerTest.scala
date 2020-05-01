@@ -1,9 +1,9 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, Impl}
-import com.fasterxml.jackson.module.scala.deser.EitherJsonTestSupport
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.JsonNode
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, Impl}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.EitherJsonTestSupport
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 

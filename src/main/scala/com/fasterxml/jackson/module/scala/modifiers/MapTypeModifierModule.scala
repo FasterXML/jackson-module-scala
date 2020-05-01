@@ -1,3 +1,3 @@
-package com.fasterxml.jackson.module.scala.modifiers
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.modifiers
 
 trait MapTypeModifierModule extends ScalaTypeModifierModule

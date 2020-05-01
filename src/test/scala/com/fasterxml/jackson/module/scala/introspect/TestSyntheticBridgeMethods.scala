@@ -1,6 +1,6 @@
-package com.fasterxml.jackson.module.scala.introspect
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect
 
-import com.fasterxml.jackson.module.scala.BaseSpec
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.BaseSpec
 import org.scalatest.{Inside, LoneElement}
 
 object TestSyntheticBridgeMethods {

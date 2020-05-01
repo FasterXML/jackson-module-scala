@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala.util
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.util
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.language.higherKinds

@@ -1,9 +1,9 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.module.scala.introspect.OrderingLocator
-import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
-import com.fasterxml.jackson.module.scala.util.MapFactorySorter
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect.OrderingLocator
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.util.MapFactorySorter
 
 import scala.collection._
 import scala.collection.generic.SortedMapFactory

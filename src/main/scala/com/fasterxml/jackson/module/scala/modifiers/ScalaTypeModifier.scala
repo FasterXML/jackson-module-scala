@@ -1,10 +1,10 @@
-package com.fasterxml.jackson.module.scala.modifiers
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.modifiers
 
 import java.lang.reflect.Type
 
-import com.fasterxml.jackson.databind.JavaType
-import com.fasterxml.jackson.databind.`type`._
-import com.fasterxml.jackson.module.scala.JacksonModule
+import __foursquare_shaded__.com.fasterxml.jackson.databind.JavaType
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`._
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.JacksonModule
 
 import scala.collection._
 

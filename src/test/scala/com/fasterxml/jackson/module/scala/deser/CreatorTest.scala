@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.ObjectMapper
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonCreator
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 

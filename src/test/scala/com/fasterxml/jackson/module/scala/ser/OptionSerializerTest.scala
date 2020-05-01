@@ -1,14 +1,14 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
 import java.util
 
-import com.fasterxml.jackson.annotation._
-import com.fasterxml.jackson.databind.node.JsonNodeType
-import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema
-import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
-import com.fasterxml.jackson.module.scala.experimental.{RequiredPropertiesSchemaModule, ScalaObjectMapper}
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import __foursquare_shaded__.com.fasterxml.jackson.annotation._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.node.JsonNodeType
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
+import __foursquare_shaded__.com.fasterxml.jackson.module.jsonSchema.JsonSchema
+import __foursquare_shaded__.com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.experimental.{RequiredPropertiesSchemaModule, ScalaObjectMapper}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 

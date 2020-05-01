@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala.introspect
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect
 
 import scala.language.existentials
 

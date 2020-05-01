@@ -1,5 +1,5 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.module.scala.BaseFixture
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.BaseFixture
 
 class DeserializationFixture extends BaseFixture

@@ -1,9 +1,9 @@
-package com.fasterxml.jackson
+package __foursquare_shaded__.com.fasterxml.jackson
 package module.scala
 package ser
 
-import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
+import __foursquare_shaded__.com.fasterxml.jackson.core.`type`.TypeReference
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -47,12 +47,12 @@ class EnumerationSerializerTest extends SerializerTest {
 
   it should "serialize an Enumeration" in {
 		val day = Weekday.Fri
-		serialize(day) should be ("""{"enumClass":"com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}""")
+		serialize(day) should be ("""{"enumClass":"__foursquare_shaded__.com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}""")
 	}
 
   it should "serialize an inner Enumeration" in {
     val day = InnerWeekday.Fri
-    serialize(day) should be ("""{"enumClass":"com.fasterxml.jackson.module.scala.OuterWeekday$InnerWeekday","value":"Fri"}""")
+    serialize(day) should be ("""{"enumClass":"__foursquare_shaded__.com.fasterxml.jackson.module.scala.OuterWeekday$InnerWeekday","value":"Fri"}""")
   }
 
   it should "serialize an annotated Enumeration with custom values" in {

@@ -1,9 +1,9 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.module.scala.JacksonModule
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonGenerator
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.Serializers
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.JacksonModule
 
 private class TupleSerializer extends JsonSerializer[Product] {
 

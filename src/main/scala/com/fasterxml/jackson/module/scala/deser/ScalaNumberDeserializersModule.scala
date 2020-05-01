@@ -1,13 +1,13 @@
-package com.fasterxml.jackson
+package __foursquare_shaded__.com.fasterxml.jackson
 package module.scala
 package deser
 
-import com.fasterxml.jackson.core.JsonToken.{START_ARRAY, VALUE_NUMBER_FLOAT, VALUE_NUMBER_INT, VALUE_STRING}
-import com.fasterxml.jackson.core.{JsonParser, JsonToken}
-import com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS
-import com.fasterxml.jackson.databind.deser.Deserializers
-import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
-import com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonToken.{START_ARRAY, VALUE_NUMBER_FLOAT, VALUE_NUMBER_INT, VALUE_STRING}
+import __foursquare_shaded__.com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.Deserializers
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
 
 import scala.reflect.{ClassTag, classTag}
 

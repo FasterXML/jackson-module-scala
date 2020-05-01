@@ -1,15 +1,15 @@
-package com.fasterxml.jackson
+package __foursquare_shaded__.com.fasterxml.jackson
 package module.scala
 package ser
 
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.ReferenceType
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer
-import com.fasterxml.jackson.databind.util.NameTransformer
-import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`.ReferenceType
+import __foursquare_shaded__.com.fasterxml.jackson.databind.annotation.JsonSerialize
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.Serializers
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.util.NameTransformer
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 // This is still here because it is used in other places like EitherSerializer, it is no
 // longer used for the Option serializer

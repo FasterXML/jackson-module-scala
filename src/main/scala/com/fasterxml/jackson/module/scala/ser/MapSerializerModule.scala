@@ -1,12 +1,12 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.{MapLikeType, TypeFactory}
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
-import com.fasterxml.jackson.databind.util.StdConverter
-import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`.{MapLikeType, TypeFactory}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.Serializers
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.util.StdConverter
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
 import scala.collection.JavaConverters._
 import scala.collection.Map

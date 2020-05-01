@@ -1,6 +1,6 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
 
 /**
  * Adds support for serializing Scala Iterables.

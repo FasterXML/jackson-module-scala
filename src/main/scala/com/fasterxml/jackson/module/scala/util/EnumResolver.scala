@@ -1,9 +1,9 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 package util
 
 import java.lang.reflect.ParameterizedType
 
-import com.fasterxml.jackson.databind.BeanProperty
+import __foursquare_shaded__.com.fasterxml.jackson.databind.BeanProperty
 
 object EnumResolver {
 

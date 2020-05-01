@@ -1,11 +1,11 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.{JsonParser, JsonToken}
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, ContextualDeserializer, Deserializers}
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
-import com.fasterxml.jackson.module.scala.JacksonModule
+import __foursquare_shaded__.com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, ContextualDeserializer, Deserializers}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.JacksonModule
 
 private class TupleDeserializer(javaType: JavaType,
                                 config: DeserializationConfig,

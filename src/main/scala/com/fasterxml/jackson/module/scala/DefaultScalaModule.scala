@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 /**
  * Complete module with support for all features.

@@ -1,12 +1,12 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.{JsonParser, JsonToken}
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
-import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
+import __foursquare_shaded__.com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 private class OptionDeserializer(fullType: JavaType,
                                  valueTypeDeserializer: Option[TypeDeserializer],

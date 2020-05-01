@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.module.scala.deser.{SortedMapDeserializerModule, UnsortedMapDeserializerModule}
-import com.fasterxml.jackson.module.scala.ser.MapSerializerModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.{SortedMapDeserializerModule, UnsortedMapDeserializerModule}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.MapSerializerModule
 
 trait MapModule
   extends MapSerializerModule

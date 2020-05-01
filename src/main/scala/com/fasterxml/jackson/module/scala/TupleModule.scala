@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.module.scala.deser.TupleDeserializerModule
-import com.fasterxml.jackson.module.scala.ser.TupleSerializerModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.TupleDeserializerModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.TupleSerializerModule
 
 /**
  * Adds support for serializing and deserializing Scala Tuples.

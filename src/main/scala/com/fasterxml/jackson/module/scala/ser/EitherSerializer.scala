@@ -1,15 +1,15 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.ReferenceType
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.impl.{PropertySerializerMap, UnknownSerializer}
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.fasterxml.jackson.databind.ser.{ContextualSerializer, Serializers}
-import com.fasterxml.jackson.module.scala.modifiers.EitherTypeModifierModule
-import com.fasterxml.jackson.module.scala.util.Implicits._
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonInclude
+import __foursquare_shaded__.com.fasterxml.jackson.core.JsonGenerator
+import __foursquare_shaded__.com.fasterxml.jackson.databind._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`.ReferenceType
+import __foursquare_shaded__.com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.impl.{PropertySerializerMap, UnknownSerializer}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.std.StdSerializer
+import __foursquare_shaded__.com.fasterxml.jackson.databind.ser.{ContextualSerializer, Serializers}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.modifiers.EitherTypeModifierModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.util.Implicits._
 
 import scala.language.existentials
 
@@ -36,7 +36,7 @@ private class EitherSerializer(left: EitherDetails,
   extends StdSerializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]])
     with ContextualSerializer {
 
-  import com.fasterxml.jackson.module.scala.ser.OptionSerializer._
+  import __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.OptionSerializer._
 
   protected[this] def withResolved(prop: Option[BeanProperty], newLeft: EitherDetails, newRight: EitherDetails,
                                    contentIncl: Option[JsonInclude.Include]): EitherSerializer = {

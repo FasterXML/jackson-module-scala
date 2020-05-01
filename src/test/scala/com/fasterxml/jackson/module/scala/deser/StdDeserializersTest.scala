@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner

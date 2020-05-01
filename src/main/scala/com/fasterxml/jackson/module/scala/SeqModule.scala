@@ -1,7 +1,7 @@
-package com.fasterxml.jackson.module.scala
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.module.scala.deser.SeqDeserializerModule
-import com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.SeqDeserializerModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
 
 /**
  * Adds support for serializing and deserializing Scala sequences.

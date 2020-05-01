@@ -1,9 +1,9 @@
-package com.fasterxml.jackson.module.scala.ser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.ser
 
-import com.fasterxml.jackson.annotation.JsonProperty.Access
-import com.fasterxml.jackson.annotation._
-import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonProperty.Access
+import __foursquare_shaded__.com.fasterxml.jackson.annotation._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -145,11 +145,11 @@ class CaseClassSerializerTest extends SerializerTest {
   }
 
   it should "serialize a case class with JsonTypeInfo" in {
-    serialize(JsonTypeInfoCaseClass(1)) should equal( """{"class":"com.fasterxml.jackson.module.scala.ser.JsonTypeInfoCaseClass","intValue":1}""")
+    serialize(JsonTypeInfoCaseClass(1)) should equal( """{"class":"__foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.JsonTypeInfoCaseClass","intValue":1}""")
   }
 
   it should "serialize a case class containing a case class with JsonTypeInfo" in {
-    serialize(CaseClassContainingJsonTypeInfoCaseClass(JsonTypeInfoCaseClass(1))) should equal( """{"c":{"class":"com.fasterxml.jackson.module.scala.ser.JsonTypeInfoCaseClass","intValue":1}}""")
+    serialize(CaseClassContainingJsonTypeInfoCaseClass(JsonTypeInfoCaseClass(1))) should equal( """{"c":{"class":"__foursquare_shaded__.com.fasterxml.jackson.module.scala.ser.JsonTypeInfoCaseClass","intValue":1}}""")
   }
 
   it should "serialize a non-case class with @BeanProperty annotations" in {

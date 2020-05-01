@@ -1,14 +1,14 @@
-package com.fasterxml.jackson.module.scala.introspect
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.introspect
 
 import java.lang.annotation.Annotation
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.`type`.ClassKey
-import com.fasterxml.jackson.databind.introspect._
-import com.fasterxml.jackson.databind.util.LRUMap
-import com.fasterxml.jackson.module.paranamer.ParanamerAnnotationIntrospector
-import com.fasterxml.jackson.module.scala.JacksonModule
-import com.fasterxml.jackson.module.scala.util.Implicits._
+import __foursquare_shaded__.com.fasterxml.jackson.annotation.JsonCreator
+import __foursquare_shaded__.com.fasterxml.jackson.databind.`type`.ClassKey
+import __foursquare_shaded__.com.fasterxml.jackson.databind.introspect._
+import __foursquare_shaded__.com.fasterxml.jackson.databind.util.LRUMap
+import __foursquare_shaded__.com.fasterxml.jackson.module.paranamer.ParanamerAnnotationIntrospector
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.JacksonModule
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.util.Implicits._
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector
 {

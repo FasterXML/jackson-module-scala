@@ -1,10 +1,10 @@
-package com.fasterxml.jackson
+package __foursquare_shaded__.com.fasterxml.jackson
 package module.scala
 package ser
 
 import java.io.ByteArrayOutputStream
 
-import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
+import __foursquare_shaded__.com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
 import com.google.common.base.Optional
 import org.junit.runner.RunWith
 import org.scalatest.{Matchers, Outcome, fixture}

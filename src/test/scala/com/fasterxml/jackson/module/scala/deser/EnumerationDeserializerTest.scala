@@ -1,8 +1,8 @@
-package com.fasterxml.jackson.module.scala.deser
+package __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration, Weekday}
+import __foursquare_shaded__.com.fasterxml.jackson.core.`type`.TypeReference
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
+import __foursquare_shaded__.com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration, Weekday}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -32,7 +32,7 @@ object EnumerationDeserializerTest  {
 
 @RunWith(classOf[JUnitRunner])
 class EnumerationDeserializerTest extends DeserializerTest {
-  import com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerTest._
+  import __foursquare_shaded__.com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerTest._
 
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
 
@@ -63,9 +63,9 @@ class EnumerationDeserializerTest extends DeserializerTest {
     result.weekdayMap should contain key Weekday.Mon
   }
 
-  val fridayEnumJson = """{"day": {"enumClass":"com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}}"""
+  val fridayEnumJson = """{"day": {"enumClass":"__foursquare_shaded__.com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}}"""
 
-  val fridayInnerEnumJson = """{"day": {"enumClass":"com.fasterxml.jackson.module.scala.OuterWeekday$InnerWeekday","value":"Fri"}}"""
+  val fridayInnerEnumJson = """{"day": {"enumClass":"__foursquare_shaded__.com.fasterxml.jackson.module.scala.OuterWeekday$InnerWeekday","value":"Fri"}}"""
 
   val annotatedFridayJson = """{"weekday":"Fri"}"""
 
