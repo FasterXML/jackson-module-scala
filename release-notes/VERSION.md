@@ -10,6 +10,11 @@ Scala 2.10, 2.11 and 2.12 and 2.13.
 * [[gh-445]](https://github.com/FasterXML/jackson-module-scala/issues/445) fix NullPointerException that can happen
   with some case classes (caused by gh-87 fix) - issue still appears in 2.11.0.rc1 but is fixed in 2.11.0
 
+# Version: 2.10.4
+
+There are no new fixes in this release; it serves to track the 2.10.4 release
+of the upstream Jackson projects.
+
 # Version: 2.10.3
 
 ## Fixes
