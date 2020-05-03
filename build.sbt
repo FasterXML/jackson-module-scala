@@ -29,8 +29,7 @@ unmanagedSourceDirectories in Compile += {
   (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
 }
 
-val jacksonVersion = "2.10.3"
-val jacksonLastReleaseVersion = "2.10.3"
+val jacksonVersion = "2.10.4"
 
 libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
@@ -40,7 +39,7 @@ libraryDependencies ++= Seq(
     // test dependencies
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % "test",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % "test",
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonLastReleaseVersion % "test",
+    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % "test",
     "org.scalatest" %% "scalatest" % "3.0.8" % "test",
     "junit" % "junit" % "4.13" % "test"
 )
