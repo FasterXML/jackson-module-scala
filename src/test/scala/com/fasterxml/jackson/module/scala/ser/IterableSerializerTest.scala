@@ -15,16 +15,20 @@ class NonEmptyCollections {
 
   @JsonProperty
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  def nonEmptyIterable = Iterable(1,2,3)
+  def nonEmptyIterable = Iterable(1, 2, 3)
 }
 
 object IterableSerializerTest {
+
   @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY)
   trait C
-  case class X(data:String) extends C
-  case class Y(data:Int) extends C
+
+  case class X(data: String) extends C
+
+  case class Y(data: Int) extends C
 
   case class CHolder(c: Seq[C])
+
 }
 
 @RunWith(classOf[JUnitRunner])
@@ -36,46 +40,46 @@ class IterableSerializerTest extends SerializerTest {
 
   "An ObjectMapper with IterableSerializer" should "serialize an Iterable[Int]" in {
     val iterable = new Iterable[Int] {
-          def iterator = Iterator(1, 2, 3)
-      }
+      def iterator = Iterator(1, 2, 3)
+    }
 
-    serialize(iterable) should be ("[1,2,3]")
+    serialize(iterable) should be("[1,2,3]")
   }
 
   it should "serialize a Seq[Int]" in {
-    serialize(Seq(1,2,3)) should be ("[1,2,3]")
+    serialize(Seq(1, 2, 3)) should be("[1,2,3]")
   }
 
   it should "serialize an immutable Set[Int]" in {
-    serialize(immutable.Set(1,2,3)) should matchUnorderedSet
+    serialize(immutable.Set(1, 2, 3)) should matchUnorderedSet
   }
 
   it should "serialize an immutable HashSet[Int]" in {
-    serialize(immutable.HashSet(1,2,3)) should matchUnorderedSet
+    serialize(immutable.HashSet(1, 2, 3)) should matchUnorderedSet
   }
 
   it should "serialize an immutable ListSet[Int]" in {
-    serialize(immutable.ListSet(1,2,3)) should matchUnorderedSet
+    serialize(immutable.ListSet(1, 2, 3)) should matchUnorderedSet
   }
 
   it should "serialize a mutable Set[Int]" in {
-    serialize(mutable.Set(1,2,3)) should matchUnorderedSet
+    serialize(mutable.Set(1, 2, 3)) should matchUnorderedSet
   }
 
   it should "serialize a mutable HashSet[Int]" in {
-    serialize(mutable.HashSet(1,2,3)) should matchUnorderedSet
+    serialize(mutable.HashSet(1, 2, 3)) should matchUnorderedSet
   }
 
   it should "serialize a mutable LinkedHashSet[Int]" in {
-    serialize(mutable.LinkedHashSet(1,2,3)) should matchUnorderedSet
+    serialize(mutable.LinkedHashSet(1, 2, 3)) should matchUnorderedSet
   }
 
   it should "serialize a Map[Int]" in {
-    serialize(Map(1->2,3->4)) should matchUnorderedMap
+    serialize(Map(1 -> 2, 3 -> 4)) should matchUnorderedMap
   }
 
   it should "honor the JsonInclude(NON_EMPTY) annotation" in {
-    serialize(new NonEmptyCollections) should be ("""{"nonEmptyIterable":[1,2,3]}""")
+    serialize(new NonEmptyCollections) should be("""{"nonEmptyIterable":[1,2,3]}""")
   }
 
   it should "honor JsonTypeInfo" in {
@@ -83,16 +87,16 @@ class IterableSerializerTest extends SerializerTest {
   }
 
   val matchUnorderedSet: Matcher[Any] = {
-    be ("[1,2,3]") or
-    be ("[1,3,2]") or
-    be ("[2,1,3]") or
-    be ("[2,3,1]") or
-    be ("[3,1,2]") or
-    be ("[3,2,1]")
+    be("[1,2,3]") or
+      be("[1,3,2]") or
+      be("[2,1,3]") or
+      be("[2,3,1]") or
+      be("[3,1,2]") or
+      be("[3,2,1]")
   }
 
   val matchUnorderedMap: Matcher[Any] = {
-    be ("{\"1\":2,\"3\":4}") or
-    be ("{\"3\":4,\"1\":2}")
+    be("{\"1\":2,\"3\":4}") or
+      be("{\"3\":4,\"1\":2}")
   }
 }
