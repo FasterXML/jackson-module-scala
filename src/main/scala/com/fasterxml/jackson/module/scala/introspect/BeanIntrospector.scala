@@ -30,6 +30,7 @@ import com.thoughtworks.paranamer.{BytecodeReadingParanamer, CachingParanamer}
 
 import scala.annotation.tailrec
 import scala.reflect.NameTransformer
+import scala.util.Try
 
 //TODO: This might be more efficient/type safe if we used Scala reflection here
 //but we have to support 2.9.x and 2.10.x - once the scala reflection APIs
@@ -41,8 +42,12 @@ object BeanIntrospector {
   private [this] val paranamer = new CachingParanamer(new BytecodeReadingParanamer)
   private val productClass = classOf[Product]
 
-  private def getCtorParams(ctor: Constructor[_]): Array[String] =
-    paranamer.lookupParameterNames(ctor, false).map(NameTransformer.decode)
+  private def getCtorParams(ctor: Constructor[_]): Seq[String] = {
+    val names = Try(JavaParameterIntrospector.getCtorParams(ctor)).getOrElse {
+      paranamer.lookupParameterNames(ctor, false).toSeq
+    }
+    names.map(NameTransformer.decode)
+  }
 
   def apply[T <: AnyRef](implicit mf: Manifest[_]): BeanDescriptor = apply[T](mf.runtimeClass)
 
