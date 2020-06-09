@@ -3,9 +3,8 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, ObjectMapper}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 import org.junit.runner.RunWith
-import org.scalatest.{FlatSpec, Matchers}
 import org.scalatestplus.junit.JUnitRunner
 
 abstract class A
@@ -36,7 +35,7 @@ object Util {
 }
 
 @RunWith(classOf[JUnitRunner])
-class InteropTest extends FlatSpec with Matchers
+class InteropTest extends BaseSpec
 {
   "Scala module" should "support JsonDeserialize in Scala" in {
     val v = Util.mapper.readValue(Util.jsonString, classOf[B])

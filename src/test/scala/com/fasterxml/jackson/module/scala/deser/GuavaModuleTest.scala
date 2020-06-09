@@ -2,16 +2,15 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.datatype.guava.GuavaModule
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 import com.google.common.collect.Multimap
 import org.junit.runner.RunWith
-import org.scalatest.{FlatSpec, Matchers}
 import org.scalatestplus.junit.JUnitRunner
 
 class PojoWithMultiMap(val headers: Multimap[String, String])
 
 @RunWith(classOf[JUnitRunner])
-class GuavaModuleTest extends FlatSpec with Matchers {
+class GuavaModuleTest extends BaseSpec {
   "Scala module" should "work with GuavaModule (Scala registered second)" in {
     val objectMapper = new ObjectMapper
     objectMapper.registerModule(new GuavaModule)

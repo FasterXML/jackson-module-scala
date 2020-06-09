@@ -7,10 +7,11 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
 import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
-import com.fasterxml.jackson.module.scala.ScalaObjectMapper
 import org.junit.runner.RunWith
 import org.scalatest.LoneElement._
-import org.scalatest.{Matchers, Outcome, fixture}
+import org.scalatest.Outcome
+import org.scalatest.flatspec.FixtureAnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
@@ -30,7 +31,7 @@ object ScalaAnnotationIntrospectorTest {
 }
 
 @RunWith(classOf[JUnitRunner])
-class ScalaAnnotationIntrospectorTest extends fixture.FlatSpec with Matchers {
+class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   import ScalaAnnotationIntrospectorTest._
 
   type FixtureParam = ObjectMapper with ScalaObjectMapper

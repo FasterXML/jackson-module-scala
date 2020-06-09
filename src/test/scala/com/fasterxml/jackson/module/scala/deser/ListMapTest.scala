@@ -3,9 +3,8 @@ package com.fasterxml.jackson.module.scala.deser
 import java.io.StringWriter
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, MapperFeature, ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 import org.junit.runner.RunWith
-import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatestplus.junit.JUnitRunner
 
@@ -15,7 +14,7 @@ import scala.collection.immutable.{ListMap, Queue, TreeMap}
 // test for https://github.com/FasterXML/jackson-databind/issues/2422
 
 @RunWith(classOf[JUnitRunner])
-class ListMapTest extends FlatSpec with Matchers with TableDrivenPropertyChecks {
+class ListMapTest extends BaseSpec with TableDrivenPropertyChecks {
   private val mapper = {
     val _mapper = new ObjectMapper
     _mapper.registerModule(DefaultScalaModule)
