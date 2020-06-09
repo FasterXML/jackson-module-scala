@@ -147,7 +147,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       }
     }
 
-    override def getFromObjectArguments(context: DeserializationContext): Array[SettableBeanProperty] = {
+    override def getFromObjectArguments(config: DeserializationConfig): Array[SettableBeanProperty] = {
       overriddenConstructorArguments
     }
   }
