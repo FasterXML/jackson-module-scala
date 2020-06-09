@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-abstract class BaseSpec extends FlatSpec with Matchers
+abstract class BaseSpec extends AnyFlatSpec with Matchers
