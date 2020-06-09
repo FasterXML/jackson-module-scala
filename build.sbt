@@ -54,10 +54,6 @@ resourceGenerators in Compile += Def.task {
 }.taskValue
 
 // site
-site.settings
-
-site.includeScaladoc()
-
-ghpages.settings
-
+enablePlugins(SiteScaladocPlugin)
+enablePlugins(GhpagesPlugin)
 git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"

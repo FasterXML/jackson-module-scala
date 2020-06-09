@@ -2,13 +2,12 @@ import ReleaseTransformations._
 import com.typesafe.sbt.osgi.OsgiKeys
 
 // OSGI bundles
-osgiSettings
-
-OsgiKeys.exportPackage := Seq(
-  "com.fasterxml.jackson.module.scala.*"
+lazy val jacksonOsgiSettings = osgiSettings ++ Seq(
+  OsgiKeys.exportPackage := Seq("com.fasterxml.jackson.module.scala.*"),
+  OsgiKeys.privatePackage := Seq()
 )
 
-OsgiKeys.privatePackage := Nil
+lazy val jacksonProject = project.in(file(".")).enablePlugins(SbtOsgi).settings(jacksonOsgiSettings:_*)
 
 // publishing
 publishMavenStyle := true
