@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.deser.{CreatorProperty, NullValueProvider,
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LRUMap}
-import com.fasterxml.jackson.module.paranamer.ParanamerAnnotationIntrospector
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
@@ -171,7 +170,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
 }
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
-  this += { _.appendAnnotationIntrospector(new ParanamerAnnotationIntrospector()) }
+  this += { _.appendAnnotationIntrospector(JavaAnnotationIntrospector) }
   this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
   this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
 }

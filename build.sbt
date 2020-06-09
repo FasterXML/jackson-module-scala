@@ -36,7 +36,6 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % jacksonVersion,
     // test dependencies
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonLegacyVersion % Test,

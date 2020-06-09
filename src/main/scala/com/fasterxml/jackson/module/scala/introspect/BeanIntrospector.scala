@@ -26,11 +26,9 @@ package com.fasterxml.jackson.module.scala.introspect
 import java.lang.reflect.{Constructor, Field, Method, Modifier}
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.thoughtworks.paranamer.{BytecodeReadingParanamer, CachingParanamer}
 
 import scala.annotation.tailrec
 import scala.reflect.NameTransformer
-import scala.util.Try
 
 //TODO: This might be more efficient/type safe if we used Scala reflection here
 //but we have to support 2.9.x and 2.10.x - once the scala reflection APIs
@@ -39,13 +37,10 @@ import scala.util.Try
 
 object BeanIntrospector {
 
-  private [this] val paranamer = new CachingParanamer(new BytecodeReadingParanamer)
   private val productClass = classOf[Product]
 
   private def getCtorParams(ctor: Constructor[_]): Seq[String] = {
-    val names = Try(JavaParameterIntrospector.getCtorParams(ctor)).getOrElse {
-      paranamer.lookupParameterNames(ctor, false).toSeq
-    }
+    val names = JavaParameterIntrospector.getCtorParamNames(ctor)
     names.map(NameTransformer.decode)
   }
 
