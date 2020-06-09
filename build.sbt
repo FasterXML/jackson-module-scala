@@ -36,14 +36,20 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "com.thoughtworks.paranamer" % "paranamer" % "2.8",
-    // test dependencies
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonLegacyVersion % Test,
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonLegacyVersion % Test,
-    "org.scalatest" %% "scalatest" % "3.1.2" % Test,
-    "org.scalatestplus" %% "junit-4-12" % "3.1.2.0" % Test,
-    "junit" % "junit" % "4.13" % Test
+) ++ {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, scalaMajor)) if scalaMajor <= 11 =>
+      Seq("com.thoughtworks.paranamer" % "paranamer" % "2.8")
+    case _ => Seq.empty
+  }
+} ++ Seq(
+  // test dependencies
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonLegacyVersion % Test,
+  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonLegacyVersion % Test,
+  "org.scalatest" %% "scalatest" % "3.1.2" % Test,
+  "org.scalatestplus" %% "junit-4-12" % "3.1.2.0" % Test,
+  "junit" % "junit" % "4.13" % Test
 )
 
 // build.properties
