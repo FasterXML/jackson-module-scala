@@ -3,13 +3,14 @@ package com.fasterxml.jackson.module.scala.introspect
 import java.lang.reflect.{Constructor, Field, Method, Parameter}
 
 import com.fasterxml.jackson.databind.PropertyName
+import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedMember, AnnotatedParameter, NopAnnotationIntrospector}
 
 object JavaAnnotationIntrospector extends NopAnnotationIntrospector {
 
-  def findNameForDeserialization(a: Annotated): PropertyName = None.orNull
+  override def findNameForDeserialization(config: MapperConfig[_], a: Annotated): PropertyName = None.orNull
 
-  def findImplicitPropertyName(param: AnnotatedMember): String = param match {
+  override def findImplicitPropertyName(config: MapperConfig[_], param: AnnotatedMember): String = param match {
     case param: AnnotatedParameter => {
       val index = param.getIndex
       val owner = param.getOwner
