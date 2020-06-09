@@ -34,9 +34,14 @@ val jacksonLegacyVersion = "2.11.0"
 
 libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-    "com.fasterxml.jackson.module" % "jackson-module-paranamer" % jacksonVersion,
-    // test dependencies
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
+) ++ {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, scalaMajor)) if scalaMajor <= 11 =>
+      Seq("com.thoughtworks.paranamer" % "paranamer" % "2.8")
+    case _ => Seq.empty
+  }
+} ++ Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonLegacyVersion % Test,
