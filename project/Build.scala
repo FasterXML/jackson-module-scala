@@ -1,7 +1,5 @@
 import sbt._
 import Keys._
-import com.typesafe.sbt.SbtSite.SiteKeys._
-import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseStep
 
 object Build {
@@ -13,8 +11,9 @@ object Build {
     newState
   }
 
-  lazy val generateAndPushDocs: ReleaseStep = { st: State =>
-    val st2 = executeTask(makeSite, "Making doc site")(st)
-    executeTask(pushSite, "Publishing doc site")(st2)
-  }
+// needs a rewrite after sbt upgrade
+//  lazy val generateAndPushDocs: ReleaseStep = { st: State =>
+//    val st2 = executeTask(ghpagesMakeSite, "Making doc site")(st)
+//    executeTask(ghpagesPushSite, "Publishing doc site")(st2)
+//  }
 }
