@@ -2,7 +2,8 @@ dist: trusty
 sudo: false
 cache:
   directories:
-    - $HOME/.ivy2
+    - $HOME/.cache/coursier
+    - $HOME/.ivy2/cache
     - $HOME/.sbt
 
 language: scala
