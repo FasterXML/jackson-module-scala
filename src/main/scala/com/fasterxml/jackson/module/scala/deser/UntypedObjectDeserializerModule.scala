@@ -51,7 +51,7 @@ private object UntypedObjectDeserializerResolver extends Deserializers.Base {
   override def findBeanDeserializer(javaType: JavaType,
                                     config: DeserializationConfig,
                                     beanDesc: BeanDescription) =
-    if (!OBJECT.equals(javaType.getRawClass)) null
+    if (!OBJECT.equals(javaType.getRawClass)) None.orNull
     else new UntypedObjectDeserializer
 }
 

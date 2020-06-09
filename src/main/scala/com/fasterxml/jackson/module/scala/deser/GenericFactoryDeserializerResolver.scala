@@ -33,7 +33,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
                                               beanDesc: BeanDescription,
                                               elementTypeDeserializer: TypeDeserializer,
                                               elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    if (!CLASS_DOMAIN.isAssignableFrom(collectionType.getRawClass)) null
+    if (!CLASS_DOMAIN.isAssignableFrom(collectionType.getRawClass)) None.orNull
     else {
       val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
       val instantiator = new Instantiator(config, collectionType, collectionType.getContentType)
@@ -47,7 +47,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
     override def add(e: A): Boolean = { builder += e; size += 1; true }
 
     // Required by AbstractCollection, but not implemented
-    override def iterator(): util.Iterator[A] = null
+    override def iterator(): util.Iterator[A] = None.orNull
   }
 
   private class Instantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)

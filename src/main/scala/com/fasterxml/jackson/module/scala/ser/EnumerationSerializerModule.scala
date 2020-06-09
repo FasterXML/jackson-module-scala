@@ -40,15 +40,17 @@ private class AnnotatedEnumerationSerializer extends JsonSerializer[scala.Enumer
 
 private object EnumerationSerializerResolver extends Serializers.Base {
 
+  private val EnumClass = classOf[scala.Enumeration#Value]
+
   override def findSerializer(config: SerializationConfig,
                               javaType: JavaType,
                               beanDescription: BeanDescription): JsonSerializer[_] = {
 		val clazz = javaType.getRawClass
 
-    if (classOf[scala.Enumeration#Value].isAssignableFrom(clazz)) {
-        new EnumerationSerializer
+    if (EnumClass.isAssignableFrom(clazz)) {
+      new EnumerationSerializer
     } else {
-      null
+      None.orNull
     }
 	}
 

@@ -46,7 +46,7 @@ private object MapSerializerResolver extends Serializers.Base {
 
     val rawClass = mapLikeType.getRawClass
 
-    if (!BASE.isAssignableFrom(rawClass)) null
+    if (!BASE.isAssignableFrom(rawClass)) None.orNull
     else new StdDelegatingSerializer(new MapConverter(mapLikeType, config))
   }
 

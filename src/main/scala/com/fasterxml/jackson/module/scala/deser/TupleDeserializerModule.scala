@@ -67,16 +67,16 @@ private class TupleDeserializer(javaType: JavaType,
 
 private object TupleDeserializerResolver extends Deserializers.Base {
 
-  def PRODUCT = classOf[Product]
+  private val PRODUCT = classOf[Product]
 
   override def findBeanDeserializer(javaType: JavaType,
                                     config: DeserializationConfig,
                                     beanDesc: BeanDescription): JsonDeserializer[_] = {
     val cls = javaType.getRawClass
-    if (!PRODUCT.isAssignableFrom(cls)) null else
+    if (!PRODUCT.isAssignableFrom(cls)) None.orNull else
     // If it's not *actually* a tuple, it's either a case class or a custom Product
     // which either way we shouldn't handle here.
-    if (!cls.getName.startsWith("scala.Tuple")) null else
+    if (!cls.getName.startsWith("scala.Tuple")) None.orNull else
     new TupleDeserializer(javaType, config)
   }
 }

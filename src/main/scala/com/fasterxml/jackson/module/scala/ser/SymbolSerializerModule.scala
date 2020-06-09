@@ -18,7 +18,7 @@ private object SymbolSerializerResolver extends Serializers.Base {
   override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription): JsonSerializer[Symbol] =
     if (SYMBOL isAssignableFrom javaType.getRawClass)
       SymbolSerializer
-    else null
+    else None.orNull
 }
 
 trait SymbolSerializerModule extends JacksonModule {

@@ -32,7 +32,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
                                        keyDeserializer: KeyDeserializer,
                                        elementTypeDeserializer: TypeDeserializer,
                                        elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    if (!CLASS_DOMAIN.isAssignableFrom(theType.getRawClass)) null
+    if (!CLASS_DOMAIN.isAssignableFrom(theType.getRawClass)) None.orNull
     else {
       val instantiator = new Instantiator(config, theType)
       new Deserializer(theType, instantiator, keyDeserializer, elementDeserializer, elementTypeDeserializer)

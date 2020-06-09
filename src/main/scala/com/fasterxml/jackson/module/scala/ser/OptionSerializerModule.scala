@@ -177,11 +177,13 @@ private object OptionSerializerResolver extends Serializers.Base {
                                        beanDesc: BeanDescription,
                                        contentTypeSerializer: TypeSerializer,
                                        contentValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
-    if (!OPTION.isAssignableFrom(refType.getRawClass)) return null
-    val staticTyping = contentTypeSerializer == null && config.isEnabled(
-      MapperFeature.USE_STATIC_TYPING
-    )
-    new OptionSerializer(refType, staticTyping, contentTypeSerializer, contentValueSerializer)
+    if (!OPTION.isAssignableFrom(refType.getRawClass)) None.orNull
+    else {
+      val staticTyping = contentTypeSerializer == null && config.isEnabled(
+        MapperFeature.USE_STATIC_TYPING
+      )
+      new OptionSerializer(refType, staticTyping, contentTypeSerializer, contentValueSerializer)
+    }
   }
 }
 
