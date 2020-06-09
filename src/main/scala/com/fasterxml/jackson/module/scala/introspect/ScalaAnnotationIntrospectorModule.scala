@@ -83,7 +83,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       case af: AnnotatedField => fieldName(af).orNull
       case am: AnnotatedMethod => methodName(am).orNull
       case ap: AnnotatedParameter => paramName(ap).orNull
-      case _ => null
+      case _ => None.orNull
     }
   }
 
@@ -118,7 +118,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       ann.mode()
     } else if (isScala(a) && hasCreatorAnnotation(a)) {
       JsonCreator.Mode.PROPERTIES
-    } else null
+    } else None.orNull
   }
 
   class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor) extends StdValueInstantiator(delegate) {
