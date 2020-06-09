@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper}
 import org.junit.runner.RunWith
-import org.scalatest.{FlatSpec, Matchers}
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection.JavaConverters._
@@ -44,7 +43,7 @@ private class Mixin(val foo: String)
 private case class GenericTestClass[T](t: T)
 
 @RunWith(classOf[JUnitRunner])
-class ScalaObjectMapperTest extends FlatSpec with Matchers {
+class ScalaObjectMapperTest extends BaseSpec {
 
   val mapper = new ObjectMapper with ScalaObjectMapper
   mapper.registerModule(DefaultScalaModule)

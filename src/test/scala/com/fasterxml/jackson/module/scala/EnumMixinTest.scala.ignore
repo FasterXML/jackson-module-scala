@@ -3,7 +3,6 @@ package com.fasterxml.jackson.module.scala
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.runner.RunWith
-import org.scalatest.{FlatSpec, Matchers}
 import org.scalatestplus.junit.JUnitRunner
 
 object TestEnum extends Enumeration {
@@ -22,7 +21,7 @@ abstract class TestObject2Mixin {
 }
 
 @RunWith(classOf[JUnitRunner])
-class EnumMixinTest extends FlatSpec with Matchers {
+class EnumMixinTest extends BaseSpec {
   val mapper = new ObjectMapper() with ScalaObjectMapper
   mapper.registerModule(DefaultScalaModule)
   mapper.addMixin[TestObject2, TestObject2Mixin]()
