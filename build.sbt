@@ -37,11 +37,12 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
     "com.fasterxml.jackson.module" % "jackson-module-paranamer" % jacksonVersion,
     // test dependencies
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonLegacyVersion % "test",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % "test",
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonLegacyVersion % "test",
-    "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-    "junit" % "junit" % "4.13" % "test"
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
+    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonLegacyVersion % Test,
+    "org.scalatest" %% "scalatest" % "3.1.2" % Test,
+    "org.scalatestplus" %% "junit-4-12" % "3.1.2.0" % Test,
+    "junit" % "junit" % "4.13" % Test
 )
 
 // build.properties
