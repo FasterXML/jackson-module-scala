@@ -9,7 +9,7 @@ Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java ver
 
 # Version: 2.11.1
 
-There are no new fixes in this release; it serves to track the 2.10.1 release
+There are no new fixes in this release; it serves to track the 2.11.1 release
 of the upstream Jackson projects.
 
 # Version: 2.11.0
