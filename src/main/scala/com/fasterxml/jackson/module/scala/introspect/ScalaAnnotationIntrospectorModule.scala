@@ -17,13 +17,14 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
 
   private def _descriptorFor(clz: Class[_]): BeanDescriptor = {
     val key = new ClassKey(clz)
-    var result = _descriptorCache.get(key)
-    if (result == null) {
-      result = BeanIntrospector(clz)
-      _descriptorCache.put(key, result)
+    Option(_descriptorCache.get(key)) match {
+      case Some(result) => result
+      case _ => {
+        val introspector = BeanIntrospector(clz)
+        _descriptorCache.put(key, introspector)
+        introspector
+      }
     }
-
-    result
   }
 
   private def fieldName(af: AnnotatedField): Option[String] = {
@@ -112,12 +113,14 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   override def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
-    val ann = _findAnnotation(a, classOf[JsonCreator])
-    if (ann != null) {
-      ann.mode()
-    } else if (isScala(a) && hasCreatorAnnotation(a)) {
-      JsonCreator.Mode.PROPERTIES
-    } else None.orNull
+    Option(_findAnnotation(a, classOf[JsonCreator])) match {
+      case Some(ann) => ann.mode()
+      case _ => {
+        if (isScala(a) && hasCreatorAnnotation(a)) {
+          JsonCreator.Mode.PROPERTIES
+        } else None.orNull
+      }
+    }
   }
 
   class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor) extends StdValueInstantiator(delegate) {
