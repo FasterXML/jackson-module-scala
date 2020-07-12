@@ -4,6 +4,7 @@ import scala.language.implicitConversions
 import scala.reflect.{ScalaLongSignature, ScalaSignature}
 
 trait ClassW extends PimpedType[Class[_]] {
+
   def hasSignature: Boolean = {
     def hasSigHelper(clazz: Class[_]): Boolean = {
       if (clazz == null) false

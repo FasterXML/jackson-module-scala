@@ -3,23 +3,21 @@ package com.fasterxml.jackson.module.scala.introspect
 import java.lang.annotation.Annotation
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
 import com.fasterxml.jackson.databind.`type`.ClassKey
-import com.fasterxml.jackson.databind.deser.{CreatorProperty, NullValueProvider, SettableBeanProperty, ValueInstantiator, ValueInstantiators}
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
+import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LRUMap}
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] val _descriptorCache = new LRUMap[ClassKey, BeanDescriptor](16, 100)
+  private val productClass = classOf[Product]
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    if (clz.getName.startsWith("io.swagger.models")) {
-      //ignore swagger model java classes -- https://github.com/FasterXML/jackson-module-scala/issues/454
-      None
-    } else {
+    if (clz.hasSignature || productClass.isAssignableFrom(clz)) {
       val key = new ClassKey(clz)
       Option(_descriptorCache.get(key)) match {
         case Some(result) => Some(result)
@@ -29,6 +27,8 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
           Some(introspector)
         }
       }
+    } else {
+      None
     }
   }
 
