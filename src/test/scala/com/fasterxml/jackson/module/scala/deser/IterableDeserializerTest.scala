@@ -1,5 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import org.junit.runner.RunWith
+import org.scalatestplus.junit.JUnitRunner
+
+@RunWith(classOf[JUnitRunner])
 class IterableDeserializerTest extends DeserializationFixture {
 
   // Testing values
