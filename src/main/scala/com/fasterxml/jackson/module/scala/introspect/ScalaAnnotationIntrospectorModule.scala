@@ -16,36 +16,45 @@ import com.fasterxml.jackson.module.scala.util.Implicits._
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] val _descriptorCache = new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  private def _descriptorFor(clz: Class[_]): BeanDescriptor = {
-    val key = new ClassKey(clz)
-    var result = _descriptorCache.get(key)
-    if (result == null) {
-      result = BeanIntrospector(clz)
-      _descriptorCache.put(key, result)
+  private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
+    if (clz.getName.startsWith("io.swagger.models")) {
+      //ignore swagger model java classes -- https://github.com/FasterXML/jackson-module-scala/issues/454
+      None
+    } else {
+      val key = new ClassKey(clz)
+      Option(_descriptorCache.get(key)) match {
+        case Some(result) => Some(result)
+        case _ => {
+          val introspector = BeanIntrospector(clz)
+          _descriptorCache.put(key, introspector)
+          Some(introspector)
+        }
+      }
     }
-
-    result
   }
 
   private def fieldName(af: AnnotatedField): Option[String] = {
-    val d = _descriptorFor(af.getDeclaringClass)
-    d.properties.find(p => p.field.exists(_ == af.getAnnotated)).map(_.name)
+    _descriptorFor(af.getDeclaringClass).flatMap { d =>
+      d.properties.find(p => p.field.exists(_ == af.getAnnotated)).map(_.name)
+    }
   }
 
   private def methodName(am: AnnotatedMethod): Option[String] = {
-    val d = _descriptorFor(am.getDeclaringClass)
-    val getterSetter = d.properties.find(p => (p.getter ++ p.setter).exists(_ == am.getAnnotated)).map(_.name)
-    getterSetter match {
-      case Some(s) => Some(s)
-      case _ => d.properties.find(p => p.name == am.getName).map(_.name)
+    _descriptorFor(am.getDeclaringClass).flatMap { d =>
+      val getterSetter = d.properties.find(p => (p.getter ++ p.setter).exists(_ == am.getAnnotated)).map(_.name)
+      getterSetter match {
+        case Some(s) => Some(s)
+        case _ => d.properties.find(p => p.name == am.getName).map(_.name)
+      }
     }
   }
 
   private def paramName(ap: AnnotatedParameter): Option[String] = {
-    val d = _descriptorFor(ap.getDeclaringClass)
-    d.properties.find(p => p.param.exists { cp =>
-      cp.constructor == ap.getOwner.getAnnotated && cp.index == ap.getIndex
-    }).map(_.name)
+    _descriptorFor(ap.getDeclaringClass).flatMap { d =>
+      d.properties.find(p => p.param.exists { cp =>
+        cp.constructor == ap.getOwner.getAnnotated && cp.index == ap.getIndex
+      }).map(_.name)
+    }
   }
 
   private def isScalaPackage(pkg: Option[Package]): Boolean =
@@ -64,17 +73,19 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   def propertyFor(a: Annotated): Option[PropertyDescriptor] = {
     a match {
       case ap: AnnotatedParameter =>
-        val d = _descriptorFor(ap.getDeclaringClass)
-        d.properties.find(p =>
-          p.param.exists { cp =>
-            (cp.constructor == ap.getOwner.getAnnotated) && (cp.index == ap.getIndex)
+        _descriptorFor(ap.getDeclaringClass).flatMap { d =>
+          d.properties.find { p =>
+            p.param.exists { cp =>
+              (cp.constructor == ap.getOwner.getAnnotated) && (cp.index == ap.getIndex)
+            }
           }
-        )
+        }
       case am: AnnotatedMember =>
-        val d = _descriptorFor(am.getDeclaringClass)
-        d.properties.find(p =>
-          (p.field ++ p.getter ++ p.setter ++ p.param ++ p.beanGetter ++ p.beanSetter).exists(_  == a.getAnnotated)
-        )
+        _descriptorFor(am.getDeclaringClass).flatMap { d =>
+          d.properties.find { p =>
+            (p.field ++ p.getter ++ p.setter ++ p.param ++ p.beanGetter ++ p.beanSetter).exists(_ == a.getAnnotated)
+          }
+        }
     }
   }
 
@@ -93,10 +104,11 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     a match {
       case ac: AnnotatedConstructor =>
         if (!isScala(ac)) return false
-        val annotatedFound = _descriptorFor(ac.getDeclaringClass)
-          .properties
-          .flatMap(_.param)
-          .exists(_.constructor == ac.getAnnotated)
+        val annotatedFound = _descriptorFor(ac.getDeclaringClass).map { d =>
+          d.properties
+            .flatMap(_.param)
+            .exists(_.constructor == ac.getAnnotated)
+        }.getOrElse(false)
 
         // Ignore this annotation if there is another annotation that is actually annotated with @JsonCreator.
         val annotatedConstructor = {
@@ -156,15 +168,16 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
 
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
 
-      val descriptor = _descriptorFor(beanDesc.getBeanClass)
-      if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
-        defaultInstantiator match {
-          case std: StdValueInstantiator =>
-            new ScalaValueInstantiator(std, config, descriptor)
-          case other =>
-            throw new IllegalArgumentException("Cannot customise a non StdValueInstantiatiator: " + other.getClass)
-        }
-      } else defaultInstantiator
+      _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
+        if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
+          defaultInstantiator match {
+            case std: StdValueInstantiator =>
+              new ScalaValueInstantiator(std, config, descriptor)
+            case other =>
+              throw new IllegalArgumentException("Cannot customise a non StdValueInstantiatiator: " + other.getClass)
+          }
+        } else defaultInstantiator
+      }.getOrElse(defaultInstantiator)
 
     } else defaultInstantiator
   }
