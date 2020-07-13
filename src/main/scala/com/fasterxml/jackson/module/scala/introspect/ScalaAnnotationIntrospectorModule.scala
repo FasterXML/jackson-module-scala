@@ -151,7 +151,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
-  override def findValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription,
+  override def modifyValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription,
     defaultInstantiator: ValueInstantiator): ValueInstantiator = {
 
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
@@ -167,6 +167,10 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       } else defaultInstantiator
 
     } else defaultInstantiator
+  }
+
+  override def findValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription): ValueInstantiator = {
+    None.orNull
   }
 }
 
