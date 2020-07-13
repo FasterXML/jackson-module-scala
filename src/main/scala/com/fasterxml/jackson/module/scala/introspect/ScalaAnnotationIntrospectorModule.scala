@@ -101,8 +101,8 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     val jsonCreators: PartialFunction[Annotation, JsonCreator] = { case jc: JsonCreator => jc }
 
     a match {
+      case ac: AnnotatedConstructor if (!isScala(ac)) => false
       case ac: AnnotatedConstructor =>
-        if (!isScala(ac)) return false
         val annotatedFound = _descriptorFor(ac.getDeclaringClass).map { d =>
           d.properties
             .flatMap(_.param)
