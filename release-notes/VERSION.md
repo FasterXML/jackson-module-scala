@@ -15,6 +15,11 @@ Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java ver
 * [[gh-454]](https://github.com/FasterXML/jackson-module-scala/issues/454)
   Jackson module scala potentially breaks serialization for swagger Model.
 
+# Version: 2.11.1
+
+There are no new fixes in this release; it serves to track the 2.11.1 release
+of the upstream Jackson projects.
+
 # Version: 2.11.0
 
 This patch release tracks Jackson 2.11. The 2.11 series has full support for
