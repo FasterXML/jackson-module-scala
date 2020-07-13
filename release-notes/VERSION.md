@@ -1,3 +1,25 @@
+# Version: 2.12.0 (not yet scheduled for release)
+
+This patch release tracks Jackson 2.12. The 2.12 series has full support for
+Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java version.
+
+## Fixes
+
+* [[gh-449]](https://github.com/FasterXML/jackson-module-scala/issues/449) Remove jackson-module-paranamer dependency. Scala 2.10 and 2.11 releases use paranamer directly still. Scala 2.12 and 2.13 releases no longer use paranamer.
+* [[gh-455]](https://github.com/FasterXML/jackson-module-scala/issues/455) get ScalaAnnotationIntrospector to ignore non-Scala classes.
+
+# Version: 2.11.2 (not yet scheduled for release)
+
+## Fixes
+
+* [[gh-454]](https://github.com/FasterXML/jackson-module-scala/issues/454)
+  Jackson module scala potentially breaks serialization for swagger Model.
+
+# Version: 2.11.1
+
+There are no new fixes in this release; it serves to track the 2.11.1 release
+of the upstream Jackson projects.
+
 # Version: 2.11.0
 
 This patch release tracks Jackson 2.11. The 2.11 series has full support for
@@ -9,6 +31,11 @@ Scala 2.10, 2.11 and 2.12 and 2.13.
   support default values in case class parameter lists
 * [[gh-445]](https://github.com/FasterXML/jackson-module-scala/issues/445) fix NullPointerException that can happen
   with some case classes (caused by gh-87 fix) - issue still appears in 2.11.0.rc1 but is fixed in 2.11.0
+
+# Version: 2.10.4
+
+There are no new fixes in this release; it serves to track the 2.10.4 release
+of the upstream Jackson projects.
 
 # Version: 2.10.3
 
