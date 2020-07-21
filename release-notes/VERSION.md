@@ -1,10 +1,77 @@
-# Version: 2.10.0 (pre-release 3)
+# Version: 2.12.0 (not yet scheduled for release)
+
+This patch release tracks Jackson 2.12. The 2.12 series has full support for
+Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java version.
+
+## Fixes
+
+* [[gh-449]](https://github.com/FasterXML/jackson-module-scala/issues/449) Remove jackson-module-paranamer dependency. Scala 2.10 and 2.11 releases use paranamer directly still. Scala 2.12 and 2.13 releases no longer use paranamer.
+* [[gh-455]](https://github.com/FasterXML/jackson-module-scala/issues/455) get ScalaAnnotationIntrospector to ignore non-Scala classes.
+
+# Version: 2.11.2 (not yet scheduled for release)
+
+## Fixes
+
+* [[gh-454]](https://github.com/FasterXML/jackson-module-scala/issues/454)
+  Jackson module scala potentially breaks serialization for swagger Model.
+
+# Version: 2.11.1
+
+There are no new fixes in this release; it serves to track the 2.11.1 release
+of the upstream Jackson projects.
+
+# Version: 2.11.0
+
+This patch release tracks Jackson 2.11. The 2.11 series has full support for
+Scala 2.10, 2.11 and 2.12 and 2.13.
+
+## Fixes
+
+* [[gh-87]](https://github.com/FasterXML/jackson-module-scala/issues/87)
+  support default values in case class parameter lists
+* [[gh-445]](https://github.com/FasterXML/jackson-module-scala/issues/445) fix NullPointerException that can happen
+  with some case classes (caused by gh-87 fix) - issue still appears in 2.11.0.rc1 but is fixed in 2.11.0
+
+# Version: 2.10.5
+
+There are no new fixes in this release; it serves to track the 2.10.5 release
+of the upstream Jackson projects.
+
+# Version: 2.10.4
+
+There are no new fixes in this release; it serves to track the 2.10.4 release
+of the upstream Jackson projects.
+
+# Version: 2.10.3
+
+## Fixes
+
+* [[gh-218]](https://github.com/FasterXML/jackson-module-scala/issues/218)
+  Fix issue with serialization of case class with overridden attributes
+
+# Version: 2.10.2
+
+There are no new fixes in this release; it serves to track the 2.10.2 release
+of the upstream Jackson projects.
+
+# Version: 2.10.1
+
+There are no new fixes in this release; it serves to track the 2.10.1 release
+of the upstream Jackson projects.
+
+# Version: 2.10.0
 
 This patch release tracks Jackson 2.10. The 2.10 series adds full support for
 Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
 
+The addition of a SymbolModule to DefaultScalaModule might lead to some behaviour changes for some users.
+
 ## Fixes
 
+* [[gh-432]](https://github.com/FasterXML/jackson-module-scala/issues/432)
+  move experimental classes to main package
+* [[gh-pr-264]](https://github.com/FasterXML/jackson-module-scala/pull/264)
+  Add SymbolModule to support Scala symbols
 * [[gh-399]](https://github.com/FasterXML/jackson-module-scala/issues/399)
   JsonScalaEnumeration annotation not picked up when using a Mixin
 * [[gh-429]](https://github.com/FasterXML/jackson-module-scala/issues/429)
@@ -13,8 +80,6 @@ Scala 2.13 while maintaining support for 2.10, 2.11 and 2.12.
   `scala.collection.immutable.ListMap` fails to serialize since 2.9.3 (fix in jackson-databind that is useful for Scala developers)
 
 # Version: 2.9.10
-
-The first release to support Scala 2.13. Thanks to Adriaan Moors and Seth Tisue.
 
 ## Fixes
 
@@ -75,8 +140,36 @@ Thanks to Kenji Yoshida.
 
 * [[gh-346]](https://github.com/FasterXML/jackson-module-scala/issues/346)
   `@JsonInclude` content inclusion does not work. Thanks to brharrington.
+  
+# Version: 2.9.3
 
-# Versions 2.6.0 - 2.9.3
+There are no new fixes in this release; it serves to track the 2.9.3 release
+of the upstream Jackson projects.
+
+# Version: 2.9.2
+
+There are no new fixes in this release; it serves to track the 2.9.2 release
+of the upstream Jackson projects.
+
+# Version: 2.9.1
+
+## Fixes
+
+* [[gh-338]](https://github.com/FasterXML/jackson-module-scala/issues/338)
+  Deserialization of JSON object with null values into a `Map[String, JsonNode]` causes a NullPointerException. Thanks to David Pratt.
+* [[gh-287]](https://github.com/FasterXML/jackson-module-scala/issues/287)
+  Null pointer exception when trying to deserialize into `Either[]`. Thanks to Jonathan Stearnes.
+
+# Version: 2.9.0
+
+This minor release tracks Jackson 2.9 and fixes a number of issues.
+
+## Fixes
+
+* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324)
+  Fix bean accessors being used for field names. Thanks to Nick Telford.
+
+# Versions 2.6.0 - 2.8.x
 
 Version notes for these versions were not produced and will need to be
 updated retrospectively.
