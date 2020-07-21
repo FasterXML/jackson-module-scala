@@ -22,16 +22,16 @@ matrix:
       jdk: openjdk8
       env: SONATYPE_PUBLISH=false
     # Scala 2.12+ only supports JDK 8+
-    - scala: 2.12.10
+    - scala: 2.12.12
       jdk: openjdk8
       env: SONATYPE_PUBLISH=true
-    - scala: 2.12.10
+    - scala: 2.12.12
       jdk: openjdk11
       env: SONATYPE_PUBLISH=false
-    - scala: 2.13.1
+    - scala: 2.13.3
       jdk: openjdk8
       env: SONATYPE_PUBLISH=true
-    - scala: 2.13.1
+    - scala: 2.13.3
       jdk: openjdk11
       env: SONATYPE_PUBLISH=false
 
