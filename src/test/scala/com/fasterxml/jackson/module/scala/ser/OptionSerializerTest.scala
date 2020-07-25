@@ -341,7 +341,7 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   private def newMapperWithPropertyInclusion(incl: JsonInclude.Value): ObjectMapper = {
-    val builder = JsonMapper.builder().addModule(module).changeDefaultPropertyInclusion(_ => incl)
+    val builder = newBuilder.changeDefaultPropertyInclusion(_ => incl)
     builder.build()
   }
 }

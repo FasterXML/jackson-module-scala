@@ -33,7 +33,7 @@ class TransientFieldTest extends SerializerTest {
   }
 
   it should "respect @transient annotation when feature enabled" in {
-    serialize(new ClassyTransient, newMapper.enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)) shouldBe """{"x":42}"""
+    serialize(new ClassyTransient, newBuilder.enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER).build()) shouldBe """{"x":42}"""
   }
 
    it should "normally ignore @transient fields without getters" in {

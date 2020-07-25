@@ -6,8 +6,11 @@ import com.fasterxml.jackson.databind.{Module, ObjectMapper}
 abstract class JacksonTest extends BaseSpec {
   def module: Module
 
+  def newBuilder: JsonMapper.Builder = {
+    JsonMapper.builder().addModule(module)
+  }
+
   def newMapper: ObjectMapper = {
-    val builder = JsonMapper.builder().addModule(module)
-    builder.build()
+    newBuilder.build()
   }
 }
