@@ -15,6 +15,7 @@ import org.scalatestplus.junit.JUnitRunner
 
 import scala.annotation.meta.{field, getter}
 import scala.collection.JavaConverters._
+import scala.compat.java8.FunctionConverters._
 
 object OptionSerializerTest {
   class NonEmptyOptions {
@@ -340,8 +341,8 @@ class OptionSerializerTest extends SerializerTest {
     serialize(Some(null), newMapper) should be("null")
   }
 
-  private def newMapperWithPropertyInclusion(incl: JsonInclude.Value): ObjectMapper = {
-    val builder = newBuilder.changeDefaultPropertyInclusion(_ => incl)
+  private def newMapperWithPropertyInclusion(includeValue: JsonInclude.Value): ObjectMapper = {
+    val builder = newBuilder.changeDefaultPropertyInclusion(asJavaUnaryOperator((a: Any) => includeValue))
     builder.build()
   }
 }

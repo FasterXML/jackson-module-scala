@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
 import com.google.common.base.Optional
 import org.junit.runner.RunWith
-import org.scalatest.{Matchers, Outcome, fixture}
+import org.scalatest.flatspec.FixtureAnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.Outcome
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
@@ -19,7 +21,7 @@ class PojoWrittenInScala {
 }
 
 @RunWith(classOf[JUnitRunner])
-class NamingStrategyTest extends fixture.FlatSpec with Matchers {
+class NamingStrategyTest extends FixtureAnyFlatSpec with Matchers {
 
   type FixtureParam = ObjectMapper
 
