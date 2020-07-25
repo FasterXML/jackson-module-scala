@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonProperty.Access
 import com.fasterxml.jackson.annotation._
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
@@ -119,10 +120,9 @@ class CaseClassSerializerTest extends SerializerTest {
     serialize(CaseClassWithCompanion(42)) should equal( """{"intValue":42}""")
   }
 
-  def nonNullMapper: ObjectMapper =
-    new ObjectMapper()
-      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-      .registerModule(DefaultScalaModule)
+  def nonNullMapper: ObjectMapper = {
+    JsonMapper.builder().addModule(DefaultScalaModule).build()
+  }
 
   it should "not write a null value" in {
     val o = NonNullCaseClass1(null)
@@ -134,9 +134,10 @@ class CaseClassSerializerTest extends SerializerTest {
     nonNullMapper.writeValueAsString(o) should be ("{}")
   }
 
-  def propertyNamingStrategyMapper = new ObjectMapper() {
-    registerModule(module)
-    setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+  def propertyNamingStrategyMapper: ObjectMapper = {
+    val builder = JsonMapper.builder()
+    val settings = builder.baseSettings().`with`(PropertyNamingStrategy.SNAKE_CASE)
+    builder.baseSettings(settings).addModule(module).build()
   }
 
   it should "honor the property naming strategy" in {
