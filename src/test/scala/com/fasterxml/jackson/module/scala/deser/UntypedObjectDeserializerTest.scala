@@ -44,7 +44,7 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
     }
 
     val mapper = newBuilder.addModule(AtrModule).build()
-    val atrMapper = mapper.asInstanceOf[JsonMapper] :: ScalaObjectMapper
+    val atrMapper = mapper :: ScalaObjectMapper
 
     val mapValue = atrMapper.readValue[Map[String,Any]](jsonString)
 

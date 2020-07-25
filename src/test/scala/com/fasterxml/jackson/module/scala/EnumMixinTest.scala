@@ -23,8 +23,8 @@ abstract class TestObject2Mixin {
 
 @RunWith(classOf[JUnitRunner])
 class EnumMixinTest extends BaseSpec {
-  val baseMapper = JsonMapper.builder().addModule(new DefaultScalaModule).addMixIn(classOf[TestObject2], classOf[TestObject2Mixin])
-  val mapper = baseMapper.asInstanceOf[JsonMapper] :: ScalaObjectMapper
+  val baseBuilder = JsonMapper.builder().addModule(new DefaultScalaModule).addMixIn(classOf[TestObject2], classOf[TestObject2Mixin])
+  val mapper = baseBuilder.build() :: ScalaObjectMapper
 
   val json = """{"field": "Value1"}"""
 
@@ -42,8 +42,9 @@ class EnumMixinTest extends BaseSpec {
 //  }
 
   it should "handle mixin annotations for an enum (case class mixin)" in {
-    val baseMapper = JsonMapper.builder().addModule(new DefaultScalaModule).addMixIn(classOf[TestObject2], classOf[TestObject1])
-    val m1 = baseMapper.asInstanceOf[JsonMapper] :: ScalaObjectMapper
+    val baseMapper = JsonMapper.builder().addModule(new DefaultScalaModule)
+      .addMixIn(classOf[TestObject2], classOf[TestObject1]).build()
+    val m1 = baseMapper :: ScalaObjectMapper
 //TODO fix
 //    val mixinResult = m1.findMixInClassFor[TestObject2]
 //    mixinResult shouldEqual classOf[TestObject1]

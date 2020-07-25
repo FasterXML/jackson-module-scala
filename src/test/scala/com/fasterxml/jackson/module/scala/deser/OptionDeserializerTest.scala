@@ -85,7 +85,7 @@ class OptionDeserializerTest extends DeserializerTest {
     var result = deserialize[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
 
-    val m = newMapper.asInstanceOf[JsonMapper] :: ScalaObjectMapper
+    val m = newMapper :: ScalaObjectMapper
     result = m.readValue[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
   }
