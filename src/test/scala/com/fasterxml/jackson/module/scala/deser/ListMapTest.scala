@@ -18,11 +18,9 @@ import scala.collection.immutable.{ListMap, Queue, TreeMap}
 class ListMapTest extends BaseSpec with TableDrivenPropertyChecks {
   private val mapper = {
     val builder = JsonMapper.builder().addModule(new DefaultScalaModule)
-    val _mapper = builder.build()
-    _mapper.disable(MapperFeature.AUTO_DETECT_IS_GETTERS)
-    _mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-    _mapper.disable(SerializationFeature.INDENT_OUTPUT)
-    _mapper
+      .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+      .disable(SerializationFeature.INDENT_OUTPUT)
+    builder.build()
   }
 
   case class SampleCaseClass(map: Map[String, String] = Map(), seq: Seq[String] = List())

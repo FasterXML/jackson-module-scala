@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.`type`.MapLikeType
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{AbstractTypeResolver, DeserializationConfig, JavaType, ObjectMapper}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule, ScalaObjectMapper}
 import org.junit.runner.RunWith
@@ -42,9 +43,8 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
       this += (_ addAbstractTypeResolver ATR)
     }
 
-    val atrMapper = new ObjectMapper with ScalaObjectMapper
-    atrMapper.registerModule(DefaultScalaModule)
-    atrMapper.registerModule(AtrModule)
+    val mapper = JsonMapper.builder().addModule(new DefaultScalaModule).addModule(AtrModule).build()
+    val atrMapper = mapper.asInstanceOf[JsonMapper] :: ScalaObjectMapper
 
     val mapValue = atrMapper.readValue[Map[String,Any]](jsonString)
 

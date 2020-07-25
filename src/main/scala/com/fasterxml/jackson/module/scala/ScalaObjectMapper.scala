@@ -6,6 +6,12 @@ import java.net.URL
 import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.json.JsonMapper
+
+object ScalaObjectMapper {
+  def ::(o: JsonMapper) = new Mixin(o)
+  final class Mixin private[ScalaObjectMapper](val obj: JsonMapper) extends JsonMapper with ScalaObjectMapper
+}
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>

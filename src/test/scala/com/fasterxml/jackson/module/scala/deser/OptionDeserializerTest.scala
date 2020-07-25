@@ -85,13 +85,6 @@ class OptionDeserializerTest extends DeserializerTest {
     var result = deserialize[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
 
-    object ScalaObjectMapper {
-      //implicit def innerObj(o: Mixin) = o.obj
-
-      def ::(o: JsonMapper) = new Mixin(o)
-      final class Mixin private[ScalaObjectMapper](val obj: JsonMapper) extends JsonMapper with ScalaObjectMapper
-    }
-    import ScalaObjectMapper._
     val m = newMapper.asInstanceOf[JsonMapper] :: ScalaObjectMapper
     result = m.readValue[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
