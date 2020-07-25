@@ -9,10 +9,7 @@ cache:
 language: scala
 matrix:
   include:
-    # Test Scala 2.10 and 2.11 with JDK 8 (jackson3 does not support older JDKs)
-    - scala: 2.10.7
-      jdk: openjdk8
-      env: SONATYPE_PUBLISH=true
+    # Test Scala 2.11 with JDK 8 (jackson3 does not support older JDKs)
     - scala: 2.11.12
       jdk: openjdk8
       env: SONATYPE_PUBLISH=true
