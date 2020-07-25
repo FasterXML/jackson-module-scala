@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
-import com.fasterxml.jackson.datatype.joda.JodaModule
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -105,10 +104,9 @@ class CaseClassDeserializerTest extends DeserializerTest {
   }
 
   def propertyNamingStrategyMapper: ObjectMapper = {
-    val builder = JsonMapper.builder().addModule(module)
-    val mapper = builder.build()
-    mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-    mapper
+    val builder = JsonMapper.builder()
+    val settings = builder.baseSettings().`with`(PropertyNamingStrategy.SNAKE_CASE)
+    builder.baseSettings(settings).addModule(module).build()
   }
 
   it should "honor the property naming strategy" in {
