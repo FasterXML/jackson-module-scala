@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.`type`.ClassKey
+import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.introspect._
@@ -121,6 +122,15 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
         annotatedFound && annotatedConstructor.forall(_ == ac.getAnnotated) && !isDisabled
       case _ => false
     }
+  }
+
+  override def findCreatorAnnotation(config: MapperConfig[_], a: Annotated): JsonCreator.Mode = {
+    if (hasCreatorAnnotation(a)) {
+      Option(findCreatorBinding(a)) match {
+        case Some(mode) => mode
+        case _ => JsonCreator.Mode.DEFAULT
+      }
+    } else None.orNull
   }
 
   override def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
