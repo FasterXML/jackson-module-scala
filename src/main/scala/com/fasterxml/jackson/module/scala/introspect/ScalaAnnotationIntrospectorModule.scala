@@ -98,7 +98,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
-  def hasCreatorAnnotation(a: Annotated): Boolean = {
+  private def hasCreatorAnnotation(a: Annotated): Boolean = {
     val jsonCreators: PartialFunction[Annotation, JsonCreator] = { case jc: JsonCreator => jc }
 
     a match {
@@ -124,13 +124,24 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
-  def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
-    val ann = _findAnnotation(a, classOf[JsonCreator])
-    if (ann != null) {
-      ann.mode()
-    } else if (isScala(a) && hasCreatorAnnotation(a)) {
-      JsonCreator.Mode.PROPERTIES
+  override def findCreatorAnnotation(config: MapperConfig[_], a: Annotated): JsonCreator.Mode = {
+    if (hasCreatorAnnotation(a)) {
+      Option(findCreatorBinding(a)) match {
+        case Some(mode) => mode
+        case _ => JsonCreator.Mode.DEFAULT
+      }
     } else None.orNull
+  }
+
+  private def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
+    Option(_findAnnotation(a, classOf[JsonCreator])) match {
+      case Some(ann) => ann.mode()
+      case _ => {
+        if (isScala(a) && hasCreatorAnnotation(a)) {
+          JsonCreator.Mode.PROPERTIES
+        } else None.orNull
+      }
+    }
   }
 
   class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor) extends StdValueInstantiator(delegate) {
