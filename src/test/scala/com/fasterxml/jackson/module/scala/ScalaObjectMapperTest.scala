@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper}
+import com.fasterxml.jackson.databind.JsonMappingException
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -151,12 +151,6 @@ class ScalaObjectMapperTest extends BaseSpec {
     val result = mapper.convertValue[GenericTestClass[Int]](GenericTestClass("42"))
     result should equal(genericInt)
   }
-
-//TODO fix
-//  it should "generate json schema" in {
-//    val result = mapper.generateJsonSchema[Target]
-//    result should equal(mapper.generateJsonSchema(classOf[Target]))
-//  }
 
   it should "read values as Array from a JSON array" in {
     val result = mapper.readValue[Array[GenericTestClass[Int]]](toplevelArrayJson)

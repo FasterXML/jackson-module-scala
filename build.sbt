@@ -30,7 +30,6 @@ unmanagedSourceDirectories in Compile += {
 }
 
 val jacksonVersion = "3.0.0-SNAPSHOT"
-val jacksonLegacyVersion = "2.11.1"
 
 libraryDependencies ++= Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
@@ -44,7 +43,6 @@ libraryDependencies ++= Seq(
 } ++ Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonLegacyVersion % Test,
     "org.scala-lang.modules" %% "scala-java8-compat" % "0.9.1" % Test,
     "io.swagger" % "swagger-core" % "1.6.2" % Test,
     "org.scalatest" %% "scalatest" % "3.1.2" % Test,
