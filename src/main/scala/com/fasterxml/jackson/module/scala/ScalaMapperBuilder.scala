@@ -24,8 +24,4 @@ trait ScalaMapperBuilder[M <: ObjectMapper,B <: MapperBuilder[M,B]] {
   final def addMixin[Target: Manifest, MixinSource: Manifest](): B = {
     addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
-
-  final def findMixInClassFor[T: Manifest]: Class[_] = {
-    mixInHandler()findMixInClassFor(manifest[T].runtimeClass)
-  }
 }
