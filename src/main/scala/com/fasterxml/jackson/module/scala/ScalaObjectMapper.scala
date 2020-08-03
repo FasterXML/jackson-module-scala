@@ -10,7 +10,8 @@ import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrappe
 
 object ScalaObjectMapper {
   def ::(o: JsonMapper) = new Mixin(o)
-  final class Mixin private[ScalaObjectMapper](val obj: JsonMapper) extends JsonMapper with ScalaObjectMapper
+  final class Mixin private[ScalaObjectMapper](mapper: JsonMapper)
+    extends JsonMapper(mapper.rebuild()) with ScalaObjectMapper
 }
 
 trait ScalaObjectMapper {
