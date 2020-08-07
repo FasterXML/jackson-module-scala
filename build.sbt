@@ -5,9 +5,9 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-scalaVersion := "2.12.11"
+scalaVersion := "2.13.3"
 
-crossScalaVersions := Seq("2.11.12", "2.12.11", "2.13.3")
+crossScalaVersions := Seq("2.11.12", "2.12.12", "2.13.3")
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
@@ -45,8 +45,8 @@ libraryDependencies ++= Seq(
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
     "org.scala-lang.modules" %% "scala-java8-compat" % "0.9.1" % Test,
     "io.swagger" % "swagger-core" % "1.6.2" % Test,
-    "org.scalatest" %% "scalatest" % "3.1.2" % Test,
-    "org.scalatestplus" %% "junit-4-12" % "3.1.2.0" % Test,
+    "org.scalatest" %% "scalatest" % "3.2.1" % Test,
+    "org.scalatestplus" %% "junit-4-12" % "3.2.0.0" % Test,
     "junit" % "junit" % "4.13" % Test
 )
 
