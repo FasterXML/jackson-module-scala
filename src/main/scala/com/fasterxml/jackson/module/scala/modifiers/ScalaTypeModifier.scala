@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.`type`._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import scala.collection._
+
 class ScalaTypeModifier extends TypeModifier {
 
   private val optionClass = classOf[Option[_]]
