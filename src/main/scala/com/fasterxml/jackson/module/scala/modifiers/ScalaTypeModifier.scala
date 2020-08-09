@@ -20,8 +20,10 @@ class ScalaTypeModifier extends TypeModifier {
 
 
     if (javaType.isTypeOrSubTypeOf(optionClass)) {
-      if (javaType.isInstanceOf[ReferenceType]) return javaType
-      ReferenceType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
+      javaType match {
+        case rt: ReferenceType => rt
+        case _ => ReferenceType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
+      }
     } else if (javaType.isTypeOrSubTypeOf(mapClass)) {
       MapLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0), javaType.containedTypeOrUnknown(1))
     } else if (javaType.isTypeOrSubTypeOf(iterableOnceClass)) {
