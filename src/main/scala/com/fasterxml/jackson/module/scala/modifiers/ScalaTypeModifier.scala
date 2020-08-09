@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.`type`._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import scala.collection._
+
 class ScalaTypeModifier extends TypeModifier {
 
   private val optionClass = classOf[Option[_]]
   private val eitherClass = classOf[Either[_, _]]
-  private val mapClass = classOf[scala.collection.Map[_, _]]
-  private val iterableOnceClass = classOf[scala.collection.IterableOnce[_]]
+  private val mapClass = classOf[Map[_, _]]
+  private val iterableOnceClass = classOf[IterableOnce[_]]
 
   override def modifyType(javaType: JavaType,
                           jdkType: Type,
