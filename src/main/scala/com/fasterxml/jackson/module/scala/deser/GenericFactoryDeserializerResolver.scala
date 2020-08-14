@@ -6,8 +6,9 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializerBase, StdValueInstantiator}
-import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
+import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, NullValueProvider, ValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.databind.util.AccessPattern
 
 import scala.collection.mutable
 import scala.language.higherKinds
@@ -59,8 +60,18 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       new BuilderWrapper[AnyRef](builderFor[AnyRef](collectionType.getRawClass, valueType))
   }
 
+  private class ContainerNullValueProvider(containerDeserializer: CollectionDeserializer) extends NullValueProvider {
+    override def getNullValue(ctxt: DeserializationContext): CC[_] = {
+      containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[CC[_]]
+    }
+
+    override def getNullAccessPattern: AccessPattern = {
+      AccessPattern.DYNAMIC
+    }
+  }
+
   private class Deserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)
-    extends ContainerDeserializerBase[CC[_]](collectionType)
+    extends ContainerDeserializerBase[CC[_]](collectionType, new ContainerNullValueProvider(containerDeserializer), None.orNull.asInstanceOf[Boolean])
       with ContextualDeserializer {
 
     def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) = {
@@ -76,9 +87,10 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
 
     override def getContentDeserializer: JsonDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
 
-    override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[_] =
+    override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[_] = {
       containerDeserializer.deserialize(jp, ctxt) match {
-        case wrapper: BuilderWrapper[_] => wrapper.builder.result().asInstanceOf[CC[_]]
+        case wrapper: BuilderWrapper[_] => wrapper.builder.result()
       }
+    }
   }
 }
