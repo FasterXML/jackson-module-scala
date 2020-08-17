@@ -5,7 +5,7 @@ import java.util.UUID
 import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule, deser}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -13,7 +13,6 @@ import scala.collection.{immutable, mutable}
 
 case class JavaListWrapper(s: java.util.ArrayList[String])
 case class SeqWrapper(s: Seq[String])
-case class SeqWrapperWithDefault(s: Seq[String] = Seq.empty)
 
 @RunWith(classOf[JUnitRunner])
 class SeqDeserializerTest extends DeserializerTest {
@@ -193,12 +192,6 @@ class SeqDeserializerTest extends DeserializerTest {
     result1 shouldEqual JavaListWrapper(new java.util.ArrayList[String]())
     val result2 = mapper.readValue(json, classOf[SeqWrapper])
     result2 shouldEqual SeqWrapper(Seq.empty)
-  }
-
-  it should "handle Seq with default value" in {
-    val json = """{"s": null}"""
-    val result = deserialize[SeqWrapperWithDefault](json)
-    result shouldEqual SeqWrapperWithDefault(Seq.empty)
   }
 
   val listJson =  "[1,2,3,4,5,6]"
