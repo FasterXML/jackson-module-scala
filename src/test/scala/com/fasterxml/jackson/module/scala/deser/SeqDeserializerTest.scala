@@ -185,10 +185,9 @@ class SeqDeserializerTest extends DeserializerTest {
     exceptionPath should equal (List(1))
   }
 
-  it should "handle AS_NULL" in {
-    val mapper = new ObjectMapper
-    mapper.registerModule(new DefaultScalaModule)
-    mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
+  it should "handle conversion of null to empty collection" in {
+    // need to find equivalent of jackson 2.x setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
+    val mapper = newMapper
     val json = """{"s": null}"""
     val result1 = mapper.readValue(json, classOf[JavaListWrapper])
     result1 shouldEqual JavaListWrapper(new java.util.ArrayList[String]())
