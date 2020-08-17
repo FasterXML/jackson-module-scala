@@ -50,11 +50,13 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a LazyList" in {
+    import overrides._
     val result = deserialize[LazyList[Int]](listJson)
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable LazyList" in {
+    import overrides._
     val result = deserialize[LazyList[Int]](listJson)
     result should equal (listScala)
   }

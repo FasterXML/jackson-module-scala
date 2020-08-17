@@ -82,9 +82,9 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       }
     }
 
-    override def getEmptyValue(ctxt: DeserializationContext): Any = {
+    override def getEmptyValue(ctxt: DeserializationContext): Object = {
       val bw = containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef]]
-      bw.builder.result()
+      bw.builder.result().asInstanceOf[Object]
     }
   }
 }
