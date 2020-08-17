@@ -68,9 +68,14 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
     }
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[_, _] = {
-      containerDeserializer.deserialize(jp,ctxt) match {
-        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result().asInstanceOf[CC[_, _]]
+      containerDeserializer.deserialize(jp, ctxt) match {
+        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result()
       }
+    }
+
+    override def getEmptyValue(ctxt: DeserializationContext): Object = {
+      val bw = containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef, AnyRef]]
+      bw.builder.result().asInstanceOf[Object]
     }
   }
 }
