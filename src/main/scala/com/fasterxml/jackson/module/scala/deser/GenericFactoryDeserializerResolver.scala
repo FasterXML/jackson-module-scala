@@ -83,7 +83,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[_] =
       containerDeserializer.deserialize(jp, ctxt) match {
-        case wrapper: BuilderWrapper[_] => wrapper.builder.result().asInstanceOf[CC[_]]
+        case wrapper: BuilderWrapper[_] => wrapper.builder.result()
       }
   }
 }
