@@ -2,12 +2,17 @@ package com.fasterxml.jackson.module.scala.deser
 
 import java.util.UUID
 
+import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection.{immutable, mutable}
+
+case class JavaListWrapper(s: java.util.ArrayList[String])
+case class SeqWrapper(s: Seq[String])
 
 @RunWith(classOf[JUnitRunner])
 class SeqDeserializerTest extends DeserializerTest {
@@ -178,6 +183,17 @@ class SeqDeserializerTest extends DeserializerTest {
 
     val exceptionPath = exception.getPath.asScala.map(_.getIndex)
     exceptionPath should equal (List(1))
+  }
+
+  it should "handle AS_NULL" in {
+    val mapper = new ObjectMapper
+    mapper.registerModule(new DefaultScalaModule)
+    mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
+    val json = """{"s": null}"""
+    val result1 = mapper.readValue(json, classOf[JavaListWrapper])
+    result1 shouldEqual JavaListWrapper(new java.util.ArrayList[String]())
+    val result2 = mapper.readValue(json, classOf[SeqWrapper])
+    result2 shouldEqual SeqWrapper(Seq.empty)
   }
 
   val listJson =  "[1,2,3,4,5,6]"
