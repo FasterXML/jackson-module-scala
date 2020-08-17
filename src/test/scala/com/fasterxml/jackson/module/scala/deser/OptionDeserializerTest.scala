@@ -1,14 +1,17 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo, JsonTypeName}
+import com.fasterxml.jackson.annotation.{JsonSetter, JsonSubTypes, JsonTypeInfo, JsonTypeName, Nulls}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.annotation.meta.field
+import scala.collection.Map
 
 case class UnavailableField(foo: Option[String])
+case class JavaOptionalWrapper(o: java.util.Optional[String])
+case class OptionWrapper(o: Option[String])
 
 object OptionDeserializerTest {
   @JsonSubTypes(Array(new JsonSubTypes.Type(classOf[Impl])))
@@ -89,5 +92,16 @@ class OptionDeserializerTest extends DeserializerTest {
     m.registerModule(DefaultScalaModule)
     result = m.readValue[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
+  }
+
+  it should "handle AS_NULL" in {
+    val mapper = new ObjectMapper
+    mapper.registerModule(new DefaultScalaModule)
+    mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
+    val json = """{"o": null}"""
+    val result1 = mapper.readValue(json, classOf[JavaOptionalWrapper])
+    result1 shouldEqual JavaOptionalWrapper(java.util.Optional.empty[String]())
+    val result2 = mapper.readValue(json, classOf[OptionWrapper])
+    result2 shouldEqual OptionWrapper(None)
   }
 }

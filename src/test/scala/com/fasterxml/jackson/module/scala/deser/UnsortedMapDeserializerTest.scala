@@ -2,14 +2,18 @@ package com.fasterxml.jackson.module.scala.deser
 
 import java.util.UUID
 
+import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection._
+
+case class JavaMapWrapper(m: java.util.HashMap[String, String])
+case class MapWrapper(m: Map[String, String])
 
 @RunWith(classOf[JUnitRunner])
 class UnsortedMapDeserializerTest extends DeserializerTest {
@@ -80,6 +84,17 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
   it should "properly deserialize nullary values" in {
     val result = deserialize[Map[String, JsonNode]](nullValueMapJson)
     result should equal (nullValueMapScala)
+  }
+
+  it should "handle AS_NULL" in {
+    val mapper = new ObjectMapper
+    mapper.registerModule(new DefaultScalaModule)
+    mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
+    val json = """{"m": null}"""
+    val result1 = mapper.readValue(json, classOf[JavaMapWrapper])
+    result1 shouldEqual JavaMapWrapper(new java.util.HashMap[String, String]())
+    val result2 = mapper.readValue(json, classOf[MapWrapper])
+    result2 shouldEqual MapWrapper(Map.empty)
   }
 
   private val mapJson =  """{ "one": "1", "two": "2" }"""
