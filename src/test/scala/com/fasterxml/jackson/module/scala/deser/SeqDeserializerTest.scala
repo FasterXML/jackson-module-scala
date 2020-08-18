@@ -186,8 +186,8 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "handle conversion of null to empty collection" in {
-    // need to find equivalent of jackson 2.x setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
-    val mapper = newMapper
+    val mapper = newBuilder.changeDefaultNullHandling(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY))
+      .build()
     val json = """{"s": null}"""
     val result1 = mapper.readValue(json, classOf[JavaListWrapper])
     result1 shouldEqual JavaListWrapper(new java.util.ArrayList[String]())
