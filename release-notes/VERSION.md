@@ -7,6 +7,7 @@ Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java ver
 
 * [[gh-449]](https://github.com/FasterXML/jackson-module-scala/issues/449) Remove jackson-module-paranamer dependency. Scala 2.10 and 2.11 releases use paranamer directly still. Scala 2.12 and 2.13 releases no longer use paranamer.
 * [[gh-455]](https://github.com/FasterXML/jackson-module-scala/issues/455) get ScalaAnnotationIntrospector to ignore non-Scala classes.
+* [[gh-462]](https://github.com/FasterXML/jackson-module-scala/issues/462) Unable to deserailize Seq or Map with AS_EMPTY null handling
 
 # Version: 2.11.2
 
