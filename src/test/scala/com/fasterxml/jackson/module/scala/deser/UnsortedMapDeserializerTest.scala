@@ -5,8 +5,9 @@ import java.util.UUID
 import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -87,7 +88,9 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
   }
 
   it should "handle conversion of null to empty collection" in {
-    val mapper = newBuilder.changeDefaultNullHandling(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY))
+    val mapper = JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .changeDefaultNullHandling(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY))
       .build()
     val json = """{"m": null}"""
     val result1 = mapper.readValue(json, classOf[JavaMapWrapper])
