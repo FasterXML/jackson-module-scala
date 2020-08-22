@@ -116,26 +116,6 @@ class OptionSerializerTest extends SerializerTest {
       .writeValueAsString(new NonNullOption()) should be ("""{"foo":null}""")
   }
 
-//TODO fix
-//  it should "generate correct schema for options" in {
-//    val schema = newMapper.generateJsonSchema(classOf[OptionSchema])
-//    val schemaNode = schema.getSchemaNode
-//
-//    val typeNode = schemaNode.path("type")
-//    typeNode should not be 'missingNode
-//    typeNode should have (
-//      'nodeType (JsonNodeType.STRING),
-//      'textValue ("object")
-//    )
-//
-//    val stringValueTypeNode = schemaNode.path("properties").path("stringValue").path("type")
-//    stringValueTypeNode should not be 'missingNode
-//    stringValueTypeNode should have (
-//      'nodeType (JsonNodeType.STRING),
-//      'textValue ("string")
-//    )
-//  }
-
   it should "serialize contained JsonNode correctly" in {
     val json: String = """{"prop":"value"}"""
     val tree: JsonNode = newMapper.readTree(json)
