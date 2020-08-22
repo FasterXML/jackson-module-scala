@@ -9,7 +9,6 @@ import org.scalatestplus.junit.JUnitRunner
 import scala.annotation.meta.field
 
 case class UnavailableField(foo: Option[String])
-case class JavaOptionalWrapper(o: java.util.Optional[String])
 case class OptionWrapper(o: Option[String])
 
 object OptionDeserializerTest {
