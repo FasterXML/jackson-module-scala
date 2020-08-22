@@ -98,8 +98,6 @@ class OptionDeserializerTest extends DeserializerTest {
     mapper.registerModule(new DefaultScalaModule)
     mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
     val json = """{"o": null}"""
-    val result1 = mapper.readValue(json, classOf[JavaOptionalWrapper])
-    result1 shouldEqual JavaOptionalWrapper(java.util.Optional.empty[String]())
     val result2 = mapper.readValue(json, classOf[OptionWrapper])
     result2 shouldEqual OptionWrapper(None)
   }
