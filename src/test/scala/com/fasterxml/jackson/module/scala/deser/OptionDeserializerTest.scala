@@ -7,7 +7,6 @@ import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.annotation.meta.field
-import scala.collection.Map
 
 case class UnavailableField(foo: Option[String])
 
