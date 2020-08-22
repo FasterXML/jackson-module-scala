@@ -185,6 +185,11 @@ class SeqDeserializerTest extends DeserializerTest {
     exceptionPath should equal (List(1))
   }
 
+  it should "deserialize a nested seq into an immutable Seq" in {
+    val result = deserialize[immutable.Seq[Seq[Int]]](nestedJson)
+    result shouldEqual Seq(Seq(1,2,3),Seq(4,5,6))
+  }
+
   it should "handle conversion of null to empty collection" in {
     val mapper = JsonMapper.builder()
       .addModule(DefaultScalaModule)
@@ -199,4 +204,5 @@ class SeqDeserializerTest extends DeserializerTest {
 
   val listJson =  "[1,2,3,4,5,6]"
   val listScala: Range.Inclusive = 1 to 6
+  val nestedJson =  """[[1,2,3],[4,5,6]]"""
 }
