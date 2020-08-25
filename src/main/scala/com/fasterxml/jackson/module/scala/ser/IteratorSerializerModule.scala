@@ -24,7 +24,13 @@ private trait IteratorSerializer
     p1.knownSize == 1
 
   override def serialize(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
-    iteratorSerializer.serializeContents(value.asJava, jgen, provider)
+    if (provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
+      iteratorSerializer.serializeContents(value.asJava, jgen, provider)
+    } else {
+      jgen.writeStartArray(value)
+      iteratorSerializer.serializeContents(value.asJava, jgen, provider)
+      jgen.writeEndArray()
+    }
   }
 
   override def serializeContents(value: collection.Iterator[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
