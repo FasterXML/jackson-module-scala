@@ -24,7 +24,9 @@ private trait IterableSerializer
     value.knownSize == 1
 
   override def serialize(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
+    gen.writeStartArray(value)
     collectionSerializer.serializeContents(value.asJavaCollection, gen, provider)
+    gen.writeEndArray()
   }
 
   override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
