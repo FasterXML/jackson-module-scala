@@ -5,7 +5,7 @@ package ser
 import java.io.ByteArrayOutputStream
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
+import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategies}
 import com.google.common.base.Optional
 import org.junit.runner.RunWith
 import org.scalatest.flatspec.FixtureAnyFlatSpec
@@ -27,7 +27,7 @@ class NamingStrategyTest extends FixtureAnyFlatSpec with Matchers {
 
   protected def withFixture(test: OneArgTest): Outcome = {
     val builder = JsonMapper.builder()
-    val settings = builder.baseSettings().`with`(PropertyNamingStrategy.SNAKE_CASE)
+    val settings = builder.baseSettings().`with`(PropertyNamingStrategies.SNAKE_CASE)
     val mapper = builder.baseSettings(settings).addModule(DefaultScalaModule).build()
     test(mapper)
   }

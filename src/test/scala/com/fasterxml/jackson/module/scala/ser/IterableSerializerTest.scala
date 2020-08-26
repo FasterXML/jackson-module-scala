@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonTypeInfo}
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatest.matchers.Matcher
@@ -84,6 +85,13 @@ class IterableSerializerTest extends SerializerTest {
 
   it should "honor JsonTypeInfo" in {
     serialize(CHolder(Seq[C](X("1"), X("2")))) shouldBe """{"c":[{"@class":"com.fasterxml.jackson.module.scala.ser.IterableSerializerTest$X","data":"1"},{"@class":"com.fasterxml.jackson.module.scala.ser.IterableSerializerTest$X","data":"2"}]}"""
+  }
+
+  it should "honor SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED" in {
+    val mapper = newBuilder.enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)
+      .build()
+    mapper.writeValueAsString(Seq("123")) shouldBe """"123""""
+    mapper.writeValueAsString(Seq("123", "abc")) shouldBe """["123","abc"]"""
   }
 
   val matchUnorderedSet: Matcher[Any] = {

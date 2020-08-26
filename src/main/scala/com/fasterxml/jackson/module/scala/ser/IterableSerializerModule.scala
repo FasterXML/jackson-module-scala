@@ -21,7 +21,7 @@ private trait IterableSerializer
   def collectionSerializer: CollectionSerializer
 
   override def hasSingleElement(value: collection.Iterable[Any]): Boolean =
-    value.knownSize == 1
+    value.size == 1
 
   override def serialize(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
     if (provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
