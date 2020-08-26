@@ -23,10 +23,6 @@ private trait IterableSerializer
     value.size == 1
   }
 
-  override def serialize(value: Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
-    super.serialize(value, gen, provider)
-  }
-
   override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
     collectionSerializer.serializeContents(value.asJavaCollection, gen, provider)
   }
