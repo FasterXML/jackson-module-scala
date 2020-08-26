@@ -8,6 +8,7 @@ Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java ver
 * [[gh-449]](https://github.com/FasterXML/jackson-module-scala/issues/449) Remove jackson-module-paranamer dependency. Scala 2.10 and 2.11 releases use paranamer directly still. Scala 2.12 and 2.13 releases no longer use paranamer.
 * [[gh-455]](https://github.com/FasterXML/jackson-module-scala/issues/455) get ScalaAnnotationIntrospector to ignore non-Scala classes.
 * [[gh-462]](https://github.com/FasterXML/jackson-module-scala/issues/462) Unable to deserialize Seq or Map with AS_EMPTY null handling
+* [[gh-466]](https://github.com/FasterXML/jackson-module-scala/issues/466) Add support for WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED
 
 # Version: 2.11.2
 
@@ -32,6 +33,11 @@ Scala 2.10, 2.11 and 2.12 and 2.13.
   support default values in case class parameter lists
 * [[gh-445]](https://github.com/FasterXML/jackson-module-scala/issues/445) fix NullPointerException that can happen
   with some case classes (caused by gh-87 fix) - issue still appears in 2.11.0.rc1 but is fixed in 2.11.0
+
+# Version: 2.10.5
+
+There are no new fixes in this release; it serves to track the 2.10.5 release
+of the upstream Jackson projects.
 
 # Version: 2.10.4
 
