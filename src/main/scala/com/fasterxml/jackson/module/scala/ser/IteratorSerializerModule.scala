@@ -20,7 +20,7 @@ private trait IteratorSerializer
   def iteratorSerializer: impl.IteratorSerializer
 
   override def hasSingleElement(p1: collection.Iterator[Any]): Boolean =
-    p1.knownSize == 1
+    p1.size == 1
 
   def serializeContents(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     iteratorSerializer.serializeContents(value.asJava, jgen, provider)
