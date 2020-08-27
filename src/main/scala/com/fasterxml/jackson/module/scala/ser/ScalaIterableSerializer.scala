@@ -12,6 +12,10 @@ case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boolean, vt
                                    valueSerializer: JsonSerializer[Object])
   extends AsArraySerializerBase[collection.Iterable[Any]](collection.Iterable.getClass, elemType, staticTyping, vts, valueSerializer) {
 
+  def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: JsonSerializer[_]) {
+    this(src.elemType, src.staticTyping, vts, valueSerializer.asInstanceOf[JsonSerializer[Object]])
+  }
+
   override def isEmpty(prov: SerializerProvider, value: Iterable[Any]): Boolean = value.isEmpty
 
   override def hasSingleElement(value: Iterable[Any]): Boolean = value.size == 1
