@@ -12,18 +12,16 @@ import com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase
 import com.fasterxml.jackson.databind.ser.{Serializers, impl}
 import com.fasterxml.jackson.module.scala.modifiers.IteratorTypeModifierModule
 
-import scala.collection.JavaConverters._
-
 private trait IteratorSerializer
   extends AsArraySerializerBase[collection.Iterator[Any]]
 {
-  def iteratorSerializer: impl.IteratorSerializer
+  def iteratorSerializer: ScalaIteratorSerializer
 
   override def hasSingleElement(p1: collection.Iterator[Any]): Boolean =
     p1.size == 1
 
   def serializeContents(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
-    iteratorSerializer.serializeContents(value.asJava, jgen, provider)
+    iteratorSerializer.serializeContents(value, jgen, provider)
   }
 
   override def withResolved(property: BeanProperty, vts: TypeSerializer, elementSerializer: JsonSerializer[_], unwrapSingle: jl.Boolean) =
@@ -42,7 +40,7 @@ private class ResolvedIteratorSerializer( src: IteratorSerializer,
   with IteratorSerializer
 {
   val iteratorSerializer =
-    new impl.IteratorSerializer(src.iteratorSerializer, property, vts, elementSerializer, unwrapSingle)
+    new ScalaIteratorSerializer(src.iteratorSerializer, property, vts, elementSerializer)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
     new ResolvedIteratorSerializer(src, property, newVts, elementSerializer, unwrapSingle)
@@ -57,7 +55,7 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
   with IteratorSerializer
 {
   val iteratorSerializer =
-    new impl.IteratorSerializer(et, staticTyping, vts)
+    new ScalaIteratorSerializer(et, staticTyping, vts)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
     new UnresolvedIteratorSerializer(cls, et, staticTyping, newVts, elementSerializer)
