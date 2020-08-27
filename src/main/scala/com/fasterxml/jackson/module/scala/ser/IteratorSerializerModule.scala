@@ -40,7 +40,7 @@ private class ResolvedIteratorSerializer( src: IteratorSerializer,
   with IteratorSerializer
 {
   val iteratorSerializer =
-    new ScalaIteratorSerializer(src.iteratorSerializer, property, vts, elementSerializer)
+    new ScalaIteratorSerializer(src.iteratorSerializer, property, vts, elementSerializer, unwrapSingle)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
     new ResolvedIteratorSerializer(src, property, newVts, elementSerializer, unwrapSingle)
