@@ -43,8 +43,8 @@ case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boolean, vt
     } else {
       val it = value.iterator
       if (it.hasNext) {
-        var serializers = _dynamicSerializers
         val typeSer = _valueTypeSerializer
+        var serializers = _dynamicSerializers
         var i = 0
         try do {
           val elem = it.next
@@ -61,9 +61,7 @@ case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boolean, vt
             else serializer.serializeWithType(elem.asInstanceOf[Object], g, provider, typeSer)
           }
           i += 1
-        } while ( {
-          it.hasNext
-        })
+        } while (it.hasNext)
         catch {
           case e: Exception =>
             wrapAndThrow(provider, e, value, i)
@@ -97,9 +95,7 @@ case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boolean, vt
           case e: Exception =>
             wrapAndThrow(provider, e, value, i)
         }
-      } while ( {
-        it.hasNext
-      })
+      } while (it.hasNext)
     }
   }
 }
