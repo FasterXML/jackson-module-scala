@@ -10,25 +10,23 @@ import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase
-import com.fasterxml.jackson.databind.ser.{Serializers, impl}
+import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.module.scala.modifiers.IteratorTypeModifierModule
-
-import scala.collection.JavaConverters._
 
 private trait IteratorSerializer
   extends AsArraySerializerBase[collection.Iterator[Any]]
 {
-  def iteratorSerializer: impl.IteratorSerializer
+  def iteratorSerializer: ScalaIteratorSerializer
 
   override def hasSingleElement(p1: collection.Iterator[Any]): Boolean =
     p1.size == 1
 
   override def serialize(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     if (provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
-      iteratorSerializer.serializeContents(value.asJava, jgen, provider)
+      iteratorSerializer.serializeContents(value, jgen, provider)
     } else {
       jgen.writeStartArray(value)
-      iteratorSerializer.serializeContents(value.asJava, jgen, provider)
+      iteratorSerializer.serializeContents(value, jgen, provider)
       jgen.writeEndArray()
     }
   }
@@ -53,7 +51,7 @@ private class ResolvedIteratorSerializer( src: IteratorSerializer,
   with IteratorSerializer
 {
   val iteratorSerializer =
-    new impl.IteratorSerializer(src.iteratorSerializer, property, vts, elementSerializer, unwrapSingle)
+    new ScalaIteratorSerializer(src.iteratorSerializer, property, vts, elementSerializer, unwrapSingle)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
     new ResolvedIteratorSerializer(src, property, newVts, elementSerializer, unwrapSingle)
@@ -68,7 +66,7 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
   with IteratorSerializer
 {
   val iteratorSerializer =
-    new impl.IteratorSerializer(et, staticTyping, vts)
+    new ScalaIteratorSerializer(et, staticTyping, vts)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
     new UnresolvedIteratorSerializer(cls, et, staticTyping, newVts, elementSerializer)

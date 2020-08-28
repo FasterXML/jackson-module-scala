@@ -8,27 +8,25 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, CollectionSerializer}
+import com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase
 import com.fasterxml.jackson.databind.ser.{ContainerSerializer, Serializers}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
 
-import scala.collection.JavaConverters._
-
 private trait IterableSerializer
   extends AsArraySerializerBase[collection.Iterable[Any]]
 {
-  def collectionSerializer: CollectionSerializer
+  def collectionSerializer: ScalaIterableSerializer
 
   override def hasSingleElement(value: collection.Iterable[Any]): Boolean =
     value.size == 1
 
   override def serialize(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
     if (provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
-      collectionSerializer.serializeContents(value.asJavaCollection, gen, provider)
+      collectionSerializer.serializeContents(value, gen, provider)
     } else {
       gen.writeStartArray(value)
-      collectionSerializer.serializeContents(value.asJavaCollection, gen, provider)
+      collectionSerializer.serializeContents(value, gen, provider)
       gen.writeEndArray()
     }
   }
@@ -55,7 +53,7 @@ private class ResolvedIterableSerializer( src: IterableSerializer,
   with IterableSerializer
 {
   val collectionSerializer =
-    new CollectionSerializer(src.collectionSerializer, property, vts, elementSerializer, unwrapSingle)
+    new ScalaIterableSerializer(src.collectionSerializer, property, vts, elementSerializer, unwrapSingle)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer): ContainerSerializer[_] =
     new ResolvedIterableSerializer(this, property, newVts, elementSerializer, unwrapSingle)
@@ -71,7 +69,7 @@ private class UnresolvedIterableSerializer( cls: Class[_],
   with IterableSerializer
 {
   val collectionSerializer =
-    new CollectionSerializer(et, staticTyping, vts, elementSerializer.asInstanceOf[JsonSerializer[Object]])
+    new ScalaIterableSerializer(et, staticTyping, vts, elementSerializer.asInstanceOf[JsonSerializer[Object]])
 
   override def _withValueTypeSerializer(newVts: TypeSerializer): ContainerSerializer[_] =
     new UnresolvedIterableSerializer(cls, et, staticTyping, newVts, elementSerializer)
