@@ -28,12 +28,11 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
   override def hasSingleElement(value: Iterable[Any]): Boolean = value.size == 1
 
   override def serialize(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider): Unit = {
-    val len: Int = value.size
-    if (len == 1 &&
-      (_unwrapSingle == null && provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)) || (_unwrapSingle)) {
+    if (((_unwrapSingle == null && provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED))
+      || _unwrapSingle) && hasSingleElement(value)) {
       serializeContents(value, g, provider)
     } else {
-      g.writeStartArray(value, len)
+      g.writeStartArray(value)
       serializeContents(value, g, provider)
       g.writeEndArray()
     }
