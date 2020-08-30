@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection.{immutable, mutable}
+import scala.compat.java8.FunctionConverters
 
 case class JavaListWrapper(s: java.util.ArrayList[String])
 case class SeqWrapper(s: Seq[String])
@@ -193,7 +194,7 @@ class SeqDeserializerTest extends DeserializerTest {
   it should "handle conversion of null to empty collection" in {
     val mapper = JsonMapper.builder()
       .addModule(DefaultScalaModule)
-      .changeDefaultNullHandling(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY))
+      .changeDefaultNullHandling(FunctionConverters.asJavaUnaryOperator(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY)))
       .build()
     val json = """{"s": null}"""
     val result1 = mapper.readValue(json, classOf[JavaListWrapper])
