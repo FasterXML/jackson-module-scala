@@ -123,8 +123,8 @@ class CaseClassSerializerTest extends SerializerTest {
 
   def nonNullMapper: ObjectMapper = {
     newBuilder
-      //.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-      .changeDefaultNullHandling(FunctionConverters.asJavaUnaryOperator(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY)))
+      .changeDefaultPropertyInclusion(FunctionConverters.asJavaUnaryOperator(_ =>
+        JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)))
       .build()
   }
 
