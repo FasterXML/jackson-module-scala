@@ -9,6 +9,7 @@ import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
+import scala.compat.java8.FunctionConverters
 
 case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
@@ -121,7 +122,10 @@ class CaseClassSerializerTest extends SerializerTest {
   }
 
   def nonNullMapper: ObjectMapper = {
-    JsonMapper.builder().addModule(DefaultScalaModule).build()
+    newBuilder
+      //.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      .changeDefaultNullHandling(FunctionConverters.asJavaUnaryOperator(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY)))
+      .build()
   }
 
   it should "not write a null value" in {

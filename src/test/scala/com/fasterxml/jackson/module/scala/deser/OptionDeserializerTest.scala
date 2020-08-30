@@ -1,12 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.{JsonSetter, JsonSubTypes, JsonTypeInfo, JsonTypeName, Nulls}
-import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
 import scala.annotation.meta.field
+import scala.compat.java8.FunctionConverters
 
 case class UnavailableField(foo: Option[String])
 
@@ -94,9 +94,8 @@ class OptionDeserializerTest extends DeserializerTest {
   }
 
   it should "handle conversion of null to empty collection" in {
-    val mapper = JsonMapper.builder()
-      .addModule(DefaultScalaModule)
-      .changeDefaultNullHandling(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY))
+    val mapper = newBuilder
+      .changeDefaultNullHandling(FunctionConverters.asJavaUnaryOperator(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY)))
       .build()
     val json = """{"o": null}"""
     val result1 = mapper.readValue(json, classOf[JavaOptionalWrapper])
