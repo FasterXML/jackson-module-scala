@@ -65,7 +65,9 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
 //  }
 
   it should "detect annotations on a val property" in { mapper =>
-    val builder = new JsonMapper.Builder(new JsonFactory).addModule(new SimpleModule() {
+    val builder = new JsonMapper.Builder(new JsonFactory)
+      .addModule(DefaultScalaModule)
+      .addModule(new SimpleModule() {
       addSerializer(new JsonSerializer[Token] with ContextualSerializer {
         override val handledType: Class[Token] = classOf[Token]
         override def serialize(value: Token, gen: JsonGenerator, serializers: SerializerProvider): Unit =
