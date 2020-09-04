@@ -32,8 +32,8 @@ unmanagedSourceDirectories in Compile += {
 val jacksonVersion = "3.0.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
-    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion changing(),
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion changing()
 ) ++ {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, scalaMajor)) if scalaMajor <= 11 =>

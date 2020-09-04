@@ -47,7 +47,7 @@ private class ResolvedIteratorSerializer( src: IteratorSerializer,
                                           vts: TypeSerializer,
                                           elementSerializer: JsonSerializer[_],
                                           unwrapSingle: jl.Boolean )
-  extends AsArraySerializerBase[collection.Iterator[Any]](src, property, vts, elementSerializer, unwrapSingle)
+  extends AsArraySerializerBase[collection.Iterator[Any]](src, vts, elementSerializer, unwrapSingle, property)
   with IteratorSerializer
 {
   val iteratorSerializer =

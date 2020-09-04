@@ -12,7 +12,7 @@ import scala.util.control.NonFatal
 
 private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
                                            property: BeanProperty, valueSerializer: JsonSerializer[Object], unwrapSingle: jl.Boolean)
-  extends AsArraySerializerBase[collection.Iterator[Any]](collection.Iterator.getClass, elemType, staticTyping, vts, property, valueSerializer, unwrapSingle) {
+  extends AsArraySerializerBase[collection.Iterator[Any]](collection.Iterator.getClass, elemType, staticTyping, vts, valueSerializer, unwrapSingle, property) {
 
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer) = {
     this(elemType, staticTyping, vts, None.orNull, None.orNull, None.orNull)
