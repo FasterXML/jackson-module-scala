@@ -31,9 +31,19 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
     deserialize[Either[_, String]](s"""{"right":null}""") should be (Right(null))
   }
 
+  it should "be able to deserialize right with None value" in {
+    deserialize[Either[_, Option[String]]](s"""{"r":null}""") should be (Right(None))
+    deserialize[Either[_, Option[String]]](s"""{"right":null}""") should be (Right(None))
+  }
+
   it should "be able to deserialize left with null value" in {
     deserialize[Either[String, String]](s"""{"l":null}""") should be (Left(null))
     deserialize[Either[String, String]](s"""{"left":null}""") should be (Left(null))
+  }
+
+  it should "be able to deserialize left with None value" in {
+    deserialize[Either[Option[String], _]](s"""{"l":null}""") should be (Left(None))
+    deserialize[Either[Option[String], _]](s"""{"left":null}""") should be (Left(None))
   }
 
   it should "be able to deserialize Right with complex objects" in {
