@@ -38,6 +38,8 @@ private class EitherDeserializer(javaType: JavaType,
 
   private def deserializeValue(`type`: JsonToken, config: ElementDeserializerConfig, jp: JsonParser, ctxt: DeserializationContext) =
     (config, `type`) match {
+      case (ElementDeserializerConfig(Some(ed), _), JsonToken.VALUE_NULL) if ed.isInstanceOf[OptionDeserializer] =>
+        None
       case (_, JsonToken.VALUE_NULL) => None.orNull
       case (ElementDeserializerConfig(Some(ed), Some(td)), _) =>
         ed.deserializeWithType(jp, ctxt, td)
