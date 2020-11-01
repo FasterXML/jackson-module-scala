@@ -47,7 +47,7 @@ libraryDependencies ++= Seq(
     "io.swagger" % "swagger-core" % "1.6.2" % Test,
     "org.scalatest" %% "scalatest" % "3.2.2" % Test,
     "org.scalatestplus" %% "junit-4-12" % "3.2.2.0" % Test,
-    "junit" % "junit" % "4.13" % Test
+    "junit" % "junit" % "4.13.1" % Test
 )
 
 // build.properties
