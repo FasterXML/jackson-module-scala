@@ -10,9 +10,6 @@ language: scala
 matrix:
   include:
     # Jackson-Module-Scala 2.12.0 drops support for JDK7
-    - scala: 2.10.7
-      jdk: openjdk8
-      env: SONATYPE_PUBLISH=true
     - scala: 2.11.12
       jdk: openjdk8
       env: SONATYPE_PUBLISH=true
@@ -40,9 +37,6 @@ after_success:
 branches:
   only:
     - master
-    - "2.9"
-    - "2.10"
-    - "2.11"
     - "2.12"
 env:
   global:
