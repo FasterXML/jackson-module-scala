@@ -20,8 +20,8 @@ object EnumResolver {
   }
 
   def apply[T <: Enumeration](cls: Class[T]): EnumResolver = {
-    val enum = cls.getField("MODULE$").get(null).asInstanceOf[T]
-    apply(enum)
+    val enumInstance = cls.getField("MODULE$").get(null).asInstanceOf[T]
+    apply(enumInstance)
   }
 
   def apply(e: Enumeration): EnumResolver = {
