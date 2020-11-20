@@ -48,7 +48,7 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
         val typeSer = _valueTypeSerializer
         var serializers = _dynamicSerializers
         var i = 0
-        try do {
+        try while (it.hasNext) {
           val elem = it.next()
           if (elem == null) provider.defaultSerializeNull(g)
           else {
@@ -63,7 +63,7 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
             else serializer.serializeWithType(elem.asInstanceOf[Object], g, provider, typeSer)
           }
           i += 1
-        } while (it.hasNext)
+        }
         catch {
           case NonFatal(e) =>
             wrapAndThrow(provider, e, it, i)
@@ -85,7 +85,7 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
     if (it.hasNext) {
       val typeSer = _valueTypeSerializer
       var i = 0
-      do {
+      while (it.hasNext) {
         val elem = it.next()
         try {
           if (elem == null) provider.defaultSerializeNull(g)
@@ -96,7 +96,7 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
           case NonFatal(e) =>
             wrapAndThrow(provider, e, it, i)
         }
-      } while (it.hasNext)
+      }
     }
   }
 }
