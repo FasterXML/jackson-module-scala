@@ -20,10 +20,10 @@ matrix:
     - scala: 2.12.12
       jdk: openjdk11
       env: SONATYPE_PUBLISH=false
-    - scala: 2.13.3
+    - scala: 2.13.4
       jdk: openjdk8
       env: SONATYPE_PUBLISH=true
-    - scala: 2.13.3
+    - scala: 2.13.4
       jdk: openjdk11
       env: SONATYPE_PUBLISH=false
 
