@@ -10,6 +10,7 @@ Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java ver
 * [[gh-462]](https://github.com/FasterXML/jackson-module-scala/issues/462) Unable to deserialize Seq or Map with AS_EMPTY null handling
 * [[gh-466]](https://github.com/FasterXML/jackson-module-scala/issues/466) Add support for WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED
 * [[gh-467]](https://github.com/FasterXML/jackson-module-scala/issues/467) Serializer for Scala Iterable/Iterator converts to Java Collection - avoid this conversion
+* [[gh-480]](https://github.com/FasterXML/jackson-module-scala/issues/480) Drop Scala 2.10 support
 
 # Version: 2.11.3
 
