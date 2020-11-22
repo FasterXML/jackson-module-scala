@@ -61,7 +61,7 @@ val mapper = JsonMapper.builder()
   .build()
 ```
 
-You can also mixin `ScalaObjectMapper` (experimental) to get rich wrappers that automatically
+You can also mixin `ScalaObjectMapper` to get rich wrappers that automatically
 convert scala manifests directly into TypeReferences for Jackson to use:
 ```scala
 val mapper = new ObjectMapper() with ScalaObjectMapper
