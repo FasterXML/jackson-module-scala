@@ -40,6 +40,12 @@ To use the Scala Module in Jackson, simply register it with the
 ObjectMapper instance:
 
 ```scala
+// With 2.10 and later
+val mapper = JsonMapper.builder()
+  .addModule(DefaultScalaModule)
+  .build()
+
+// versions before 2.10 (also support for later 2.x but not 3.0)
 val mapper = new ObjectMapper()
 mapper.registerModule(DefaultScalaModule)
 ```
@@ -50,11 +56,12 @@ the component traits can be included individually:
 
 ```scala
 val module = new OptionModule with TupleModule {}
-val mapper = new ObjectMapper()
-mapper.registerModule(module)
+val mapper = JsonMapper.builder()
+  .addModule(module)
+  .build()
 ```
 
-You can also mixin `ScalaObjectMapper` (experimental) to get rich wrappers that automatically
+You can also mixin `ScalaObjectMapper` to get rich wrappers that automatically
 convert scala manifests directly into TypeReferences for Jackson to use:
 ```scala
 val mapper = new ObjectMapper() with ScalaObjectMapper
