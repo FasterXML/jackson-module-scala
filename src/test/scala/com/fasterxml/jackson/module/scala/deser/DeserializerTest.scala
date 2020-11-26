@@ -12,7 +12,7 @@ trait DeserializerTest extends JacksonTest {
   def deserialize[T: Manifest](value: String) : T =
     newMapper.readValue(value, typeReference[T])
 
-  private [this] def typeReference[T: Manifest]: TypeReference[T] = new TypeReference[T] {
+  def typeReference[T: Manifest]: TypeReference[T] = new TypeReference[T] {
     override def getType: Type = typeFromManifest(manifest[T])
   }
 
