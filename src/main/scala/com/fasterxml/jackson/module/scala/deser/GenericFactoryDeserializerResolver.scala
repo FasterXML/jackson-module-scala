@@ -52,7 +52,9 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
     override def add(e: A): Boolean = { builder += e; size += 1; true }
 
     // Required by AbstractCollection, but not implemented
-    override def iterator(): util.Iterator[A] = null
+    override def iterator(): util.Iterator[A] = None.orNull
+
+    def setInitialValue(init: Collection[_]): Unit = init.asInstanceOf[Iterable[A]].foreach(add)
   }
 
   private class Instantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
@@ -87,9 +89,21 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       }
     }
 
+    override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[_]): CC[_] = {
+      val bw = newBuilderWrapper(ctxt)
+      bw.setInitialValue(intoValue)
+      containerDeserializer.deserialize(jp, ctxt, bw) match {
+        case wrapper: BuilderWrapper[_] => wrapper.builder.result()
+      }
+    }
+
     override def getEmptyValue(ctxt: DeserializationContext): Object = {
-      val bw = containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef]]
+      val bw = newBuilderWrapper(ctxt)
       bw.builder.result().asInstanceOf[Object]
+    }
+
+    private def newBuilderWrapper(ctxt: DeserializationContext): BuilderWrapper[AnyRef] = {
+      containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef]]
     }
   }
 }
