@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserialize
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
-import scala.collection.mutable
+import scala.collection.{Map, mutable}
 import scala.language.higherKinds
 
 abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] extends Deserializers.Base {
@@ -39,15 +39,26 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
     }
   }
 
-  private class BuilderWrapper[K,V](val builder: Builder[K, V]) extends java.util.AbstractMap[K, V] {
+  private class BuilderWrapper[K, V >: AnyRef](val builder: Builder[K, V]) extends java.util.AbstractMap[K, V] {
+    private var baseMap: Map[Any, V] = Map.empty
+
     override def put(k: K, v: V): V = { builder += ((k, v)); v }
 
+    // Used by the deserializer when using readerForUpdating
+    override def get(key: Any): V = baseMap.get(key).orNull
+
     // Isn't used by the deserializer
-    def entrySet(): java.util.Set[java.util.Map.Entry[K, V]] = throw new UnsupportedOperationException
+    override def entrySet(): java.util.Set[java.util.Map.Entry[K, V]] = throw new UnsupportedOperationException
+
+    def setInitialValue(init: Collection[_, _]): Unit = {
+      init.asInstanceOf[Map[K, V]].foreach(Function.tupled(put))
+      baseMap = init.asInstanceOf[Map[Any, V]]
+    }
   }
 
   private class Instantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
     override def canCreateUsingDefault = true
+
     override def createUsingDefault(ctxt: DeserializationContext) =
       new BuilderWrapper[AnyRef, AnyRef](builderFor[AnyRef, AnyRef](mapType.getRawClass, mapType.getKeyType, mapType.getContentType))
   }
@@ -60,6 +71,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
     }
 
     override def getContentType: JavaType = containerDeserializer.getContentType
+
     override def getContentDeserializer: JsonDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
 
     override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
@@ -73,9 +85,21 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
       }
     }
 
+    override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[_, _]): CC[_, _] = {
+      val bw = newBuilderWrapper(ctxt)
+      bw.setInitialValue(intoValue)
+      containerDeserializer.deserialize(jp, ctxt, bw) match {
+        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result()
+      }
+    }
+
     override def getEmptyValue(ctxt: DeserializationContext): Object = {
-      val bw = containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef, AnyRef]]
+      val bw = newBuilderWrapper(ctxt)
       bw.builder.result().asInstanceOf[Object]
+    }
+
+    private def newBuilderWrapper(ctxt: DeserializationContext): BuilderWrapper[AnyRef, AnyRef] = {
+      containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef, AnyRef]]
     }
   }
 }
