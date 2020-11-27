@@ -207,6 +207,38 @@ trait ScalaObjectMapper {
     readValue(src, offset, len, constructType[T])
   }
 
+  def updateValue[T: Manifest](valueToUpdate: T, src: File): T = {
+    objectReaderFor(valueToUpdate).readValue(src)
+  }
+
+  def updateValue[T: Manifest](valueToUpdate: T, src: URL): T = {
+    objectReaderFor(valueToUpdate).readValue(src)
+  }
+
+  def updateValue[T: Manifest](valueToUpdate: T, content: String): T = {
+    objectReaderFor(valueToUpdate).readValue(content)
+  }
+
+  def updateValue[T: Manifest](valueToUpdate: T, src: Reader): T = {
+    objectReaderFor(valueToUpdate).readValue(src)
+  }
+
+  def updateValue[T: Manifest](valueToUpdate: T, src: InputStream): T = {
+    objectReaderFor(valueToUpdate).readValue(src)
+  }
+
+  def updateValue[T: Manifest](valueToUpdate: T, src: Array[Byte]): T = {
+    objectReaderFor(valueToUpdate).readValue(src)
+  }
+
+  def updateValue[T: Manifest](valueToUpdate: T, src: Array[Byte], offset: Int, len: Int): T = {
+    objectReaderFor(valueToUpdate).readValue(src, offset, len)
+  }
+
+  private def objectReaderFor[T: Manifest](valueToUpdate: T): ObjectReader = {
+    readerForUpdating(valueToUpdate).forType(constructType[T])
+  }
+
   /*
    **********************************************************
    * Extended Public API: constructing ObjectWriters
