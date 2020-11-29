@@ -46,7 +46,7 @@ class MergeTest extends DeserializerTest {
 
   it should "merge only the annotated string map" in {
     val initial = deserialize[ClassWithMaps[String]](classJson(firstStringMapJson))
-    val result = newBuilder.defaultMergeable(true).build()
+    val result = newMapper
       .readerForUpdating(initial).readValue[ClassWithMaps[String]](classJson(secondStringMapJson))
 
     result shouldBe ClassWithMaps(secondStringMap, mergedStringMap)
