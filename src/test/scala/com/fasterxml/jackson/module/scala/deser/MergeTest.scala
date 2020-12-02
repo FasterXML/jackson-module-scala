@@ -1,7 +1,8 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.JsonMerge
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -18,68 +19,68 @@ class MergeTest extends DeserializerTest {
 
   val module: DefaultScalaModule.type = DefaultScalaModule
 
+  def newScalaMapper: ObjectMapper with ScalaObjectMapper = {
+    newMapper :: ScalaObjectMapper
+  }
+
+  def newMergeableScalaMapper: ObjectMapper with ScalaObjectMapper = {
+    newBuilder.defaultMergeable(true).build() :: ScalaObjectMapper
+  }
+
   behavior of "The DefaultScalaModule when reading for updating"
 
   it should "merge both lists" in {
     val initial = deserialize[ClassWithLists](classJson(firstListJson))
-    val result = newBuilder.defaultMergeable(true).build()
-      .readerForUpdating(initial).readValue[ClassWithLists](classJson(secondListJson))
+    val result = newMergeableScalaMapper.updateValue(initial, classJson(secondListJson))
 
     result shouldBe ClassWithLists(mergedList, mergedList)
   }
 
   it should "merge only the annotated list" in {
     val initial = deserialize[ClassWithLists](classJson(firstListJson))
-    val result = newMapper
-      .readerForUpdating(initial).readValue[ClassWithLists](classJson(secondListJson))
+    val result = newScalaMapper.updateValue(initial, classJson(secondListJson))
 
     result shouldBe ClassWithLists(secondList, mergedList)
   }
 
   it should "merge both string maps" in {
     val initial = deserialize[ClassWithMaps[String]](classJson(firstStringMapJson))
-    val result = newBuilder.defaultMergeable(true).build()
-      .readerForUpdating(initial).readValue[ClassWithMaps[String]](classJson(secondStringMapJson))
+    val result = newMergeableScalaMapper.updateValue(initial, classJson(secondStringMapJson))
 
     result shouldBe ClassWithMaps(mergedStringMap, mergedStringMap)
   }
 
   it should "merge only the annotated string map" in {
     val initial = deserialize[ClassWithMaps[String]](classJson(firstStringMapJson))
-    val result = newMapper
-      .readerForUpdating(initial).readValue[ClassWithMaps[String]](classJson(secondStringMapJson))
+    val result = newScalaMapper.updateValue(initial, classJson(secondStringMapJson))
 
     result shouldBe ClassWithMaps(secondStringMap, mergedStringMap)
   }
 
   it should "merge both pair maps" in {
     val initial = deserialize[ClassWithMaps[Pair]](classJson(firstPairMapJson))
-    val result = newBuilder.defaultMergeable(true).build()
-      .readerForUpdating(initial).forType(typeReference[ClassWithMaps[Pair]]).readValue[ClassWithMaps[Pair]](classJson(secondPairMapJson))
+    val result = newMergeableScalaMapper.updateValue(initial, classJson(secondPairMapJson))
 
     result shouldBe ClassWithMaps(mergedPairMap, mergedPairMap)
   }
 
   it should "merge only the annotated pair map" in {
     val initial = deserialize[ClassWithMaps[Pair]](classJson(firstPairMapJson))
-    val result = newMapper
-      .readerForUpdating(initial).forType(typeReference[ClassWithMaps[Pair]]).readValue[ClassWithMaps[Pair]](classJson(secondPairMapJson))
+    val result = newScalaMapper.updateValue(initial, classJson(secondPairMapJson))
 
     result shouldBe ClassWithMaps(secondPairMap, mergedPairMap)
   }
 
   it should "merge both mutable maps" in {
     val initial = deserialize[ClassWithMutableMaps[String]](classJson(firstStringMapJson))
-    val result = newBuilder.defaultMergeable(true).build()
-      .readerForUpdating(initial).readValue[ClassWithMutableMaps[String]](classJson(secondStringMapJson))
+    val result = newMergeableScalaMapper.updateValue(initial, classJson(secondStringMapJson))
 
     result shouldBe ClassWithMutableMaps(mutable.Map() ++ mergedStringMap, mutable.Map() ++ mergedStringMap)
   }
 
   it should "merge only the annotated mutable map" in {
     val initial = deserialize[ClassWithMutableMaps[String]](classJson(firstStringMapJson))
-    val result = newMapper
-      .readerForUpdating(initial).readValue[ClassWithMutableMaps[String]](classJson(secondStringMapJson))
+    val result = newScalaMapper.updateValue(initial, classJson(secondStringMapJson))
 
     result shouldBe ClassWithMutableMaps(mutable.Map() ++ secondStringMap, mutable.Map() ++ mergedStringMap)
   }
