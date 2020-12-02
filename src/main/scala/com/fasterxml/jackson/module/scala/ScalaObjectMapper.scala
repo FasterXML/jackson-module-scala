@@ -7,6 +7,13 @@ import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.json.JsonMapper
+
+object ScalaObjectMapper {
+  def ::(o: JsonMapper) = new Mixin(o)
+  final class Mixin private[ScalaObjectMapper](mapper: JsonMapper)
+    extends JsonMapper(mapper.rebuild().build()) with ScalaObjectMapper
+}
 
 trait ScalaObjectMapper {
   self: ObjectMapper =>
@@ -67,7 +74,7 @@ trait ScalaObjectMapper {
         throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
       }
       getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
-    } else if (isReference(clazz)) { // Option is a subclss of IterableOnce, so check it first
+    } else if (isReference(clazz)) { // Option is a subclass of IterableOnce, so check it first
       val typeArguments = m.typeArguments.map(constructType(_)).toArray
       if (typeArguments.length != 1) {
         throw new IllegalArgumentException("Need exactly 1 type parameter for reference types ("+clazz.getName+")")
