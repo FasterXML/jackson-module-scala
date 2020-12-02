@@ -1,4 +1,4 @@
-# Version: 2.12.0 (rc2 available)
+# Version: 2.12.0
 
 This patch release tracks Jackson 2.12. The 2.12 series has full support for
 Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java version. Scala 2.11 is now the minimum supported Scala version.
