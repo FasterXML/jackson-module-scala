@@ -3,11 +3,10 @@ package com.fasterxml.jackson.module.scala
 import java.io.{ByteArrayInputStream, File, InputStreamReader}
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper}
+import com.fasterxml.jackson.databind.{JsonMappingException, Module, ObjectMapper}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -47,7 +46,7 @@ private case class GenericTestClass[T](t: T)
 @RunWith(classOf[JUnitRunner])
 class ScalaObjectMapperTest extends JacksonTest {
 
-  def module: DefaultScalaModule.type = DefaultScalaModule
+  def module: Module = DefaultScalaModule
   val mapper = newMapperWithScalaObjectMapper
 
   "An ObjectMapper with the ScalaObjectMapper mixin" should "add mixin annotations" in {
