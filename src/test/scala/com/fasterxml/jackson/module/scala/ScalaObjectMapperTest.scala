@@ -45,10 +45,10 @@ private class Mixin(val foo: String)
 private case class GenericTestClass[T](t: T)
 
 @RunWith(classOf[JUnitRunner])
-class ScalaObjectMapperTest extends BaseSpec {
+class ScalaObjectMapperTest extends JacksonTest {
 
-  val mapper = new ObjectMapper with ScalaObjectMapper
-  mapper.registerModule(DefaultScalaModule)
+  def module: DefaultScalaModule.type = DefaultScalaModule
+  val mapper = newMapperWithScalaObjectMapper
 
   "An ObjectMapper with the ScalaObjectMapper mixin" should "add mixin annotations" in {
     mapper.addMixin[Target, Mixin]()

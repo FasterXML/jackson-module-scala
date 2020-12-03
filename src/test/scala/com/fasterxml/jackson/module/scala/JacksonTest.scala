@@ -11,4 +11,8 @@ abstract class JacksonTest extends BaseSpec {
   }
 
   def newMapper: ObjectMapper = newBuilder.build()
+
+  def newMapperWithScalaObjectMapper: ObjectMapper with ScalaObjectMapper = {
+    newBuilder.build() :: ScalaObjectMapper
+  }
 }

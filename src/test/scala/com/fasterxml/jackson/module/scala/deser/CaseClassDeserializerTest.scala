@@ -45,7 +45,6 @@ object CaseClassDeserializerTest
 class CaseClassDeserializerTest extends DeserializerTest {
   import com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerTest._
 
-
   def module: DefaultScalaModule.type = DefaultScalaModule
 
   "An ObjectMapper with CaseClassDeserializer" should "deserialize a case class with a single constructor" in {
