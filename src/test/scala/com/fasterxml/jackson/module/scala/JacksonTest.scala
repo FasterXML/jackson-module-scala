@@ -10,7 +10,9 @@ abstract class JacksonTest extends BaseSpec {
     JsonMapper.builder().addModule(module)
   }
 
-  def newMapper: JsonMapper = {
-    newBuilder.build()
+  def newMapper: JsonMapper = newBuilder.build()
+
+  def newMapperWithScalaObjectMapper: JsonMapper with ScalaObjectMapper = {
+    newBuilder.build() :: ScalaObjectMapper
   }
 }
