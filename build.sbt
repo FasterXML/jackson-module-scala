@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
     "org.scala-lang.modules" %% "scala-java8-compat" % "0.9.1" % Test,
     "io.swagger" % "swagger-core" % "1.6.2" % Test,
     "org.scalatest" %% "scalatest" % "3.2.3" % Test,
-    "org.scalatestplus" %% "junit-4-12" % "3.2.2.0" % Test,
+    "org.scalatestplus" %% "junit-4-13" % "3.2.3.0" % Test,
     "junit" % "junit" % "4.13.1" % Test
 )
 
