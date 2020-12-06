@@ -1,5 +1,5 @@
 // For OSGI bundles
-addSbtPlugin("com.typesafe.sbt" % "sbt-osgi" % "0.9.5")
+addSbtPlugin("com.typesafe.sbt" % "sbt-osgi" % "0.9.6")
 
 // For making releases
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.13")
