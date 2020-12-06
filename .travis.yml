@@ -26,6 +26,9 @@ matrix:
     - scala: 2.13.4
       jdk: openjdk11
       env: SONATYPE_PUBLISH=false
+    - scala: 2.13.4
+      jdk: openjdk15
+      env: SONATYPE_PUBLISH=false      
 
 after_success:
   - >
