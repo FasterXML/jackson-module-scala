@@ -4,6 +4,11 @@ import scala.language.implicitConversions
 import scala.reflect.{ScalaLongSignature, ScalaSignature}
 
 trait ClassW extends PimpedType[Class[_]] {
+
+  def extendsScalaClass: Boolean = {
+    ClassW.productClass.isAssignableFrom(value)
+  }
+
   def hasSignature: Boolean = {
     def hasSigHelper(clazz: Class[_]): Boolean = {
       if (clazz == null) false
@@ -17,6 +22,8 @@ trait ClassW extends PimpedType[Class[_]] {
 }
 
 object ClassW {
+  val productClass = classOf[Product]
+
   def apply(c: => Class[_]): ClassW = new ClassW {
     lazy val value = c
   }
