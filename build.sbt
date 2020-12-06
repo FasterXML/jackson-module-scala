@@ -46,6 +46,7 @@ libraryDependencies ++= Seq(
   // test dependencies
     "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
     "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
     "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
     "io.swagger" % "swagger-core" % "1.6.2" % Test,
     "org.scalatest" %% "scalatest" % "3.2.3" % Test,
