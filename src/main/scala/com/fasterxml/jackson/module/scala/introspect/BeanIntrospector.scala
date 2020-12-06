@@ -24,8 +24,8 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import java.lang.reflect.{Constructor, Field, Method, Modifier}
-
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.scala.util.ClassW
 
 import scala.annotation.tailrec
 import scala.reflect.NameTransformer
@@ -36,8 +36,6 @@ import scala.reflect.NameTransformer
 //suffer with type erasure, so we can only compare gross types of arguments and return values
 
 object BeanIntrospector {
-
-  private val productClass = classOf[Product]
 
   private def getCtorParams(ctor: Constructor[_]): Seq[String] = {
     val names = JavaParameterIntrospector.getCtorParamNames(ctor)
@@ -174,7 +172,7 @@ object BeanIntrospector {
     }
 
     def isScalaCaseObject(cls: Class[_]): Boolean = {
-      productClass.isAssignableFrom(cls) && cls.getName.endsWith("$")
+      ClassW.productClass.isAssignableFrom(cls) && cls.getName.endsWith("$")
     }
 
     //TODO - as we walk the classes, it would be nice to use a language specific introspector
