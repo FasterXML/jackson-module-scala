@@ -31,7 +31,7 @@ class NonEmptyMaps {
 class TupleKeySerializer extends JsonSerializer[Product] {
   def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     val stringWriter = new java.io.StringWriter()
-    val valueJgen = jgen.getCodec.getFactory.createJsonGenerator(stringWriter)
+    val valueJgen = jgen.getCodec.getFactory.createGenerator(stringWriter)
 
     valueJgen.writeObject(value)
     jgen.writeFieldName(stringWriter.toString)
