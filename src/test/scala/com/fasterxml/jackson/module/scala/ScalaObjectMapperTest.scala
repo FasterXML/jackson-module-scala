@@ -51,11 +51,11 @@ class ScalaObjectMapperTest extends JacksonTest {
   val mapper = newMapperWithScalaObjectMapper
 
   "An ObjectMapper with the ScalaObjectMapper mixin" should "add mixin annotations" in {
-    val mapper1 = JsonMapper.builder().addModule(DefaultScalaModule).addMixIn(classOf[Target], classOf[Mixin]).build()
+    val builder = newBuilder
+    val mapper1 = builder.addMixIn(classOf[Target], classOf[Mixin]).build()
     val testMapper = mapper1 :: ScalaObjectMapper
-//TODO fix
-//    val result = mapper.findMixInClassFor[Target]
-//    result should equal(classOf[Mixin])
+    val result = testMapper.deserializationConfig().findMixInClassFor(classOf[Target])
+    result should equal(classOf[Mixin])
     val json = """{"foo":"value"}"""
     testMapper.readValue[Target](json) shouldEqual new Target {
       foo = "value"
