@@ -13,6 +13,11 @@ Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java ver
 * [[gh-467]](https://github.com/FasterXML/jackson-module-scala/issues/467) Serializer for Scala Iterable/Iterator converts to Java Collection - avoid this conversion
 * [[gh-480]](https://github.com/FasterXML/jackson-module-scala/issues/480) Drop Scala 2.10 support
 
+# Version: 2.11.4
+
+There are no new fixes in this release; it serves to track the 2.11.4 release
+of the upstream Jackson projects.
+
 # Version: 2.11.3
 
 ## Fixes
