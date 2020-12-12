@@ -1,12 +1,22 @@
-# Version: 2.12.0 (not yet scheduled for release)
+# Version: 2.12.0
 
 This patch release tracks Jackson 2.12. The 2.12 series has full support for
-Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java version.
+Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java version. Scala 2.11 is now the minimum supported Scala version.
 
 ## Fixes
 
-* [[gh-449]](https://github.com/FasterXML/jackson-module-scala/issues/449) Remove jackson-module-paranamer dependency. Scala 2.10 and 2.11 releases use paranamer directly still. Scala 2.12 and 2.13 releases no longer use paranamer.
+* [[gh-370]](https://github.com/FasterXML/jackson-module-scala/issues/370) Support jackson feature @JsonMerge (added after rc2 release). Thanks to Helder Pereira.
+* [[gh-449]](https://github.com/FasterXML/jackson-module-scala/issues/449) Remove jackson-module-paranamer dependency. Scala 2.11 releases use paranamer directly still. Scala 2.12 and 2.13 releases no longer use paranamer.
 * [[gh-455]](https://github.com/FasterXML/jackson-module-scala/issues/455) get ScalaAnnotationIntrospector to ignore non-Scala classes.
+* [[gh-462]](https://github.com/FasterXML/jackson-module-scala/issues/462) Unable to deserialize Seq or Map with AS_EMPTY null handling
+* [[gh-466]](https://github.com/FasterXML/jackson-module-scala/issues/466) Add support for WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED
+* [[gh-467]](https://github.com/FasterXML/jackson-module-scala/issues/467) Serializer for Scala Iterable/Iterator converts to Java Collection - avoid this conversion
+* [[gh-480]](https://github.com/FasterXML/jackson-module-scala/issues/480) Drop Scala 2.10 support
+
+# Version: 2.11.4
+
+There are no new fixes in this release; it serves to track the 2.11.4 release
+of the upstream Jackson projects.
 
 # Version: 2.11.3
 
