@@ -6,7 +6,6 @@ import java.nio.file.Files
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{JsonMappingException, Module}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
@@ -85,17 +84,6 @@ class ScalaObjectMapperTest extends JacksonTest {
     val result = mapper.treeToValue[GenericTestClass[Int]](treeNode)
     result should equal(genericInt)
   }
-
-//TODO fix
-//  it should "know if it can serialize a seralizable type" in {
-//    val result = mapper.canSerialize[Target]
-//    result should equal(mapper.canSerialize(classOf[Target]))
-//  }
-//
-//  it should "know if it can deserialize a deserializable type" in {
-//    val result = mapper.canDeserialize[Target]
-//    result should equal(mapper.canDeserialize(mapper.constructType(classOf[Target])))
-//  }
 
   it should "read value from file" in {
     withFile(genericJson) { file =>

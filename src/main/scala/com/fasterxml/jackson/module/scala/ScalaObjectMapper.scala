@@ -120,36 +120,6 @@ trait ScalaObjectMapper {
    **********************************************************
    */
 
-  // TODO find new ways to implement these functions
-
-//  /**
-//   * Method that can be called to check whether mapper thinks
-//   * it could serialize an instance of given Class.
-//   * Check is done
-//   * by checking whether a serializer can be found for the type.
-//   *
-//   * @return True if mapper can find a serializer for instances of
-//   *         given class (potentially serializable), false otherwise (not
-//   *         serializable)
-//   */
-//  def canSerialize[T: Manifest]: Boolean = {
-//    canSerialize(manifest[T].runtimeClass)
-//  }
-//
-//  /**
-//   * Method that can be called to check whether mapper thinks
-//   * it could deserialize an Object of given type.
-//   * Check is done
-//   * by checking whether a deserializer can be found for the type.
-//   *
-//   * @return True if mapper can find a serializer for instances of
-//   *         given class (potentially serializable), false otherwise (not
-//   *         serializable)
-//   */
-//  def canDeserialize[T: Manifest]: Boolean = {
-//    canDeserialize(constructType[T])
-//  }
-
   /*
    **********************************************************
    * Extended Public API, deserialization,
