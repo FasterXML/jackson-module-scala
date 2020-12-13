@@ -33,22 +33,20 @@ class EnumMixinTest extends BaseSpec {
     obj shouldEqual TestObject1(TestEnum.Value1)
   }
 
-//TODO fix
-//  it should "handle mixin annotations for an enum" in {
-//    val mixinResult = mapper.findMixInClassFor[TestObject2]
-//    mixinResult shouldEqual classOf[TestObject2Mixin]
-//    val obj = mapper.readValue[TestObject2](json)
-//    obj shouldEqual TestObject2(TestEnum.Value1)
-//  }
+  it should "handle mixin annotations for an enum" in {
+    val mixinResult = mapper.deserializationConfig().findMixInClassFor(classOf[TestObject2])
+    mixinResult shouldEqual classOf[TestObject2Mixin]
+    val obj = mapper.readValue[TestObject2](json)
+    obj shouldEqual TestObject2(TestEnum.Value1)
+  }
 
   it should "handle mixin annotations for an enum (case class mixin)" in {
     val baseMapper = JsonMapper.builder().addModule(new DefaultScalaModule)
       .addMixIn(classOf[TestObject2], classOf[TestObject1]).build()
     val m1 = baseMapper :: ScalaObjectMapper
-//TODO fix
-//    val mixinResult = m1.findMixInClassFor[TestObject2]
-//    mixinResult shouldEqual classOf[TestObject1]
-//    val obj = m1.readValue[TestObject2](json)
-//    obj shouldEqual TestObject2(TestEnum.Value1)
+    val mixinResult = m1.deserializationConfig().findMixInClassFor(classOf[TestObject2])
+    mixinResult shouldEqual classOf[TestObject1]
+    val obj = m1.readValue[TestObject2](json)
+    obj shouldEqual TestObject2(TestEnum.Value1)
   }
 }
