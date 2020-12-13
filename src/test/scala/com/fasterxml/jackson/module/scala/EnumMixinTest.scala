@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
