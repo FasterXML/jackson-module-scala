@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
 import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
-import com.fasterxml.jackson.module.scala.ScalaObjectMapper
 import org.junit.runner.RunWith
 import org.scalatest.LoneElement._
 import org.scalatest.Outcome
@@ -47,22 +46,21 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
 
   behavior of "ScalaAnnotationIntrospector"
 
-//TODO fix
-//  it should "detect a val property" in { mapper =>
-//    val bean = new BasicPropertyClass(1)
-//    val allProps = getProps(mapper, bean)
-//    allProps.loneElement should have ('name ("param"))
-//
-//    val prop = allProps.asScala.head
-//    prop should have (
-//      'hasField (true),
-//      'hasGetter (true),
-//      'hasConstructorParameter (true)
-//    )
-//
-//    val accessor = prop.getAccessor
-//    accessor shouldNot be (null)
-//  }
+  it should "detect a val property" in { mapper =>
+    val bean = new BasicPropertyClass(1)
+    val allProps = getProps(mapper, bean)
+    allProps.loneElement should have ('name ("param"))
+
+    val prop = allProps.asScala.head
+    prop should have (
+      'hasField (true),
+      'hasGetter (true),
+      'hasConstructorParameter (true)
+    )
+
+    val accessor = prop.getAccessor
+    accessor shouldNot be (null)
+  }
 
   it should "detect annotations on a val property" in { mapper =>
     val builder = new JsonMapper.Builder(new JsonFactory)
@@ -83,22 +81,21 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     builder.build().writeValueAsString(bean)
   }
 
-//TODO fix
-//  it should "detect a bean property" in { mapper =>
-//    val bean = new BeanPropertyClass(1)
-//    val allProps = getProps(mapper, bean)
-//    allProps.loneElement should have ('name ("param"))
-//
-//    val prop = allProps.asScala.head
-//    prop should have (
-//      'hasField (true),
-//      'hasGetter (true),
-//      'hasConstructorParameter (true)
-//    )
-//
-//    val accessor = prop.getAccessor
-//    accessor shouldNot be (null)
-//  }
+  it should "detect a bean property" in { mapper =>
+    val bean = new BeanPropertyClass(1)
+    val allProps = getProps(mapper, bean)
+    allProps.loneElement should have ('name ("param"))
+
+    val prop = allProps.asScala.head
+    prop should have (
+      'hasField (true),
+      'hasGetter (true),
+      'hasConstructorParameter (true)
+    )
+
+    val accessor = prop.getAccessor
+    accessor shouldNot be (null)
+  }
 
   it should "detect annotations on a bean property" in { mapper =>
     val builder = new JsonMapper.Builder(new JsonFactory).addModule(new SimpleModule() {
@@ -114,20 +111,20 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     })
 
     val bean = new AnnotatedBeanPropertyClass(new Token)
-//TODO fix
-//    val allProps = getProps(mapper, bean)
-//    allProps.loneElement should have ('name ("param"))
-//
-//    val prop = allProps.asScala.head
-//    prop should have (
-//      'hasField (true),
-//      'hasGetter (true),
-//      'hasConstructorParameter (true)
-//    )
-//    val param = prop.getConstructorParameter
-//    param.getAnnotation(classOf[JsonScalaTestAnnotation]) shouldNot be (null)
-//
-//    builder.build().writeValueAsString(bean)
+    val allProps = getProps(mapper, bean)
+    allProps.loneElement should have ('name ("param"))
+
+    val prop = allProps.asScala.head
+    prop should have (
+      'hasField (true),
+      'hasGetter (true),
+      'hasConstructorParameter (true)
+    )
+    val param = prop.getConstructorParameter
+    param.getAnnotation(classOf[JsonScalaTestAnnotation]) shouldNot be (null)
+
+    //TODO fix test (works in v2.12.0)
+    //builder.build().writeValueAsString(bean)
   }
 
   it should "correctly infer name(s) of un-named bean properties" in { mapper =>
@@ -137,10 +134,9 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     tree.has("getValue") shouldBe false
   }
 
-//TODO fix
-//  private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
-//    val config = mapper.getSerializationConfig
-//    val beanDescription: BeanDescription = config.introspect(mapper.constructType(bean.getClass))
-//    beanDescription.findProperties()
-//  }
+  private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
+    val classIntrospector = mapper.serializationConfig().classIntrospectorInstance()
+    val beanDescription: BeanDescription = classIntrospector.introspectForSerialization(mapper.constructType(bean.getClass))
+    beanDescription.findProperties()
+  }
 }
