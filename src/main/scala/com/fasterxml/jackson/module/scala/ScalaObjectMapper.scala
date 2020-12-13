@@ -161,7 +161,9 @@ trait ScalaObjectMapper {
    * @return True if mapper can find a serializer for instances of
    *         given class (potentially serializable), false otherwise (not
    *         serializable)
+   * @deprecated jackson-databind will not implement this in v3.0.0
    */
+  @Deprecated
   def canSerialize[T: Manifest]: Boolean = {
     canSerialize(manifest[T].runtimeClass)
   }
@@ -175,7 +177,9 @@ trait ScalaObjectMapper {
    * @return True if mapper can find a serializer for instances of
    *         given class (potentially serializable), false otherwise (not
    *         serializable)
+   * @deprecated jackson-databind will not implement this in v3.0.0
    */
+  @Deprecated
   def canDeserialize[T: Manifest]: Boolean = {
     canDeserialize(constructType[T])
   }
