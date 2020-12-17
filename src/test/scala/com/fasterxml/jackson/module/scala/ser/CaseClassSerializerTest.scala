@@ -63,6 +63,12 @@ case class PrivateDefaultFields(
   @JsonProperty lastName: String = "Freeman"
 )
 
+case class LazyClass(data: String) {
+  lazy val lazyString: String = data
+  @JsonIgnore
+  lazy val lazyIgnoredString: String = data
+}
+
 @RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest {
 
@@ -195,5 +201,10 @@ class CaseClassSerializerTest extends SerializerTest {
     }
     val foo = new Foo(java.util.Arrays.asList("foo", "bar"))
     serialize(foo) should equal ("""{"strings":["foo","bar"]}""")
+  }
+
+  it should "exclude bitmap$0 field from serialization" in {
+    val lazyInstance = LazyClass("test")
+    serialize(lazyInstance) should equal ("""{"data":"test","lazyString":"test"}""")
   }
 }
