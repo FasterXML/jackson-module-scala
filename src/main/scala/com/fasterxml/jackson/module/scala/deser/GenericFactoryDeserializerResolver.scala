@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import java.util
-
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
@@ -10,6 +9,7 @@ import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserialize
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deserializers.Base {
   type Collection[A] = CC[A]
@@ -38,6 +38,49 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       val instantiator = new Instantiator(config, collectionType, collectionType.getContentType)
       new Deserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
+  }
+
+  protected def sortFactories(factories: IndexedSeq[(Class[_], Factory)]): Seq[(Class[_], Factory)] = {
+    val cs = factories.toArray
+    val output = new ListBuffer[(Class[_], Factory)]()
+
+    val remaining = cs.map(_ => 1)
+    val adjMatrix = Array.ofDim[Int](cs.length, cs.length)
+
+    // Build the adjacency matrix. Only mark the in-edges.
+    for (i <- cs.indices; j <- cs.indices) {
+      val (ic, _) = cs(i)
+      val (jc, _) = cs(j)
+
+      if (i != j && ic.isAssignableFrom(jc)) {
+        adjMatrix(i)(j) = 1
+      }
+    }
+
+    // While we haven't removed every node, remove all nodes with 0 degree in-edges.
+    while (output.length < cs.length) {
+      val startLength = output.length
+
+      for (i <- cs.indices) {
+        if (remaining(i) == 1 && dotProduct(adjMatrix(i), remaining) == 0) {
+          output += factories(i)
+          remaining(i) = 0
+        }
+      }
+
+      // If we couldn't remove any nodes, it means we've found a cycle. Realistically this should never happen.
+      if (output.length == startLength) {
+        throw new IllegalStateException("Companions contain a cycle.")
+      }
+    }
+
+    output.toSeq
+  }
+
+  private def dotProduct(a: Array[Int], b: Array[Int]): Int = {
+    if (a.length != b.length) throw new IllegalArgumentException()
+
+    a.indices.map(i => a(i) * b(i)).sum
   }
 
   private class BuilderWrapper[A](val builder: Builder[A]) extends util.AbstractCollection[A] {
