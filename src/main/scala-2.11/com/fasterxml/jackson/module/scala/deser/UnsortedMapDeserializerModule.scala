@@ -2,7 +2,6 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
-import com.fasterxml.jackson.module.scala.util.MapFactorySorter
 
 import scala.collection._
 import scala.collection.generic.GenMapFactory
@@ -13,18 +12,19 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
 
     override val CLASS_DOMAIN: Class[Collection[_, _]] = classOf[GenMap[_, _]]
 
-    override val factories: List[(Class[_], Factory)] = new MapFactorySorter[Collection, GenMapFactory]()
-      .add(GenMap)
-      .add(Map)
-      .add(immutable.HashMap)
-      .add(immutable.ListMap)
-      .add(immutable.Map)
-      .add(mutable.HashMap)
-      .add(mutable.LinkedHashMap)
-      .add(mutable.ListMap)
-      .add(mutable.Map)
-      // WeakHashMap is omitted due to the unlikely use case
-      .toList
+    // WeakHashMap is omitted due to the unlikely use case
+    override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
+      (classOf[GenMap[_, _]], GenMap.asInstanceOf[Factory]),
+      (classOf[Map[_, _]], Map.asInstanceOf[Factory]),
+      (classOf[immutable.HashMap[_, _]], immutable.HashMap.asInstanceOf[Factory]),
+      (classOf[immutable.ListMap[_, _]], immutable.ListMap.asInstanceOf[Factory]),
+      (classOf[immutable.Map[_, _]], immutable.Map.asInstanceOf[Factory]),
+      (classOf[mutable.HashMap[_, _]], mutable.HashMap.asInstanceOf[Factory]),
+      (classOf[mutable.LinkedHashMap[_, _]], mutable.LinkedHashMap.asInstanceOf[Factory]),
+      (classOf[mutable.ListMap[_, _]], mutable.ListMap.asInstanceOf[Factory]),
+      (classOf[mutable.Map[_, _]], mutable.Map.asInstanceOf[Factory]),
+      (classOf[concurrent.TrieMap[_, _]], concurrent.TrieMap.asInstanceOf[Factory])
+    ))
 
     override def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V] = factory.newBuilder[K, V]
   })

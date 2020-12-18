@@ -12,11 +12,11 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
     override val CLASS_DOMAIN: Class[Collection[_]] = classOf[SortedSet[_]]
 
     override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
-      (classOf[SortedSet[_]], SortedSet),
-      (classOf[immutable.TreeSet[_]], immutable.TreeSet),
-      (classOf[immutable.SortedSet[_]], immutable.SortedSet),
-      (classOf[mutable.TreeSet[_]], mutable.TreeSet),
-      (classOf[mutable.SortedSet[_]], mutable.SortedSet)
+      (classOf[SortedSet[_]], SortedSet.asInstanceOf[Factory]),
+      (classOf[immutable.TreeSet[_]], immutable.TreeSet.asInstanceOf[Factory]),
+      (classOf[immutable.SortedSet[_]], immutable.SortedSet.asInstanceOf[Factory]),
+      (classOf[mutable.TreeSet[_]], mutable.TreeSet.asInstanceOf[Factory]),
+      (classOf[mutable.SortedSet[_]], mutable.SortedSet.asInstanceOf[Factory])
     ))
 
     override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] =

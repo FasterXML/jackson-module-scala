@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserialize
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
+import scala.collection.mutable.ListBuffer
 import scala.collection.{Map, mutable}
+import scala.language.higherKinds
 
 abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] extends Deserializers.Base {
   type Collection[K, V] = CC[K, V]
@@ -16,7 +18,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
 
   // Subclasses need to implement the following:
   val CLASS_DOMAIN: Class[_]
-  val factories: List[(Class[_], Factory)]
+  val factories: Iterable[(Class[_], Factory)]
   def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V]
 
   def builderFor[K, V](cls: Class[_], keyType: JavaType, valueType: JavaType): Builder[K, V] = factories
@@ -36,6 +38,49 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
       val instantiator = new Instantiator(config, theType)
       new Deserializer(theType, instantiator, keyDeserializer, elementDeserializer, elementTypeDeserializer)
     }
+  }
+
+  protected def sortFactories(factories: IndexedSeq[(Class[_], Factory)]): Seq[(Class[_], Factory)] = {
+    val cs = factories.toArray
+    val output = new ListBuffer[(Class[_], Factory)]()
+
+    val remaining = cs.map(_ => 1)
+    val adjMatrix = Array.ofDim[Int](cs.length, cs.length)
+
+    // Build the adjacency matrix. Only mark the in-edges.
+    for (i <- cs.indices; j <- cs.indices) {
+      val (ic, _) = cs(i)
+      val (jc, _) = cs(j)
+
+      if (i != j && ic.isAssignableFrom(jc)) {
+        adjMatrix(i)(j) = 1
+      }
+    }
+
+    // While we haven't removed every node, remove all nodes with 0 degree in-edges.
+    while (output.length < cs.length) {
+      val startLength = output.length
+
+      for (i <- cs.indices) {
+        if (remaining(i) == 1 && dotProduct(adjMatrix(i), remaining) == 0) {
+          output += factories(i)
+          remaining(i) = 0
+        }
+      }
+
+      // If we couldn't remove any nodes, it means we've found a cycle. Realistically this should never happen.
+      if (output.length == startLength) {
+        throw new IllegalStateException("Companions contain a cycle.")
+      }
+    }
+
+    output.toSeq
+  }
+
+  private def dotProduct(a: Array[Int], b: Array[Int]): Int = {
+    if (a.length != b.length) throw new IllegalArgumentException()
+
+    a.indices.map(i => a(i) * b(i)).sum
   }
 
   private class BuilderWrapper[K, V >: AnyRef](val builder: Builder[K, V]) extends java.util.AbstractMap[K, V] {
