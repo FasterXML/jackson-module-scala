@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import scala.language.higherKinds
 
 abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deserializers.Base {
   type Collection[A] = CC[A]
