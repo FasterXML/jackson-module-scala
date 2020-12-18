@@ -86,7 +86,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[_]): CC[_] = {
       val bw = newBuilderWrapper(ctxt)
-      bw.setInitialValue(intoValue)
+      bw.setInitialValue(intoValue.asInstanceOf[CC[Any]])
       containerDeserializer.deserialize(jp, ctxt, bw) match {
         case wrapper: BuilderWrapper[_] => wrapper.builder.result()
       }
