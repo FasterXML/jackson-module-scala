@@ -60,15 +60,15 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       new BuilderWrapper[AnyRef](builderFor[AnyRef](collectionType.getRawClass, valueType))
   }
 
-  private class Deserializer(collectionType: JavaType, containerDeserializer: CollectionDeserializer)
-    extends ContainerDeserializerBase[CC[_]](collectionType)
+  private class Deserializer[A](collectionType: JavaType, containerDeserializer: CollectionDeserializer)
+    extends ContainerDeserializerBase[CC[A]](collectionType)
       with ContextualDeserializer {
 
     def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) = {
       this(collectionType, new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, valueInstantiator))
     }
 
-    override def createContextual(ctxt: DeserializationContext, property: BeanProperty): Deserializer = {
+    override def createContextual(ctxt: DeserializationContext, property: BeanProperty): Deserializer[A] = {
       val newDelegate = containerDeserializer.createContextual(ctxt, property)
       new Deserializer(collectionType, newDelegate)
     }
@@ -77,17 +77,17 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
 
     override def getContentDeserializer: JsonDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
 
-    override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[_] = {
+    override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[A] = {
       containerDeserializer.deserialize(jp, ctxt) match {
-        case wrapper: BuilderWrapper[_] => wrapper.builder.result()
+        case wrapper: BuilderWrapper[_] => wrapper.builder.result().asInstanceOf[CC[A]]
       }
     }
 
-    override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[_]): CC[_] = {
+    override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[A]): CC[A] = {
       val bw = newBuilderWrapper(ctxt)
       bw.setInitialValue(intoValue.asInstanceOf[CC[AnyRef]])
       containerDeserializer.deserialize(jp, ctxt, bw) match {
-        case wrapper: BuilderWrapper[_] => wrapper.builder.result()
+        case wrapper: BuilderWrapper[_] => wrapper.builder.result().asInstanceOf[CC[A]]
       }
     }
 

@@ -62,8 +62,8 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
       new BuilderWrapper[AnyRef, AnyRef](builderFor[AnyRef, AnyRef](mapType.getRawClass, mapType.getKeyType, mapType.getContentType))
   }
 
-  private class Deserializer(mapType: MapLikeType, containerDeserializer: MapDeserializer)
-    extends ContainerDeserializerBase[CC[_, _]](mapType) with ContextualDeserializer {
+  private class Deserializer[K, V](mapType: MapLikeType, containerDeserializer: MapDeserializer)
+    extends ContainerDeserializerBase[CC[K, V]](mapType) with ContextualDeserializer {
 
     def this(mapType: MapLikeType, valueInstantiator: ValueInstantiator, keyDeser: KeyDeserializer, valueDeser: JsonDeserializer[_], valueTypeDeser: TypeDeserializer) = {
       this(mapType, new MapDeserializer(mapType, valueInstantiator, keyDeser, valueDeser.asInstanceOf[JsonDeserializer[AnyRef]], valueTypeDeser))
@@ -78,17 +78,17 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
       new Deserializer(mapType, newDelegate)
     }
 
-    override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[_, _] = {
+    override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[K, V] = {
       containerDeserializer.deserialize(jp, ctxt) match {
-        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result()
+        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result().asInstanceOf[CC[K, V]]
       }
     }
 
-    override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[_, _]): CC[_, _] = {
+    override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[K, V]): CC[K, V] = {
       val bw = newBuilderWrapper(ctxt)
       bw.setInitialValue(intoValue.asInstanceOf[CC[AnyRef, AnyRef]])
       containerDeserializer.deserialize(jp, ctxt, bw) match {
-        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result()
+        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result().asInstanceOf[CC[K, V]]
       }
     }
 
