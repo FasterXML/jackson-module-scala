@@ -9,7 +9,7 @@ import org.scalatestplus.junit.JUnitRunner
 import scala.beans.BeanProperty
 
 class EnumContainer {
-	var day: Weekday.Value = Weekday.Fri
+  var day: Weekday.Value = Weekday.Fri
 }
 
 class WeekdayType extends TypeReference[Weekday.type]
@@ -36,8 +36,8 @@ class EnumerationDeserializerTest extends DeserializerTest {
 
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
 
-	"An ObjectMapper with EnumDeserializerModule" should "deserialize a value into a scala Enumeration as a bean property" in {
-		val expectedDay = Weekday.Fri
+  "An ObjectMapper with EnumDeserializerModule" should "deserialize a value into a scala Enumeration as a bean property" in {
+    val expectedDay = Weekday.Fri
     val result = deserialize[EnumContainer](fridayEnumJson)
     result.day should be (expectedDay)
   }
