@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapD
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
 import scala.collection.{Map, mutable}
-import scala.language.higherKinds
 
 abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] extends Deserializers.Base {
   type Collection[K, V] = CC[K, V]
@@ -16,7 +15,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
   type Builder[K, V] = mutable.Builder[(K, V), _ <: Collection[K, V]]
 
   // Subclasses need to implement the following:
-  val CLASS_DOMAIN: Class[Collection[_, _]]
+  val CLASS_DOMAIN: Class[_]
   val factories: List[(Class[_], Factory)]
   def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V]
 

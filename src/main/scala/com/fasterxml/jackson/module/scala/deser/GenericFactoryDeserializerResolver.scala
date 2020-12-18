@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserialize
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
 import scala.collection.mutable
-import scala.language.higherKinds
 
 abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deserializers.Base {
   type Collection[A] = CC[A]
@@ -18,7 +17,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
   type Builder[A] = mutable.Builder[A, _ <: Collection[A]]
 
   // Subclasses need to implement the following:
-  val CLASS_DOMAIN: Class[Collection[_]]
+  val CLASS_DOMAIN: Class[_]
   val factories: Iterable[(Class[_], Factory)]
   def builderFor[A](cf: Factory, valueType: JavaType): Builder[A]
 
