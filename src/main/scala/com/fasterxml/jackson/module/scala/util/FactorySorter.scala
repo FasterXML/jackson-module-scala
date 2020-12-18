@@ -26,7 +26,7 @@ class MapFactorySorter[CM[_, _], CF[+X[_, _]]] extends TopologicalSorter[CM[_, _
   }
 }
 
-class TopologicalSorter[CC, CF] {
+trait TopologicalSorter[CC, CF] {
   protected[this] val companions = new ArrayBuffer[(Class[_], CF)]()
 
   def toList: List[(Class[_], CF)] = {
