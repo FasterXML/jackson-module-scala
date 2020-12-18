@@ -49,7 +49,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
     // Isn't used by the deserializer
     override def entrySet(): java.util.Set[java.util.Map.Entry[K, V]] = throw new UnsupportedOperationException
 
-    def setInitialValue(init: Collection[_, _]): Unit = {
+    def setInitialValue(init: Collection[K, V]): Unit = {
       init.asInstanceOf[Map[K, V]].foreach(Function.tupled(put))
       baseMap = init.asInstanceOf[Map[Any, V]]
     }
@@ -86,7 +86,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[_, _]): CC[_, _] = {
       val bw = newBuilderWrapper(ctxt)
-      bw.setInitialValue(intoValue.asInstanceOf[CC[Any, Any]])
+      bw.setInitialValue(intoValue.asInstanceOf[CC[AnyRef, AnyRef]])
       containerDeserializer.deserialize(jp, ctxt, bw) match {
         case wrapper: BuilderWrapper[_, _] => wrapper.builder.result()
       }
