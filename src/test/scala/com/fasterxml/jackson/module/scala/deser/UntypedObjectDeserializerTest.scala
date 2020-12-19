@@ -15,7 +15,7 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
   behavior of "UntypedObjectDeserializer"
 
   it should "deserialize to an immutable.Map by default" in {
-    val mapValue = deserializeWithManifest[Map[String,Any]](jsonString)
+    val mapValue = deserialize(jsonString, classOf[Map[String,Any]])
     mapValue should contain key "sKey"
     mapValue("sKey") should be ("sValue")
     val mKeyValue = mapValue("mKey")

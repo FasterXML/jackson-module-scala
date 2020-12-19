@@ -42,38 +42,38 @@ class OptionDeserializerTest extends DeserializerTest {
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
 
   "An ObjectMapper with OptionDeserializer" should "deserialize an Option[Int]" in {
-    deserializeWithManifest[Option[Int]]("1") should be (Some(1))
-    deserializeWithManifest[Option[Int]]("1") should be (Option(1))
-    deserializeWithManifest[Option[Int]]("null") should be (None)
+    deserialize("1", classOf[Option[Int]]) should be (Some(1))
+    deserialize("1", classOf[Option[Int]]) should be (Option(1))
+    deserialize("null", classOf[Option[Int]]) should be (None)
   }
 
   it should "deserialize an Option[String]" in {
-    deserializeWithManifest[Option[String]]("\"foo\"") should be (Some("foo"))
-    deserializeWithManifest[Option[String]]("\"foo\"") should be (Option("foo"))
-    deserializeWithManifest[Option[String]]("null") should be (None)
+    deserialize("\"foo\"", classOf[Option[String]]) should be (Some("foo"))
+    deserialize("\"foo\"", classOf[Option[String]]) should be (Option("foo"))
+    deserialize("null", classOf[Option[String]]) should be (None)
   }
 
   it should "deserialize an Option[Long] to a long" in {
-    deserializeWithManifest[Option[Long]]("123456789012345678") should be (Some(123456789012345678L))
-    deserializeWithManifest[Option[Long]]("123456789012345678").map(java.lang.Long.valueOf(_)) should be (Some(123456789012345678L))
-    deserializeWithManifest[Option[Long]]("123456789012345678").get.getClass should be (classOf[Long])
+    deserialize("123456789012345678", classOf[Option[Long]]) should be (Some(123456789012345678L))
+    deserialize("123456789012345678", classOf[Option[Long]]).map(java.lang.Long.valueOf(_)) should be (Some(123456789012345678L))
+    deserialize("123456789012345678", classOf[Option[Long]]).get.getClass should be (classOf[Long])
 
     deserializeWithManifest[Option[Long]]("1") should be (Some(1L))
     deserializeWithManifest[Option[Long]]("1").map(java.lang.Long.valueOf(_)) should be (Some(1L))
     deserializeWithManifest[Option[Long]]("1").get.getClass should be (classOf[Long])
   }
 
-  it should "sythensize None for optional fields that are non-existent" in {
-    deserializeWithManifest[UnavailableField]("{}") should be(UnavailableField(None))
+  it should "synthesize None for optional fields that are non-existent" in {
+    deserialize("{}", classOf[UnavailableField]) should be(UnavailableField(None))
   }
 
   it should "propagate type information" in {
     val json: String = """{"base":{"$type":"impl"}}"""
-    deserializeWithManifest[BaseHolder](json) should be(BaseHolder(Some(Impl())))
+    deserialize(json, classOf[BaseHolder]) should be(BaseHolder(Some(Impl())))
   }
 
   it should "deserialize a polymorphic null as None" in {
-    deserializeWithManifest[BaseHolder]("""{"base":null}""") should be(BaseHolder(None))
+    deserialize("""{"base":null}""", classOf[BaseHolder]) should be(BaseHolder(None))
   }
 
   it should "deserialize defaulted parameters correctly (without defaults)" in {

@@ -15,47 +15,47 @@ class UnsortedSetDeserializerTest extends DeserializerTest {
   lazy val module: JacksonModule = new UnsortedSetDeserializerModule {}
 
   "An ObjectMapper with the SetDeserializerModule" should "deserialize an object into a Set" in {
-    val result = deserializeWithManifest[Set[String]](setJson)
+    val result = deserialize(setJson, classOf[Set[String]])
     result should equal(setScala)
   }
 
   it should "deserialize an object into an immutable Set" in {
-    val result = deserializeWithManifest[immutable.Set[String]](setJson)
+    val result = deserialize(setJson, classOf[immutable.Set[String]])
     result should equal(setScala)
   }
 
   it should "deserialize an object into a mutable Set" in {
-    val result = deserializeWithManifest[mutable.Set[String]](setJson)
+    val result = deserialize(setJson, classOf[mutable.Set[String]])
     result should equal(setScala)
   }
 
   it should "deserialize an object into an immutable HashSet" in {
-    val result = deserializeWithManifest[immutable.HashSet[String]](setJson)
+    val result = deserialize(setJson, classOf[immutable.HashSet[String]])
     result should equal(setScala)
   }
 
   it should "deserialize an object into a mutable HashSet" in {
-    val result = deserializeWithManifest[mutable.HashSet[String]](setJson)
+    val result = deserialize(setJson, classOf[mutable.HashSet[String]])
     result should equal(setScala)
   }
 
   it should "deserialize an object into an immutable ListSet" in {
-    val result = deserializeWithManifest[immutable.ListSet[String]](setJson)
+    val result = deserialize(setJson, classOf[immutable.ListSet[String]])
     result should equal(setScala)
   }
 
   it should "deserialize an object into a LinkedHashSet" in {
-    val result = deserializeWithManifest[mutable.LinkedHashSet[String]](setJson)
+    val result = deserialize(setJson, classOf[mutable.LinkedHashSet[String]])
     result should equal(setScala)
   }
 
   it should "deserialize an object with variable value types into a variable UnsortedSet" in {
-    val result = deserializeWithManifest[Set[Any]](variantSetJson)
+    val result = deserialize(variantSetJson, classOf[Set[Any]])
     result should equal(variantSetScala)
   }
 
   it should "deserialize an object into a ListSet" in {
-    val result = deserializeWithManifest[immutable.ListSet[String]](setJson)
+    val result = deserialize(setJson, classOf[immutable.ListSet[String]])
     result should equal(setScala)
   }
 
