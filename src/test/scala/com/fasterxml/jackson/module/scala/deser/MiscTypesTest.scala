@@ -15,7 +15,7 @@ class MiscTypesTest extends DeserializerTest {
     val data: Seq[UUID] = Stream.continually(UUID.randomUUID).take(4).toList
 
     val json = newMapper.writeValueAsString(data)
-    val read = deserialize[List[UUID]](json)
+    val read = deserializeWithManifest[List[UUID]](json)
 
     read shouldBe data
   }
