@@ -20,32 +20,32 @@ class SeqDeserializerTest extends DeserializerTest {
   lazy val module = new JacksonModule with SeqDeserializerModule
 
   "An ObjectMapper with the SeqDeserializer" should "deserialize a list into an Iterable" in {
-    val result = deserialize[Iterable[Int]](listJson)
+    val result = deserialize[Iterable[Int]](listJson, classOf[Iterable[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable Iterable" in {
-    val result = deserializeWithManifest[immutable.Iterable[Int]](listJson)
+    val result = deserialize[immutable.Iterable[Int]](listJson, classOf[immutable.Iterable[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable Iterable" in {
-    val result = deserializeWithManifest[mutable.Iterable[Int]](listJson)
+    val result = deserialize[mutable.Iterable[Int]](listJson, classOf[mutable.Iterable[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an IndexedSeq" in {
-    val result = deserializeWithManifest[IndexedSeq[Int]](listJson)
+    val result = deserialize[IndexedSeq[Int]](listJson, classOf[IndexedSeq[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable IndexedSeq" in {
-    val result = deserializeWithManifest[immutable.IndexedSeq[Int]](listJson)
+    val result = deserialize[immutable.IndexedSeq[Int]](listJson, classOf[immutable.IndexedSeq[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable IndexedSeq" in {
-    val result = deserializeWithManifest[mutable.IndexedSeq[Int]](listJson)
+    val result = deserialize[mutable.IndexedSeq[Int]](listJson, classOf[mutable.IndexedSeq[Int]])
     result should equal (listScala)
   }
 
