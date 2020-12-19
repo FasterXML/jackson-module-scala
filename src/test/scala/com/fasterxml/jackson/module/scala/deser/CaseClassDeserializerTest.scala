@@ -48,40 +48,40 @@ class CaseClassDeserializerTest extends DeserializerTest {
   def module: DefaultScalaModule.type = DefaultScalaModule
 
   "An ObjectMapper with CaseClassDeserializer" should "deserialize a case class with a single constructor" in {
-    deserialize[ConstructorTestCaseClass]("""{"intValue":1,"stringValue":"foo"}""") should be (ConstructorTestCaseClass(1,"foo"))
+    deserializeWithManifest[ConstructorTestCaseClass]("""{"intValue":1,"stringValue":"foo"}""") should be (ConstructorTestCaseClass(1,"foo"))
   }
 
   it should "deserialize a case class with var properties" in {
     val result = PropertiesTestCaseClass()
     result.intProperty = 1
     result.stringProperty = "foo"
-    deserialize[PropertiesTestCaseClass]("""{"intProperty":1,"stringProperty":"foo"}""") shouldBe result
+    deserializeWithManifest[PropertiesTestCaseClass]("""{"intProperty":1,"stringProperty":"foo"}""") shouldBe result
   }
 
   it should "honor Jackson annotations" in {
     val result = JacksonAnnotationTestCaseClass("foo","bar")
-    deserialize[JacksonAnnotationTestCaseClass]("""{"foo":"foo","bar":"bar"}""") shouldBe result
+    deserializeWithManifest[JacksonAnnotationTestCaseClass]("""{"foo":"foo","bar":"bar"}""") shouldBe result
   }
 
   it should "not try to deserialize a List" in {
     intercept[JsonMappingException] {
-      deserialize[List[_]]("""{"foo":"foo","bar":"bar"}""")
+      deserializeWithManifest[List[_]]("""{"foo":"foo","bar":"bar"}""")
     }
   }
 
   it should "deserialize a class with unicode property names" in {
     val result = UnicodeNameCaseClass(23, "the name of this")
-    deserialize[UnicodeNameCaseClass]("""{"winning-id":23,"name":"the name of this"}""") shouldBe result
+    deserializeWithManifest[UnicodeNameCaseClass]("""{"winning-id":23,"name":"the name of this"}""") shouldBe result
   }
 
   it should "deserialize a generic case class" in {
     val result = GenericTestCaseClass(42)
-    deserialize[GenericTestCaseClass[Int]]("""{"data":42}""") shouldBe result
+    deserializeWithManifest[GenericTestCaseClass[Int]]("""{"data":42}""") shouldBe result
   }
 
   it should "deserialize Longs properly" in {
     val expected = LongValueCaseClass(1234L, Some(123456789012345678L), Some(5678L))
-    val result = deserialize[LongValueCaseClass]("""{"id":1234,"big":123456789012345678,"small":5678}""")
+    val result = deserializeWithManifest[LongValueCaseClass]("""{"id":1234,"big":123456789012345678,"small":5678}""")
 
     result shouldBe expected
 
@@ -97,7 +97,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize Longs in POSOs" in {
-    val result = deserialize[LongValueClass]("""{"small":1}""")
+    val result = deserializeWithManifest[LongValueClass]("""{"small":1}""")
     result.small.get.getClass should be (classOf[Long])
   }
 
@@ -119,7 +119,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
   }
 
   it should "support Array[Byte] properties" in {
-    val result = deserialize[ArrayHolder]("""{"value":"AQID"}""")
+    val result = deserializeWithManifest[ArrayHolder]("""{"value":"AQID"}""")
     result.value should equal (Array[Byte](1,2,3))
   }
 }

@@ -22,61 +22,61 @@ class TupleDeserializerTest extends DeserializerTest {
   lazy val module: JacksonModule = DefaultScalaModule
 
   "ObjectMapper with TupleDeserialzier" should "deserialize a Tuple[Int]" in {
-    val result = deserialize[Tuple1[Int]]("[1]")
+    val result = deserializeWithManifest[Tuple1[Int]]("[1]")
     result should be (Tuple1(1))
   }
 
   it should "deserialize a Tuple[Double]" in {
-    val result = deserialize[Tuple1[Double]]("[1.0]")
+    val result = deserializeWithManifest[Tuple1[Double]]("[1.0]")
     result should be (Tuple1(1.0))
   }
 
   it should "deserialize a Tuple[String]" in {
-    val result = deserialize[Tuple1[String]]("[\"foo\"]")
+    val result = deserializeWithManifest[Tuple1[String]]("[\"foo\"]")
     result should be (Tuple1("foo"))
   }
 
   it should "deserialize a Tuple[Int,Int]" in {
-    val result = deserialize[(Int, Int)]("[1,2]")
+    val result = deserializeWithManifest[(Int, Int)]("[1,2]")
     result should be ((1,2))
   }
 
   it should "deserialize a Tuple[Int,Double]" in {
-    val result = deserialize[(Int, Double)]("[1,2.0]")
+    val result = deserializeWithManifest[(Int, Double)]("[1,2.0]")
     result should be ((1,2.0))
   }
 
   it should "deserialize a Tuple[Int,String]" in {
-    val result = deserialize[(Int, String)]("[1,\"foo\"]")
+    val result = deserializeWithManifest[(Int, String)]("[1,\"foo\"]")
     result should be ((1,"foo"))
   }
 
   it should "deserialize a Tuple3[Double,String,Int]" in {
-    val result = deserialize[(Double,String,Int)]("""[3.0,"A",1]""")
+    val result = deserializeWithManifest[(Double,String,Int)]("""[3.0,"A",1]""")
     result should be ((3.0,"A",1))
   }
 
   it should "deserialize a list of tuples " in {
-    val result = deserialize[List[(String,Double)]]("""[["foo",1.0],["bar",10.0],["baz",100.0]]""")
+    val result = deserializeWithManifest[List[(String,Double)]]("""[["foo",1.0],["bar",10.0],["baz",100.0]]""")
     result should be (List(("foo",1.0), ("bar",10.0), ("baz",100.0)))
   }
 
   it should "deserialize an option list of tuples " in {
-    val result = deserialize[Option[List[(String,Double)]]]("""[["foo",1.0],["bar",10.0],["baz",100.0]]""")
+    val result = deserializeWithManifest[Option[List[(String,Double)]]]("""[["foo",1.0],["bar",10.0],["baz",100.0]]""")
     result should be (Some(List(("foo",1.0), ("bar",10.0), ("baz",100.0))))
   }
 
   it should "deserialize using type information" in {
     val value = TupleContainer(TupleValueLong(1), TupleValueString("foo"))
     val json = newMapper.writeValueAsString(value)
-    val result = deserialize[TupleContainer](json)
+    val result = deserializeWithManifest[TupleContainer](json)
     result should be (value)
   }
 
   it should "deserialize using type information outside of field" in {
     val value = (TupleValueLong(1), TupleValueString("foo"))
     val json = newMapper.writeValueAsString(value)
-    val result = deserialize[(TupleValueBase, TupleValueBase)](json)
+    val result = deserializeWithManifest[(TupleValueBase, TupleValueBase)](json)
     result should be (value)
   }
 }

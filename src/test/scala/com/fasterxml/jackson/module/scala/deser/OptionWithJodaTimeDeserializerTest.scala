@@ -13,12 +13,12 @@ class OptionWithJodaTimeDeserializerTest extends DeserializerTest {
   def module: DefaultScalaModule.type = DefaultScalaModule
 
   "DefaultScalaModule" should "deserialize a case class with Option without JodaModule" in {
-    deserialize[OptionalInt](stringValue) should be (OptionalInt(Some(123)))
+    deserializeWithManifest[OptionalInt](stringValue) should be (OptionalInt(Some(123)))
   }
 
   it should "deserialize a case class with Option with JodaModule" in {
     newMapper.registerModule(new JodaModule)
-    deserialize[OptionalInt](stringValue) should be (OptionalInt(Some(123)))
+    deserializeWithManifest[OptionalInt](stringValue) should be (OptionalInt(Some(123)))
   }
 
   val stringValue = """{"x":123}"""

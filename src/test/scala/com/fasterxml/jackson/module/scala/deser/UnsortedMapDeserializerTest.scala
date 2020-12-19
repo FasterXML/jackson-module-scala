@@ -21,58 +21,58 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
   lazy val module: JacksonModule = new UnsortedMapDeserializerModule {}
 
   "An ObjectMapper with the UnsortedMapDeserializerModule" should "deserialize an object into a Map" in {
-    val result = deserialize[Map[String, String]](mapJson)
+    val result = deserializeWithManifest[Map[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an immutable Map" in {
-    val result = deserialize[immutable.Map[String, String]](mapJson)
+    val result = deserializeWithManifest[immutable.Map[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable Map" in {
-    val result = deserialize[mutable.Map[String, String]](mapJson)
+    val result = deserializeWithManifest[mutable.Map[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a GenMap" in {
-    val result = deserialize[GenMap[String, String]](mapJson)
+    val result = deserializeWithManifest[GenMap[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an immutable HashMap" in {
-    val result = deserialize[immutable.HashMap[String, String]](mapJson)
+    val result = deserializeWithManifest[immutable.HashMap[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable HashMap" in {
-    val result = deserialize[mutable.HashMap[String, String]](mapJson)
+    val result = deserializeWithManifest[mutable.HashMap[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an immutable ListMap" in {
-    val result = deserialize[immutable.ListMap[String, String]](mapJson)
+    val result = deserializeWithManifest[immutable.ListMap[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable ListMap" in {
-    val result = deserialize[mutable.ListMap[String, String]](mapJson)
+    val result = deserializeWithManifest[mutable.ListMap[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable LinkedHashMap" in {
-    val result = deserialize[mutable.LinkedHashMap[String, String]](mapJson)
+    val result = deserializeWithManifest[mutable.LinkedHashMap[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a concurrent TrieMap" in {
     import overrides._
-    val result = deserialize[TrieMap[String, String]](mapJson)
+    val result = deserializeWithManifest[TrieMap[String, String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object with variable value types into a variable UnsortedMap" in {
-    val result = deserialize[Map[String, Any]](variantMapJson)
+    val result = deserializeWithManifest[Map[String, Any]](variantMapJson)
     result should equal (variantMapScala)
   }
 
@@ -82,7 +82,7 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
   }
 
   it should "properly deserialize nullary values" in {
-    val result = deserialize[Map[String, JsonNode]](nullValueMapJson)
+    val result = deserializeWithManifest[Map[String, JsonNode]](nullValueMapJson)
     result should equal (nullValueMapScala)
   }
 
