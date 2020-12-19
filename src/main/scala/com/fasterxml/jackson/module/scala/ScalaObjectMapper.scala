@@ -204,6 +204,7 @@ trait ScalaObjectMapper {
   /**
    * @deprecated Since 2.5, use { @link #writerFor(Class)} instead
    */
+  @Deprecated
   def writerWithType[T: Manifest]: ObjectWriter = {
     writerFor[T]
   }

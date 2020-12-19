@@ -86,11 +86,7 @@ class OptionDeserializerTest extends DeserializerTest {
 
   it should "deserialize a type param wrapped option" in {
     val json: String = """{"t": {"bar": "baz"}}"""
-    var result = deserialize[Wrapper[Option[Foo]]](json)
-    result.t.get.isInstanceOf[Foo] should be(true)
-
-    val m = newMapper :: ScalaObjectMapper
-    result = m.readValue[Wrapper[Option[Foo]]](json)
+    val result = deserialize[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
   }
 
