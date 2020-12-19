@@ -202,14 +202,6 @@ trait ScalaObjectMapper {
   }
 
   /**
-   * @deprecated Since 2.5, use { @link #writerFor(Class)} instead
-   */
-  @Deprecated
-  def writerWithType[T: Manifest]: ObjectWriter = {
-    writerFor[T]
-  }
-
-  /**
    * Factory method for constructing {@link ObjectWriter} that will
    * serialize objects using specified root type, instead of actual
    * runtime type of value. Type must be a super-type of runtime type.

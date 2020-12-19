@@ -136,7 +136,7 @@ class ScalaObjectMapperTest extends JacksonTest {
   }
 
   it should "produce writer with type" in {
-    val result = mapper.writerWithType[SuperType].writeValueAsString(SubType("foo", 42))
+    val result = mapper.writerFor[SuperType].writeValueAsString(SubType("foo", 42))
     result should equal("""{"foo":"foo"}""")
   }
 
