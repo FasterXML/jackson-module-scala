@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 /**
  * @deprecated use {@link com.fasterxml.jackson.module.scala.ScalaObjectMapper}
  */
-@Deprecated
+@deprecated("use com.fasterxml.jackson.module.scala.ScalaObjectMapper")
 trait ScalaObjectMapper extends com.fasterxml.jackson.module.scala.ScalaObjectMapper {
   self: ObjectMapper =>
 }

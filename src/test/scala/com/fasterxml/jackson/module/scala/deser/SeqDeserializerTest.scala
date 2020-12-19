@@ -20,49 +20,49 @@ class SeqDeserializerTest extends DeserializerTest {
   lazy val module = new JacksonModule with SeqDeserializerModule
 
   "An ObjectMapper with the SeqDeserializer" should "deserialize a list into an Iterable" in {
-    val result = deserialize[Iterable[Int]](listJson, classOf[Iterable[Int]])
+    val result = deserialize(listJson, classOf[Iterable[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable Iterable" in {
-    val result = deserialize[immutable.Iterable[Int]](listJson, classOf[immutable.Iterable[Int]])
+    val result = deserialize(listJson, classOf[immutable.Iterable[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable Iterable" in {
-    val result = deserialize[mutable.Iterable[Int]](listJson, classOf[mutable.Iterable[Int]])
+    val result = deserialize(listJson, classOf[mutable.Iterable[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an IndexedSeq" in {
-    val result = deserialize[IndexedSeq[Int]](listJson, classOf[IndexedSeq[Int]])
+    val result = deserialize(listJson, classOf[IndexedSeq[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable IndexedSeq" in {
-    val result = deserialize[immutable.IndexedSeq[Int]](listJson, classOf[immutable.IndexedSeq[Int]])
+    val result = deserialize(listJson, classOf[immutable.IndexedSeq[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable IndexedSeq" in {
-    val result = deserialize[mutable.IndexedSeq[Int]](listJson, classOf[mutable.IndexedSeq[Int]])
+    val result = deserialize(listJson, classOf[mutable.IndexedSeq[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a LazyList" in {
     import overrides._
-    val result = deserializeWithManifest[LazyList[Int]](listJson)
+    val result = deserialize(listJson, classOf[LazyList[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable LazyList" in {
     import overrides._
-    val result = deserializeWithManifest[LazyList[Int]](listJson)
+    val result = deserialize(listJson, classOf[LazyList[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable LinearSeq" in {
-    val result = deserializeWithManifest[immutable.LinearSeq[Int]](listJson)
+    val result = deserialize(listJson, classOf[immutable.LinearSeq[Int]])
     result should equal (listScala)
   }
 
@@ -72,105 +72,105 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a List" in {
-    val result = deserializeWithManifest[List[Int]](listJson)
+    val result = deserialize(listJson, classOf[List[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable List" in {
-    val result = deserializeWithManifest[immutable.List[Int]](listJson)
+    val result = deserialize(listJson, classOf[immutable.List[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable Queue" in {
-    val result = deserializeWithManifest[immutable.Queue[Int]](listJson)
+    val result = deserialize(listJson, classOf[immutable.Queue[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable Queue" in {
-    val result = deserializeWithManifest[mutable.Queue[Int]](listJson)
+    val result = deserialize(listJson, classOf[mutable.Queue[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a Stream" in {
-    val result = deserializeWithManifest[Stream[Int]](listJson)
+    val result = deserialize(listJson, classOf[Stream[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable Stream" in {
-    val result = deserializeWithManifest[immutable.Stream[Int]](listJson)
+    val result = deserialize(listJson, classOf[immutable.Stream[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a Seq" in {
-    val result = deserializeWithManifest[Seq[Int]](listJson)
+    val result = deserialize(listJson, classOf[Seq[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable Seq" in {
-    val result = deserializeWithManifest[immutable.Seq[Int]](listJson)
+    val result = deserialize(listJson, classOf[immutable.Seq[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable Seq" in {
-    val result = deserializeWithManifest[mutable.Seq[Int]](listJson)
+    val result = deserialize[mutable.Seq[Int]](listJson, classOf)
     result should equal (listScala)
   }
 
   it should "deserialize a list into a Vector" in {
-    val result = deserializeWithManifest[Vector[Int]](listJson)
+    val result = deserialize(listJson, classOf[Vector[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable Vector" in {
-    val result = deserializeWithManifest[immutable.Vector[Int]](listJson)
+    val result = deserialize(listJson, classOf[immutable.Vector[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable ArrayBuffer" in {
-    val result = deserializeWithManifest[mutable.ArrayBuffer[Int]](listJson)
+    val result = deserialize(listJson, classOf[mutable.ArrayBuffer[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable ArrayDeque" in {
     import overrides._
-    val result = deserializeWithManifest[ArrayDeque[Int]](listJson)
+    val result = deserialize(listJson, classOf[ArrayDeque[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable Buffer" in {
-    val result = deserializeWithManifest[mutable.Buffer[Int]](listJson)
+    val result = deserialize(listJson, classOf[mutable.Buffer[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable ListBuffer" in {
-    val result = deserializeWithManifest[mutable.ListBuffer[Int]](listJson)
+    val result = deserialize(listJson, classOf[mutable.ListBuffer[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable Stack" in {
-    val result = deserializeWithManifest[mutable.Stack[Int]](listJson)
+    val result = deserialize(listJson, classOf[mutable.Stack[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable MutableList" in {
     import overrides._
-    val result = deserializeWithManifest[MutableList[Int]](listJson)
+    val result = deserialize(listJson, classOf[MutableList[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into a mutable ResizableArray" in {
     import overrides._
-    val result = deserializeWithManifest[ResizableArray[Int]](listJson)
+    val result = deserialize(listJson, classOf[ResizableArray[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an ArraySeq" in {
-    val result = deserializeWithManifest[mutable.ArraySeq[Int]](listJson)
+    val result = deserialize(listJson, classOf[mutable.ArraySeq[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an UnrolledBuffer" in {
-    val result = deserializeWithManifest[mutable.UnrolledBuffer[Int]](listJson)
+    val result = deserialize(listJson, classOf[mutable.UnrolledBuffer[Int]])
     result should equal (listScala)
   }
 
