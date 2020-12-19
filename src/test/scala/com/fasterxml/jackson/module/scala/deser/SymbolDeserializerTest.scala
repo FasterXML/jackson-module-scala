@@ -10,6 +10,6 @@ class SymbolDeserializerTest extends DeserializerTest {
 
   "An ObjectMapper with the SymbolDeserializer" should "deserialize a string into a Symbol" in {
     val result = deserialize[Symbol](""""symbol"""")
-    result should equal ('symbol)
+    result should equal (Symbol("symbol"))
   }
 }
