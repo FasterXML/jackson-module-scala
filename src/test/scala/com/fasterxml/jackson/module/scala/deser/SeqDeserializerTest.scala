@@ -178,7 +178,7 @@ class SeqDeserializerTest extends DeserializerTest {
     import scala.collection.JavaConverters._
     val uuidListJson = """["13dfbd92-dbc5-41cc-8d93-22079acc09c4", "foo"]"""
     val exception = intercept[InvalidFormatException] {
-      deserializeWithManifest[List[UUID]](uuidListJson)
+      deserialize(uuidListJson, classOf[List[UUID]], classOf[UUID])
     }
 
     val exceptionPath = exception.getPath.asScala.map(_.getIndex)
@@ -186,7 +186,7 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a nested seq into an immutable Seq" in {
-    val result = deserializeWithManifest[immutable.Seq[Seq[Int]]](nestedJson)
+    val result = deserialize(nestedJson, classOf[immutable.Seq[Seq[Int]]], classOf[Seq[Int]])
     result shouldEqual Seq(Seq(1,2,3),Seq(4,5,6))
   }
 
