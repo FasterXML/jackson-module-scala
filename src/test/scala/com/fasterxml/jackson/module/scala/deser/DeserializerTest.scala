@@ -7,14 +7,15 @@ import com.fasterxml.jackson.module.scala.JacksonTest
 
 trait DeserializerTest extends JacksonTest {
 
-  def serialize(o: AnyRef): String = newMapper.writeValueAsString(o)
+  private lazy val deserializerMapper = newMapper
+
+  def serialize(o: AnyRef): String = deserializerMapper.writeValueAsString(o)
 
   def deserialize[T](value: String, clazz: Class[T]): T =
-    newMapper.readValue(value, clazz)
+    deserializerMapper.readValue(value, clazz)
 
-  @deprecated("use deserialize - Manifests are not supported in Scala3")
   def deserializeWithManifest[T: Manifest](value: String) : T =
-    newMapper.readValue(value, typeReference[T])
+    deserializerMapper.readValue(value, typeReference[T])
 
   def typeReference[T: Manifest]: TypeReference[T] = new TypeReference[T] {
     override def getType: Type = typeFromManifest(manifest[T])
