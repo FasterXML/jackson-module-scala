@@ -38,28 +38,28 @@ class EnumerationDeserializerTest extends DeserializerTest {
 
   "An ObjectMapper with EnumDeserializerModule" should "deserialize a value into a scala Enumeration as a bean property" in {
     val expectedDay = Weekday.Fri
-    val result = deserialize[EnumContainer](fridayEnumJson)
+    val result = deserializeWithManifest[EnumContainer](fridayEnumJson)
     result.day should be (expectedDay)
   }
 
   "An ObjectMapper with EnumDeserializerModule" should "deserialize a value of an inner Enumeration class into a scala Enumeration as a bean property" in {
     val expectedDay = InnerWeekday.Fri
-    val result = deserialize[EnumContainer](fridayInnerEnumJson)
+    val result = deserializeWithManifest[EnumContainer](fridayInnerEnumJson)
     result.day should be (expectedDay)
   }
 
   it should "deserialize an annotated Enumeration value" in {
-    val result = deserialize[AnnotatedEnumHolder](annotatedFridayJson)
+    val result = deserializeWithManifest[AnnotatedEnumHolder](annotatedFridayJson)
     result.weekday should be (Weekday.Fri)
   }
 
   it should "deserialize an annotated Enumeration as a key" in {
-    val result = deserialize[EnumMapHolder](weekdayMapJson)
+    val result = deserializeWithManifest[EnumMapHolder](weekdayMapJson)
     result.weekdayMap should contain key Weekday.Mon
   }
 
   it should "locate the annotation on BeanProperty fields" in {
-    val result = deserialize[HolderImpl](weekdayMapJson)
+    val result = deserializeWithManifest[HolderImpl](weekdayMapJson)
     result.weekdayMap should contain key Weekday.Mon
   }
 

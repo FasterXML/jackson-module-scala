@@ -17,40 +17,40 @@ class SortedMapDeserializerTest extends DeserializerTest {
   lazy val module: JacksonModule = new SortedMapDeserializerModule {}
 
   "An ObjectMapper with the SortedMapDeserializerModule" should "deserialize an object into a SortedMap" in {
-    val result = deserialize[collection.SortedMap[String,String]](mapJson)
+    val result = deserializeWithManifest[collection.SortedMap[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an immutable SortedMap" in {
-    val result = deserialize[immutable.SortedMap[String,String]](mapJson)
+    val result = deserializeWithManifest[immutable.SortedMap[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable SortedMap" in {
     import overrides._
-    val result = deserialize[SortedMap[String,String]](mapJson)
+    val result = deserializeWithManifest[SortedMap[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an immutable TreeMap" in {
-    val result = deserialize[immutable.TreeMap[String,String]](mapJson)
+    val result = deserializeWithManifest[immutable.TreeMap[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable TreeMap" in {
     import overrides._
-    val result = deserialize[TreeMap[String,String]](mapJson)
+    val result = deserializeWithManifest[TreeMap[String,String]](mapJson)
     result should equal (mapScala)
   }
 
   it should "deserialize an object with variable value types into a variable UnsortedMap" in {
-    val result = deserialize[collection.SortedMap[String,Any]](variantMapJson)
+    val result = deserializeWithManifest[collection.SortedMap[String,Any]](variantMapJson)
     result should equal (variantMapScala)
   }
 
   it should "deserialize an object with numeric keys into a SortedMap" in {
     // NB: This is `java.lang.Integer` because of GH-104
-    val result = deserialize[collection.SortedMap[Integer,String]](numericMapJson)
+    val result = deserializeWithManifest[collection.SortedMap[Integer,String]](numericMapJson)
     result should equal (numericMapScala)
   }
 
@@ -60,7 +60,7 @@ class SortedMapDeserializerTest extends DeserializerTest {
   }
 
   it should "properly deserialize nullary values" in {
-    val result = deserialize[collection.SortedMap[String, JsonNode]](nullValueMapJson)
+    val result = deserializeWithManifest[collection.SortedMap[String, JsonNode]](nullValueMapJson)
     result should equal (nullValueMapScala)
   }
 
