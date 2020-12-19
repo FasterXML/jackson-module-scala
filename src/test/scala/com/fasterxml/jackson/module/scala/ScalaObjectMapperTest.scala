@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.{JsonMappingException, Module, ObjectMapper}
+import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -265,6 +266,12 @@ class ScalaObjectMapperTest extends JacksonTest {
   it should "update value from subset of byte array" in {
     val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes, 0, toplevelArrayJson.length)
     result should equal(listGenericInt)
+  }
+
+  it should "deserialize a type param wrapped option" in {
+    val json: String = """{"t": {"bar": "baz"}}"""
+    val result = mapper.readValue[Wrapper[Option[Foo]]](json)
+    result.t.get.isInstanceOf[Foo] should be(true)
   }
 
   // No tests for the following functions:

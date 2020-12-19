@@ -41,6 +41,7 @@ trait ScalaObjectMapper {
   /**
    * @deprecated Since 2.5: replaced by a fluent form of the method; { @link #addMixIn(Class, Class)}.
    */
+  @Deprecated
   final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() = {
     addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
