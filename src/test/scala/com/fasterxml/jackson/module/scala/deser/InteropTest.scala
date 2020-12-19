@@ -21,7 +21,7 @@ class ADeserializer extends JsonDeserializer[A] {
   }
 }
 
-case class B(prop1: String, @JsonDeserialize(using = classOf[ADeserializer]) prop2: A)
+case class B(prop1: String, @JsonDeserialize(`using` = classOf[ADeserializer]) prop2: A)
 
 object Util {
   def mapper: ObjectMapper = {
