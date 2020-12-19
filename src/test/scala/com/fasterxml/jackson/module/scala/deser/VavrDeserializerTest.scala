@@ -11,19 +11,19 @@ class VavrDeserializerTest extends DeserializerTest with EitherJsonTestSupport {
   val module: DefaultScalaModule.type = DefaultScalaModule
 
   "DefaultScalaModule" should "be able to deserialize right with string" in {
-    deserializeWithManifest[Either[_, String]](s"""["right", "$str"]""")
+    deserialize(s"""["right", "$str"]""", classOf[Either[_, String]], Seq(classOf[Any], classOf[String])) should be (Right(str))
   }
 
   it should "be able to deserialize left with string" in {
-    deserializeWithManifest[Either[String, _]](s"""["left", "$str"]""") should be (Left(str))
+    deserialize(s"""["left", "$str"]""", classOf[Either[String, _]], Seq(classOf[String], classOf[Any])) should be (Left(str))
   }
 
   it should "be able to deserialize right with null value" in {
-    deserializeWithManifest[Either[_, String]]("""["right", null]""") should be (Right(null))
+    deserialize("""["right", null]""", classOf[Either[_, String]], Seq(classOf[Any], classOf[String])) should be (Right(null))
   }
 
   it should "be able to deserialize left with null value" in {
-    deserializeWithManifest[Either[String, String]]("""["left", null]""") should be (Left(null))
+    deserialize("""["left", null]""", classOf[Either[String, String]], Seq(classOf[String], classOf[String])) should be (Left(null))
   }
 
   it should "be able to deserialize Right with complex objects" in {
