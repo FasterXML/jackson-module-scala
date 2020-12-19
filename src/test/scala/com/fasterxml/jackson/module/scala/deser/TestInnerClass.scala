@@ -36,11 +36,11 @@ class TestInnerClass extends DeserializerTest {
     val json = newMapper.writeValueAsString(input)
     val output = deserialize[Dog](json)
 
-    output should have ('name ("Smurf"))
-    output.brain should be ('thinking)
-    output.brain should have ('parentName ("Smurf"))
+    output should have (Symbol("name") ("Smurf"))
+    output.brain should be (Symbol("thinking"))
+    output.brain should have (Symbol("parentName") ("Smurf"))
 
     output.name = "Foo"
-    output.brain should have ('parentName ("Foo"))
+    output.brain should have (Symbol("parentName") ("Foo"))
   }
 }
