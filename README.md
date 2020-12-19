@@ -23,17 +23,6 @@ its subclasses, and Scala properties do not (by default) look like `Java Bean` p
 The Scala Module supports serialization and limited deserialization of
 Scala Case Classes, `Sequence`s, `Map`s, `Tuple`s, `Option`s, and Enumerations.
 
-## Caveats
-
-Support for class constructor arguments currently depends upon
-[Paranamer](https://github.com/paul-hammant/paranamer),
-specifically an implementation that
-depends upon constructor parameter names being present in the class debug
-information. Since this is the default in Scala, it is usually not an
-issue, but since it's possible to turn this off, be aware that the current
-version will throw an exception if it cannot find the constructor parameter
-names. Future versions may permit configuration to suppress this exception.
-
 # Usage
 
 To use the Scala Module in Jackson, simply register it with the
