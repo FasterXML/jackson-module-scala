@@ -15,6 +15,7 @@ object ScalaObjectMapper {
     extends JsonMapper(mapper.rebuild().build()) with ScalaObjectMapper
 }
 
+@deprecated("ScalaObjectMapper is deprecated because Manifests are not supported in Scala3", "2.12.1")
 trait ScalaObjectMapper {
   self: ObjectMapper =>
 
@@ -41,7 +42,7 @@ trait ScalaObjectMapper {
   /**
    * @deprecated Since 2.5: replaced by a fluent form of the method; { @link #addMixIn(Class, Class)}.
    */
-  @Deprecated
+  @deprecated("use addMixIn", "2.5")
   final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() = {
     addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
@@ -164,7 +165,7 @@ trait ScalaObjectMapper {
    *         serializable)
    * @deprecated jackson-databind will not implement this in v3.0.0
    */
-  @Deprecated
+  @deprecated("jackson-databind will not implement this in v3.0.0", "2.12.1")
   def canSerialize[T: Manifest]: Boolean = {
     canSerialize(manifest[T].runtimeClass)
   }
@@ -180,7 +181,7 @@ trait ScalaObjectMapper {
    *         serializable)
    * @deprecated jackson-databind will not implement this in v3.0.0
    */
-  @Deprecated
+  @deprecated("jackson-databind will not implement this in v3.0.0", "2.12.1")
   def canDeserialize[T: Manifest]: Boolean = {
     canDeserialize(constructType[T])
   }

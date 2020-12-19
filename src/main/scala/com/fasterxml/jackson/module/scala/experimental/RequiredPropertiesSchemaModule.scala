@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.introspect.{AnnotatedMember, NopAnnotation
 /**
  * @deprecated use {@link com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector}
  */
-@Deprecated
+@deprecated("use com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector")
 object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
   override def hasRequiredMarker(m: AnnotatedMember) =
     com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.hasRequiredMarker(m)
@@ -15,5 +15,5 @@ object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
 /**
  * @deprecated use {@link com.fasterxml.jackson.module.scala.RequiredPropertiesSchemaModule}
  */
-@Deprecated
+@deprecated("use com.fasterxml.jackson.module.scala.RequiredPropertiesSchemaModule")
 trait RequiredPropertiesSchemaModule extends com.fasterxml.jackson.module.scala.RequiredPropertiesSchemaModule
