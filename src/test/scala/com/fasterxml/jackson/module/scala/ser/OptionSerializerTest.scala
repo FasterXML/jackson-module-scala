@@ -125,17 +125,17 @@ class OptionSerializerTest extends SerializerTest {
     val schemaNode = schema.getSchemaNode
 
     val typeNode = schemaNode.path("type")
-    typeNode should not be 'missingNode
+    typeNode should not be Symbol("missingNode")
     typeNode should have (
-      'nodeType (JsonNodeType.STRING),
-      'textValue ("object")
+      Symbol("nodeType") (JsonNodeType.STRING),
+      Symbol("textValue") ("object")
     )
 
     val stringValueTypeNode = schemaNode.path("properties").path("stringValue").path("type")
-    stringValueTypeNode should not be 'missingNode
+    stringValueTypeNode should not be Symbol("missingNode")
     stringValueTypeNode should have (
-      'nodeType (JsonNodeType.STRING),
-      'textValue ("string")
+      Symbol("nodeType") (JsonNodeType.STRING),
+      Symbol("textValue") ("string")
     )
   }
 
@@ -144,11 +144,11 @@ class OptionSerializerTest extends SerializerTest {
     newMapper.acceptJsonFormatVisitor(newMapper.constructType(classOf[OptionSchema]), visitor)
 
     val schema = visitor.finalSchema
-    schema should be an 'objectSchema
+    schema should be an Symbol("objectSchema")
     val props = schema.asObjectSchema().getProperties.asScala
     props should contain key "stringValue"
     val stringValue = props("stringValue")
-    stringValue should be a 'stringSchema
+    stringValue should be a Symbol("stringSchema")
   }
 
   it should "mark as required the non-Option fields" in {
@@ -156,16 +156,16 @@ class OptionSerializerTest extends SerializerTest {
     newMapper.acceptJsonFormatVisitor(newMapper.constructType(classOf[MixedOptionSchema]), visitor)
 
     val schema = visitor.finalSchema()
-    schema should be an 'objectSchema
+    schema should be an Symbol("objectSchema")
     val props = schema.asObjectSchema().getProperties.asScala
     props should contain key "stringValue"
     val stringValue = props("stringValue")
-    stringValue should be a 'stringSchema
+    stringValue should be a Symbol("stringSchema")
     stringValue.getRequired shouldBe null
 
     props should contain key "nonOptionValue"
     val nonOptionValue: JsonSchema = props("nonOptionValue")
-    nonOptionValue should be a 'stringSchema
+    nonOptionValue should be a Symbol("stringSchema")
     nonOptionValue.getRequired shouldBe true
   }
 
@@ -179,16 +179,16 @@ class OptionSerializerTest extends SerializerTest {
     m.acceptJsonFormatVisitor(newMapper.constructType(classOf[DefaultOptionSchema]), visitor)
 
     val schema = visitor.finalSchema()
-    schema should be an 'objectSchema
+    schema should be an Symbol("objectSchema")
     val props = schema.asObjectSchema().getProperties.asScala
     props should contain key "stringValue"
     val stringValue = props("stringValue")
-    stringValue should be a 'stringSchema
+    stringValue should be a Symbol("stringSchema")
     stringValue.getRequired shouldBe null
 
     props should contain key "nonOptionValue"
     val nonOptionValue: JsonSchema = props("nonOptionValue")
-    nonOptionValue should be a 'stringSchema
+    nonOptionValue should be a Symbol("stringSchema")
     nonOptionValue.getRequired shouldBe true
   }
 
