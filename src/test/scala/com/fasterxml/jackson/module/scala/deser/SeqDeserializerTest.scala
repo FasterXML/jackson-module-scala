@@ -113,7 +113,7 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a mutable Seq" in {
-    val result = deserialize[mutable.Seq[Int]](listJson, classOf)
+    val result = deserialize(listJson, classOf[mutable.Seq[Int]])
     result should equal (listScala)
   }
 
