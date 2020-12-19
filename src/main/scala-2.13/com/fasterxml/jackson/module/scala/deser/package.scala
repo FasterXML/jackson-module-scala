@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
-import scala.collection.{concurrent, immutable, mutable}
+import scala.collection.{concurrent, mutable}
 
 /**
   * Here we add some type aliases for things that were removed or reworked in scala 2.13.

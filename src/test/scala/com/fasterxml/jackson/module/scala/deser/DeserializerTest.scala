@@ -14,15 +14,32 @@ trait DeserializerTest extends JacksonTest {
   def deserialize[T](value: String, clazz: Class[T]): T =
     deserializerMapper.readValue(value, clazz)
 
+  def deserialize[T](value: String, referenceType: Class[T], argType: Class[_]): T =
+    deserialize(value, referenceType, Seq(argType))
+
+  def deserialize[T](value: String, referenceType: Class[T], argTypes: Seq[Class[_]]): T = {
+    val pt = new ParameterizedType {
+      override def getRawType: Class[_] = referenceType
+
+      override def getActualTypeArguments: Array[Type] = argTypes.toArray
+
+      override def getOwnerType: Null = null
+    }
+    deserializerMapper.readValue(value, typeReference(pt))
+  }
+
   @deprecated("need to stop using manifests because they are not supported in Scala3")
   def deserializeWithManifest[T: Manifest](value: String) : T =
     deserializerMapper.readValue(value, typeReference[T])
 
-  def typeReference[T: Manifest]: TypeReference[T] = new TypeReference[T] {
-    override def getType: Type = typeFromManifest(manifest[T])
+  private def typeReference[T: Manifest]: TypeReference[T] =
+    typeReference(typeFromManifest(manifest[T]))
+
+  private def typeReference[T](t: Type): TypeReference[T] = new TypeReference[T] {
+    override def getType: Type = t
   }
 
-  private [this] def typeFromManifest(m: Manifest[_]): Type = {
+  private def typeFromManifest(m: Manifest[_]): Type = {
     if (m.typeArguments.isEmpty) { m.runtimeClass }
     else new ParameterizedType {
       override def getRawType: Class[_] = m.runtimeClass

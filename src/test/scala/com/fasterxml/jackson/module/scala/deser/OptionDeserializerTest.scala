@@ -58,9 +58,9 @@ class OptionDeserializerTest extends DeserializerTest {
     deserialize("123456789012345678", classOf[Option[Long]]).map(java.lang.Long.valueOf(_)) should be (Some(123456789012345678L))
     deserialize("123456789012345678", classOf[Option[Long]]).get.getClass should be (classOf[Long])
 
-    deserializeWithManifest[Option[Long]]("1") should be (Some(1L))
-    deserializeWithManifest[Option[Long]]("1").map(java.lang.Long.valueOf(_)) should be (Some(1L))
-    deserializeWithManifest[Option[Long]]("1").get.getClass should be (classOf[Long])
+    deserialize("1", classOf[Option[Long]], classOf[Long]) should be (Some(1L))
+    deserialize("1", classOf[Option[Long]], classOf[Long]).map(java.lang.Long.valueOf(_)) should be (Some(1L))
+    deserialize("1", classOf[Option[Long]], classOf[Long]).get.getClass should be (classOf[Long])
   }
 
   it should "synthesize None for optional fields that are non-existent" in {
