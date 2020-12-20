@@ -6,6 +6,7 @@ import java.nio.file.Files
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{JsonMappingException, Module}
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
 import org.junit.runner.RunWith
@@ -288,7 +289,7 @@ class ScalaObjectMapperTest extends JacksonTest {
     }
   }
 
-  private def newMapperWithScalaObjectMapper: ObjectMapper with ScalaObjectMapper = {
+  private def newMapperWithScalaObjectMapper: JsonMapper with ScalaObjectMapper = {
     newBuilder.build() :: ScalaObjectMapper
   }
 }
