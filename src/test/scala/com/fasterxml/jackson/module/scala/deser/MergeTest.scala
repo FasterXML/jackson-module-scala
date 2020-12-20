@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation.JsonMerge
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{ObjectMapper, ObjectReader}
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
