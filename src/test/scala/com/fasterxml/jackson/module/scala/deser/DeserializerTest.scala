@@ -31,26 +31,8 @@ trait DeserializerTest extends JacksonTest {
     deserializerMapper.readValue(value, typeReference(pt))
   }
 
-  @deprecated("need to stop using manifests because they are not supported in Scala3", "2.12.1")
-  def deserializeWithManifest[T: Manifest](value: String) : T =
-    deserializerMapper.readValue(value, typeReference[T])
-
-  private def typeReference[T: Manifest]: TypeReference[T] =
-    typeReference(typeFromManifest(manifest[T]))
-
   private def typeReference[T](t: Type): TypeReference[T] = new TypeReference[T] {
     override def getType: Type = t
-  }
-
-  private def typeFromManifest(m: Manifest[_]): Type = {
-    if (m.typeArguments.isEmpty) { m.runtimeClass }
-    else new ParameterizedType {
-      override def getRawType: Class[_] = m.runtimeClass
-
-      override def getActualTypeArguments: Array[Type] = m.typeArguments.map(typeFromManifest).toArray
-
-      override def getOwnerType: Null = null
-    }
   }
 
 }
