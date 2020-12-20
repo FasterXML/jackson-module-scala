@@ -1,9 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{AbstractTypeResolver, DeserializationConfig, JavaType, ObjectMapper}
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule, ScalaObjectMapper}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -43,10 +44,8 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
       this += (_ addAbstractTypeResolver ATR)
     }
 
-    val mapper = newBuilder.addModule(AtrModule).build()
-    val atrMapper = mapper :: ScalaObjectMapper
-
-    val mapValue = atrMapper.readValue[Map[String,Any]](jsonString)
+    val atrMapper = newBuilder.addModule(AtrModule).build()
+    val mapValue = atrMapper.readValue(jsonString, new TypeReference[Map[String,Any]] {})
 
     mapValue should contain key "sKey"
     mapValue("sKey") should be ("sValue")
