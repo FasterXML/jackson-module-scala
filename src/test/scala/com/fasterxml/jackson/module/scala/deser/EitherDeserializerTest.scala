@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation._
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, EitherField, Impl, PlainPojoObject}
@@ -16,67 +17,80 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
   override val module = DefaultScalaModule
 
   "DefaultScalaModule" should "be able to deserialize right with string" in {
-    deserializeWithManifest[Either[_, String]](s"""{"r":"$str"}""") should be (Right(str))
-    deserializeWithManifest[Either[_, String]](s"""{"right":"$str"}""") should be (Right(str))
+    val typeRef = new TypeReference[Either[_, String]] {}
+    deserialize(s"""{"r":"$str"}""", typeRef) should be (Right(str))
+    deserialize(s"""{"right":"$str"}""", typeRef) should be (Right(str))
   }
 
   it should "be able to deserialize left with string" in {
-    deserializeWithManifest[Either[String, _]](s"""{"l":"$str"}""") should be (Left(str))
-    deserializeWithManifest[Either[String, _]](s"""{"left":"$str"}""") should be (Left(str))
+    val typeRef = new TypeReference[Either[_, String]] {}
+    deserialize(s"""{"l":"$str"}""", typeRef) should be (Left(str))
+    deserialize(s"""{"left":"$str"}""", typeRef) should be (Left(str))
   }
 
   it should "be able to deserialize right with null value" in {
-    deserializeWithManifest[Either[_, String]](s"""{"r":null}""") should be (Right(null))
-    deserializeWithManifest[Either[_, String]](s"""{"right":null}""") should be (Right(null))
+    val typeRef = new TypeReference[Either[_, String]] {}
+    deserialize(s"""{"r":null}""", typeRef) should be (Right(null))
+    deserialize(s"""{"right":null}""", typeRef) should be (Right(null))
   }
 
   it should "be able to deserialize right with None value" in {
-    deserializeWithManifest[Either[_, Option[String]]](s"""{"r":null}""") should be (Right(None))
-    deserializeWithManifest[Either[_, Option[String]]](s"""{"right":null}""") should be (Right(None))
+    val typeRef = new TypeReference[Either[_, Option[String]]] {}
+    deserialize(s"""{"r":null}""", typeRef) should be (Right(None))
+    deserialize(s"""{"right":null}""", typeRef) should be (Right(None))
   }
 
   it should "be able to deserialize left with null value" in {
-    deserializeWithManifest[Either[String, String]](s"""{"l":null}""") should be (Left(null))
-    deserializeWithManifest[Either[String, String]](s"""{"left":null}""") should be (Left(null))
+    val typeRef = new TypeReference[Either[String, String]] {}
+    deserialize(s"""{"l":null}""", typeRef) should be (Left(null))
+    deserialize(s"""{"left":null}""", typeRef) should be (Left(null))
   }
 
   it should "be able to deserialize left with None value" in {
-    deserializeWithManifest[Either[Option[String], _]](s"""{"l":null}""") should be (Left(None))
-    deserializeWithManifest[Either[Option[String], _]](s"""{"left":null}""") should be (Left(None))
+    val typeRef = new TypeReference[Either[Option[String], _]] {}
+    deserialize(s"""{"l":null}""", typeRef) should be (Left(None))
+    deserialize(s"""{"left":null}""", typeRef) should be (Left(None))
   }
 
   it should "be able to deserialize Right with complex objects" in {
-    deserializeWithManifest[Either[String, PlainPojoObject]](s"""{"r":${serialize(obj)}}""") should be (Right(obj))
-    deserializeWithManifest[Either[String, PlainPojoObject]](s"""{"right":${serialize(obj)}}""") should be (Right(obj))
+    val typeRef = new TypeReference[Either[String, PlainPojoObject]] {}
+    deserialize(s"""{"r":${serialize(obj)}}""", typeRef) should be (Right(obj))
+    deserialize(s"""{"right":${serialize(obj)}}""", typeRef) should be (Right(obj))
   }
 
   it should "be able to deserialize Left with complex objects" in {
-    deserializeWithManifest[Either[PlainPojoObject, String]](s"""{"l":${serialize(obj)}}""") should be (Left(obj))
-    deserializeWithManifest[Either[PlainPojoObject, String]](s"""{"left":${serialize(obj)}}""") should be (Left(obj))
+    val typeRef = new TypeReference[Either[PlainPojoObject, String]] {}
+    deserialize(s"""{"l":${serialize(obj)}}""", typeRef) should be (Left(obj))
+    deserialize(s"""{"left":${serialize(obj)}}""", typeRef) should be (Left(obj))
   }
 
   it should "propagate type information for Right" in {
-    deserializeWithManifest[BaseHolder]("""{"base":{"r":{"$type":"impl"}}}""") should be(BaseHolder(Right(Impl())))
-    deserializeWithManifest[BaseHolder]("""{"base":{"right":{"$type":"impl"}}}""") should be(BaseHolder(Right(Impl())))
+    val typeRef = new TypeReference[BaseHolder] {}
+    deserialize("""{"base":{"r":{"$type":"impl"}}}""", typeRef) should be(BaseHolder(Right(Impl())))
+    deserialize("""{"base":{"right":{"$type":"impl"}}}""", typeRef) should be(BaseHolder(Right(Impl())))
   }
 
   it should "propagate type information for Left" in {
-    deserializeWithManifest[BaseHolder]("""{"base":{"l":{"$type":"impl"}}}""") should be(BaseHolder(Left(Impl())))
-    deserializeWithManifest[BaseHolder]("""{"base":{"left":{"$type":"impl"}}}""") should be(BaseHolder(Left(Impl())))
+    val typeRef = new TypeReference[BaseHolder] {}
+    deserialize("""{"base":{"l":{"$type":"impl"}}}""", typeRef) should be(BaseHolder(Left(Impl())))
+    deserialize("""{"base":{"left":{"$type":"impl"}}}""", typeRef) should be(BaseHolder(Left(Impl())))
   }
 
   it should "deserialize a polymorphic null as null" in {
-    deserializeWithManifest[BaseHolder]("""{"base":null}""") should be(BaseHolder(null))
+    val typeRef = new TypeReference[BaseHolder] {}
+    deserialize("""{"base":null}""", typeRef) should be(BaseHolder(null))
   }
 
   it should "deserialize a seq wrapped Either" in {
-    deserializeWithManifest[Seq[Either[String, String]]]("""[{"l":"left"}]""") shouldBe Seq(Left("left"))
-    deserializeWithManifest[Seq[Either[String, String]]]("""[{"left":"left"}]""") shouldBe Seq(Left("left"))
+    val typeRef = new TypeReference[Seq[Either[String, String]]] {}
+    deserialize("""[{"l":"left"}]""", typeRef) shouldBe Seq(Left("left"))
+    deserialize("""[{"left":"left"}]""", typeRef) shouldBe Seq(Left("left"))
   }
 
   it should "deserialize class with a field with Either" in {
-    deserializeWithManifest[EitherField]("""{"either":{"r":{"a":"1","b":null,"c":1}}}""") shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
-    deserializeWithManifest[EitherField]("""{"either":{"right":{"a":"1","b":null,"c":1}}}""") shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
+    val typeRef = new TypeReference[EitherField] {}
+    deserialize("""{"either":{"r":{"a":"1","b":null,"c":1}}}""", typeRef) shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
+    deserialize("""{"either":{"right":{"a":"1","b":null,"c":1}}}""", typeRef) shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
   }
 }
 
