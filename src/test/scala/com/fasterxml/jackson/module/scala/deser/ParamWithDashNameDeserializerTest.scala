@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.junit.runner.RunWith
@@ -38,12 +39,13 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
 
   it should "support param names with dashes" in {
     // check deserialization
-    val v1 = deserializeWithManifest[OptionLongWithDash]("""{"value-long":251}""")
+    val typeRef = new TypeReference[OptionLongWithDash] {}
+    val v1 = deserialize("""{"value-long":251}""", typeRef)
     v1 shouldBe OptionLongWithDash(Some(251L))
     v1.`value-long`.get shouldBe 251L
 
     // serialize from case class then deserialize and then apply the method that will fail
-    val v2 = deserializeWithManifest[OptionLongWithDash](serialize(OptionLongWithDash(Some(252))))
+    val v2 = deserialize(serialize(OptionLongWithDash(Some(252))), typeRef)
     v2 shouldBe OptionLongWithDash(Some(252L))
     v2.`value-long`.get shouldBe 252L
     //TODO last assert fails due to unboxing issue
@@ -52,12 +54,13 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
 
   it should "support param names with dashes (annotated case)" in {
     // check deserialization
-    val v1 = deserializeWithManifest[AnnotatedOptionLongWithDash]("""{"value-long":251}""")
+    val typeRef = new TypeReference[AnnotatedOptionLongWithDash] {}
+    val v1 = deserialize("""{"value-long":251}""", typeRef)
     v1 shouldBe AnnotatedOptionLongWithDash(Some(251L))
     v1.`value-long`.get shouldBe 251L
 
     // serialize from case class then deserialize and then apply the method that will fail
-    val v2 = deserializeWithManifest[AnnotatedOptionLongWithDash](serialize(AnnotatedOptionLongWithDash(Some(252))))
+    val v2 = deserialize(serialize(AnnotatedOptionLongWithDash(Some(252))), typeRef)
     v2 shouldBe AnnotatedOptionLongWithDash(Some(252L))
     v2.`value-long`.get shouldBe 252L
     //TODO last assert fails due to unboxing issue
@@ -66,12 +69,13 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
 
   it should "support renaming param names to names with dashes" in {
     // check deserialization
-    val v1 = deserializeWithManifest[AnnotatedOptionLongWithDashButChangeToCamelCase]("""{"value-long":351}""")
+    val typeRef = new TypeReference[AnnotatedOptionLongWithDashButChangeToCamelCase] {}
+    val v1 = deserialize("""{"value-long":351}""", typeRef)
     v1 shouldBe AnnotatedOptionLongWithDashButChangeToCamelCase(Some(351L))
     v1.valueLong.get shouldBe 351L
 
     // serialize from case class then deserialize and then apply the method that will fail
-    val v2 = deserializeWithManifest[AnnotatedOptionLongWithDashButChangeToCamelCase](serialize(AnnotatedOptionLongWithDashButChangeToCamelCase(Some(352))))
+    val v2 = deserialize(serialize(AnnotatedOptionLongWithDashButChangeToCamelCase(Some(352))), typeRef)
     v2 shouldBe AnnotatedOptionLongWithDashButChangeToCamelCase(Some(352L))
     v2.valueLong.get shouldBe 352L
     useOptionLong(v2.valueLong) shouldBe 704L
