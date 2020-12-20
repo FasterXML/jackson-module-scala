@@ -17,8 +17,8 @@ class OptionWithJodaTimeDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a case class with Option with JodaModule" in {
-    newMapper.registerModule(new JodaModule)
-    deserialize(stringValue, classOf[OptionalInt]) should be (OptionalInt(Some(123)))
+    val mapper = newMapper.registerModule(new JodaModule)
+    mapper.readValue(stringValue, classOf[OptionalInt]) should be (OptionalInt(Some(123)))
   }
 
   val stringValue = """{"x":123}"""
