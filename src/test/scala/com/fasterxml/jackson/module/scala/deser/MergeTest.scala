@@ -27,17 +27,17 @@ class MergeTest extends DeserializerTest {
   behavior of "The DefaultScalaModule when reading for updating"
 
   it should "merge both lists" in {
-    val typeReference = new TypeReference[ClassWithLists] {}
-    val initial = deserialize(classJson(firstListJson), typeReference)
-    val result = updateValue(newMergeableScalaMapper, initial, typeReference, classJson(secondListJson))
+    val clazz = classOf[ClassWithLists]
+    val initial = deserialize(classJson(firstListJson), clazz)
+    val result = updateValue(newMergeableScalaMapper, initial, clazz, classJson(secondListJson))
 
     result shouldBe ClassWithLists(mergedList, mergedList)
   }
 
   it should "merge only the annotated list" in {
-    val typeReference = new TypeReference[ClassWithLists] {}
-    val initial = deserialize(classJson(firstListJson), typeReference)
-    val result = updateValue(newScalaMapper, initial, typeReference, classJson(secondListJson))
+    val clazz = classOf[ClassWithLists]
+    val initial = deserialize(classJson(firstListJson), clazz)
+    val result = updateValue(newScalaMapper, initial, clazz, classJson(secondListJson))
 
     result shouldBe ClassWithLists(secondList, mergedList)
   }
@@ -112,8 +112,18 @@ class MergeTest extends DeserializerTest {
     objectReaderFor(mapper, valueToUpdate, typeReference).readValue(src)
   }
 
+  private def updateValue[T](mapper: ObjectMapper, valueToUpdate: T,
+                             clazz: Class[T], src: String): T = {
+    objectReaderFor(mapper, valueToUpdate, clazz).readValue(src)
+  }
+
   private def objectReaderFor[T](mapper: ObjectMapper, valueToUpdate: T,
                                  typeReference: TypeReference[T]): ObjectReader = {
     mapper.readerForUpdating(valueToUpdate).forType(typeReference)
+  }
+
+  private def objectReaderFor[T](mapper: ObjectMapper, valueToUpdate: T,
+                                 clazz: Class[T]): ObjectReader = {
+    mapper.readerForUpdating(valueToUpdate).forType(clazz)
   }
 }
