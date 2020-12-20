@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.deser.EitherJsonTest.{BaseHolder, EitherField, Impl, PlainPojoObject}
 
@@ -27,26 +28,26 @@ class VavrDeserializerTest extends DeserializerTest with EitherJsonTestSupport {
   }
 
   it should "be able to deserialize Right with complex objects" in {
-    deserializeWithManifest[Either[String, PlainPojoObject]](s"""["right", ${serialize(obj)}]""") should be (Right(obj))
+    deserialize(s"""["right", ${serialize(obj)}]""", new TypeReference[Either[String, PlainPojoObject]]{}) should be (Right(obj))
   }
 
   it should "be able to deserialize Left with complex objects" in {
-    deserializeWithManifest[Either[PlainPojoObject, String]](s"""["left", ${serialize(obj)}]""") should be (Left(obj))
+    deserialize(s"""["left", ${serialize(obj)}]""", new TypeReference[Either[PlainPojoObject, String]]{}) should be (Left(obj))
   }
 
   it should "propagate type information for Right" in {
-    deserializeWithManifest[BaseHolder]("""{"base":{"r":{"$type":"impl"}}}""") should be(BaseHolder(Right(Impl())))
+    deserialize("""{"base":{"r":{"$type":"impl"}}}""", new TypeReference[BaseHolder]{}) should be(BaseHolder(Right(Impl())))
   }
 
   it should "propagate type information for Left" in {
-    deserializeWithManifest[BaseHolder]("""{"base":{"l":{"$type":"impl"}}}""") should be(BaseHolder(Left(Impl())))
+    deserialize("""{"base":{"l":{"$type":"impl"}}}""", new TypeReference[BaseHolder]{}) should be(BaseHolder(Left(Impl())))
   }
 
   it should "deserialize a seq wrapped Either" in {
-    deserializeWithManifest[Seq[Either[String, String]]]("""[["left", "left"]]""") shouldBe Seq(Left("left"))
+    deserialize("""[["left", "left"]]""", new TypeReference[Seq[Either[String, String]]]{}) shouldBe Seq(Left("left"))
   }
 
   it should "deserialize class with a field with Either" in {
-    deserializeWithManifest[EitherField]("""{"either":["right", {"a":"1","b":null,"c":1}]}""") shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
+    deserialize("""{"either":["right", {"a":"1","b":null,"c":1}]}""", new TypeReference[EitherField]{}) shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
   }
 }

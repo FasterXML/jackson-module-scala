@@ -25,12 +25,12 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
 
   "JacksonModuleScala" should "support standard param names" in {
     // check deserialization
-    val v1 = deserializeWithManifest[AnnotatedOptionLong]("""{"valueLong":151}""")
+    val v1 = deserialize("""{"valueLong":151}""", classOf[AnnotatedOptionLong])
     v1 shouldBe AnnotatedOptionLong(Some(151L))
     v1.valueLong.get shouldBe 151L
 
     // serialize from case class then deserialize and then apply the method that will fail
-    val v2 = deserializeWithManifest[AnnotatedOptionLong](serialize(AnnotatedOptionLong(Some(152))))
+    val v2 = deserialize(serialize(AnnotatedOptionLong(Some(152))), classOf[AnnotatedOptionLong])
     v2 shouldBe AnnotatedOptionLong(Some(152L))
     v2.valueLong.get shouldBe 152L
     useOptionLong(v2.valueLong) shouldBe 304L
