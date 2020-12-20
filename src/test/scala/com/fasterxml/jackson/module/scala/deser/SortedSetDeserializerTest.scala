@@ -49,9 +49,8 @@ class SortedSetDeserializerTest extends DeserializationFixture {
     result shouldBe setScala
   }
 
-  //TODO fix
-  it should "deserialize a list of Ints into a SortedSet" ignore { f =>
-    val result = f.readValue(intSetJson, new TypeReference[SortedSet[Int]]{})
+  it should "deserialize a list of Ints into a SortedSet" in { f =>
+    val result = f.readValue(intSetJson, new TypeReference[SortedSet[Integer]]{})
     result shouldBe intSetScala
   }
 
