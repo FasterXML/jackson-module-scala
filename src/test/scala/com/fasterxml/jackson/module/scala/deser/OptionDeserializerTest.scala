@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.{JsonSetter, JsonSubTypes, JsonTypeInfo, JsonTypeName, Nulls}
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -79,13 +80,13 @@ class OptionDeserializerTest extends DeserializerTest {
   it should "deserialize defaulted parameters correctly (without defaults)" in {
     val json = newMapper.writeValueAsString(Defaulted(id = 1))
     json shouldBe """{"id":1,"name":""}"""
-    val d = newMapper.readValue(json, classOf[Defaulted])
+    val d = deserialize(json, classOf[Defaulted])
     d.name should not be null
   }
 
   it should "deserialize a type param wrapped option" in {
     val json: String = """{"t": {"bar": "baz"}}"""
-    val result = deserializeWithManifest[Wrapper[Option[Foo]]](json)
+    val result = deserialize(json, new TypeReference[Wrapper[Option[Foo]]] {})
     result.t.get.isInstanceOf[Foo] should be(true)
   }
 

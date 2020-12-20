@@ -11,6 +11,9 @@ trait DeserializerTest extends JacksonTest {
 
   def serialize(o: AnyRef): String = deserializerMapper.writeValueAsString(o)
 
+  def deserialize[T](value: String, typeReference: TypeReference[T]): T =
+    deserializerMapper.readValue(value, typeReference)
+
   def deserialize[T](value: String, clazz: Class[T]): T =
     deserializerMapper.readValue(value, clazz)
 
