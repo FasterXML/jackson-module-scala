@@ -8,11 +8,11 @@ import org.scalatest.matchers.should.Matchers
 
 class BaseFixture extends FixtureAnyFlatSpec with Matchers {
 
-  type FixtureParam = ObjectMapper with ScalaObjectMapper
+  type FixtureParam = ObjectMapper
 
   def withFixture(test: OneArgTest): Outcome = {
-    val builder = JsonMapper.builder().addModule(new DefaultScalaModule)
-    val mapper = builder.build() :: ScalaObjectMapper
+    val builder = JsonMapper.builder().addModule(DefaultScalaModule)
+    val mapper = builder.build()
     test(mapper)
   }
 }

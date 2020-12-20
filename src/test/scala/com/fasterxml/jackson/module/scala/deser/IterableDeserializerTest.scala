@@ -1,5 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.core.`type`.TypeReference
+import org.junit.runner.RunWith
+import org.scalatestplus.junit.JUnitRunner
+
+@RunWith(classOf[JUnitRunner])
 class IterableDeserializerTest extends DeserializationFixture {
 
   // Testing values
@@ -9,7 +14,7 @@ class IterableDeserializerTest extends DeserializationFixture {
   behavior of "ObjectMapper"
 
   it should "deserialize a list to an Iterable" in { f =>
-    val result = f.readValue[Iterable[Int]](listJson)
+    val result = f.readValue(listJson, new TypeReference[Iterable[Int]] {})
     result should equal (listScala)
   }
 }
