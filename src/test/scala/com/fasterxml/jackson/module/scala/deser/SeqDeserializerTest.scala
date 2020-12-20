@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import java.util.UUID
-
 import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
@@ -68,7 +68,7 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a mutable LinearSeq" in {
-    val result = deserializeWithManifest[mutable.LinearSeq[Int]](listJson)
+    val result = deserialize(listJson, new TypeReference[mutable.LinearSeq[Int]] {})
     result should equal (listScala)
   }
 
