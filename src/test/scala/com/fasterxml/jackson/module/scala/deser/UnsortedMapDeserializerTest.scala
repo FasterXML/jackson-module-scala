@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import java.util.UUID
-
 import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
@@ -21,58 +20,69 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
   lazy val module: JacksonModule = new UnsortedMapDeserializerModule {}
 
   "An ObjectMapper with the UnsortedMapDeserializerModule" should "deserialize an object into a Map" in {
-    val result = deserializeWithManifest[Map[String, String]](mapJson)
+    val typeRef = new TypeReference[Map[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an immutable Map" in {
-    val result = deserializeWithManifest[immutable.Map[String, String]](mapJson)
+    val typeRef = new TypeReference[immutable.Map[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable Map" in {
-    val result = deserializeWithManifest[mutable.Map[String, String]](mapJson)
+    val typeRef = new TypeReference[mutable.Map[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a GenMap" in {
-    val result = deserializeWithManifest[GenMap[String, String]](mapJson)
+    val typeRef = new TypeReference[GenMap[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an immutable HashMap" in {
-    val result = deserializeWithManifest[immutable.HashMap[String, String]](mapJson)
+    val typeRef = new TypeReference[immutable.HashMap[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable HashMap" in {
-    val result = deserializeWithManifest[mutable.HashMap[String, String]](mapJson)
+    val typeRef = new TypeReference[mutable.HashMap[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into an immutable ListMap" in {
-    val result = deserializeWithManifest[immutable.ListMap[String, String]](mapJson)
+    val typeRef = new TypeReference[immutable.ListMap[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable ListMap" in {
-    val result = deserializeWithManifest[mutable.ListMap[String, String]](mapJson)
+    val typeRef = new TypeReference[mutable.ListMap[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a mutable LinkedHashMap" in {
-    val result = deserializeWithManifest[mutable.LinkedHashMap[String, String]](mapJson)
+    val typeRef = new TypeReference[mutable.LinkedHashMap[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object into a concurrent TrieMap" in {
     import overrides._
-    val result = deserializeWithManifest[TrieMap[String, String]](mapJson)
+    val typeRef = new TypeReference[TrieMap[String, String]] {}
+    val result = deserialize(mapJson, typeRef)
     result should equal (mapScala)
   }
 
   it should "deserialize an object with variable value types into a variable UnsortedMap" in {
-    val result = deserializeWithManifest[Map[String, Any]](variantMapJson)
+    val typeRef = new TypeReference[Map[String, Any]] {}
+    val result = deserialize(variantMapJson, typeRef)
     result should equal (variantMapScala)
   }
 
@@ -82,7 +92,8 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
   }
 
   it should "properly deserialize nullary values" in {
-    val result = deserializeWithManifest[Map[String, JsonNode]](nullValueMapJson)
+    val typeRef = new TypeReference[Map[String, JsonNode]] {}
+    val result = deserialize(nullValueMapJson, typeRef)
     result should equal (nullValueMapScala)
   }
 
