@@ -36,12 +36,12 @@ object ScalaAnnotationIntrospectorTest {
 class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   import ScalaAnnotationIntrospectorTest._
 
-  type FixtureParam = ObjectMapper with ScalaObjectMapper
+  type FixtureParam = ObjectMapper
 
   override def withFixture(test: OneArgTest): Outcome = {
     val builder = new JsonMapper.Builder(new JsonFactory).addModule(DefaultScalaModule)
     val mapper = builder.build()
-    withFixture(test.toNoArgTest(mapper :: ScalaObjectMapper))
+    withFixture(test.toNoArgTest(mapper))
   }
 
   behavior of "ScalaAnnotationIntrospector"

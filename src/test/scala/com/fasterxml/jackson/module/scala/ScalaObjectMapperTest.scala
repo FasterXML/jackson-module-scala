@@ -287,4 +287,8 @@ class ScalaObjectMapperTest extends JacksonTest {
       }
     }
   }
+
+  private def newMapperWithScalaObjectMapper: ObjectMapper with ScalaObjectMapper = {
+    newBuilder.build() :: ScalaObjectMapper
+  }
 }
