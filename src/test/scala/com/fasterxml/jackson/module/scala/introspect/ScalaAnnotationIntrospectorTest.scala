@@ -34,10 +34,10 @@ object ScalaAnnotationIntrospectorTest {
 class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   import ScalaAnnotationIntrospectorTest._
 
-  type FixtureParam = ObjectMapper with ScalaObjectMapper
+  type FixtureParam = ObjectMapper
 
   override def withFixture(test: OneArgTest): Outcome = {
-    val mapper = new ObjectMapper with ScalaObjectMapper
+    val mapper = new ObjectMapper
     mapper.registerModule(DefaultScalaModule)
     withFixture(test.toNoArgTest(mapper))
   }
