@@ -2,8 +2,8 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.JsonMerge
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
+import com.fasterxml.jackson.databind.{ObjectMapper, ObjectReader}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
@@ -20,13 +20,13 @@ class MergeTest extends DeserializerTest {
 
   val module: DefaultScalaModule.type = DefaultScalaModule
 
-  def newScalaMapper: ObjectMapper with ScalaObjectMapper = {
-    val mapper = new ObjectMapper with ScalaObjectMapper
+  def newScalaMapper: ObjectMapper = {
+    val mapper = new ObjectMapper
     mapper.registerModule(module)
     mapper
   }
 
-  def newMergeableScalaMapper: ObjectMapper with ScalaObjectMapper = {
+  def newMergeableScalaMapper: ObjectMapper = {
     val mapper = newScalaMapper
     mapper.setDefaultMergeable(true)
     mapper
@@ -35,57 +35,65 @@ class MergeTest extends DeserializerTest {
   behavior of "The DefaultScalaModule when reading for updating"
 
   it should "merge both lists" in {
-    val initial = deserialize(classJson(firstListJson), classOf[ClassWithLists])
-    val result = newMergeableScalaMapper.updateValue(initial, classJson(secondListJson))
+    val typeReference = new TypeReference[ClassWithLists] {}
+    val initial = deserialize(classJson(firstListJson), typeReference)
+    val result = updateValue(newMergeableScalaMapper, initial, typeReference, classJson(secondListJson))
 
     result shouldBe ClassWithLists(mergedList, mergedList)
   }
 
   it should "merge only the annotated list" in {
-    val initial = deserialize(classJson(firstListJson), classOf[ClassWithLists])
-    val result = newScalaMapper.updateValue(initial, classJson(secondListJson))
+    val typeReference = new TypeReference[ClassWithLists] {}
+    val initial = deserialize(classJson(firstListJson), typeReference)
+    val result = updateValue(newScalaMapper, initial, typeReference, classJson(secondListJson))
 
     result shouldBe ClassWithLists(secondList, mergedList)
   }
 
   it should "merge both string maps" in {
-    val initial = deserialize(classJson(firstStringMapJson), classOf[ClassWithMaps[String]])
-    val result = newMergeableScalaMapper.updateValue(initial, classJson(secondStringMapJson))
+    val typeReference = new TypeReference[ClassWithMaps[String]] {}
+    val initial = deserialize(classJson(firstStringMapJson), typeReference)
+    val result = updateValue(newMergeableScalaMapper, initial, typeReference, classJson(secondStringMapJson))
 
     result shouldBe ClassWithMaps(mergedStringMap, mergedStringMap)
   }
 
   it should "merge only the annotated string map" in {
-    val initial = deserialize(classJson(firstStringMapJson), classOf[ClassWithMaps[String]])
-    val result = newScalaMapper.updateValue(initial, classJson(secondStringMapJson))
+    val typeReference = new TypeReference[ClassWithMaps[String]] {}
+    val initial = deserialize(classJson(firstStringMapJson), typeReference)
+    val result = updateValue(newScalaMapper, initial, typeReference, classJson(secondStringMapJson))
 
     result shouldBe ClassWithMaps(secondStringMap, mergedStringMap)
   }
 
   it should "merge both pair maps" in {
-    val initial = deserialize(classJson(firstPairMapJson), new TypeReference[ClassWithMaps[Pair]]{})
-    val result = newMergeableScalaMapper.updateValue(initial, classJson(secondPairMapJson))
+    val typeReference = new TypeReference[ClassWithMaps[Pair]] {}
+    val initial = deserialize(classJson(firstPairMapJson), typeReference)
+    val result = updateValue(newMergeableScalaMapper, initial, typeReference, classJson(secondPairMapJson))
 
     result shouldBe ClassWithMaps(mergedPairMap, mergedPairMap)
   }
 
   it should "merge only the annotated pair map" in {
-    val initial = deserialize(classJson(firstPairMapJson), new TypeReference[ClassWithMaps[Pair]]{})
-    val result = newScalaMapper.updateValue(initial, classJson(secondPairMapJson))
+    val typeReference = new TypeReference[ClassWithMaps[Pair]]{}
+    val initial = deserialize(classJson(firstPairMapJson), typeReference)
+    val result = updateValue(newScalaMapper, initial, typeReference, classJson(secondPairMapJson))
 
     result shouldBe ClassWithMaps(secondPairMap, mergedPairMap)
   }
 
   it should "merge both mutable maps" in {
-    val initial = deserialize(classJson(firstStringMapJson), classOf[ClassWithMutableMaps[String]])
-    val result = newMergeableScalaMapper.updateValue(initial, classJson(secondStringMapJson))
+    val typeReference = new TypeReference[ClassWithMutableMaps[String]]{}
+    val initial = deserialize(classJson(firstStringMapJson), typeReference)
+    val result = updateValue(newMergeableScalaMapper, initial, typeReference, classJson(secondStringMapJson))
 
     result shouldBe ClassWithMutableMaps(mutable.Map() ++ mergedStringMap, mutable.Map() ++ mergedStringMap)
   }
 
   it should "merge only the annotated mutable map" in {
-    val initial = deserialize(classJson(firstStringMapJson), classOf[ClassWithMutableMaps[String]])
-    val result = newScalaMapper.updateValue(initial, classJson(secondStringMapJson))
+    val typeReference = new TypeReference[ClassWithMutableMaps[String]]{}
+    val initial = deserialize(classJson(firstStringMapJson), typeReference)
+    val result = updateValue(newScalaMapper, initial, typeReference, classJson(secondStringMapJson))
 
     result shouldBe ClassWithMutableMaps(mutable.Map() ++ secondStringMap, mutable.Map() ++ mergedStringMap)
   }
@@ -106,4 +114,14 @@ class MergeTest extends DeserializerTest {
   val secondPairMapJson = """{"two":{"first":"22"},"three":{"second":"33"}}"""
   val secondPairMap = Map("two" -> Pair("22", null), "three" -> Pair(null, "33"))
   val mergedPairMap = Map("one" -> Pair("1", null), "two" -> Pair("22", "2"), "three" -> Pair("3", "33"))
+
+  private def updateValue[T](mapper: ObjectMapper, valueToUpdate: T,
+                             typeReference: TypeReference[T], src: String): T = {
+    objectReaderFor(mapper, valueToUpdate, typeReference).readValue(src)
+  }
+
+  private def objectReaderFor[T](mapper: ObjectMapper, valueToUpdate: T,
+                                 typeReference: TypeReference[T]): ObjectReader = {
+    mapper.readerForUpdating(valueToUpdate).forType(typeReference)
+  }
 }
