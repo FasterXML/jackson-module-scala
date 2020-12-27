@@ -13,6 +13,7 @@ import scala.collection._
 
 case class JavaMapWrapper(m: java.util.HashMap[String, String])
 case class MapWrapper(m: Map[String, String])
+object StringMapTypeReference extends TypeReference[Map[String, String]]
 
 @RunWith(classOf[JUnitRunner])
 class UnsortedMapDeserializerTest extends DeserializerTest {
@@ -22,6 +23,11 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
   "An ObjectMapper with the UnsortedMapDeserializerModule" should "deserialize an object into a Map" in {
     val typeRef = new TypeReference[Map[String, String]] {}
     val result = deserialize(mapJson, typeRef)
+    result should equal (mapScala)
+  }
+
+  it should "deserialize an object into a Map (TypeReference not declared as anonymous class)" in {
+    val result = deserialize(mapJson, StringMapTypeReference)
     result should equal (mapScala)
   }
 
