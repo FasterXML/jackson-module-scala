@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
 @JsonSubTypes(Array(
@@ -17,7 +15,6 @@ case class TupleValueLong(long: Long) extends TupleValueBase
 case class TupleValueString(string: String) extends TupleValueBase
 case class TupleContainer(tuple: (TupleValueBase,TupleValueBase))
 
-@RunWith(classOf[JUnitRunner])
 class TupleDeserializerTest extends DeserializerTest {
 
   lazy val module: JacksonModule = DefaultScalaModule

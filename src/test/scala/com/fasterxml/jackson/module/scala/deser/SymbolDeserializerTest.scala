@@ -1,10 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.JacksonModule
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class SymbolDeserializerTest extends DeserializerTest {
   lazy val module = new JacksonModule with SymbolDeserializerModule
 

@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule, RequiredPropertiesSchemaModule}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.annotation.meta.{field, getter}
 import scala.collection.JavaConverters._
@@ -59,7 +57,6 @@ trait M2
 case class F2(label: String) extends M2
 case class C2(m: Option[M2])
 
-@RunWith(classOf[JUnitRunner])
 class OptionSerializerTest extends SerializerTest {
   import OptionSerializerTest._
 

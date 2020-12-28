@@ -3,9 +3,7 @@ package com.fasterxml.jackson.module.scala.ser
 import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonTypeInfo}
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.junit.runner.RunWith
 import org.scalatest.matchers.Matcher
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection.{Iterator, immutable, mutable}
 
@@ -32,7 +30,6 @@ object IterableSerializerTest {
 
 }
 
-@RunWith(classOf[JUnitRunner])
 class IterableSerializerTest extends SerializerTest {
 
   import IterableSerializerTest._

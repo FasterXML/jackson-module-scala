@@ -5,8 +5,6 @@ package deser
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 object CaseClassDeserializerTest
 {
@@ -41,7 +39,6 @@ object CaseClassDeserializerTest
   case class ArrayHolder(value: Array[Byte])
 }
 
-@RunWith(classOf[JUnitRunner])
 class CaseClassDeserializerTest extends DeserializerTest {
   import com.fasterxml.jackson.module.scala.deser.CaseClassDeserializerTest._
 

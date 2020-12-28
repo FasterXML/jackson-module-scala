@@ -6,8 +6,6 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.{JsonSerializer, SerializationFeature, SerializerProvider}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.annotation.meta.getter
 import scala.beans.BeanProperty
@@ -52,7 +50,6 @@ case class MapValueDouble(value: Double) extends MapValueBase
 case class MapValueString(value: String) extends MapValueBase
 
 
-@RunWith(classOf[JUnitRunner])
 class MapSerializerTest extends SerializerTest {
 
   lazy val module: JacksonModule = DefaultScalaModule

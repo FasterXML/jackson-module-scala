@@ -1,15 +1,12 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 case object CaseObjectExample {
   val field1: String = "test"
   val field2: Int = 42
 }
 
-@RunWith(classOf[JUnitRunner])
 class CaseObjectSerializerTest extends SerializerTest {
 
   def module = DefaultScalaModule

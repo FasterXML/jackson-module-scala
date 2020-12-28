@@ -3,10 +3,7 @@ package com.fasterxml.jackson.module.scala.ser
 import java.util.UUID
 
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class OverrideValSerializerTest extends SerializerTest {
   lazy val module = DefaultScalaModule
 

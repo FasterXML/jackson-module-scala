@@ -4,8 +4,6 @@ package ser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
 
@@ -31,7 +29,6 @@ object EnumerationSerializerTest {
   )
 }
 
-@RunWith(classOf[JUnitRunner])
 class EnumerationSerializerTest extends SerializerTest {
 
   import EnumerationSerializerTest._

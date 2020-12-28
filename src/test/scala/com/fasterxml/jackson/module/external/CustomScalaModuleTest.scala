@@ -1,10 +1,7 @@
 package com.fasterxml.jackson.module.external
 
 import com.fasterxml.jackson.module.scala.BaseSpec
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class CustomScalaModuleTest extends BaseSpec {
 
     "A custom scala module" should "be buildable outside of the module package" in {

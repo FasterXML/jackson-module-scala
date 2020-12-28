@@ -33,9 +33,9 @@ val jacksonVersion = "2.12.1-SNAPSHOT"
 val jacksonJsonSchemaVersion = "2.12.0"
 
 libraryDependencies ++= Seq(
-    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+  "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+  "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
 ) ++ {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, scalaMajor)) if scalaMajor <= 11 =>
@@ -44,14 +44,12 @@ libraryDependencies ++= Seq(
   }
 } ++ Seq(
   // test dependencies
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
-    "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
-    "io.swagger" % "swagger-core" % "1.6.2" % Test,
-    "org.scalatest" %% "scalatest" % "3.2.3" % Test,
-    "org.scalatestplus" %% "junit-4-13" % "3.2.3.0" % Test,
-    "junit" % "junit" % "4.13.1" % Test
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
+  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
+  "io.swagger" % "swagger-core" % "1.6.2" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.3" % Test
 )
 
 // build.properties

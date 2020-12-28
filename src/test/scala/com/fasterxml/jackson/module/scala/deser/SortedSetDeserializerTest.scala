@@ -5,8 +5,6 @@ import java.util.UUID
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection._
 
@@ -18,7 +16,6 @@ object SortedSetDeserializerTest {
   }
 }
 
-@RunWith(classOf[JUnitRunner])
 class SortedSetDeserializerTest extends DeserializationFixture {
   import SortedSetDeserializerTest._
 

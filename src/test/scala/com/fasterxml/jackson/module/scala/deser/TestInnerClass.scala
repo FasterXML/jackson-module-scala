@@ -1,8 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 object Dog {
   def apply(n: String, thinking: Boolean): Dog = {
@@ -26,7 +24,6 @@ class Dog {
 }
 
 // Cribbed from the same named test in jackson-databind
-@RunWith(classOf[JUnitRunner])
 class TestInnerClass extends DeserializerTest {
 
   def module: JacksonModule = DefaultScalaModule

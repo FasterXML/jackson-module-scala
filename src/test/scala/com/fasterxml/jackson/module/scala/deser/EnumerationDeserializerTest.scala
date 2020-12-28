@@ -3,8 +3,6 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration, Weekday}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
 
@@ -30,7 +28,6 @@ object EnumerationDeserializerTest  {
   class HolderImpl extends BeanPropertyEnumMapHolder
 }
 
-@RunWith(classOf[JUnitRunner])
 class EnumerationDeserializerTest extends DeserializerTest {
   import com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerTest._
 

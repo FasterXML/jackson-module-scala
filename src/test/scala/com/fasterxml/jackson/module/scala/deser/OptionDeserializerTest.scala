@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.annotation.meta.field
 
@@ -37,7 +35,6 @@ object OptionDeserializerTest {
   case class Wrapper[T](t: T)
 }
 
-@RunWith(classOf[JUnitRunner])
 class OptionDeserializerTest extends DeserializerTest {
   import OptionDeserializerTest._
   lazy val module: DefaultScalaModule.type = DefaultScalaModule

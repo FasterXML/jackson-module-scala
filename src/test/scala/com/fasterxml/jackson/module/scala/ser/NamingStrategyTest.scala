@@ -5,11 +5,9 @@ package ser
 import java.io.ByteArrayOutputStream
 
 import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
-import org.junit.runner.RunWith
 import org.scalatest.flatspec.FixtureAnyFlatSpec
 import org.scalatest.Outcome
 import org.scalatest.matchers.should.Matchers
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
 
@@ -17,7 +15,6 @@ class PojoWrittenInScala {
   @BeanProperty var fooBar: String = ""
 }
 
-@RunWith(classOf[JUnitRunner])
 class NamingStrategyTest extends FixtureAnyFlatSpec with Matchers {
 
   type FixtureParam = ObjectMapper

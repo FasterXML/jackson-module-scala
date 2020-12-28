@@ -1,11 +1,8 @@
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.ser.SerializerTest
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 case class UnpackagedCaseClass(intValue: Int, stringValue: String)
 
-@RunWith(classOf[JUnitRunner])
 class UnpackagedTest extends SerializerTest {
 
   def module: DefaultScalaModule.type = DefaultScalaModule

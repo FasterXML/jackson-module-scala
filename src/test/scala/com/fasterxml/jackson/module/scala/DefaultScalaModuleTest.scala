@@ -1,9 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class DefaultScalaModuleTest extends BaseSpec {
 
   "DefaultScalaModule" should "have a sensible version" in {

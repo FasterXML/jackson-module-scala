@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
 
@@ -67,7 +65,6 @@ case class LazyClass(data: String) {
   lazy val lazyIgnoredString: String = data
 }
 
-@RunWith(classOf[JUnitRunner])
 class CaseClassSerializerTest extends SerializerTest {
 
   case class NestedClass(field: String)

@@ -2,12 +2,9 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.util.Success
 
-@RunWith(classOf[JUnitRunner])
 class TrySerializerTest extends SerializerTest {
 
   val module: JacksonModule = DefaultScalaModule

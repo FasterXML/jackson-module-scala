@@ -6,8 +6,6 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection._
 
@@ -15,7 +13,6 @@ case class JavaMapWrapper(m: java.util.HashMap[String, String])
 case class MapWrapper(m: Map[String, String])
 object StringMapTypeReference extends TypeReference[Map[String, String]]
 
-@RunWith(classOf[JUnitRunner])
 class UnsortedMapDeserializerTest extends DeserializerTest {
 
   lazy val module: JacksonModule = new UnsortedMapDeserializerModule {}
