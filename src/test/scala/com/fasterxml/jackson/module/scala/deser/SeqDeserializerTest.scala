@@ -6,8 +6,6 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection.{immutable, mutable}
 import scala.compat.java8.FunctionConverters
@@ -15,7 +13,6 @@ import scala.compat.java8.FunctionConverters
 case class JavaListWrapper(s: java.util.ArrayList[String])
 case class SeqWrapper(s: Seq[String])
 
-@RunWith(classOf[JUnitRunner])
 class SeqDeserializerTest extends DeserializerTest {
 
   lazy val module = new JacksonModule with SeqDeserializerModule

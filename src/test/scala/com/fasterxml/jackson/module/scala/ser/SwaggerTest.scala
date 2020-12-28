@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 import io.swagger.models.ModelImpl
 import io.swagger.models.properties.{IntegerProperty, Property}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class SwaggerTest extends BaseSpec {
   //https://github.com/FasterXML/jackson-module-scala/issues/454
   "An ObjectMapper" should "serialize a Swagger Model" in {

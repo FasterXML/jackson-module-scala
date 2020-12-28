@@ -3,8 +3,6 @@ package com.fasterxml.jackson.module.scala.ser
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 object TransientFieldTest {
   @JsonPropertyOrder(Array("x"))
@@ -22,7 +20,6 @@ object TransientFieldTest {
   }
 }
 
-@RunWith(classOf[JUnitRunner])
 class TransientFieldTest extends SerializerTest {
   import TransientFieldTest._
 

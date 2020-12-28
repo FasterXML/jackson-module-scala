@@ -2,8 +2,6 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.json.JsonMapper
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 object TestEnum extends Enumeration {
   type TestEnum = Value
@@ -20,7 +18,6 @@ abstract class TestObject2Mixin {
   @JsonScalaEnumeration(classOf[TestEnumClass]) var field: TestEnum.Value = TestEnum.Value1
 }
 
-@RunWith(classOf[JUnitRunner])
 class EnumMixinTest extends BaseSpec {
   val baseBuilder = JsonMapper.builder().addModule(new DefaultScalaModule).addMixIn(classOf[TestObject2], classOf[TestObject2Mixin])
   val mapper = baseBuilder.build() :: ScalaObjectMapper

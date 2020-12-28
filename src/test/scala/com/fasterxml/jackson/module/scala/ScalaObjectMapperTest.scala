@@ -9,8 +9,6 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{JsonMappingException, Module}
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection.JavaConverters._
 
@@ -45,7 +43,6 @@ private class Target {
 private class Mixin(val foo: String)
 private case class GenericTestClass[T](t: T)
 
-@RunWith(classOf[JUnitRunner])
 class ScalaObjectMapperTest extends JacksonTest {
 
   def module: Module = DefaultScalaModule

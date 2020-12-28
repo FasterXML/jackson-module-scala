@@ -3,12 +3,9 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 private case class OptionalInt(x: Option[Int])
 
-@RunWith(classOf[JUnitRunner])
 class OptionWithJodaTimeDeserializerTest extends DeserializerTest {
 
   def module: DefaultScalaModule.type = DefaultScalaModule

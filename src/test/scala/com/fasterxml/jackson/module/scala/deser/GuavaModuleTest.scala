@@ -5,12 +5,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.guava.GuavaModule
 import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 import com.google.common.collect.Multimap
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 class PojoWithMultiMap(val headers: Multimap[String, String])
 
-@RunWith(classOf[JUnitRunner])
 class GuavaModuleTest extends BaseSpec {
   "Scala module" should "work with GuavaModule (Scala registered second)" in {
     val builder = JsonMapper.builder().addModules(new GuavaModule, new DefaultScalaModule)

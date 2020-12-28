@@ -2,8 +2,6 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 object CreatorTest
 {
@@ -53,7 +51,6 @@ object CreatorTest
 }
 
 
-@RunWith(classOf[JUnitRunner])
 class CreatorTest extends DeserializationFixture {
   import CreatorTest._
 

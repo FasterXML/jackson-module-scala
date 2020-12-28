@@ -9,12 +9,10 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
 import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
-import org.junit.runner.RunWith
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
@@ -32,7 +30,6 @@ object ScalaAnnotationIntrospectorTest {
   }
 }
 
-@RunWith(classOf[JUnitRunner])
 class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   import ScalaAnnotationIntrospectorTest._
 

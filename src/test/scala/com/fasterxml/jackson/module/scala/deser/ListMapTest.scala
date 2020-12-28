@@ -5,16 +5,13 @@ import java.io.StringWriter
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{DeserializationFeature, MapperFeature, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
-import org.junit.runner.RunWith
 import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.collection.immutable.{ListMap, Queue, TreeMap}
 
 // taken from https://github.com/dejanlokar1/serialization_problem/blob/master/src/test/scala/SerializationTest.scala
 // test for https://github.com/FasterXML/jackson-databind/issues/2422
 
-@RunWith(classOf[JUnitRunner])
 class ListMapTest extends BaseSpec with TableDrivenPropertyChecks {
   private val mapper = {
     val builder = JsonMapper.builder().addModule(new DefaultScalaModule)

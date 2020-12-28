@@ -3,8 +3,6 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation.{JsonSetter, JsonSubTypes, JsonTypeInfo, JsonTypeName, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 import scala.annotation.meta.field
 import scala.compat.java8.FunctionConverters
@@ -37,7 +35,6 @@ object OptionDeserializerTest {
   case class Wrapper[T](t: T)
 }
 
-@RunWith(classOf[JUnitRunner])
 class OptionDeserializerTest extends DeserializerTest {
   import OptionDeserializerTest._
   lazy val module: DefaultScalaModule.type = DefaultScalaModule

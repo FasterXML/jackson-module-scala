@@ -3,8 +3,6 @@ package com.fasterxml.jackson.module.scala
 import com.fasterxml.jackson.annotation.{JsonIgnore, JsonUnwrapped}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
 case class Address(address1: Option[String], city: Option[String], state: Option[String])
 
@@ -39,7 +37,6 @@ case class Person(name: String, @JsonIgnore location: Address, alias: Option[Str
   }
 }
 
-@RunWith(classOf[JUnitRunner])
 class UnwrappedTest extends BaseSpec {
 
   "mapper" should "handle ignored fields correctly" in {

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 
 import java.util.UUID
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.junit.runner.RunWith
-import org.scalatestplus.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class MiscTypesTest extends DeserializerTest {
 
   def module: DefaultScalaModule.type = DefaultScalaModule
