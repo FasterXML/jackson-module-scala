@@ -20,8 +20,8 @@ private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
  * This class is mostly legacy logic to be deprecated/removed in 3.0
  */
 private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
-	override def deserialize(jp:JsonParser, ctxt:DeserializationContext): Enumeration#Value = {
-		if (jp.getCurrentToken != JsonToken.START_OBJECT) {
+  override def deserialize(jp:JsonParser, ctxt:DeserializationContext): Enumeration#Value = {
+    if (jp.getCurrentToken != JsonToken.START_OBJECT) {
       ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
     } else {
       val (eclass, eclassName) = parsePair(jp)
@@ -37,9 +37,9 @@ private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer
         }
       }
     }
-	}
+  }
 
-	private def parsePair( jp:JsonParser ) = ({jp.nextToken; jp.getText}, {jp.nextToken; jp.getText})
+  private def parsePair( jp:JsonParser ) = ({jp.nextToken; jp.getText}, {jp.nextToken; jp.getText})
 }
 
 private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
@@ -59,13 +59,13 @@ private object EnumerationDeserializerResolver extends Deserializers.Base {
           config: DeserializationConfig,
           beanDesc: BeanDescription) = {
 
-		val clazz = javaType.getRawClass
-		if (ENUMERATION.isAssignableFrom(clazz)) {
-			new EnumerationDeserializer(javaType)
-		} else {
+    val clazz = javaType.getRawClass
+    if (ENUMERATION.isAssignableFrom(clazz)) {
+      new EnumerationDeserializer(javaType)
+    } else {
       None.orNull
     }
-	}
+  }
 
   override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
     ENUMERATION.isAssignableFrom(valueType)
