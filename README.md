@@ -51,11 +51,17 @@ val mapper = JsonMapper.builder()
 ```
 
 You can also mixin `ScalaObjectMapper` to get rich wrappers that automatically
-convert scala manifests directly into TypeReferences for Jackson to use:
+convert scala manifests directly into TypeReferences for Jackson to use (now depecated because manifests are not supported in Scala 3):
 ```scala
 val mapper = new ObjectMapper() with ScalaObjectMapper
 mapper.registerModule(DefaultScalaModule)
 val myMap = mapper.readValue[Map[String,Tuple2[Int,Int]]](src)
+```
+
+This is the equivalent of
+```scala
+val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+val myMap = mapper.readValue(src, new TypeReference[Map[String,Tuple2[Int,Int]]]{})
 ```
 
 Consult the [Scaladoc](http://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
