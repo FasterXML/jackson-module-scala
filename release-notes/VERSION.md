@@ -1,4 +1,4 @@
-# Version: 2.12.1 (available only as a snapshot)
+# Version: 2.12.1
 
 No functionality changes but ScalaObjectMapper has been deprecated because it relies on `Manifest`s and these are not supported in Scala3. A number of other code changes have been made to try to get the code to compile in Scala3 but there is still a lot of test code that doesn't compile.
   
