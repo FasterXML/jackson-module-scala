@@ -29,7 +29,7 @@ unmanagedSourceDirectories in Compile += {
   (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
 }
 
-val jacksonVersion = "2.12.2-SNAPSHOT"
+val jacksonVersion = "2.13.0-SNAPSHOT"
 val jacksonJsonSchemaVersion = "2.12.1"
 
 libraryDependencies ++= Seq(
