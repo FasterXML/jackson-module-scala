@@ -8,6 +8,12 @@ Scala 2.10, 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java ver
 * [[gh-449]](https://github.com/FasterXML/jackson-module-scala/issues/449) Remove jackson-module-paranamer dependency. Scala 2.10 and 2.11 releases use paranamer directly still. Scala 2.12 and 2.13 releases no longer use paranamer.
 * [[gh-455]](https://github.com/FasterXML/jackson-module-scala/issues/455) get ScalaAnnotationIntrospector to ignore non-Scala classes.
 
+# Version: 2.11.4.1
+
+## Fixes
+* [[gh-451]](https://github.com/FasterXML/jackson-module-scala/issues/451)
+  Fixes binary compatibility with 2.9.x Jackson scala module.
+
 # Version: 2.11.3
 
 ## Fixes
