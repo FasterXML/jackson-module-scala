@@ -6,7 +6,7 @@ import java.net.URL
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
 import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
-import com.fasterxml.jackson.databind.{MappingIterator, ObjectMapper, ObjectReader, ObjectWriter}
+import com.fasterxml.jackson.databind.{JavaType, MappingIterator, ObjectMapper, ObjectReader, ObjectWriter}
 
 /**
  * @deprecated use {@link com.fasterxml.jackson.module.scala.ScalaObjectMapper}
@@ -15,98 +15,308 @@ import com.fasterxml.jackson.databind.{MappingIterator, ObjectMapper, ObjectRead
 trait ScalaObjectMapper extends com.fasterxml.jackson.module.scala.ScalaObjectMapper {
   self: ObjectMapper =>
 
-  //  This is to tell scala compiler to create ScalaObjectMapper.$init$
-  assert(true)
-
-  //  Methods above are overwritten just to maintain binary compatibility for trait implementations
+  //  Methods below are overwritten just to maintain binary compatibility for trait implementations
   //  By default it's implemented via default interface methods so we need to
 
+  /**
+   * Convenience method for constructing [[com.fasterxml.jackson.databind.JavaType]] out of given
+   * type (typically <code>java.lang.Class</code>), but without explicit
+   * context.
+   */
+  override def constructType[T](implicit m: Manifest[T]): JavaType = {
+    val clazz = m.runtimeClass
+    if (isArray(clazz)) {
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if (typeArguments.length != 1) {
+        throw new IllegalArgumentException("Need exactly 1 type parameter for array like types ("+clazz.getName+")")
+      }
+      getTypeFactory.constructArrayType(typeArguments(0))
+    } else if (isMapLike(clazz)) {
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if (typeArguments.length != 2) {
+        throw new IllegalArgumentException("Need exactly 2 type parameters for map like types ("+clazz.getName+")")
+      }
+      getTypeFactory.constructMapLikeType(clazz, typeArguments(0), typeArguments(1))
+    } else if (isReference(clazz)) { // Option is a subclss of IterableOnce, so check it first
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if (typeArguments.length != 1) {
+        throw new IllegalArgumentException("Need exactly 1 type parameter for reference types ("+clazz.getName+")")
+      }
+      getTypeFactory.constructReferenceType(clazz, typeArguments(0))
+    } else if (isCollectionLike(clazz)) {
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      if (typeArguments.length != 1) {
+        throw new IllegalArgumentException("Need exactly 1 type parameter for collection like types ("+clazz.getName+")")
+      }
+      getTypeFactory.constructCollectionLikeType(clazz, typeArguments(0))
+    } else {
+      val typeArguments = m.typeArguments.map(constructType(_)).toArray
+      getTypeFactory.constructParametricType(clazz, typeArguments: _*)
+    }
+  }
+
+  /*
+   **********************************************************
+   * Public API (from ObjectCodec): deserialization
+   * (mapping from JSON to Java types);
+   * main methods
+   **********************************************************
+   */
+
+  /**
+   * Method to deserialize JSON content into a Java type, reference
+   * to which is passed as argument. Type is passed using so-called
+   * "super type token" (see )
+   * and specifically needs to be used if the root type is a
+   * parameterized (generic) container type.
+   */
   override def readValue[T: Manifest](jp: JsonParser): T = {
-    super.readValue(jp)
+    readValue(jp, constructType[T])
   }
 
+  /**
+   * Method for reading sequence of Objects from parser stream.
+   * Sequence can be either root-level "unwrapped" sequence (without surrounding
+   * JSON array), or a sequence contained in a JSON Array.
+   * In either case [[com.fasterxml.jackson.core.JsonParser]] must point to the first token of
+   * the first element, OR not point to any token (in which case it is advanced
+   * to the next token). This means, specifically, that for wrapped sequences,
+   * parser MUST NOT point to the surrounding <code>START_ARRAY</code> but rather
+   * to the token following it.
+   * <p>
+   * Note that [[com.fasterxml.jackson.databind.ObjectReader]] has more complete set of variants.
+   */
   override def readValues[T: Manifest](jp: JsonParser): MappingIterator[T] = {
-    super.readValues[T](jp)
+    readValues(jp, constructType[T])
   }
 
+  /*
+   **********************************************************
+   * Public API (from ObjectCodec): Tree Model support
+   **********************************************************
+   */
+
+  /**
+   * Convenience conversion method that will bind data given JSON tree
+   * contains into specific value (usually bean) type.
+   * <p>
+   * Equivalent to:
+   * <pre>
+   * objectMapper.convertValue(n, valueClass);
+   * </pre>
+   */
   override def treeToValue[T: Manifest](n: TreeNode): T = {
-    super.treeToValue[T](n)
+    treeToValue(n, manifest[T].runtimeClass).asInstanceOf[T]
   }
 
+  /*
+   **********************************************************
+   * Extended Public API, accessors
+   **********************************************************
+   */
+
+  /**
+   * Method that can be called to check whether mapper thinks
+   * it could serialize an instance of given Class.
+   * Check is done
+   * by checking whether a serializer can be found for the type.
+   *
+   * @return True if mapper can find a serializer for instances of
+   *         given class (potentially serializable), false otherwise (not
+   *         serializable)
+   */
   override def canSerialize[T: Manifest]: Boolean = {
-    super.canSerialize[T]
+    canSerialize(manifest[T].runtimeClass)
   }
 
+  /**
+   * Method that can be called to check whether mapper thinks
+   * it could deserialize an Object of given type.
+   * Check is done
+   * by checking whether a deserializer can be found for the type.
+   *
+   * @return True if mapper can find a serializer for instances of
+   *         given class (potentially serializable), false otherwise (not
+   *         serializable)
+   */
   override def canDeserialize[T: Manifest]: Boolean = {
-    super.canDeserialize[T]
+    canDeserialize(constructType[T])
   }
 
+  /*
+   **********************************************************
+   * Extended Public API, deserialization,
+   * convenience methods
+   **********************************************************
+   */
   override def readValue[T: Manifest](src: File): T = {
-    super.readValue[T](src)
+    readValue(src, constructType[T])
   }
 
   override def readValue[T: Manifest](src: URL): T = {
-    super.readValue[T](src)
+    readValue(src, constructType[T])
   }
 
   override def readValue[T: Manifest](content: String): T = {
-    super.readValue[T](content)
+    readValue(content, constructType[T])
   }
 
   override def readValue[T: Manifest](src: Reader): T = {
-    super.readValue[T](src)
+    readValue(src, constructType[T])
   }
 
   override def readValue[T: Manifest](src: InputStream): T = {
-    super.readValue[T](src)
+    readValue(src, constructType[T])
   }
 
   override def readValue[T: Manifest](src: Array[Byte]): T = {
-    super.readValue[T](src)
+    readValue(src, constructType[T])
   }
 
   override def readValue[T: Manifest](src: Array[Byte], offset: Int, len: Int): T = {
-    super.readValue[T](src, offset, len)
+    readValue(src, offset, len, constructType[T])
   }
 
+  /*
+   **********************************************************
+   * Extended Public API: constructing ObjectWriters
+   * for more advanced configuration
+   **********************************************************
+   */
+
+  /**
+   * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectWriter]] that will
+   * serialize objects using specified JSON View (filter).
+   */
   override def writerWithView[T: Manifest]: ObjectWriter = {
-    super.writerWithView[T]
+    writerWithView(manifest[T].runtimeClass)
   }
 
   /**
    * @deprecated Since 2.5, use { @link #writerFor(Class)} instead
    */
   override def writerWithType[T: Manifest]: ObjectWriter = {
-    super.writerWithType[T]
+    writerFor[T]
   }
 
+  /**
+   * Factory method for constructing {@link com.fasterxml.jackson.databind.ObjectWriter} that will
+   * serialize objects using specified root type, instead of actual
+   * runtime type of value. Type must be a super-type of runtime type.
+   * <p>
+   * Main reason for using this method is performance, as writer is able
+   * to pre-fetch serializer to use before write, and if writer is used
+   * more than once this avoids addition per-value serializer lookups.
+   *
+   * @since 2.5
+   */
   override def writerFor[T: Manifest]: ObjectWriter = {
-    super.writerFor[T]
+    writerFor(constructType[T])
   }
 
+  /*
+   **********************************************************
+   * Extended Public API: constructing ObjectReaders
+   * for more advanced configuration
+   **********************************************************
+   */
+
+  /**
+   * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
+   * read or update instances of specified type
+   */
   @deprecated(message = "Replaced with readerFor", since = "2.6")
-  override def reader[T: Manifest]: ObjectReader = {
-    super.reader[T]
+  override  def reader[T: Manifest]: ObjectReader = {
+    reader(constructType[T])
   }
 
-  override def readerFor[T: Manifest]: ObjectReader = {
-    super.readerFor[T]
+  /**
+   * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
+   * read or update instances of specified type
+   */
+  override  def readerFor[T: Manifest]: ObjectReader = {
+    readerFor(constructType[T])
   }
 
-  override def readerWithView[T: Manifest]: ObjectReader = {
-    super.readerWithView[T]
+  /**
+   * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
+   * deserialize objects using specified JSON View (filter).
+   */
+  override  def readerWithView[T: Manifest]: ObjectReader = {
+    readerWithView(manifest[T].runtimeClass)
   }
 
+  /*
+   **********************************************************
+   * Extended Public API: convenience type conversion
+   **********************************************************
+   */
+
+  /**
+   * Convenience method for doing two-step conversion from given value, into
+   * instance of given value type. This is functionality equivalent to first
+   * serializing given value into JSON, then binding JSON data into value
+   * of given type, but may be executed without fully serializing into
+   * JSON. Same converters (serializers, deserializers) will be used as for
+   * data binding, meaning same object mapper configuration works.
+   *
+   * @throws IllegalArgumentException If conversion fails due to incompatible type;
+   *                                  if so, root cause will contain underlying checked exception data binding
+   *                                  functionality threw
+   */
   override def convertValue[T: Manifest](fromValue: Any): T = {
-    super.convertValue[T](fromValue)
+    convertValue(fromValue, constructType[T])
   }
 
+  /*
+   **********************************************************
+   * Extended Public API: JSON Schema generation
+   **********************************************************
+   */
+
+  /**
+   * Generate <a href="http://json-schema.org/">Json-schema</a>
+   * instance for specified class.
+   *
+   * @tparam T The class to generate schema for
+   * @return Constructed JSON schema.
+   */
   @deprecated("JsonSchema is deprecated in favor of JsonFormatVisitor", "2.2.2")
   override def generateJsonSchema[T: Manifest]: JsonSchema = {
-    super.generateJsonSchema[T]
+    generateJsonSchema(manifest[T].runtimeClass)
   }
 
+  /**
+   * Method for visiting type hierarchy for given type, using specified visitor.
+   * <p>
+   * This method can be used for things like
+   * generating <a href="http://json-schema.org/">Json Schema</a>
+   * instance for specified type.
+   *
+   * @tparam T Type to generate schema for (possibly with generic signature)
+   *
+   * @since 2.1
+   */
   override def acceptJsonFormatVisitor[T: Manifest](visitor: JsonFormatVisitorWrapper): Unit = {
-    super.acceptJsonFormatVisitor[T](visitor)
+    acceptJsonFormatVisitor(manifest[T].runtimeClass, visitor)
+  }
+
+  private def isArray(c: Class[_]): Boolean = {
+    c.isArray
+  }
+
+  private val MAP = classOf[collection.Map[_,_]]
+  private def isMapLike(c: Class[_]): Boolean = {
+    MAP.isAssignableFrom(c)
+  }
+
+  private val OPTION = classOf[Option[_]]
+  private def isReference(c: Class[_]): Boolean = {
+    OPTION.isAssignableFrom(c)
+  }
+
+  private val ITERABLE = classOf[collection.Iterable[_]]
+  private def isCollectionLike(c: Class[_]): Boolean = {
+    ITERABLE.isAssignableFrom(c)
   }
 }
