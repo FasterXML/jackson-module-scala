@@ -61,5 +61,3 @@ site.includeScaladoc()
 ghpages.settings
 
 git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
-
-javacOptions ++= Seq("-source", "1.7", "-target", "1.7", "-Xlint")
