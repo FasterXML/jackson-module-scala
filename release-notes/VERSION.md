@@ -1,3 +1,10 @@
+# Version: 2.13.0 (Snapshot only)
+
+This patch release tracks Jackson 2.13. The 2.13 series has full support for
+Scala 2.11 and 2.12 and 2.13. Java 8 is the minimum supported Java version.
+
+No functionality changes but the experimental package has been removed. The classes were moved in release 2.10.0 and experimental package was just kept to ease the transition.
+
 # Version: 2.12.1
 
 No functionality changes but ScalaObjectMapper has been deprecated because it relies on `Manifest`s and these are not supported in Scala3. A number of other code changes have been made to try to get the code to compile in Scala3 but there is still a lot of test code that doesn't compile.
