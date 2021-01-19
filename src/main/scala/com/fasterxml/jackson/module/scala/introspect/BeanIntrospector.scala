@@ -187,10 +187,11 @@ object BeanIntrospector {
     //create properties for all appropriate fields
     val fields = for {
       cls <- hierarchy
+      classW = ClassW(cls)
       field <- cls.getDeclaredFields
       name = maybePrivateName(field)
       if !name.contains('$')
-      if (isScalaCaseObject(cls) || isAcceptableField(field))
+      if (classW.isScalaObject || isScalaCaseObject(cls) || isAcceptableField(field))
       beanGetter = findBeanGetter(cls, name)
       beanSetter = findBeanSetter(cls, name)
     } yield PropertyDescriptor(name, findConstructorParam(hierarchy.head, name), Some(field), findGetter(cls, name), findSetter(cls, name), beanGetter, beanSetter)

@@ -17,7 +17,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   private [this] val _descriptorCache = new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    if (clz.hasSignature || clz.extendsScalaClass) {
+    if (clz.extendsScalaClass || clz.hasSignature) {
       val key = new ClassKey(clz)
       Option(_descriptorCache.get(key)) match {
         case Some(result) => Some(result)
