@@ -2,11 +2,12 @@ package com.fasterxml.jackson.module.scala.util
 
 import scala.language.implicitConversions
 import scala.reflect.{ScalaLongSignature, ScalaSignature}
+import scala.util.Try
 
 trait ClassW extends PimpedType[Class[_]] {
 
   def extendsScalaClass: Boolean = {
-    ClassW.productClass.isAssignableFrom(value)
+    ClassW.productClass.isAssignableFrom(value) || isScalaObject
   }
 
   def hasSignature: Boolean = {
@@ -18,6 +19,10 @@ trait ClassW extends PimpedType[Class[_]] {
       else hasSigHelper(clazz.getEnclosingClass)
     }
     hasSigHelper(value)
+  }
+
+  def isScalaObject: Boolean = {
+    Try(value.getField("MODULE$")).isSuccess
   }
 }
 
