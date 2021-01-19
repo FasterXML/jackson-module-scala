@@ -32,13 +32,17 @@ private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer
           ctxt.handleUnexpectedToken(theType.getRawClass, jp).asInstanceOf[Enumeration#Value]
         } else {
           jp.nextToken()
-          Class.forName(eclassName + "$").getField("MODULE$").get(null).asInstanceOf[Enumeration].withName(valueValue)
+          Class.forName(eclassName + "$").getField("MODULE$").get(None.orNull).asInstanceOf[Enumeration].withName(valueValue)
         }
       }
     }
   }
 
-  private def parsePair( jp:JsonParser ) = ({jp.nextToken; jp.getText}, {jp.nextToken; jp.getText})
+  private def parsePair(jp: JsonParser): (String, String) = (nextToken(jp), nextToken(jp))
+  private def nextToken(jp: JsonParser): String = {
+    jp.nextToken
+    jp.getText
+  }
 }
 
 private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
