@@ -21,7 +21,7 @@ trait ClassW extends PimpedType[Class[_]] {
     hasSigHelper(value)
   }
 
-  private def isScalaObject: Boolean = {
+  def isScalaObject: Boolean = {
     Try(value.getField("MODULE$")).isSuccess
   }
 }
