@@ -1,73 +1,25 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import java.lang.annotation.Annotation
-
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.`type`.ClassKey
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.introspect._
-import com.fasterxml.jackson.databind.util.{AccessPattern, LRUMap}
+import com.fasterxml.jackson.databind.util.{AccessPattern, LRUMap, LookupCache}
 import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
-  private [this] val _descriptorCache = new LRUMap[ClassKey, BeanDescriptor](16, 100)
+  private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
+    new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    if (clz.extendsScalaClass || clz.hasSignature) {
-      val key = new ClassKey(clz)
-      Option(_descriptorCache.get(key)) match {
-        case Some(result) => Some(result)
-        case _ => {
-          val introspector = BeanIntrospector(clz)
-          _descriptorCache.put(key, introspector)
-          Some(introspector)
-        }
-      }
-    } else {
-      None
-    }
-  }
-
-  private def fieldName(af: AnnotatedField): Option[String] = {
-    _descriptorFor(af.getDeclaringClass).flatMap { d =>
-      d.properties.find(p => p.field.exists(_ == af.getAnnotated)).map(_.name)
-    }
-  }
-
-  private def methodName(am: AnnotatedMethod): Option[String] = {
-    _descriptorFor(am.getDeclaringClass).flatMap { d =>
-      val getterSetter = d.properties.find(p => (p.getter ++ p.setter).exists(_ == am.getAnnotated)).map(_.name)
-      getterSetter match {
-        case Some(s) => Some(s)
-        case _ => d.properties.find(p => p.name == am.getName).map(_.name)
-      }
-    }
-  }
-
-  private def paramName(ap: AnnotatedParameter): Option[String] = {
-    _descriptorFor(ap.getDeclaringClass).flatMap { d =>
-      d.properties.find(p => p.param.exists { cp =>
-        cp.constructor == ap.getOwner.getAnnotated && cp.index == ap.getIndex
-      }).map(_.name)
-    }
-  }
-
-  private def isScalaPackage(pkg: Option[Package]): Boolean =
-    pkg.exists(_.getName.startsWith("scala."))
-
-  private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
-    (cls.extendsScalaClass || cls.hasSignature) &&
-      !isScalaPackage(Option(cls.getPackage))
-
-  private def isScala(a: Annotated): Boolean = {
-    a match {
-      case ac: AnnotatedClass => isMaybeScalaBeanType(ac.getAnnotated)
-      case am: AnnotatedMember => isMaybeScalaBeanType(am.getDeclaringClass)
-    }
+  def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
+    val existingCache = _descriptorCache
+    _descriptorCache = cache
+    existingCache
   }
 
   def propertyFor(a: Annotated): Option[PropertyDescriptor] = {
@@ -191,6 +143,60 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       }.getOrElse(defaultInstantiator)
 
     } else defaultInstantiator
+  }
+
+  private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
+    if (clz.extendsScalaClass || clz.hasSignature) {
+      val key = new ClassKey(clz)
+      Option(_descriptorCache.get(key)) match {
+        case Some(result) => Some(result)
+        case _ => {
+          val introspector = BeanIntrospector(clz)
+          _descriptorCache.put(key, introspector)
+          Some(introspector)
+        }
+      }
+    } else {
+      None
+    }
+  }
+
+  private def fieldName(af: AnnotatedField): Option[String] = {
+    _descriptorFor(af.getDeclaringClass).flatMap { d =>
+      d.properties.find(p => p.field.exists(_ == af.getAnnotated)).map(_.name)
+    }
+  }
+
+  private def methodName(am: AnnotatedMethod): Option[String] = {
+    _descriptorFor(am.getDeclaringClass).flatMap { d =>
+      val getterSetter = d.properties.find(p => (p.getter ++ p.setter).exists(_ == am.getAnnotated)).map(_.name)
+      getterSetter match {
+        case Some(s) => Some(s)
+        case _ => d.properties.find(p => p.name == am.getName).map(_.name)
+      }
+    }
+  }
+
+  private def paramName(ap: AnnotatedParameter): Option[String] = {
+    _descriptorFor(ap.getDeclaringClass).flatMap { d =>
+      d.properties.find(p => p.param.exists { cp =>
+        cp.constructor == ap.getOwner.getAnnotated && cp.index == ap.getIndex
+      }).map(_.name)
+    }
+  }
+
+  private def isScalaPackage(pkg: Option[Package]): Boolean =
+    pkg.exists(_.getName.startsWith("scala."))
+
+  private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
+    (cls.extendsScalaClass || cls.hasSignature) &&
+      !isScalaPackage(Option(cls.getPackage))
+
+  private def isScala(a: Annotated): Boolean = {
+    a match {
+      case ac: AnnotatedClass => isMaybeScalaBeanType(ac.getAnnotated)
+      case am: AnnotatedMember => isMaybeScalaBeanType(am.getDeclaringClass)
+    }
   }
 }
 
