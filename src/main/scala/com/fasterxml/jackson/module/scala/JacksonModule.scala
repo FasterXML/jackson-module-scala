@@ -2,13 +2,13 @@ package com.fasterxml.jackson.module.scala
 
 import java.util.Properties
 
-import com.fasterxml.jackson.core.Version
+import com.fasterxml.jackson.core.{JsonParser, Version}
 import com.fasterxml.jackson.core.util.VersionUtil
 import com.fasterxml.jackson.databind.Module.SetupContext
 import com.fasterxml.jackson.databind.`type`.TypeModifier
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
-import com.fasterxml.jackson.databind.{JsonMappingException, Module}
+import com.fasterxml.jackson.databind.{DatabindException, Module}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -59,7 +59,7 @@ trait JacksonModule extends Module {
       case VersionExtractor(MajorVersion, MinorVersion) =>
         // success!
       case _ =>
-        throw new JsonMappingException(null, databindVersionError)
+        throw DatabindException.from(null.asInstanceOf[JsonParser], databindVersionError)
     }
 
     initializers.result().foreach(_ apply context)

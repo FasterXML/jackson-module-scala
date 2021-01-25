@@ -88,7 +88,7 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
       return r.get.getEnum(s)
     }
 
-    throw JsonMappingException.from(ctxt, "Need @JsonScalaEnumeration to determine key type")
+    throw DatabindException.from(ctxt, "Need @JsonScalaEnumeration to determine key type")
   }
 }
 
