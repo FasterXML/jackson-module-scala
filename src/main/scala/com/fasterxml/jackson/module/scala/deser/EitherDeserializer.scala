@@ -50,7 +50,7 @@ private class EitherDeserializer(javaType: JavaType,
   private def deserializeEither(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] = {
     jp.currentToken() match {
       case JsonToken.START_OBJECT =>
-        val key = jp.nextFieldName()
+        val key = jp.nextName()
         val `type` = jp.nextToken()
 
         val result = key match {

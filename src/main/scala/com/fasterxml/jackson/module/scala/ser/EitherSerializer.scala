@@ -103,7 +103,7 @@ private class EitherSerializer(left: EitherDetails,
       case Right(c) => ("r", c, right)
     }
     jgen.writeStartObject()
-    jgen.writeFieldName(field)
+    jgen.writeName(field)
     if (content == null) {
       provider.defaultSerializeNullValue(jgen)
       return

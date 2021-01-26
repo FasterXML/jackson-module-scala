@@ -5,7 +5,7 @@ package deser
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategies}
+import com.fasterxml.jackson.databind.{DatabindException, ObjectMapper, ObjectReader, PropertyNamingStrategies}
 
 object CaseClassDeserializerTest
 {
@@ -62,7 +62,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
   }
 
   it should "not try to deserialize a List" in {
-    intercept[JsonMappingException] {
+    intercept[DatabindException] {
       deserialize("""{"foo":"foo","bar":"bar"}""", classOf[List[_]])
     }
   }

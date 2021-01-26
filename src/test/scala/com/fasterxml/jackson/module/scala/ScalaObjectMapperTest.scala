@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.{JsonMappingException, Module}
+import com.fasterxml.jackson.databind.{DatabindException, Module}
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
 
 import scala.collection.JavaConverters._
@@ -175,7 +175,7 @@ class ScalaObjectMapperTest extends JacksonTest {
   }
 
   it should "fail to read as List from a non-Array JSON input" in {
-    a [JsonMappingException] should be thrownBy {
+    a [DatabindException] should be thrownBy {
       mapper.readValue[List[GenericTestClass[Int]]](genericJson)
     }
   }

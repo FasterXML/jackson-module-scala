@@ -27,8 +27,8 @@ private class EnumerationSerializer extends JsonSerializer[scala.Enumeration#Val
     val parentEnum = value.asInstanceOf[AnyRef].getClass.getSuperclass.getDeclaredFields.find( f => f.getName == "$outer" ).get
     val enumClass = parentEnum.get(value).getClass.getName stripSuffix "$"
     jgen.writeStartObject()
-    jgen.writeStringField("enumClass", enumClass)
-    jgen.writeStringField("value", value.toString)
+    jgen.writeStringProperty("enumClass", enumClass)
+    jgen.writeStringProperty("value", value.toString)
     jgen.writeEndObject()
   }
 }

@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.DatabindException
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 object PrimitiveContainerTest {
@@ -37,7 +37,7 @@ class PrimitiveContainerTest extends DeserializationFixture
   }
 
   it should "enforce type constraints"  in { f =>
-    val thrown = intercept[JsonMappingException] {
+    val thrown = intercept[DatabindException] {
       f.readValue("""{"value":9223372036854775807}""", new TypeReference[AnnotatedOptionInt] {}).value.get
     }
     thrown.getMessage should startWith ("Numeric value (9223372036854775807) out of range")
