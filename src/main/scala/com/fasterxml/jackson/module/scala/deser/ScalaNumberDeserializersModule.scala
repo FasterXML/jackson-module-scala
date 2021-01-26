@@ -15,7 +15,7 @@ private abstract class BigNumberDeserializer[T >: Null : ClassTag](creator: (Str
   extends StdScalarDeserializer[T](classTag[T].runtimeClass)
 {
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): T = {
-    val t = jp.getCurrentToken
+    val t = jp.currentToken()
     t match {
       case VALUE_NUMBER_INT | VALUE_NUMBER_FLOAT => creator(jp.getText.trim)
       case VALUE_STRING =>

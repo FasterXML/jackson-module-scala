@@ -21,7 +21,7 @@ private trait ContextualEnumerationDeserializer extends ContextualDeserializer {
  */
 private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
   override def deserialize(jp:JsonParser, ctxt:DeserializationContext): Enumeration#Value = {
-    if (jp.getCurrentToken != JsonToken.START_OBJECT) {
+    if (jp.currentToken() != JsonToken.START_OBJECT) {
       ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
     } else {
       val (eclass, eclassName) = parsePair(jp)
@@ -48,7 +48,7 @@ private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer
 
 private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Enumeration#Value = {
-    jp.getCurrentToken match {
+    jp.currentToken() match {
       case JsonToken.VALUE_STRING => r.getEnum(jp.getValueAsString)
       case _ => ctxt.handleUnexpectedToken(r.getJavaType, jp).asInstanceOf[Enumeration#Value]
     }
