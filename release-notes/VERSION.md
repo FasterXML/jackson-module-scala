@@ -10,6 +10,7 @@ No functionality changes but the experimental package has been removed. The clas
 ## Fixes
 
 * [[gh-495]](https://github.com/FasterXML/jackson-module-scala/issues/495) Fix regression since v2.12.0 where Scala objects (as opposed to case objects) were not serializing correctly.
+* [[gh-497]](https://github.com/FasterXML/jackson-module-scala/issues/497) allow DescriptorCache to be replaced with custom implementation.
 
 # Version: 2.12.1
 
