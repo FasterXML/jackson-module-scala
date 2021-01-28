@@ -41,11 +41,11 @@ trait ClassTagExtensions {
    *                     be "added" to target's annotations, overriding as necessary
    */
   final def addMixin[Target: ClassTag, MixinSource: ClassTag](): ObjectMapper = {
-    addMixIn(implicitly[ClassTag[Target]].runtimeClass, implicitly[ClassTag[MixinSource]].runtimeClass)
+    addMixIn(classFor[Target], classFor[MixinSource])
   }
 
   final def findMixInClassFor[T: ClassTag]: Class[_] = {
-    findMixInClassFor(implicitly[ClassTag[T]].runtimeClass)
+    findMixInClassFor(classFor[T])
   }
 
   /*
