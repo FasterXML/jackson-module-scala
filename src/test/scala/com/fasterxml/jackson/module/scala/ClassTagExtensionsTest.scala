@@ -6,7 +6,7 @@ import java.nio.file.Files
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.databind.{JsonMappingException, Module, ObjectMapper}
+import com.fasterxml.jackson.databind.{DatabindException, Module, ObjectMapper}
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
 
 import scala.collection.JavaConverters._
@@ -51,29 +51,7 @@ class ClassTagExtensionsTest extends JacksonTest {
   def module: Module = DefaultScalaModule
   val mapper = newMapperWithClassTagExtensions
 
-  "An ObjectMapper with the ClassTagExtensions mixin" should "add mixin annotations" in {
-    mapper.addMixin[Target, Mixin]()
-    val result = mapper.findMixInClassFor[Target]
-    result should equal(classOf[Mixin])
-    val json = """{"foo":"value"}"""
-    mapper.readValue[Target](json) shouldEqual new Target {
-      foo = "value"
-    }
-  }
-
-  it should "read value from json parser" in {
-    val parser = mapper.getFactory.createParser(genericJson)
-    val result = mapper.readValue[GenericTestClass[Int]](parser)
-    result should equal(genericInt)
-  }
-
-  it should "read values from json parser" in {
-    val parser = mapper.getFactory.createParser(listGenericJson)
-    val result = mapper.readValues[GenericTestClass[Int]](parser).asScala.toList
-    result should equal(listGenericInt)
-  }
-
-  it should "read value from tree node" in {
+  "An ObjectMapper with the ClassTagExtensions mixin" should "read value from tree node" in {
     val treeNode = mapper.readTree(genericJson).asInstanceOf[TreeNode]
     val result = mapper.treeToValue[GenericTestClass[Int]](treeNode)
     result should equal(genericInt)
@@ -170,7 +148,7 @@ class ClassTagExtensionsTest extends JacksonTest {
   }
 
   it should "fail to read as List from a non-Array JSON input" in {
-    a [JsonMappingException] should be thrownBy {
+    a [DatabindException] should be thrownBy {
       mapper.readValue[List[GenericTestClass[Int]]](genericJson)
     }
   }

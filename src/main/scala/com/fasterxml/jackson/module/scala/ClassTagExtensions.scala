@@ -11,7 +11,7 @@ import scala.reflect.ClassTag
 object ClassTagExtensions {
   def ::(o: JsonMapper) = new Mixin(o)
   final class Mixin private[ClassTagExtensions](mapper: JsonMapper)
-    extends JsonMapper(mapper.rebuild().build()) with ClassTagExtensions
+    extends JsonMapper(mapper.rebuild()) with ClassTagExtensions
 }
 
 /**
@@ -23,30 +23,6 @@ object ClassTagExtensions {
  */
 trait ClassTagExtensions {
   self: ObjectMapper =>
-
-  /*
-   **********************************************************
-   * Configuration: mix-in annotations
-   **********************************************************
-   */
-
-  /**
-   * Method to use for adding mix-in annotations to use for augmenting
-   * specified class or interface. All annotations from
-   * <code>mixinSource</code> are taken to override annotations
-   * that <code>target</code> (or its supertypes) has.
-   *
-   * @tparam Target Class (or interface) whose annotations to effectively override
-   * @tparam MixinSource Class (or interface) whose annotations are to
-   *                     be "added" to target's annotations, overriding as necessary
-   */
-  final def addMixin[Target: ClassTag, MixinSource: ClassTag](): ObjectMapper = {
-    addMixIn(implicitly[ClassTag[Target]].runtimeClass, implicitly[ClassTag[MixinSource]].runtimeClass)
-  }
-
-  final def findMixInClassFor[T: ClassTag]: Class[_] = {
-    findMixInClassFor(implicitly[ClassTag[T]].runtimeClass)
-  }
 
   /*
    **********************************************************
