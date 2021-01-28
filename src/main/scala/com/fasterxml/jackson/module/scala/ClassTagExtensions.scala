@@ -2,10 +2,17 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.json.JsonMapper
 
 import java.io.{File, InputStream, Reader}
 import java.net.URL
 import scala.reflect.ClassTag
+
+object ClassTagExtensions {
+  def ::(o: JsonMapper) = new Mixin(o)
+  final class Mixin private[ClassTagExtensions](mapper: JsonMapper)
+    extends JsonMapper(mapper.rebuild().build()) with ClassTagExtensions
+}
 
 trait ClassTagExtensions {
   self: ObjectMapper =>
