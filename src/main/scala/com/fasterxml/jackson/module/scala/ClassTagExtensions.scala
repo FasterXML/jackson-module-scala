@@ -14,6 +14,13 @@ object ClassTagExtensions {
     extends JsonMapper(mapper.rebuild().build()) with ClassTagExtensions
 }
 
+/**
+ * Experimental ClassTag equivalent of ScalaObjectMapper. This does not do a good job with
+ * reference types that wrap primitives, eg Option[Int], Seq[Boolean].
+ *
+ * This is because ClassTags only provide access to the Java class and information
+ * about the wrapped types is lost due to type erasure.
+ */
 trait ClassTagExtensions {
   self: ObjectMapper =>
 
@@ -33,8 +40,8 @@ trait ClassTagExtensions {
    * @tparam MixinSource Class (or interface) whose annotations are to
    *                     be "added" to target's annotations, overriding as necessary
    */
-  final def addMixin[Target: ClassTag, MixinSource: ClassTag]() = {
-    addMixIn(implicitly[ClassTag[Target]].runtimeClass, implicitly[ClassTag[Target]].runtimeClass)
+  final def addMixin[Target: ClassTag, MixinSource: ClassTag](): ObjectMapper = {
+    addMixIn(implicitly[ClassTag[Target]].runtimeClass, implicitly[ClassTag[MixinSource]].runtimeClass)
   }
 
   final def findMixInClassFor[T: ClassTag]: Class[_] = {
