@@ -35,6 +35,7 @@ trait ScalaObjectMapper {
    * @tparam MixinSource Class (or interface) whose annotations are to
    *                     be "added" to target's annotations, overriding as necessary
    */
+  @deprecated("this support in jackson-databind is moving to the MapperBuilder", "2.12.2")
   final def addMixin[Target: Manifest, MixinSource: Manifest]() = {
     addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
@@ -47,6 +48,7 @@ trait ScalaObjectMapper {
     addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
   }
 
+  @deprecated("this support in jackson-databind is moving to the MapperBuilder", "2.12.2")
   final def findMixInClassFor[T: Manifest]: Class[_] = {
     findMixInClassFor(manifest[T].runtimeClass)
   }

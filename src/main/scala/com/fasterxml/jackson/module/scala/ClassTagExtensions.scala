@@ -40,10 +40,12 @@ trait ClassTagExtensions {
    * @tparam MixinSource Class (or interface) whose annotations are to
    *                     be "added" to target's annotations, overriding as necessary
    */
+  @deprecated("this support in jackson-databind is moving to the MapperBuilder", "2.12.2")
   final def addMixin[Target: ClassTag, MixinSource: ClassTag](): ObjectMapper = {
     addMixIn(classFor[Target], classFor[MixinSource])
   }
 
+  @deprecated("this support in jackson-databind is moving to the MapperBuilder", "2.12.2")
   final def findMixInClassFor[T: ClassTag]: Class[_] = {
     findMixInClassFor(classFor[T])
   }
