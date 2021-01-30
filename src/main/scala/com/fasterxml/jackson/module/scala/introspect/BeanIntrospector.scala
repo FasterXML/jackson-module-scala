@@ -70,7 +70,7 @@ object BeanIntrospector {
 
     def findConstructorDefaultValue(maybeCompanion: Option[AnyRef], index: Int): Option[() => AnyRef] = {
       val methodName = "$lessinit$greater$default$" + (index + 1)
-      maybeCompanion.flatMap(companion => companion.getClass.getMethods.toStream.collectFirst {
+      maybeCompanion.flatMap(companion => companion.getClass.getMethods.collectFirst {
         case method if method.getName == methodName && method.getParameterTypes.length == 0 =>
           () => method.invoke(companion)
       })
