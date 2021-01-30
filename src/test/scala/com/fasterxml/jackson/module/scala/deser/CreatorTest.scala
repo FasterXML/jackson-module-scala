@@ -37,7 +37,7 @@ object CreatorTest
     }
   }
 
-  case class Struct1(val name: String, val classifier: String = "my_default_string") {
+  case class Struct1(name: String, classifier: String = "my_default_string") {
     override def toString: String = name
   }
 
