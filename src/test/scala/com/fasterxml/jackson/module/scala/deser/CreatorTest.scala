@@ -113,7 +113,7 @@ class CreatorTest extends DeserializationFixture {
 
   //TODO fix (works in 2.12.0)
   it should "support default values" ignore { f =>
-  val deser = f.readValue("""{}""", classOf[ConstructorWithDefaultValues])
+    val deser = f.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual "some string"
     deser.i shouldEqual 10
     deser.dummy shouldEqual null
