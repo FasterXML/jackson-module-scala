@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{DatabindException, ObjectMapper, ObjectReader, PropertyNamingStrategies}
 
+import java.time.LocalDateTime
+
 object CaseClassDeserializerTest
 {
   class Bean(var prop: String)
@@ -38,6 +40,23 @@ object CaseClassDeserializerTest
   }
 
   case class ArrayHolder(value: Array[Byte])
+
+  case class MetricPath(path: String, level: Int, isRoot: Boolean) {
+    def this(path: String) = this(path, 0, false)
+  }
+
+  case class Metric(path: MetricPath,
+                    value: Double = 0,
+                    time: String = LocalDateTime.now().toString,
+                    tags: Set[String] = Set.empty) {
+
+    def this(path: MetricPath) = this(path, 0, LocalDateTime.now().toString, Set())
+    def this(path: MetricPath, value: Double) = this(path, value, LocalDateTime.now().toString, Set())
+    def this(path: MetricPath, value: Double, time: String) = this(path, value, time, Set())
+    def this(path: String) = this(new MetricPath(path), 0, LocalDateTime.now().toString, Set())
+    def this(path: String, value: Double) = this(new MetricPath(path), value, LocalDateTime.now().toString, Set())
+    def this(path: String, value: Double, time: String) = this(new MetricPath(path), value, time, Set())
+  }
 }
 
 class CaseClassDeserializerTest extends DeserializerTest {
@@ -47,6 +66,12 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   "An ObjectMapper with CaseClassDeserializer" should "deserialize a case class with a single constructor" in {
     deserialize("""{"intValue":1,"stringValue":"foo"}""", classOf[ConstructorTestCaseClass]) should be (ConstructorTestCaseClass(1,"foo"))
+  }
+
+  //TODO fix -- works in v2.12
+  it should "deserialize a case class with multiple constructors" ignore {
+    val json = """{"path":{"path":"/path","level":1,"isRoot":false},"value":0.5,"time":"2017-05-10T00:00:00.000+02:00","tags":[]}"""
+    deserialize(json, classOf[Metric]) shouldBe Metric(MetricPath("/path", 1, false), 0.5, "2017-05-10T00:00:00.000+02:00")
   }
 
   it should "deserialize a case class with var properties" in {

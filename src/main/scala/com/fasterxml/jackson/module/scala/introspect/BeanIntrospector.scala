@@ -56,7 +56,8 @@ object BeanIntrospector {
       if (c == null || c == classOf[AnyRef]) {
         None
       } else {
-        val primaryConstructor = c.getConstructors.headOption
+        //try to use constructor with most parameters to avoid https://github.com/FasterXML/jackson-module-scala/issues/330
+        val primaryConstructor = c.getConstructors.sortBy(c => -c.getParameterCount).headOption
         val debugCtorParamNames = primaryConstructor.toIndexedSeq.flatMap(getCtorParams)
         val index = debugCtorParamNames.indexOf(name)
         val companion = findCompanionObject(c)
@@ -70,7 +71,7 @@ object BeanIntrospector {
 
     def findConstructorDefaultValue(maybeCompanion: Option[AnyRef], index: Int): Option[() => AnyRef] = {
       val methodName = "$lessinit$greater$default$" + (index + 1)
-      maybeCompanion.flatMap(companion => companion.getClass.getMethods.toStream.collectFirst {
+      maybeCompanion.flatMap(companion => companion.getClass.getMethods.collectFirst {
         case method if method.getName == methodName && method.getParameterTypes.length == 0 =>
           () => method.invoke(companion)
       })
