@@ -53,15 +53,18 @@ object BeanIntrospector {
     @tailrec
     def findConstructorParam(c: Class[_], name: String): Option[ConstructorParameter] = {
       //c can be null if we're asked for the superclass of Object or AnyRef
-      if (c == null || c == classOf[AnyRef]) return None
-      val primaryConstructor = c.getConstructors.headOption
-      val debugCtorParamNames = primaryConstructor.toIndexedSeq.flatMap(getCtorParams)
-      val index = debugCtorParamNames.indexOf(name)
-      val companion = findCompanionObject(c)
-      if (index >= 0) {
-        Some(ConstructorParameter(primaryConstructor.get, index, findConstructorDefaultValue(companion, index)))
+      if (c == null || c == classOf[AnyRef]) {
+        None
       } else {
-        findConstructorParam(c.getSuperclass, name)
+        val primaryConstructor = c.getConstructors.headOption
+        val debugCtorParamNames = primaryConstructor.toIndexedSeq.flatMap(getCtorParams)
+        val index = debugCtorParamNames.indexOf(name)
+        val companion = findCompanionObject(c)
+        if (index >= 0) {
+          Some(ConstructorParameter(primaryConstructor.get, index, findConstructorDefaultValue(companion, index)))
+        } else {
+          findConstructorParam(c.getSuperclass, name)
+        }
       }
     }
 
