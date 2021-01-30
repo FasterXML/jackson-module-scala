@@ -255,9 +255,6 @@ class ClassTagExtensionsTest extends JacksonTest {
     result.t.get.isInstanceOf[Foo] should be(true)
   }
 
-  // No tests for the following functions:
-  //  def acceptJsonFormatVisitor[T: Manifest](visitor: JsonFormatVisitorWrapper): Unit
-
   private val genericJson = """{"t":42}"""
   private val genericInt = GenericTestClass(42)
   private val listGenericJson = """{"t":42}{"t":31}"""
