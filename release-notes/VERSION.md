@@ -3,13 +3,15 @@
 This patch release tracks Jackson 2.13. The 2.13 series has full support for
 Scala 2.11 and 2.12 and 2.13. Java 8 is the minimum supported Java version.
 
-No functionality changes but the experimental package has been removed. The classes were moved in release 2.10.0 and experimental package was just kept to ease the transition.
+No functionality changes but the experimental package has been removed. The classes were moved in release 2.10.0 and experimental package was just kept to ease the transition. Some deprecated code relating to the use of Scala Manifests was also removed.
+
 
 # Version: 2.12.2 (Snapshot only)
 
 ## Fixes
 
 * [[gh-330]](https://github.com/FasterXML/jackson-module-scala/issues/330) try to fix issue where wrong constructor can be chosen
+* [[gh-438]](https://github.com/FasterXML/jackson-module-scala/issues/438) fix issues with handling field names that have dashes
 * [[gh-495]](https://github.com/FasterXML/jackson-module-scala/issues/495) Fix regression since v2.12.0 where Scala objects (as opposed to case objects) were not serializing correctly.
 * [[gh-497]](https://github.com/FasterXML/jackson-module-scala/issues/497) allow DescriptorCache to be replaced with custom implementation.
 
