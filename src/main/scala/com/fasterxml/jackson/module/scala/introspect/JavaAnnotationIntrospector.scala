@@ -5,28 +5,33 @@ import java.lang.reflect.{Constructor, Field, Method, Parameter}
 import com.fasterxml.jackson.databind.PropertyName
 import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedMember, AnnotatedParameter, NopAnnotationIntrospector}
 
+import scala.reflect.NameTransformer
+
 object JavaAnnotationIntrospector extends NopAnnotationIntrospector {
 
   override def findNameForDeserialization(a: Annotated): PropertyName = None.orNull
 
-  override def findImplicitPropertyName(param: AnnotatedMember): String = param match {
-    case param: AnnotatedParameter => {
-      val index = param.getIndex
-      val owner = param.getOwner
-      owner.getAnnotated match {
-        case ctor: Constructor[_] => {
-          val names = JavaParameterIntrospector.getCtorParamNames(ctor)
-          if (index < names.length) names(index) else None.orNull
+  override def findImplicitPropertyName(param: AnnotatedMember): String = {
+    val result = param match {
+      case param: AnnotatedParameter => {
+        val index = param.getIndex
+        val owner = param.getOwner
+        owner.getAnnotated match {
+          case ctor: Constructor[_] => {
+            val names = JavaParameterIntrospector.getCtorParamNames(ctor)
+            if (index < names.length) Option(names(index)) else None
+          }
+          case method: Method => {
+            val names = JavaParameterIntrospector.getMethodParamNames(method)
+            if (index < names.length) Option(names(index)) else None
+          }
+          case field: Field => Option(JavaParameterIntrospector.getFieldName(field))
+          case parameter: Parameter => Option(JavaParameterIntrospector.getParameterName(parameter))
+          case _ => None
         }
-        case method: Method => {
-          val names = JavaParameterIntrospector.getMethodParamNames(method)
-          if (index < names.length) names(index) else None.orNull
-        }
-        case field: Field => JavaParameterIntrospector.getFieldName(field)
-        case parameter: Parameter => JavaParameterIntrospector.getParameterName(parameter)
-        case _ => None.orNull
       }
+      case _ => None
     }
-    case _ => None.orNull
+    result.map(NameTransformer.decode).getOrElse(None.orNull)
   }
 }

@@ -59,8 +59,7 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
     val v2 = deserialize(serialize(AnnotatedOptionLongWithDash(Some(252))), typeRef)
     v2 shouldBe AnnotatedOptionLongWithDash(Some(252L))
     v2.`value-long`.get shouldBe 252L
-    //next assert fails with an unboxing error with Scala 2.11 build but passes with Scala 2.11/2.13
-    //useOptionLong(v2.`value-long`) shouldBe 504L
+    useOptionLong(v2.`value-long`) shouldBe 504L
   }
 
   it should "support renaming param names to names with dashes" in {
