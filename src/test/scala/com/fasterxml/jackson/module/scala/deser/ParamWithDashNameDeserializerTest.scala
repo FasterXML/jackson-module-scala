@@ -71,7 +71,6 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
     v1 shouldBe AnnotatedOptionLongWithDashButChangeToCamelCase(Some(351L))
     v1.valueLong.get shouldBe 351L
 
-    // serialize from case class then deserialize and then apply the method that will fail
     val v2 = deserialize(serialize(AnnotatedOptionLongWithDashButChangeToCamelCase(Some(352))), typeRef)
     v2 shouldBe AnnotatedOptionLongWithDashButChangeToCamelCase(Some(352L))
     v2.valueLong.get shouldBe 352L
