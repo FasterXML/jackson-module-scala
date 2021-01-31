@@ -74,18 +74,17 @@ class ScalaObjectMapperTest extends JacksonTest {
     result should equal(mapper.constructType(classOf[Target]))
   }
 
-//TODO fix
-//  it should "read value from json parser" in {
-//    val parser = mapper.getFactory.createParser(genericJson)
-//    val result = mapper.readValue[GenericTestClass[Int]](parser)
-//    result should equal(genericInt)
-//  }
-//
-//  it should "read values from json parser" in {
-//    val parser = mapper.getFactory.createParser(listGenericJson)
-//    val result = mapper.readValues[GenericTestClass[Int]](parser).asScala.toList
-//    result should equal(listGenericInt)
-//  }
+  it should "read value from json parser" in {
+    val parser = mapper.createParser(genericJson)
+    val result = mapper.readValue[GenericTestClass[Int]](parser)
+    result should equal(genericInt)
+  }
+
+  it should "read values from json parser" in {
+    val parser = mapper.createParser(listGenericJson)
+    val result = mapper.readValues[GenericTestClass[Int]](parser).asScala.toList
+    result should equal(listGenericInt)
+  }
 
   it should "read value from tree node" in {
     val treeNode = mapper.readTree(genericJson).asInstanceOf[TreeNode]

@@ -40,7 +40,6 @@ object ClassTagExtensionsTest {
     }
   }
 
-  private class Mixin(val foo: String)
   private case class GenericTestClass[T](t: T)
 }
 
@@ -55,6 +54,18 @@ class ClassTagExtensionsTest extends JacksonTest {
     val treeNode = mapper.readTree(genericJson).asInstanceOf[TreeNode]
     val result = mapper.treeToValue[GenericTestClass[Int]](treeNode)
     result should equal(genericInt)
+  }
+
+  it should "read value from json parser" in {
+    val parser = mapper.createParser(genericJson)
+    val result = mapper.readValue[GenericTestClass[Int]](parser)
+    result should equal(genericInt)
+  }
+
+  it should "read values from json parser" in {
+    val parser = mapper.createParser(listGenericJson)
+    val result = mapper.readValues[GenericTestClass[Int]](parser).asScala.toList
+    result should equal(listGenericInt)
   }
 
   it should "read value from file" in {
