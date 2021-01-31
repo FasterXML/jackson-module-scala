@@ -119,24 +119,24 @@ class ScalaObjectMapperTest extends JacksonTest {
   }
 
   it should "read value from Reader" in {
-    val reader = new InputStreamReader(new ByteArrayInputStream(genericJson.getBytes))
+    val reader = new InputStreamReader(new ByteArrayInputStream(genericJson.getBytes(StandardCharsets.UTF_8)))
     val result = mapper.readValue[GenericTestClass[Int]](reader)
     result should equal(genericInt)
   }
 
   it should "read value from stream" in {
-    val stream = new ByteArrayInputStream(genericJson.getBytes)
+    val stream = new ByteArrayInputStream(genericJson.getBytes(StandardCharsets.UTF_8))
     val result = mapper.readValue[GenericTestClass[Int]](stream)
     result should equal(genericInt)
   }
 
   it should "read value from byte array" in {
-    val result = mapper.readValue[GenericTestClass[Int]](genericJson.getBytes)
+    val result = mapper.readValue[GenericTestClass[Int]](genericJson.getBytes(StandardCharsets.UTF_8))
     result should equal(genericInt)
   }
 
   it should "read value from subset of byte array" in {
-    val result = mapper.readValue[GenericTestClass[Int]](genericJson.getBytes, 0, genericJson.length)
+    val result = mapper.readValue[GenericTestClass[Int]](genericJson.getBytes(StandardCharsets.UTF_8), 0, genericJson.length)
     result should equal(genericInt)
   }
 
@@ -253,24 +253,24 @@ class ScalaObjectMapperTest extends JacksonTest {
   }
 
   it should "update value from Reader" in {
-    val reader = new InputStreamReader(new ByteArrayInputStream(toplevelArrayJson.getBytes))
+    val reader = new InputStreamReader(new ByteArrayInputStream(toplevelArrayJson.getBytes(StandardCharsets.UTF_8)))
     val result = mapper.updateValue(List.empty[GenericTestClass[Int]], reader)
     result should equal(listGenericInt)
   }
 
   it should "update value from stream" in {
-    val stream = new ByteArrayInputStream(toplevelArrayJson.getBytes)
+    val stream = new ByteArrayInputStream(toplevelArrayJson.getBytes(StandardCharsets.UTF_8))
     val result = mapper.updateValue(List.empty[GenericTestClass[Int]], stream)
     result should equal(listGenericInt)
   }
 
   it should "update value from byte array" in {
-    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes)
+    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes(StandardCharsets.UTF_8))
     result should equal(listGenericInt)
   }
 
   it should "update value from subset of byte array" in {
-    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes, 0, toplevelArrayJson.length)
+    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes(StandardCharsets.UTF_8), 0, toplevelArrayJson.length)
     result should equal(listGenericInt)
   }
 
