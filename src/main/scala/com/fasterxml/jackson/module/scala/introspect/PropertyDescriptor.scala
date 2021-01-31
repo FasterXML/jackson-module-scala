@@ -19,6 +19,7 @@ case class PropertyDescriptor(name: String,
 {
   if (List(field, getter).flatten.isEmpty) throw new IllegalArgumentException("One of field or getter must be defined.")
 
+  @deprecated("remove apparently unused and untested function", "2.12.2")
   def findAnnotation[A <: java.lang.annotation.Annotation](implicit mf: Manifest[A]): Option[A] = {
     val cls = mf.runtimeClass.asInstanceOf[Class[A]]
     lazy val paramAnnotation = (param flatMap { cp =>
