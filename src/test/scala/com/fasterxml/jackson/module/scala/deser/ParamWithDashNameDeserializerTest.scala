@@ -56,12 +56,10 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
     v1 shouldBe AnnotatedOptionLongWithDash(Some(251L))
     v1.`value-long`.get shouldBe 251L
 
-    // serialize from case class then deserialize and then apply the method that will fail
     val v2 = deserialize(serialize(AnnotatedOptionLongWithDash(Some(252))), typeRef)
     v2 shouldBe AnnotatedOptionLongWithDash(Some(252L))
     v2.`value-long`.get shouldBe 252L
-    //TODO last assert fails due to unboxing issue
-    //useOptionLong(v2.`value-long`) shouldBe 504L
+    useOptionLong(v2.`value-long`) shouldBe 504L
   }
 
   it should "support renaming param names to names with dashes" in {
