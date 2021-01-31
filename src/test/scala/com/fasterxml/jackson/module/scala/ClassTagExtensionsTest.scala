@@ -99,24 +99,24 @@ class ClassTagExtensionsTest extends JacksonTest {
   }
 
   it should "read value from Reader" in {
-    val reader = new InputStreamReader(new ByteArrayInputStream(genericJson.getBytes))
+    val reader = new InputStreamReader(new ByteArrayInputStream(genericJson.getBytes(StandardCharsets.UTF_8)))
     val result = mapper.readValue[GenericTestClass[Int]](reader)
     result should equal(genericInt)
   }
 
   it should "read value from stream" in {
-    val stream = new ByteArrayInputStream(genericJson.getBytes)
+    val stream = new ByteArrayInputStream(genericJson.getBytes(StandardCharsets.UTF_8))
     val result = mapper.readValue[GenericTestClass[Int]](stream)
     result should equal(genericInt)
   }
 
   it should "read value from byte array" in {
-    val result = mapper.readValue[GenericTestClass[Int]](genericJson.getBytes)
+    val result = mapper.readValue[GenericTestClass[Int]](genericJson.getBytes(StandardCharsets.UTF_8))
     result should equal(genericInt)
   }
 
   it should "read value from subset of byte array" in {
-    val result = mapper.readValue[GenericTestClass[Int]](genericJson.getBytes, 0, genericJson.length)
+    val result = mapper.readValue[GenericTestClass[Int]](genericJson.getBytes(StandardCharsets.UTF_8), 0, genericJson.length)
     result should equal(genericInt)
   }
 
@@ -145,8 +145,9 @@ class ClassTagExtensionsTest extends JacksonTest {
   }
 
   it should "convert between types" ignore {
-    val result = mapper.convertValue[GenericTestClass[Int]](GenericTestClass("42"))
-    result should equal(genericInt)
+    val result = mapper.convertValue[GenericTestClass[BigInt]](GenericTestClass("42"))
+    //assert fails with unboxing error
+    result.t.intValue should equal(genericInt.t)
   }
 
   it should "read values as Array from a JSON array" in {
@@ -223,29 +224,29 @@ class ClassTagExtensionsTest extends JacksonTest {
   }
 
   it should "update value from string" ignore {
-    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson)
+    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], toplevelArrayJson)
     result should equal(listGenericInt)
   }
 
   it should "update value from Reader" ignore {
-    val reader = new InputStreamReader(new ByteArrayInputStream(toplevelArrayJson.getBytes))
-    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], reader)
+    val reader = new InputStreamReader(new ByteArrayInputStream(toplevelArrayJson.getBytes(StandardCharsets.UTF_8)))
+    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], reader)
     result should equal(listGenericInt)
   }
 
   it should "update value from stream" ignore {
-    val stream = new ByteArrayInputStream(toplevelArrayJson.getBytes)
-    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], stream)
+    val stream = new ByteArrayInputStream(toplevelArrayJson.getBytes(StandardCharsets.UTF_8))
+    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], stream)
     result should equal(listGenericInt)
   }
 
   it should "update value from byte array" ignore {
-    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes)
+    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], toplevelArrayJson.getBytes(StandardCharsets.UTF_8))
     result should equal(listGenericInt)
   }
 
   it should "update value from subset of byte array" ignore {
-    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes, 0, toplevelArrayJson.length)
+    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], toplevelArrayJson.getBytes(StandardCharsets.UTF_8), 0, toplevelArrayJson.length)
     result should equal(listGenericInt)
   }
 
