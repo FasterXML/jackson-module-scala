@@ -42,6 +42,7 @@ object BeanIntrospector {
     names.map(NameTransformer.decode)
   }
 
+  @deprecated("use apply(cls: Class[_] instead. Manifests are not supported by Scala 3", "2.12.2")
   def apply[T <: AnyRef](implicit mf: Manifest[_]): BeanDescriptor = apply[T](mf.runtimeClass)
 
   def apply[T <: AnyRef](cls: Class[_]) = {
