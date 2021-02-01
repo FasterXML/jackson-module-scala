@@ -189,11 +189,12 @@ object BeanIntrospector {
     //create properties for all appropriate fields
     val fields = for {
       cls <- hierarchy
-      classW = ClassW(cls)
+      scalaCaseObject = isScalaCaseObject(cls)
+      isScalaObject = ClassW(cls).isScalaObject
       field <- cls.getDeclaredFields
       name = maybePrivateName(field)
       if !name.contains('$')
-      if (classW.isScalaObject || isScalaCaseObject(cls) || isAcceptableField(field))
+      if (isScalaObject || scalaCaseObject || isAcceptableField(field))
       beanGetter = findBeanGetter(cls, name)
       beanSetter = findBeanSetter(cls, name)
     } yield PropertyDescriptor(name, findConstructorParam(hierarchy.head, name), Some(field), findGetter(cls, name), findSetter(cls, name), beanGetter, beanSetter)
@@ -203,7 +204,7 @@ object BeanIntrospector {
     //We also require that there is no field defined on the class matching the param name -
     //the assumption is that if we have made it this far, the field/getter/setter combo would have been
     //picked up if the field was valid. If we have not already added the field, and it's present, then
-    //it must be somehow inappropriate (static, volitile, etc)
+    //it must be somehow inappropriate (static, volatile, etc)
     //this catches the case where people explicitly write getter-like and setter-like methods
     //(for example, compound properties)
     //Note - this will discard 'dangling' getters as an introspected property - getters must have setters,
@@ -217,8 +218,8 @@ object BeanIntrospector {
       if findField(cls, name).isEmpty
       if !name.contains('$')
       if !fields.exists(_.name == name)
-      getterProperty = getter.getAnnotation(classOf[JsonProperty])
-      setter = findSetter(cls, name) if setter.isDefined || (getterProperty != null && getterProperty.value != JsonProperty.USE_DEFAULT_NAME)
+      getterProperty = Option(getter.getAnnotation(classOf[JsonProperty]))
+      setter = findSetter(cls, name) if setter.isDefined || (getterProperty.isDefined && getterProperty.get.value != JsonProperty.USE_DEFAULT_NAME)
       beanGetter = findBeanGetter(cls, name)
       beanSetter = findBeanSetter(cls, name)
     } yield PropertyDescriptor(name, None, None, Some(getter), setter, beanGetter, beanSetter)
