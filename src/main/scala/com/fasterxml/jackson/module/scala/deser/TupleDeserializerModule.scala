@@ -3,10 +3,9 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, ContextualDeserializer, Deserializers}
+import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.JacksonModule
-import com.fasterxml.jackson.module.scala.deser.OptionDeserializerResolver.OPTION
 
 import scala.languageFeature.postfixOps
 
@@ -14,11 +13,11 @@ private class TupleDeserializer(javaType: JavaType,
                                 config: DeserializationConfig,
                                 valueDeserializers: Seq[JsonDeserializer[Object]] = Nil,
                                 typeDeserializers: Seq[TypeDeserializer] = Nil)
-  extends StdDeserializer[Product](classOf[Product]) with ContextualDeserializer {
+  extends StdDeserializer[Product](classOf[Product]) {
 
   val cls = javaType.getRawClass
   val ctors = cls.getConstructors
-  if (ctors.length > 1) throw new IllegalStateException("Tuple should have only one constructor")
+  if (ctors.length != 1) throw new IllegalStateException("Tuple should have exactly one constructor")
   val ctor = ctors.head
 
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty): TupleDeserializer = {

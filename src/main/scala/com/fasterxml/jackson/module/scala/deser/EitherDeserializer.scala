@@ -13,8 +13,7 @@ private class EitherDeserializer(javaType: JavaType,
                                  config: DeserializationConfig,
                                  leftDeserializerConfig: ElementDeserializerConfig,
                                  rightDeserializerConfig: ElementDeserializerConfig)
-  extends StdDeserializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]])
-  with ContextualDeserializer {
+  extends StdDeserializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]]) {
 
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[Either[AnyRef, AnyRef]] = {
 

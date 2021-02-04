@@ -4,16 +4,15 @@ import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
+import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
-import com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerResolver.ENUMERATION
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 private class OptionDeserializer(fullType: JavaType,
                                  valueTypeDeserializer: Option[TypeDeserializer],
                                  valueDeserializer: Option[JsonDeserializer[AnyRef]],
                                  beanProperty: Option[BeanProperty] = None)
-  extends StdDeserializer[Option[AnyRef]](fullType) with ContextualDeserializer {
+  extends StdDeserializer[Option[AnyRef]](fullType) {
 
   override def getValueType: JavaType = fullType
 

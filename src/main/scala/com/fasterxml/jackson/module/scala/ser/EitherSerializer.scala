@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.impl.{PropertySerializerMap, UnknownSerializer}
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.fasterxml.jackson.databind.ser.{ContextualSerializer, Serializers}
+import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.module.scala.modifiers.EitherTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
@@ -33,8 +33,7 @@ private class EitherSerializer(left: EitherDetails,
                                property: Option[BeanProperty],
                                contentInclusion: Option[JsonInclude.Include] = None,
                                var dynamicSerializers: PropertySerializerMap = PropertySerializerMap.emptyForProperties())
-  extends StdSerializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]])
-    with ContextualSerializer {
+  extends StdSerializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]]) {
 
   import com.fasterxml.jackson.module.scala.ser.OptionSerializer._
 
