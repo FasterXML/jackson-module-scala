@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_SINGLE_VALUE
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 
 import scala.reflect.{ClassTag, classTag}
 
@@ -65,6 +66,6 @@ private object NumberDeserializers extends Deserializers.Base
   }
 }
 
-trait ScalaNumberDeserializersModule extends JacksonModule {
+trait ScalaNumberDeserializersModule extends JacksonScalaModule {
   this += NumberDeserializers
 }

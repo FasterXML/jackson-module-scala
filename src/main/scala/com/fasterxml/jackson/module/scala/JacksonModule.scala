@@ -4,11 +4,11 @@ import java.util.Properties
 
 import com.fasterxml.jackson.core.{JsonParser, Version}
 import com.fasterxml.jackson.core.util.VersionUtil
-import com.fasterxml.jackson.databind.Module.SetupContext
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.`type`.TypeModifier
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
-import com.fasterxml.jackson.databind.{DatabindException, Module}
+import com.fasterxml.jackson.databind.DatabindException
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -36,7 +36,7 @@ object VersionExtractor {
   def unapply(v: Version) = Some(v.getMajorVersion, v.getMinorVersion)
 }
 
-trait JacksonModule extends Module {
+trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
 
   private val initializers = Seq.newBuilder[SetupContext => Unit]
 
