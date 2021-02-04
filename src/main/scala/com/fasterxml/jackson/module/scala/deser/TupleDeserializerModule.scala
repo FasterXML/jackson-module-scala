@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, Contextual
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import scala.languageFeature.postfixOps
+
 private class TupleDeserializer(javaType: JavaType,
                                 config: DeserializationConfig,
                                 valueDeserializers: Seq[JsonDeserializer[Object]] = Nil,
@@ -15,13 +17,13 @@ private class TupleDeserializer(javaType: JavaType,
 
   val cls = javaType.getRawClass
   val ctors = cls.getConstructors
-  if (ctors.length > 1) throw new IllegalStateException("Tuple should have only one constructor")
+  if (ctors.length != 1) throw new IllegalStateException("Tuple should have exactly one constructor")
   val ctor = ctors.head
 
   def createContextual(ctxt: DeserializationContext, property: BeanProperty) = {
     // For now, the dumb and simple route of assuming we don't have the right deserializers.
     // This will probably result in duplicate deserializers, but it's safer than assuming
-    // a current non-empty seqeunce of valueDeserializers is correct.
+    // a current non-empty sequence of valueDeserializers is correct.
     val paramTypes = for (i <- 0 until javaType.containedTypeCount()) yield javaType.containedType(i)
 
     val paramDesers = paramTypes map (ctxt.findContextualValueDeserializer(_, property))
