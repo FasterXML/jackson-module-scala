@@ -23,7 +23,7 @@ private class TupleDeserializer(javaType: JavaType,
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty): TupleDeserializer = {
     // For now, the dumb and simple route of assuming we don't have the right deserializers.
     // This will probably result in duplicate deserializers, but it's safer than assuming
-    // a current non-empty seqeunce of valueDeserializers is correct.
+    // a current non-empty sequence of valueDeserializers is correct.
     val paramTypes = for (i <- 0 until javaType.containedTypeCount()) yield javaType.containedType(i)
 
     val paramDesers = paramTypes map (ctxt.findContextualValueDeserializer(_, property))
