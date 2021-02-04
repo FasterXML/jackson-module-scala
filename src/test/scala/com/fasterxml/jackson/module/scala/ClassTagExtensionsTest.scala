@@ -6,7 +6,7 @@ import java.nio.file.Files
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.databind.{DatabindException, JacksonModule, ObjectMapper}
+import com.fasterxml.jackson.databind.{DatabindException, ObjectMapper}
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
 
 import scala.collection.JavaConverters._
@@ -47,7 +47,7 @@ class ClassTagExtensionsTest extends JacksonTest {
 
   import ClassTagExtensionsTest._
 
-  def module: JacksonModule = DefaultScalaModule
+  def module = DefaultScalaModule
   val mapper = newMapperWithClassTagExtensions
 
   "An ObjectMapper with the ClassTagExtensions mixin" should "read value from tree node" in {

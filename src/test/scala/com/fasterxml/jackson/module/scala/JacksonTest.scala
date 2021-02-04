@@ -1,10 +1,10 @@
 package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.JacksonModule
+import com.fasterxml.jackson.databind.{JacksonModule => DatabindModule}
 
 abstract class JacksonTest extends BaseSpec {
-  def module: JacksonModule
+  def module: DatabindModule
 
   def newBuilder: JsonMapper.Builder = {
     JsonMapper.builder().addModule(module)

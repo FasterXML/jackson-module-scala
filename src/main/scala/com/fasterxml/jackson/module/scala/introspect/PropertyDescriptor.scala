@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala
 package introspect
 
 import java.lang.reflect.{Constructor, Field, Method}
+import scala.language.existentials
 
 case class ConstructorParameter(constructor: Constructor[_], index: Int, defaultValue: Option[() => AnyRef])
 
