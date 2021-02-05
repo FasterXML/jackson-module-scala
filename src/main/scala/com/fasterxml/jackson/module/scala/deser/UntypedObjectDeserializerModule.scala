@@ -1,18 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.deser.{Deserializers, std}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
-object UntypedObjectDeserializer
-{
-  lazy val SEQ = new TypeReference[collection.Seq[Any]] {}
-  lazy val MAP = new TypeReference[collection.Map[String,Any]] {}
-}
-
-private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer(null, null) {
+private class UntypedScalaObjectDeserializer extends std.UntypedObjectDeserializer(null, null) {
 
   private var _mapDeser: JsonDeserializer[AnyRef] = _
   private var _listDeser: JsonDeserializer[AnyRef] = _
@@ -52,7 +45,7 @@ private object UntypedObjectDeserializerResolver extends Deserializers.Base {
                                     config: DeserializationConfig,
                                     beanDesc: BeanDescription) =
     if (!OBJECT.equals(javaType.getRawClass)) None.orNull
-    else new UntypedObjectDeserializer
+    else new UntypedScalaObjectDeserializer
 }
 
 trait UntypedObjectDeserializerModule extends JacksonModule {
