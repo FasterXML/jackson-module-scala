@@ -1,11 +1,9 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import java.{lang => jl}
-
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.ContainerSerializer
-import com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase
+import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, StdContainerSerializer}
 import com.fasterxml.jackson.databind.{BeanProperty, JavaType, JsonSerializer, SerializationFeature, SerializerProvider}
 
 import scala.util.control.NonFatal
@@ -77,7 +75,7 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     new ScalaIterableSerializer(this, property, vts, elementSerializer, unwrapSingle)
   }
 
-  override def _withValueTypeSerializer(vts: TypeSerializer): ContainerSerializer[_] = {
+  override def _withValueTypeSerializer(vts: TypeSerializer): StdContainerSerializer[_] = {
     new ScalaIterableSerializer(this, _property, vts, _elementSerializer, _unwrapSingle)
   }
 

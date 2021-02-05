@@ -1,20 +1,14 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.deser.{Deserializers, std}
+import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.deser.jdk.UntypedObjectDeserializer
 import com.fasterxml.jackson.module.scala.JacksonModule
-import com.fasterxml.jackson.module.scala.deser.TupleDeserializerResolver.isOption
 
 import scala.languageFeature.postfixOps
 
-object UntypedObjectDeserializer {
-  lazy val SEQ = new TypeReference[collection.Seq[Any]] {}
-  lazy val MAP = new TypeReference[collection.Map[String,Any]] {}
-}
-
-private class UntypedObjectDeserializer extends std.UntypedObjectDeserializer(null, null) {
+private class UntypedScalaObjectDeserializer extends UntypedObjectDeserializer(null, null) {
 
   private var _mapDeser: JsonDeserializer[AnyRef] = _
   private var _listDeser: JsonDeserializer[AnyRef] = _
@@ -55,7 +49,7 @@ private object UntypedObjectDeserializerResolver extends Deserializers.Base {
                                     config: DeserializationConfig,
                                     beanDesc: BeanDescription) =
     if (!objectClass.equals(javaType.getRawClass)) null
-    else new UntypedObjectDeserializer
+    else new UntypedScalaObjectDeserializer
 
   override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
     objectClass == valueType

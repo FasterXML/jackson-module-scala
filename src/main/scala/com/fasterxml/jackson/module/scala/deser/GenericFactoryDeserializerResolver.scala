@@ -4,7 +4,8 @@ import java.util
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
-import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializerBase, StdValueInstantiator}
+import com.fasterxml.jackson.databind.deser.jdk.CollectionDeserializer
+import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, StdValueInstantiator}
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 

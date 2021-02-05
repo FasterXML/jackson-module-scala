@@ -3,8 +3,9 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.MapLikeType
+import com.fasterxml.jackson.databind.deser.jdk.MapDeserializer
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator}
-import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
+import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
 import scala.collection.mutable.ListBuffer
