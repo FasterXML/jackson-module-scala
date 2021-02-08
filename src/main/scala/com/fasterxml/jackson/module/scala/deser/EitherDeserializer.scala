@@ -15,7 +15,7 @@ private class EitherDeserializer(javaType: JavaType,
                                  rightDeserializerConfig: ElementDeserializerConfig)
   extends StdDeserializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]]) {
 
-  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[Either[AnyRef, AnyRef]] = {
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): ValueDeserializer[Either[AnyRef, AnyRef]] = {
 
     def deserializerConfigFor(param: Int, inType: JavaType, property: BeanProperty): ElementDeserializerConfig = {
       val containedType = javaType.containedType(param)
@@ -23,7 +23,7 @@ private class EitherDeserializer(javaType: JavaType,
       val paramDeserializer = Option( ctxt.findContextualValueDeserializer(containedType, property) )
       val typeDeserializer = Option(property).flatMap(p => Option(ctxt.findPropertyTypeDeserializer(containedType, p.getMember)) )
 
-      ElementDeserializerConfig( paramDeserializer.map(_.asInstanceOf[JsonDeserializer[AnyRef]]), typeDeserializer )
+      ElementDeserializerConfig( paramDeserializer.map(_.asInstanceOf[ValueDeserializer[AnyRef]]), typeDeserializer )
     }
 
     javaType.containedTypeCount match {
@@ -91,7 +91,7 @@ private class EitherDeserializer(javaType: JavaType,
 }
 
 private object EitherDeserializer {
-  case class ElementDeserializerConfig(deserializer: Option[JsonDeserializer[AnyRef]], typeDeseriazlier: Option[TypeDeserializer])
+  case class ElementDeserializerConfig(deserializer: Option[ValueDeserializer[AnyRef]], typeDeseriazlier: Option[TypeDeserializer])
 
   object ElementDeserializerConfig {
     val empty = ElementDeserializerConfig(None, None)
@@ -103,7 +103,7 @@ private object EitherDeserializerResolver extends Deserializers.Base {
 
   private val EITHER = classOf[Either[_, _]]
 
-  override def findBeanDeserializer(`type`: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): JsonDeserializer[_] = {
+  override def findBeanDeserializer(`type`: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {
     val rawClass = `type`.getRawClass
 
     if (!EITHER.isAssignableFrom(rawClass)) {
@@ -115,7 +115,7 @@ private object EitherDeserializerResolver extends Deserializers.Base {
 
   override def findReferenceDeserializer(refType: ReferenceType, config: DeserializationConfig,
                                          beanDesc: BeanDescription, contentTypeDeserializer: TypeDeserializer,
-                                         contentDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+                                         contentDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     val rawClass = refType.getRawClass
 
     if (!EITHER.isAssignableFrom(rawClass)) {

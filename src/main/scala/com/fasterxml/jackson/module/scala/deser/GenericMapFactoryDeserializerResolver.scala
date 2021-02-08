@@ -33,7 +33,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
                                        beanDesc: BeanDescription,
                                        keyDeserializer: KeyDeserializer,
                                        elementTypeDeserializer: TypeDeserializer,
-                                       elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+                                       elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     if (!CLASS_DOMAIN.isAssignableFrom(theType.getRawClass)) null
     else {
       val instantiator = new Instantiator(config, theType)
@@ -116,15 +116,15 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
   private class Deserializer[K, V](mapType: MapLikeType, containerDeserializer: MapDeserializer)
     extends ContainerDeserializerBase[CC[K, V]](mapType) {
 
-    def this(mapType: MapLikeType, valueInstantiator: ValueInstantiator, keyDeser: KeyDeserializer, valueDeser: JsonDeserializer[_], valueTypeDeser: TypeDeserializer) = {
-      this(mapType, new MapDeserializer(mapType, valueInstantiator, keyDeser, valueDeser.asInstanceOf[JsonDeserializer[AnyRef]], valueTypeDeser))
+    def this(mapType: MapLikeType, valueInstantiator: ValueInstantiator, keyDeser: KeyDeserializer, valueDeser: ValueDeserializer[_], valueTypeDeser: TypeDeserializer) = {
+      this(mapType, new MapDeserializer(mapType, valueInstantiator, keyDeser, valueDeser.asInstanceOf[ValueDeserializer[AnyRef]], valueTypeDeser))
     }
 
     override def getContentType: JavaType = containerDeserializer.getContentType
 
-    override def getContentDeserializer: JsonDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
+    override def getContentDeserializer: ValueDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
 
-    override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
+    override def createContextual(ctxt: DeserializationContext, property: BeanProperty): ValueDeserializer[_] = {
       val newDelegate = containerDeserializer.createContextual(ctxt, property).asInstanceOf[MapDeserializer]
       new Deserializer(mapType, newDelegate)
     }

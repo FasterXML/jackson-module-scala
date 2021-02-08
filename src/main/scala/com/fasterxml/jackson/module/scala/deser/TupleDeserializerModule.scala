@@ -11,7 +11,7 @@ import scala.languageFeature.postfixOps
 
 private class TupleDeserializer(javaType: JavaType,
                                 config: DeserializationConfig,
-                                valueDeserializers: Seq[JsonDeserializer[Object]] = Nil,
+                                valueDeserializers: Seq[ValueDeserializer[Object]] = Nil,
                                 typeDeserializers: Seq[TypeDeserializer] = Nil)
   extends StdDeserializer[Product](classOf[Product]) {
 
@@ -73,7 +73,7 @@ private object TupleDeserializerResolver extends Deserializers.Base {
 
   override def findBeanDeserializer(javaType: JavaType,
                                     config: DeserializationConfig,
-                                    beanDesc: BeanDescription): JsonDeserializer[_] = {
+                                    beanDesc: BeanDescription): ValueDeserializer[_] = {
     val cls = javaType.getRawClass
     if (!PRODUCT.isAssignableFrom(cls)) null else
     // If it's not *actually* a tuple, it's either a case class or a custom Product

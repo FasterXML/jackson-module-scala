@@ -50,7 +50,7 @@ private object NumberDeserializers extends Deserializers.Base
   val BigDecimalClass = BigDecimalDeserializer.handledType()
   val BigIntClass = BigIntDeserializer.handledType()
 
-  override def findBeanDeserializer(tpe: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): JsonDeserializer[_] =
+  override def findBeanDeserializer(tpe: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] =
     tpe.getRawClass match {
       case BigDecimalClass => BigDecimalDeserializer
       case BigIntClass => BigIntDeserializer

@@ -10,8 +10,8 @@ import scala.languageFeature.postfixOps
 
 private class UntypedScalaObjectDeserializer extends UntypedObjectDeserializer(null, null) {
 
-  private var _mapDeser: JsonDeserializer[AnyRef] = _
-  private var _listDeser: JsonDeserializer[AnyRef] = _
+  private var _mapDeser: ValueDeserializer[AnyRef] = _
+  private var _listDeser: ValueDeserializer[AnyRef] = _
 
   override def resolve(ctxt: DeserializationContext): Unit = {
     super.resolve(ctxt)
@@ -20,10 +20,10 @@ private class UntypedScalaObjectDeserializer extends UntypedObjectDeserializer(n
     val tf = ctxt.getTypeFactory
     _mapDeser = ctxt.findRootValueDeserializer(
       ctxt.getConfig.mapAbstractType(
-        tf.constructMapLikeType(classOf[collection.Map[_,_]], string, anyRef))).asInstanceOf[JsonDeserializer[AnyRef]]
+        tf.constructMapLikeType(classOf[collection.Map[_,_]], string, anyRef))).asInstanceOf[ValueDeserializer[AnyRef]]
     _listDeser = ctxt.findRootValueDeserializer(
       ctxt.getConfig.mapAbstractType(
-        tf.constructCollectionLikeType(classOf[collection.Seq[_]], anyRef))).asInstanceOf[JsonDeserializer[AnyRef]]
+        tf.constructCollectionLikeType(classOf[collection.Seq[_]], anyRef))).asInstanceOf[ValueDeserializer[AnyRef]]
   }
 
   override def mapArray(jp: JsonParser, ctxt: DeserializationContext): AnyRef = {

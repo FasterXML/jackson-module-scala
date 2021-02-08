@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer, ObjectMapper}
+import com.fasterxml.jackson.databind.{DeserializationContext, ValueDeserializer, ObjectMapper}
 import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 
 abstract class A
@@ -11,7 +11,7 @@ abstract class A
 case class A1(prop1: String) extends A
 case class A2(prop1: String, prop2: String) extends A
 
-class ADeserializer extends JsonDeserializer[A] {
+class ADeserializer extends ValueDeserializer[A] {
   def deserialize(jp: JsonParser, c: DeserializationContext): A1 = {
     jp.skipChildren()
     jp.nextToken()

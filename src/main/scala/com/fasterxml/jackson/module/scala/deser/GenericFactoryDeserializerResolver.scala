@@ -33,10 +33,10 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
                                               config: DeserializationConfig,
                                               beanDesc: BeanDescription,
                                               elementTypeDeserializer: TypeDeserializer,
-                                              elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+                                              elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     if (!CLASS_DOMAIN.isAssignableFrom(collectionType.getRawClass)) null
     else {
-      val deser = elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]]
+      val deser = elementDeserializer.asInstanceOf[ValueDeserializer[AnyRef]]
       val instantiator = new Instantiator(config, collectionType, collectionType.getContentType)
       new Deserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
@@ -113,7 +113,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
   private class Deserializer[A](collectionType: JavaType, containerDeserializer: CollectionDeserializer)
     extends ContainerDeserializerBase[CC[A]](collectionType) {
 
-    def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) = {
+    def this(collectionType: JavaType, valueDeser: ValueDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) = {
       this(collectionType, new CollectionDeserializer(collectionType, valueDeser, valueTypeDeser, valueInstantiator))
     }
 
@@ -124,7 +124,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
 
     override def getContentType: JavaType = containerDeserializer.getContentType
 
-    override def getContentDeserializer: JsonDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
+    override def getContentDeserializer: ValueDeserializer[AnyRef] = containerDeserializer.getContentDeserializer
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[A] = {
       containerDeserializer.deserialize(jp, ctxt) match {

@@ -8,9 +8,9 @@ import com.fasterxml.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 import com.fasterxml.jackson.module.scala.util.EnumResolver
 
 private trait ContextualEnumerationDeserializer {
-  self: JsonDeserializer[Enumeration#Value] =>
+  self: ValueDeserializer[Enumeration#Value] =>
 
-  override def createContextual(ctxt: DeserializationContext, property: BeanProperty) : JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer = {
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty) : ValueDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer = {
     EnumResolver(ctxt.getContextualType, property).map(r => new AnnotatedEnumerationDeserializer(r)).getOrElse(this)
   }
 
@@ -19,7 +19,7 @@ private trait ContextualEnumerationDeserializer {
 /**
  * This class is mostly legacy logic to be deprecated/removed in 3.0
  */
-private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
+private class EnumerationDeserializer(theType:JavaType) extends ValueDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
   override def deserialize(jp:JsonParser, ctxt:DeserializationContext): Enumeration#Value = {
     if (jp.currentToken() != JsonToken.START_OBJECT) {
       ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
@@ -46,7 +46,7 @@ private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer
   }
 }
 
-private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends JsonDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
+private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends ValueDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Enumeration#Value = {
     jp.currentToken() match {
       case JsonToken.VALUE_STRING => r.getEnum(jp.getValueAsString)

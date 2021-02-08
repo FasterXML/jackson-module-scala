@@ -10,7 +10,7 @@ import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 private class OptionDeserializer(fullType: JavaType,
                                  valueTypeDeserializer: Option[TypeDeserializer],
-                                 valueDeserializer: Option[JsonDeserializer[AnyRef]],
+                                 valueDeserializer: Option[ValueDeserializer[AnyRef]],
                                  beanProperty: Option[BeanProperty] = None)
   extends StdDeserializer[Option[AnyRef]](fullType) {
 
@@ -20,7 +20,7 @@ private class OptionDeserializer(fullType: JavaType,
 
   private[this] def withResolved(fullType: JavaType,
                                  typeDeser: Option[TypeDeserializer],
-                                 valueDeser: Option[JsonDeserializer[_]],
+                                 valueDeser: Option[ValueDeserializer[_]],
                                  beanProperty: Option[BeanProperty]): OptionDeserializer = {
     if (fullType == this.fullType &&
       typeDeser == this.valueTypeDeserializer &&
@@ -28,10 +28,10 @@ private class OptionDeserializer(fullType: JavaType,
       beanProperty == this.beanProperty) {
       return this
     }
-    new OptionDeserializer(fullType, typeDeser, valueDeser.asInstanceOf[Option[JsonDeserializer[AnyRef]]], beanProperty)
+    new OptionDeserializer(fullType, typeDeser, valueDeser.asInstanceOf[Option[ValueDeserializer[AnyRef]]], beanProperty)
   }
 
-  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[Option[AnyRef]] = {
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): ValueDeserializer[Option[AnyRef]] = {
     val typeDeser = valueTypeDeserializer.map(_.forProperty(property))
     var deser = valueDeserializer
     var typ = fullType
@@ -48,7 +48,7 @@ private class OptionDeserializer(fullType: JavaType,
         deser = Option(ctxt.findContextualValueDeserializer(refdType(), property))
       }
     } else { // otherwise directly assigned, probably not contextual yet:
-      deser = Option(ctxt.handleSecondaryContextualization(deser.get, property, refdType()).asInstanceOf[JsonDeserializer[AnyRef]])
+      deser = Option(ctxt.handleSecondaryContextualization(deser.get, property, refdType()).asInstanceOf[ValueDeserializer[AnyRef]])
     }
 
     withResolved(typ, typeDeser, deser, Option(property))
@@ -81,12 +81,12 @@ private object OptionDeserializerResolver extends Deserializers.Base {
                                          config: DeserializationConfig,
                                          beanDesc: BeanDescription,
                                          contentTypeDeserializer: TypeDeserializer,
-                                         contentDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+                                         contentDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     if (!OPTION.isAssignableFrom(refType.getRawClass)) None.orNull
     else {
       val elementType = refType.getContentType
       val typeDeser = Option(contentTypeDeserializer).orElse(Option(elementType.getTypeHandler[TypeDeserializer]))
-      val valDeser = Option(contentDeserializer).orElse(Option(elementType.getValueHandler)).asInstanceOf[Option[JsonDeserializer[AnyRef]]]
+      val valDeser = Option(contentDeserializer).orElse(Option(elementType.getValueHandler)).asInstanceOf[Option[ValueDeserializer[AnyRef]]]
       new OptionDeserializer(refType, typeDeser, valDeser)
     }
   }

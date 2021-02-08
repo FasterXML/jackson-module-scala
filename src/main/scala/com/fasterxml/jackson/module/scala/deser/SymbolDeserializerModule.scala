@@ -16,7 +16,7 @@ private object SymbolDeserializer extends StdDeserializer[Symbol](classOf[Symbol
 private object SymbolDeserializerResolver extends Deserializers.Base {
   private val SYMBOL = classOf[Symbol]
 
-  override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): JsonDeserializer[Symbol] =
+  override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[Symbol] =
     if (SYMBOL isAssignableFrom javaType.getRawClass)
       SymbolDeserializer
     else null
