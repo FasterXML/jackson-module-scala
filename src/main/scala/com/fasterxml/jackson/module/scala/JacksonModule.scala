@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.util.VersionUtil
 import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.`type`.TypeModifier
 import com.fasterxml.jackson.databind.deser.Deserializers
-import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
+import com.fasterxml.jackson.databind.ser.{ValueSerializerModifier, Serializers}
 import com.fasterxml.jackson.databind.DatabindException
 
 import scala.collection.JavaConverters._
@@ -69,5 +69,5 @@ trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
   protected def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
   protected def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
   protected def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
-  protected def +=(beanSerMod: BeanSerializerModifier): this.type = this += (_ addSerializerModifier beanSerMod)
+  protected def +=(beanSerMod: ValueSerializerModifier): this.type = this += (_ addSerializerModifier beanSerMod)
 }
