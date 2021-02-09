@@ -1,12 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.util.UUID
-
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import java.util.UUID
 import scala.collection.immutable
 
 class SortedMapDeserializerTest extends DeserializerTest {

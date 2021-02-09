@@ -2,10 +2,10 @@ package com.fasterxml.jackson.module.scala
 package deser
 
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
-import com.fasterxml.jackson.databind.deser.{ContextualKeyDeserializer, Deserializers, KeyDeserializers}
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.module.scala.{JacksonModule => JacksonScalaModule}
+import com.fasterxml.jackson.databind.deser.{ContextualKeyDeserializer, Deserializers, KeyDeserializers}
 import com.fasterxml.jackson.module.scala.util.EnumResolver
+import com.fasterxml.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 
 private trait ContextualEnumerationDeserializer {
   self: ValueDeserializer[Enumeration#Value] =>

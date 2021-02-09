@@ -1,11 +1,11 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import java.util
-
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 import io.swagger.models.ModelImpl
 import io.swagger.models.properties.{IntegerProperty, Property}
+
+import java.util
 
 class SwaggerTest extends BaseSpec {
   //https://github.com/FasterXML/jackson-module-scala/issues/454

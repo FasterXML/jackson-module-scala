@@ -1,11 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.util.UUID
-
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 
+import java.util.UUID
 import scala.collection._
 
 object SortedSetDeserializerTest {

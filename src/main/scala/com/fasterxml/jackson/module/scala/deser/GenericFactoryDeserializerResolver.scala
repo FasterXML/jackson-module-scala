@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.util
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
@@ -9,6 +8,7 @@ import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, StdV
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
+import java.util
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.language.higherKinds

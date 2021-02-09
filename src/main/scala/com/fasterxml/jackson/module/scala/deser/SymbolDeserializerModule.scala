@@ -1,9 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
 import scala.languageFeature.postfixOps

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.core.{JsonGenerator, JsonToken}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.impl.{PropertySerializerMap, UnknownSerializer}
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.module.scala.modifiers.EitherTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 

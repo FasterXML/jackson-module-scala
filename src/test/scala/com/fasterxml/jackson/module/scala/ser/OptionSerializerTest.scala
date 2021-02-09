@@ -1,11 +1,10 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import java.util
-
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule, ScalaObjectMapper}
 
+import java.util
 import scala.annotation.meta.{field, getter}
 import scala.compat.java8.FunctionConverters._
 

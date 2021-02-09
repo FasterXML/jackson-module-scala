@@ -23,10 +23,10 @@
 
 package com.fasterxml.jackson.module.scala.introspect
 
-import java.lang.reflect.{Constructor, Field, Method, Modifier}
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.scala.util.ClassW
 
+import java.lang.reflect.{Constructor, Field, Method, Modifier}
 import scala.annotation.tailrec
 import scala.reflect.NameTransformer
 

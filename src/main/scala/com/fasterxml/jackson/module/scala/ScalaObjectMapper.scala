@@ -1,12 +1,12 @@
 package com.fasterxml.jackson.module.scala
 
-import java.io.{File, InputStream, Reader}
-import java.net.URL
-
 import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
+
+import java.io.{File, InputStream, Reader}
+import java.net.URL
 
 object ScalaObjectMapper {
   def ::(o: JsonMapper) = new Mixin(o)

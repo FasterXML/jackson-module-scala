@@ -1,11 +1,10 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
-
-import java.util.UUID
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import java.util.UUID
 import scala.collection.{immutable, mutable}
 
 class UnsortedSetDeserializerTest extends DeserializerTest {

@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.{JsonSetter, JsonSubTypes, JsonTypeInfo, JsonTypeName, Nulls}
+import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 

@@ -1,15 +1,15 @@
 package com.fasterxml.jackson.module.scala
 
+import com.fasterxml.jackson.annotation.JsonView
+import com.fasterxml.jackson.core.TreeNode
+import com.fasterxml.jackson.databind.DatabindException
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
+
 import java.io.{ByteArrayInputStream, File, InputStreamReader}
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import com.fasterxml.jackson.annotation.JsonView
-import com.fasterxml.jackson.core.TreeNode
-import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.DatabindException
-import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
-
 import scala.collection.JavaConverters._
 
 object ScalaObjectMapperTest {

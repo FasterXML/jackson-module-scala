@@ -1,9 +1,9 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.lang.reflect.{ParameterizedType, Type}
-
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.JacksonTest
+
+import java.lang.reflect.{ParameterizedType, Type}
 
 trait DeserializerTest extends JacksonTest {
 

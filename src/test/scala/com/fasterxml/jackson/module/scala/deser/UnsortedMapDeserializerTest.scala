@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.util.UUID
 import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
@@ -8,6 +7,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
+import java.util.UUID
 import scala.collection._
 import scala.compat.java8.FunctionConverters
 

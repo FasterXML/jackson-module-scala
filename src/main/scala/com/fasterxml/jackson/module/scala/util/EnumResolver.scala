@@ -1,9 +1,9 @@
 package com.fasterxml.jackson.module.scala
 package util
 
-import java.lang.reflect.ParameterizedType
-
 import com.fasterxml.jackson.databind.{BeanProperty, JavaType}
+
+import java.lang.reflect.ParameterizedType
 
 object EnumResolver {
 

@@ -1,11 +1,10 @@
 package com.fasterxml.jackson.module.scala.modifiers
 
-import java.lang.reflect.Type
-
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.`type`._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
+import java.lang.reflect.Type
 import scala.collection._
 
 class ScalaTypeModifier extends TypeModifier {

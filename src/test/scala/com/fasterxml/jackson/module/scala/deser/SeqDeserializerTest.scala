@@ -1,12 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.util.UUID
 import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
+import java.util.UUID
 import scala.collection.{immutable, mutable}
 import scala.compat.java8.FunctionConverters
 
@@ -48,13 +48,11 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize a list into a LazyList" in {
-    import overrides._
     val result = deserialize(listJson, classOf[LazyList[Int]])
     result should equal (listScala)
   }
 
   it should "deserialize a list into an immutable LazyList" in {
-    import overrides._
     val result = deserialize(listJson, classOf[LazyList[Int]])
     result should equal (listScala)
   }

@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.annotation.{JsonIgnore, JsonUnwrapped}
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 
 case class Address(address1: Option[String], city: Option[String], state: Option[String])

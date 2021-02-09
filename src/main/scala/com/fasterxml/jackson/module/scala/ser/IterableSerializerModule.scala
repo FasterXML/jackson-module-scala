@@ -2,15 +2,16 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-import java.{lang => jl}
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, StdContainerSerializer}
 import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, StdContainerSerializer}
 import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
+
+import java.{lang => jl}
 
 private trait IterableSerializer
   extends AsArraySerializerBase[collection.Iterable[Any]]

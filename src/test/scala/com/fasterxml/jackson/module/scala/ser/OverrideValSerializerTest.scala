@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.scala.ser
 
-import java.util.UUID
-
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+
+import java.util.UUID
 
 class OverrideValSerializerTest extends SerializerTest {
   lazy val module = DefaultScalaModule

@@ -1,12 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.io.StringWriter
-
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.{DeserializationFeature, MapperFeature, ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.databind.{DeserializationFeature, SerializationFeature}
 import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 import org.scalatest.prop.TableDrivenPropertyChecks
 
+import java.io.StringWriter
 import scala.collection.immutable.{ListMap, Queue, TreeMap}
 
 // taken from https://github.com/dejanlokar1/serialization_problem/blob/master/src/test/scala/SerializationTest.scala

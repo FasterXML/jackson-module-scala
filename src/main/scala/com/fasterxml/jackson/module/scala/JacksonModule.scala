@@ -1,15 +1,14 @@
 package com.fasterxml.jackson.module.scala
 
-import java.util.Properties
-
-import com.fasterxml.jackson.core.{JsonParser, Version}
 import com.fasterxml.jackson.core.util.VersionUtil
+import com.fasterxml.jackson.core.{JsonParser, Version}
+import com.fasterxml.jackson.databind.DatabindException
 import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.`type`.TypeModifier
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.ser.{Serializers, ValueSerializerModifier}
-import com.fasterxml.jackson.databind.DatabindException
 
+import java.util.Properties
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.languageFeature.postfixOps

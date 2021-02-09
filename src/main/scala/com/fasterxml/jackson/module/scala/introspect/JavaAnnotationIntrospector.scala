@@ -1,11 +1,10 @@
 package com.fasterxml.jackson.module.scala.introspect
 
-import java.lang.reflect.{Constructor, Field, Method, Parameter}
-
 import com.fasterxml.jackson.databind.PropertyName
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedMember, AnnotatedParameter, NopAnnotationIntrospector}
 
+import java.lang.reflect.{Constructor, Field, Method, Parameter}
 import scala.reflect.NameTransformer
 
 object JavaAnnotationIntrospector extends NopAnnotationIntrospector {

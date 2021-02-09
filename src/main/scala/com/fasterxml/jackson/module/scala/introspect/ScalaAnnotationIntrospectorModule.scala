@@ -3,8 +3,8 @@ package com.fasterxml.jackson.module.scala.introspect
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.`type`.ClassKey
 import com.fasterxml.jackson.databind.cfg.MapperConfig
-import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
+import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LookupCache, SimpleLookupCache}
 import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
