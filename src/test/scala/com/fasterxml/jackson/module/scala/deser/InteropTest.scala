@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.{DeserializationContext, ValueDeserializer, ObjectMapper}
+import com.fasterxml.jackson.databind.{DeserializationContext, ObjectMapper, ValueDeserializer}
 import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
 
 abstract class A
