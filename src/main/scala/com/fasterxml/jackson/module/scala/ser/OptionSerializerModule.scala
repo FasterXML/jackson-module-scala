@@ -38,14 +38,14 @@ object OptionSerializer {
     provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
   }
 
-  def findSerializer(provider: SerializerProvider, typ: Class[_], prop: Option[BeanProperty]): JsonSerializer[AnyRef] = {
+  def findSerializer(provider: SerializerProvider, typ: Class[_], prop: Option[BeanProperty]): ValueSerializer[AnyRef] = {
     // Important: ask for TYPED serializer, in case polymorphic handling is needed!
-    provider.findTypedValueSerializer(typ, true).asInstanceOf[JsonSerializer[AnyRef]]
+    provider.findTypedValueSerializer(typ, true).asInstanceOf[ValueSerializer[AnyRef]]
   }
 
-  def findSerializer(provider: SerializerProvider, typ: JavaType, prop: Option[BeanProperty]): JsonSerializer[AnyRef] = {
+  def findSerializer(provider: SerializerProvider, typ: JavaType, prop: Option[BeanProperty]): ValueSerializer[AnyRef] = {
     // Important: ask for TYPED serializer, in case polymorphic handling is needed!
-    provider.findTypedValueSerializer(typ, true).asInstanceOf[JsonSerializer[AnyRef]]
+    provider.findTypedValueSerializer(typ, true).asInstanceOf[ValueSerializer[AnyRef]]
   }
 
   def hasContentTypeAnnotation(provider: SerializerProvider, property: BeanProperty): Boolean = {
@@ -59,7 +59,7 @@ class OptionSerializer(
   refType: ReferenceType,
   staticTyping: Boolean,
   contentTypeSerializer: TypeSerializer,
-  contentValueSerializer: JsonSerializer[AnyRef]
+  contentValueSerializer: ValueSerializer[AnyRef]
 ) extends ReferenceTypeSerializer[Option[_]](
       refType,
       staticTyping,
@@ -70,7 +70,7 @@ class OptionSerializer(
   override def withResolved(
     prop: BeanProperty,
     vts: TypeSerializer,
-    valueSer: JsonSerializer[_],
+    valueSer: ValueSerializer[_],
     unwrapper: NameTransformer
   ): ReferenceTypeSerializer[Option[_]] = {
 
@@ -114,7 +114,7 @@ class ResolvedOptionSerializer(
   base: ReferenceTypeSerializer[_],
   property: BeanProperty,
   vts: TypeSerializer,
-  valueSer: JsonSerializer[_],
+  valueSer: ValueSerializer[_],
   unwrapper: NameTransformer,
   suppressableValue: AnyRef,
   suppressNulls: Boolean
@@ -131,7 +131,7 @@ class ResolvedOptionSerializer(
   override def withResolved(
     prop: BeanProperty,
     vts: TypeSerializer,
-    valueSer: JsonSerializer[_],
+    valueSer: ValueSerializer[_],
     unwrapper: NameTransformer
   ): ReferenceTypeSerializer[Option[_]] = {
 
@@ -180,7 +180,7 @@ private object OptionSerializerResolver extends Serializers.Base {
                                        beanDesc: BeanDescription,
                                        formatOverrides: JsonFormat.Value,
                                        contentTypeSerializer: TypeSerializer,
-                                       contentValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
+                                       contentValueSerializer: ValueSerializer[AnyRef]): ValueSerializer[_] = {
     if (!OPTION.isAssignableFrom(refType.getRawClass)) return null
     val staticTyping = contentTypeSerializer == null && config.isEnabled(
       MapperFeature.USE_STATIC_TYPING

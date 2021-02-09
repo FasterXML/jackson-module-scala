@@ -9,9 +9,9 @@ import com.fasterxml.jackson.module.scala.{JacksonModule, JsonScalaEnumeration}
 
 trait ContextualEnumerationSerializer
 {
-  self: JsonSerializer[_] =>
+  self: ValueSerializer[_] =>
 
-  override def createContextual(serializerProvider: SerializerProvider, beanProperty: BeanProperty): JsonSerializer[_] =
+  override def createContextual(serializerProvider: SerializerProvider, beanProperty: BeanProperty): ValueSerializer[_] =
     Option(beanProperty)
       .optMap(_.getAnnotation(classOf[JsonScalaEnumeration]))
       .map(_ => new AnnotatedEnumerationSerializer)
@@ -22,7 +22,7 @@ trait ContextualEnumerationSerializer
  * The implementation is taken from the code written by Greg Zoller, found here:
  * http://jira.codehaus.org/browse/JACKSON-211
  */
-private class EnumerationSerializer extends JsonSerializer[scala.Enumeration#Value] with ContextualEnumerationSerializer {
+private class EnumerationSerializer extends ValueSerializer[scala.Enumeration#Value] with ContextualEnumerationSerializer {
   override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider) = {
     val parentEnum = value.asInstanceOf[AnyRef].getClass.getSuperclass.getDeclaredFields.find( f => f.getName == "$outer" ).get
     val enumClass = parentEnum.get(value).getClass.getName stripSuffix "$"
@@ -33,7 +33,7 @@ private class EnumerationSerializer extends JsonSerializer[scala.Enumeration#Val
   }
 }
 
-private class AnnotatedEnumerationSerializer extends JsonSerializer[scala.Enumeration#Value] with ContextualEnumerationSerializer {
+private class AnnotatedEnumerationSerializer extends ValueSerializer[scala.Enumeration#Value] with ContextualEnumerationSerializer {
   override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     jgen.writeString(value.toString)
   }
@@ -44,7 +44,7 @@ private object EnumerationSerializerResolver extends Serializers.Base {
   override def findSerializer(config: SerializationConfig,
                               javaType: JavaType,
                               beanDescription: BeanDescription,
-                              formatOverrides: JsonFormat.Value): JsonSerializer[_] = {
+                              formatOverrides: JsonFormat.Value): ValueSerializer[_] = {
     val clazz = javaType.getRawClass
 
     if (classOf[scala.Enumeration#Value].isAssignableFrom(clazz)) {

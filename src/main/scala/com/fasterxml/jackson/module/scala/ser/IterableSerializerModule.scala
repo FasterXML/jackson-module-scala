@@ -36,7 +36,7 @@ private trait IterableSerializer
 
   override def withResolved(property: BeanProperty,
                             vts: TypeSerializer,
-                            elementSerializer: JsonSerializer[_],
+                            elementSerializer: ValueSerializer[_],
                             unwrapSingle: jl.Boolean): ResolvedIterableSerializer =
     new ResolvedIterableSerializer(this, property, vts, elementSerializer, unwrapSingle)
 
@@ -46,7 +46,7 @@ private trait IterableSerializer
 private class ResolvedIterableSerializer( src: IterableSerializer,
                                           property: BeanProperty,
                                           vts: TypeSerializer,
-                                          elementSerializer: JsonSerializer[_],
+                                          elementSerializer: ValueSerializer[_],
                                           unwrapSingle: jl.Boolean )
   extends AsArraySerializerBase[collection.Iterable[Any]](src, vts, elementSerializer, unwrapSingle, property)
   with IterableSerializer
@@ -63,12 +63,12 @@ private class UnresolvedIterableSerializer( cls: Class[_],
                                             et: JavaType,
                                             staticTyping: Boolean,
                                             vts: TypeSerializer,
-                                            elementSerializer: JsonSerializer[AnyRef] )
+                                            elementSerializer: ValueSerializer[AnyRef] )
   extends AsArraySerializerBase[collection.Iterable[Any]](cls, et, staticTyping, vts, elementSerializer)
   with IterableSerializer
 {
   val collectionSerializer =
-    new ScalaIterableSerializer(et, staticTyping, vts, elementSerializer.asInstanceOf[JsonSerializer[Object]])
+    new ScalaIterableSerializer(et, staticTyping, vts, elementSerializer.asInstanceOf[ValueSerializer[Object]])
 
   override def _withValueTypeSerializer(newVts: TypeSerializer): StdContainerSerializer[_] =
     new UnresolvedIterableSerializer(cls, et, staticTyping, newVts, elementSerializer)
@@ -82,7 +82,7 @@ private object IterableSerializerResolver extends Serializers.Base {
                    beanDescription: BeanDescription,
                    formatOverrides: JsonFormat.Value,
                    elementTypeSerializer: TypeSerializer,
-                   elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
+                   elementSerializer: ValueSerializer[Object]): ValueSerializer[_] = {
     val rawClass = collectionType.getRawClass
     if (!classOf[collection.Iterable[Any]].isAssignableFrom(rawClass)) null
     else if (classOf[collection.Map[Any,Any]].isAssignableFrom(rawClass)) null

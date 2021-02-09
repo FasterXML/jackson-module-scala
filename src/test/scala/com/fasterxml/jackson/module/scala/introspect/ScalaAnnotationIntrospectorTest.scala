@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.json.JsonFactory
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
+import com.fasterxml.jackson.databind.{BeanDescription, ValueSerializer, ObjectMapper, SerializerProvider}
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
@@ -62,11 +62,11 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     val builder = new JsonMapper.Builder(new JsonFactory)
       .addModule(DefaultScalaModule)
       .addModule(new SimpleModule() {
-      addSerializer(new JsonSerializer[Token] {
+      addSerializer(new ValueSerializer[Token] {
         override val handledType: Class[Token] = classOf[Token]
         override def serialize(value: Token, gen: JsonGenerator, serializers: SerializerProvider): Unit =
           gen.writeString("")
-        override def createContextual(prov: SerializerProvider, property: databind.BeanProperty): JsonSerializer[_] = {
+        override def createContextual(prov: SerializerProvider, property: databind.BeanProperty): ValueSerializer[_] = {
           property.getAnnotation(classOf[JsonScalaTestAnnotation]) shouldNot be (null)
           this
         }
@@ -95,11 +95,11 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
 
   it should "detect annotations on a bean property" in { mapper =>
     val builder = new JsonMapper.Builder(new JsonFactory).addModule(new SimpleModule() {
-      addSerializer(new JsonSerializer[Token] {
+      addSerializer(new ValueSerializer[Token] {
         override val handledType: Class[Token] = classOf[Token]
         override def serialize(value: Token, gen: JsonGenerator, serializers: SerializerProvider): Unit =
           gen.writeString("")
-        override def createContextual(prov: SerializerProvider, property: databind.BeanProperty): JsonSerializer[_] = {
+        override def createContextual(prov: SerializerProvider, property: databind.BeanProperty): ValueSerializer[_] = {
           property.getAnnotation(classOf[JsonScalaTestAnnotation]) shouldNot be (null)
           this
         }

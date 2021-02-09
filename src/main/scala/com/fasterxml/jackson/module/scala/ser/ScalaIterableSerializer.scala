@@ -4,21 +4,21 @@ import java.{lang => jl}
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, StdContainerSerializer}
-import com.fasterxml.jackson.databind.{BeanProperty, JavaType, JsonSerializer, SerializationFeature, SerializerProvider}
+import com.fasterxml.jackson.databind.{BeanProperty, JavaType, ValueSerializer, SerializationFeature, SerializerProvider}
 
 import scala.util.control.NonFatal
 
 private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
-                                           property: BeanProperty, valueSerializer: JsonSerializer[Object], unwrapSingle: jl.Boolean)
+                                           property: BeanProperty, valueSerializer: ValueSerializer[Object], unwrapSingle: jl.Boolean)
   extends AsArraySerializerBase[collection.Iterable[Any]](collection.Iterable.getClass, elemType, staticTyping, vts, valueSerializer, unwrapSingle, property) {
 
-  def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer, valueSerializer: JsonSerializer[Object]) = {
-    this(elemType, staticTyping, vts, None.orNull, valueSerializer.asInstanceOf[JsonSerializer[Object]], None.orNull)
+  def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer, valueSerializer: ValueSerializer[Object]) = {
+    this(elemType, staticTyping, vts, None.orNull, valueSerializer.asInstanceOf[ValueSerializer[Object]], None.orNull)
   }
 
-  def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: JsonSerializer[_],
+  def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
            unwrapSingle: jl.Boolean) = {
-    this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[JsonSerializer[Object]], unwrapSingle)
+    this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]], unwrapSingle)
   }
 
   override def isEmpty(prov: SerializerProvider, value: Iterable[Any]): Boolean = value.isEmpty
@@ -70,7 +70,7 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     }
   }
 
-  override def withResolved(property: BeanProperty, vts: TypeSerializer, elementSerializer: JsonSerializer[_],
+  override def withResolved(property: BeanProperty, vts: TypeSerializer, elementSerializer: ValueSerializer[_],
                             unwrapSingle: jl.Boolean): AsArraySerializerBase[Iterable[Any]] = {
     new ScalaIterableSerializer(this, property, vts, elementSerializer, unwrapSingle)
   }
@@ -79,7 +79,7 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     new ScalaIterableSerializer(this, _property, vts, _elementSerializer, _unwrapSingle)
   }
 
-  private def serializeContentsUsing(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider, ser: JsonSerializer[AnyRef]): Unit = {
+  private def serializeContentsUsing(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider, ser: ValueSerializer[AnyRef]): Unit = {
     val it = value.iterator
     if (it.hasNext) {
       val typeSer = _valueTypeSerializer

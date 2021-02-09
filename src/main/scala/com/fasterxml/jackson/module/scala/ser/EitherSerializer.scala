@@ -15,8 +15,8 @@ import scala.language.existentials
 
 private case class EitherDetails(typ: Option[JavaType],
                                  valueTypeSerializer: Option[TypeSerializer],
-                                 valueSerializer: Option[JsonSerializer[AnyRef]]) {
-  def withHandlers(vtsOpt: Option[TypeSerializer], serOpt: Option[JsonSerializer[AnyRef]]): EitherDetails = {
+                                 valueSerializer: Option[ValueSerializer[AnyRef]]) {
+  def withHandlers(vtsOpt: Option[TypeSerializer], serOpt: Option[ValueSerializer[AnyRef]]): EitherDetails = {
     var newType = typ
     for (vts <- vtsOpt) {
       newType = newType.map(_.withTypeHandler(vts))
@@ -55,14 +55,14 @@ private class EitherSerializer(left: EitherDetails,
     val serializer2 = serializer1
       .orElse(details.valueSerializer)
       .map(prov.handlePrimaryContextualization(_, prop))
-      .asInstanceOf[Option[JsonSerializer[AnyRef]]]
+      .asInstanceOf[Option[ValueSerializer[AnyRef]]]
     val serializer3 = Option(findContextualConvertingSerializer(prov, prop, serializer2.orNull))
-      .asInstanceOf[Option[JsonSerializer[AnyRef]]]
+      .asInstanceOf[Option[ValueSerializer[AnyRef]]]
     var serializerOption = serializer3 match {
       case None => if (details.typ.isDefined && hasContentTypeAnnotation(prov, prop)) {
         Option(prov.findValueSerializer(details.typ.get)).filterNot(_.isInstanceOf[UnknownSerializer])
       } else None
-      case Some(s) => Option(prov.handlePrimaryContextualization(s, prop).asInstanceOf[JsonSerializer[AnyRef]])
+      case Some(s) => Option(prov.handlePrimaryContextualization(s, prop).asInstanceOf[ValueSerializer[AnyRef]])
     }
 
     // A few conditions needed to be able to fetch serializer here:
@@ -73,7 +73,7 @@ private class EitherSerializer(left: EitherDetails,
     details.copy(valueTypeSerializer = vts, valueSerializer = serializerOption)
   }
 
-  override def createContextual(prov: SerializerProvider, prop: BeanProperty): JsonSerializer[_] = {
+  override def createContextual(prov: SerializerProvider, prop: BeanProperty): ValueSerializer[_] = {
     val propOpt = Option(prop)
 
     val newLeft = createContextualDetails(prov, prop, left)
@@ -127,11 +127,11 @@ private class EitherSerializer(left: EitherDetails,
     typeSer.writeTypeSuffix(jgen, provider, typeSer.typeId(value, JsonToken.END_OBJECT))
   }
 
-  protected[this] def findCachedSerializer(prov: SerializerProvider, typ: Class[_]): JsonSerializer[AnyRef] = {
-    var ser = dynamicSerializers.serializerFor(typ).asInstanceOf[JsonSerializer[AnyRef]]
+  protected[this] def findCachedSerializer(prov: SerializerProvider, typ: Class[_]): ValueSerializer[AnyRef] = {
+    var ser = dynamicSerializers.serializerFor(typ).asInstanceOf[ValueSerializer[AnyRef]]
     if (ser == null) {
       ser = findSerializer(prov, typ, property)
-      dynamicSerializers = dynamicSerializers.newWith(typ, ser.asInstanceOf[JsonSerializer[Object]])
+      dynamicSerializers = dynamicSerializers.newWith(typ, ser.asInstanceOf[ValueSerializer[Object]])
     }
     ser
   }
@@ -148,7 +148,7 @@ private object EitherSerializerResolver extends Serializers.Base {
                                        beanDesc: BeanDescription,
                                        formatOverrides: JsonFormat.Value,
                                        contentTypeSerializer: TypeSerializer,
-                                       contentValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
+                                       contentValueSerializer: ValueSerializer[AnyRef]): ValueSerializer[_] = {
     if (!EITHER.isAssignableFrom(refType.getRawClass)) None.orNull
     else {
       val javaType = if (LEFT.isAssignableFrom(refType.getRawClass) || RIGHT.isAssignableFrom(refType.getRawClass)) {
@@ -159,7 +159,7 @@ private object EitherSerializerResolver extends Serializers.Base {
       val rightType = javaType.containedType(1)
 
       val typeSer = Option(contentTypeSerializer).orElse(Option(javaType.getTypeHandler[TypeSerializer]))
-      val valSer = Option(contentValueSerializer).orElse(Option(javaType.getValueHandler[JsonSerializer[AnyRef]]))
+      val valSer = Option(contentValueSerializer).orElse(Option(javaType.getValueHandler[ValueSerializer[AnyRef]]))
 
       val left = EitherDetails(Option(leftType), typeSer, valSer)
       val right = EitherDetails(Option(rightType), typeSer, valSer)

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 
 import scala.languageFeature.postfixOps
 
-private object SymbolSerializer extends JsonSerializer[Symbol] {
+private object SymbolSerializer extends ValueSerializer[Symbol] {
   def serialize(value: Symbol, jgen: JsonGenerator, provider: SerializerProvider): Unit =
     jgen.writeString(value.name)
 }
@@ -17,7 +17,7 @@ private object SymbolSerializerResolver extends Serializers.Base {
   private val SYMBOL = classOf[Symbol]
 
   override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
-                              formatOverrides: JsonFormat.Value): JsonSerializer[Symbol] =
+                              formatOverrides: JsonFormat.Value): ValueSerializer[Symbol] =
     if (SYMBOL isAssignableFrom javaType.getRawClass)
       SymbolSerializer
     else null

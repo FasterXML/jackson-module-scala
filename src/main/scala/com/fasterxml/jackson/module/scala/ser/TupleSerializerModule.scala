@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 
 import scala.languageFeature.postfixOps
 
-private class TupleSerializer extends JsonSerializer[Product] {
+private class TupleSerializer extends ValueSerializer[Product] {
 
   def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     jgen.writeStartArray()

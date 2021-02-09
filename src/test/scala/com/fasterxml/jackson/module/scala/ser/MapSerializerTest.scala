@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonSubTypes
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.{JsonSerializer, SerializerProvider}
+import com.fasterxml.jackson.databind.{ValueSerializer, SerializerProvider}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import scala.annotation.meta.getter
@@ -27,7 +27,7 @@ class NonEmptyMaps {
   def nonEmptyMap = Map("x"->1)
 }
 
-class TupleKeySerializer extends JsonSerializer[Product] {
+class TupleKeySerializer extends ValueSerializer[Product] {
   override def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     val objectMapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
     jgen.writeName(objectMapper.writeValueAsString(value))

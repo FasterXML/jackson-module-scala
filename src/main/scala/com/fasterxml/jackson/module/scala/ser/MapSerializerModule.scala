@@ -33,9 +33,9 @@ private object MapSerializerResolver extends Serializers.Base {
                                      mapLikeType : MapLikeType,
                                      beanDesc: BeanDescription,
                                      formatOverrides: JsonFormat.Value,
-                                     keySerializer: JsonSerializer[AnyRef],
+                                     keySerializer: ValueSerializer[AnyRef],
                                      elementTypeSerializer: TypeSerializer,
-                                     elementValueSerializer: JsonSerializer[AnyRef]): JsonSerializer[_] = {
+                                     elementValueSerializer: ValueSerializer[AnyRef]): ValueSerializer[_] = {
 
     val rawClass = mapLikeType.getRawClass
 
