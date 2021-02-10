@@ -96,7 +96,8 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
-  class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor) extends StdValueInstantiator(delegate) {
+  private class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor)
+    extends StdValueInstantiator(delegate) {
 
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
       val args = delegate.getFromObjectArguments(config)
@@ -127,7 +128,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   override def findValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription,
-    defaultInstantiator: ValueInstantiator): ValueInstantiator = {
+                                     defaultInstantiator: ValueInstantiator): ValueInstantiator = {
 
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
 
