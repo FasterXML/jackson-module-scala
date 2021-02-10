@@ -3,10 +3,12 @@ package com.fasterxml.jackson.module.scala
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.cfg.MapperBuilder
 
+import scala.reflect.ClassTag
+
 /**
  * @tparam M
  * @tparam B
- * @since 3.0.0
+ * @since 2.13.0
  */
 trait ScalaMapperBuilder[M <: ObjectMapper,B <: MapperBuilder[M,B]] {
   self: MapperBuilder[M,B] =>
@@ -21,7 +23,7 @@ trait ScalaMapperBuilder[M <: ObjectMapper,B <: MapperBuilder[M,B]] {
    * @tparam MixinSource Class (or interface) whose annotations are to
    *                     be "added" to target's annotations, overriding as necessary
    */
-  final def addMixin[Target: Manifest, MixinSource: Manifest](): B = {
-    addMixIn(manifest[Target].runtimeClass, manifest[MixinSource].runtimeClass)
+  final def addMixin[Target: ClassTag, MixinSource: ClassTag](): B = {
+    addMixIn(implicitly[ClassTag[Target]].runtimeClass, implicitly[ClassTag[MixinSource]].runtimeClass)
   }
 }
