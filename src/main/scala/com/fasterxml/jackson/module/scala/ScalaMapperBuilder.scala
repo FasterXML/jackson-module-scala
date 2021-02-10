@@ -8,7 +8,7 @@ import scala.reflect.ClassTag
 /**
  * @tparam M
  * @tparam B
- * @since 2.13.0
+ * @since 3.0.0
  */
 trait ScalaMapperBuilder[M <: ObjectMapper,B <: MapperBuilder[M,B]] {
   self: MapperBuilder[M,B] =>
