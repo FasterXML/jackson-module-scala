@@ -128,7 +128,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   override def modifyValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription,
-    defaultInstantiator: ValueInstantiator): ValueInstantiator = {
+                                       defaultInstantiator: ValueInstantiator): ValueInstantiator = {
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
         if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {

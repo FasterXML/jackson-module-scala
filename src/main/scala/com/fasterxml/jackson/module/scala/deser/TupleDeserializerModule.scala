@@ -29,7 +29,6 @@ private class TupleDeserializer(javaType: JavaType,
     val paramDesers = paramTypes map (ctxt.findContextualValueDeserializer(_, property))
 
     val typeDesers: Seq[TypeDeserializer] = {
-      val factory = BeanDeserializerFactory.instance
       if (property != null) {
         paramTypes map (ctxt.findPropertyTypeDeserializer(_, property.getMember))
       } else {
