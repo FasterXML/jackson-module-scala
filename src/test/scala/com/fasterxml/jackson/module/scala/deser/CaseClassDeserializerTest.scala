@@ -68,8 +68,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
     deserialize("""{"intValue":1,"stringValue":"foo"}""", classOf[ConstructorTestCaseClass]) should be (ConstructorTestCaseClass(1,"foo"))
   }
 
-  //TODO fix -- works in v2.12
-  it should "deserialize a case class with multiple constructors" ignore {
+  it should "deserialize a case class with multiple constructors" in {
     val json = """{"path":{"path":"/path","level":1,"isRoot":false},"value":0.5,"time":"2017-05-10T00:00:00.000+02:00","tags":[]}"""
     deserialize(json, classOf[Metric]) shouldBe Metric(MetricPath("/path", 1, false), 0.5, "2017-05-10T00:00:00.000+02:00")
   }

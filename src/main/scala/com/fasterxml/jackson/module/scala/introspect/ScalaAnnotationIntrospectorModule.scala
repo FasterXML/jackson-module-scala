@@ -146,14 +146,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   override def findValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription): ValueInstantiator = {
-    if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
-      _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
-        if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
-          val std = new StdValueInstantiator(config, beanDesc.getType)
-          new ScalaValueInstantiator(std, config, descriptor)
-        } else None.orNull
-      }.getOrElse(None.orNull)
-    } else None.orNull
+    None.orNull
   }
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
