@@ -74,8 +74,7 @@ class OptionDeserializerTest extends DeserializerTest {
     deserialize("""{"base":null}""", classOf[BaseHolder]) should be(BaseHolder(None))
   }
 
-  //TODO fix (fails intermittently)
-  it should "deserialize defaulted parameters correctly (without defaults)" ignore {
+  it should "deserialize defaulted parameters correctly (without defaults)" in {
     val json = newMapper.writeValueAsString(Defaulted(id = 1))
     json shouldBe """{"id":1,"name":""}"""
     val d = deserialize(json, classOf[Defaulted])
