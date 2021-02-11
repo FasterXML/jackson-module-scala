@@ -111,8 +111,7 @@ class CreatorTest extends DeserializationFixture {
     roundTrip shouldEqual orig
   }
 
-  //TODO fix (works in 2.12.0)
-  it should "support default values" ignore { f =>
+  it should "support default values" in { f =>
     val deser = f.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual "some string"
     deser.i shouldEqual 10
@@ -122,8 +121,7 @@ class CreatorTest extends DeserializationFixture {
     deser2.i shouldEqual 5
   }
 
-  //TODO fix (works in 2.12.0)
-  it should "support options with default values" ignore { f =>
+  it should "support options with default values" in { f =>
     val deser = f.readValue("""{}""", classOf[ConstructorWithOptionDefaultValues])
     deser.s shouldBe empty
     deser.i shouldBe empty
@@ -134,8 +132,7 @@ class CreatorTest extends DeserializationFixture {
     f.writeValueAsString(ConstructorWithOptionDefaultValues(dummy="d")) shouldEqual """{"s":null,"i":null,"dummy":"d"}"""
   }
 
-  //TODO fix (works in 2.12.0)
-  it should "support optional seqs with default values" ignore { f =>
+  it should "support optional seqs with default values" in { f =>
     val deser = f.readValue("""{}""", classOf[ConstructorWithOptionSeqDefaultValues])
     deser.s shouldBe empty
     val deser2 = f.readValue("""{"s":["a", "b"]}""", classOf[ConstructorWithOptionSeqDefaultValues])
@@ -143,8 +140,7 @@ class CreatorTest extends DeserializationFixture {
     f.writeValueAsString(ConstructorWithOptionSeqDefaultValues()) shouldEqual """{"s":null}"""
   }
 
-  //TODO fix (works in 2.12.0)
-  it should "support optional structs with default values" ignore { f =>
+  it should "support optional structs with default values" in { f =>
     val deser = f.readValue("""{}""", classOf[ConstructorWithOptionStruct])
     deser.s shouldBe empty
     val deser2 = f.readValue("""{"s":{"name":"name"}}""", classOf[ConstructorWithOptionStruct])
