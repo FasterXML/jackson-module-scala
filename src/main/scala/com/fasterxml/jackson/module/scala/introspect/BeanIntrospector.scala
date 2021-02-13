@@ -94,10 +94,10 @@ object BeanIntrospector {
       next(cls, Nil)
     }
 
-    def listMethods(cls: Class[_]): Stream[Method] = cls match {
-      case null => Stream.empty
-      case c if c == classOf[AnyRef] => Stream.empty
-      case c => c.getDeclaredMethods.toStream #::: listMethods(c.getSuperclass)
+    def listMethods(cls: Class[_]): LazyListSupport.LazyListType[Method] = cls match {
+      case null => LazyListSupport.empty
+      case c if c == classOf[AnyRef] => LazyListSupport.empty
+      case c => LazyListSupport.fromArray(c.getDeclaredMethods) #::: listMethods(c.getSuperclass)
     }
 
     def isNotSyntheticOrBridge(m: Method): Boolean = !(m.isBridge || m.isSynthetic)
@@ -105,10 +105,10 @@ object BeanIntrospector {
     def findMethod(cls: Class[_], name: String): Seq[Method] =
       listMethods(cls).filter(isNotSyntheticOrBridge).filter(m => NameTransformer.decode(m.getName) == name)
 
-    def listFields(cls: Class[_]): Stream[Field] = cls match {
-      case null => Stream.empty
-      case c if c == classOf[AnyRef] => Stream.empty
-      case c => c.getDeclaredFields.toStream #::: listFields(c.getSuperclass)
+    def listFields(cls: Class[_]): LazyListSupport.LazyListType[Field] = cls match {
+      case null => LazyListSupport.empty
+      case c if c == classOf[AnyRef] => LazyListSupport.empty
+      case c => LazyListSupport.fromArray(c.getDeclaredFields) #::: listFields(c.getSuperclass)
     }
 
     def findField(cls: Class[_], fieldName: String): Option[Field] =
