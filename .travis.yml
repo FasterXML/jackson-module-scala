@@ -30,6 +30,8 @@ matrix:
       jdk: openjdk15
       env: SONATYPE_PUBLISH=false      
 
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION test mimaReportBinaryIssues
 after_success:
   - >
       test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${SONATYPE_PUBLISH}" = 'true' &&
