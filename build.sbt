@@ -1,4 +1,5 @@
 import java.io.File
+import com.typesafe.tools.mima.core._
 
 // Basic facts
 name := "jackson-module-scala"
@@ -67,3 +68,8 @@ Global / useGpg := false
 enablePlugins(SiteScaladocPlugin)
 enablePlugins(GhpagesPlugin)
 git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
+
+mimaBinaryIssueFilters ++= Seq(
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.util.ClassW.isScalaObject")
+)
+
