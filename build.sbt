@@ -56,8 +56,6 @@ resourceGenerators in Compile += Def.task {
     Seq(file)
 }.taskValue
 
-Global / useGpg := false
-
 // site
 enablePlugins(SiteScaladocPlugin)
 enablePlugins(GhpagesPlugin)
