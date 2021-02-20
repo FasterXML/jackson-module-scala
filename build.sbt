@@ -1,4 +1,5 @@
 import java.io.File
+import com.typesafe.tools.mima.core._
 
 // Basic facts
 name := "jackson-module-scala"
@@ -63,7 +64,13 @@ resourceGenerators in Compile += Def.task {
 }.taskValue
 
 // site
-Global / useGpg := false
 enablePlugins(SiteScaladocPlugin)
 enablePlugins(GhpagesPlugin)
 git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
+
+mimaBinaryIssueFilters ++= Seq(
+  ProblemFilters.exclude[IncompatibleResultTypeProblem]("com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializerResolver.findBeanDeserializer"),
+  ProblemFilters.exclude[MissingClassProblem]("com.fasterxml.jackson.module.scala.deser.UntypedObjectDeserializer*"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.BeanIntrospector.apply"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.PropertyDescriptor.findAnnotation")
+)
