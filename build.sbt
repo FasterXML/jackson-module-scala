@@ -9,6 +9,8 @@ scalaVersion := "2.13.4"
 
 crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.4")
 
+mimaPreviousArtifacts := Set(organization.value %% name.value % "2.12.1")
+
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 val scalaMajorVersion = SettingKey[Int]("scalaMajorVersion")
