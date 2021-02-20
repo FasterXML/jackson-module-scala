@@ -3,7 +3,7 @@
 This patch release tracks Jackson 2.13. The 2.13 series has full support for
 Scala 2.11 and 2.12 and 2.13. Java 8 is the minimum supported Java version.
 
-No functionality changes but the experimental package has been removed. The classes were moved in release 2.10.0 and experimental package was just kept to ease the transition. Some deprecated code relating to the use of Scala Manifests was also removed.
+Some deprecated code relating to the use of Scala Manifests has been removed - ScalaObjectMapper support is unaffected (but this class remains deprecated).
 
 
 # Version: 2.12.2 (Snapshot only)
