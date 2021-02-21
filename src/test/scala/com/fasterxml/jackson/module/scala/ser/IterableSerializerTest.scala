@@ -48,7 +48,7 @@ class IterableSerializerTest extends SerializerTest {
     serialize(Seq(1, 2, 3)) should be("[1,2,3]")
   }
 
-  it should "serialize a Array[Int]" in {
+  it should "serialize an Array[Int]" in {
     serialize(Array(1, 2, 3)) should be("[1,2,3]")
   }
 
