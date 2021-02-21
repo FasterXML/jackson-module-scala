@@ -48,6 +48,10 @@ class IterableSerializerTest extends SerializerTest {
     serialize(Seq(1, 2, 3)) should be("[1,2,3]")
   }
 
+  it should "serialize a Array[Int]" in {
+    serialize(Array(1, 2, 3)) should be("[1,2,3]")
+  }
+
   it should "serialize an immutable Set[Int]" in {
     serialize(immutable.Set(1, 2, 3)) should matchUnorderedSet
   }
