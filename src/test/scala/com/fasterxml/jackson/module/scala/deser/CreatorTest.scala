@@ -7,6 +7,16 @@ import com.fasterxml.jackson.databind.node.IntNode
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
+class PositiveLong private (val value: Long) {
+  override def toString() = s"PositiveLong($value)"
+}
+object PositiveLong {
+  @JsonCreator
+  def apply(long: Long): PositiveLong = new PositiveLong(long)
+  @JsonCreator
+  def apply(str: String): PositiveLong = new PositiveLong(str.toLong)
+}
+
 object CreatorTest
 {
   class CreatorTestBean(val a: String, var b: String)
@@ -52,18 +62,7 @@ object CreatorTest
   case class ConstructorWithOptionSeqDefaultValues(s: Option[Seq[String]] = None)
 
   case class ConstructorWithOptionStruct(s: Option[Struct1] = None)
-
-  class PositiveLong private (val value: Long) {
-    override def toString() = s"PositiveLong($value)"
-  }
-  object PositiveLong {
-    @JsonCreator
-    def apply(long: Long): PositiveLong = new PositiveLong(long)
-    @JsonCreator
-    def apply(str: String): PositiveLong = new PositiveLong(str.toLong)
-  }
 }
-
 
 @RunWith(classOf[JUnitRunner])
 class CreatorTest extends DeserializationFixture {
@@ -169,6 +168,6 @@ class CreatorTest extends DeserializationFixture {
 
   it should "support multiple creator annotations" in { f =>
     val node: JsonNode = f.valueToTree[IntNode](10)
-    f.convertValue(node, new TypeReference[PositiveLong] {}) shouldEqual PositiveLong(node.asLong())
+    f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
   }
 }
