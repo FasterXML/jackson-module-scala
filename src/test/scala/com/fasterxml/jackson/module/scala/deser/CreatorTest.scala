@@ -7,14 +7,30 @@ import com.fasterxml.jackson.databind.node.IntNode
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
-class PositiveLong private (val value: Long) {
-  override def toString() = s"PositiveLong($value)"
+// Minimal reproducing class for the first failure case.
+// The `apply` methods have the same _parameter names_, which causes:
+//   Conflicting property-based creators: already had explicitly marked creator [method regression.ConflictingJsonCreator#apply(long)],
+//   encountered another: [method regression.ConflictingJsonCreator#apply(java.lang.String)]
+class ConflictingJsonCreator private (val value: Long) {
+  override def toString() = s"ConflictingJsonCreator($value)"
 }
-object PositiveLong {
+object ConflictingJsonCreator {
   @JsonCreator
-  def apply(long: Long): PositiveLong = new PositiveLong(long)
+  def apply(value: Long): ConflictingJsonCreator = new ConflictingJsonCreator(value)
   @JsonCreator
-  def apply(str: String): PositiveLong = new PositiveLong(str.toLong)
+  def apply(value: String): ConflictingJsonCreator = new ConflictingJsonCreator(value.toLong)
+}
+
+// Minimal reproducing class for the second failure case.
+// The `apply` method has the same parameter name as the value class's _member_, which causes:
+//   Cannot construct instance of `regression.ConflictingMember` (although at least one Creator exists):
+//   no int/Int-argument constructor/factory method to deserialize from Number value (10)
+class ConflictingMember private (val value: Long) {
+  override def toString() = s"ConflictingMember($value)"
+}
+object ConflictingMember {
+  @JsonCreator
+  def apply(value: Long): ConflictingMember = new ConflictingMember(value)
 }
 
 object CreatorTest
@@ -166,8 +182,17 @@ class CreatorTest extends DeserializationFixture {
     f.writeValueAsString(ConstructorWithOptionStruct()) shouldEqual """{"s":null}"""
   }
 
-  it should "support multiple creator annotations" in { f =>
+  it should "support multiple creator annotations with the same parameter names" in { f =>
     val node: JsonNode = f.valueToTree[IntNode](10)
-    f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
+    // Ensure that the parameters are actually named `value`
+    ConflictingJsonCreator(value=10L).value shouldEqual 10L
+    ConflictingJsonCreator(value="10").value shouldEqual 10L
+    f.convertValue(node, new TypeReference[ConflictingJsonCreator] {}).value shouldEqual node.asLong()
+  }
+
+  it should "not have a problem constructors and member name conflicts" in { f =>
+    val node: JsonNode = f.valueToTree[IntNode](10)
+    ConflictingMember(value=10L).value shouldEqual 10L
+    f.convertValue(node, new TypeReference[ConflictingMember] {}).value shouldEqual node.asLong()
   }
 }
