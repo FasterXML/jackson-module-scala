@@ -7,6 +7,16 @@ import com.fasterxml.jackson.databind.node.IntNode
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
+class PositiveLong private (val value: Long) {
+  override def toString() = s"PositiveLong($value)"
+}
+object PositiveLong {
+  @JsonCreator
+  def apply(long: Long): PositiveLong = new PositiveLong(long)
+  @JsonCreator
+  def apply(str: String): PositiveLong = new PositiveLong(str.toLong)
+}
+
 // Minimal reproducing class for the first failure case.
 // The `apply` methods have the same _parameter names_, which causes:
 //   Conflicting property-based creators: already had explicitly marked creator [method regression.ConflictingJsonCreator#apply(long)],
@@ -180,6 +190,11 @@ class CreatorTest extends DeserializationFixture {
     val deser2 = f.readValue[ConstructorWithOptionStruct]("""{"s":{"name":"name"}}""")
     deser2.s shouldEqual Some(new Struct1("name"){})
     f.writeValueAsString(ConstructorWithOptionStruct()) shouldEqual """{"s":null}"""
+  }
+
+  it should "support multiple creator annotations" in { f =>
+    val node: JsonNode = f.valueToTree[IntNode](10)
+    f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
   }
 
   it should "support multiple creator annotations with the same parameter names" in { f =>
