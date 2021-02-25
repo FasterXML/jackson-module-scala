@@ -14,6 +14,7 @@ No functionality changes but the experimental package has been removed. The clas
 * [[gh-438]](https://github.com/FasterXML/jackson-module-scala/issues/438) fix issues with handling field names that have dashes
 * [[gh-495]](https://github.com/FasterXML/jackson-module-scala/issues/495) Fix regression since v2.12.0 where Scala objects (as opposed to case objects) were not serializing correctly.
 * [[gh-497]](https://github.com/FasterXML/jackson-module-scala/issues/497) allow DescriptorCache to be replaced with custom implementation.
+* [[gh-505]](https://github.com/FasterXML/jackson-module-scala/issues/505) Fix regression since v2.12.0 where `@JsonCreator` annotations on companion classes were not always been handled. Had to reintroduce the dependency on paranamer jar to fix this.
 
 # Version: 2.12.1
 
