@@ -7,14 +7,18 @@ import com.fasterxml.jackson.databind.node.IntNode
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner
 
-class PositiveLong private (val value: Long) {
-  override def toString() = s"PositiveLong($value)"
+// This regression test requires that the `value` in `(val value: Long)` is the same as...
+class Issue505RegressionTest private (val value: Long) {
+  override def toString() = s"Issue505RegressionTest($value)"
 }
-object PositiveLong {
+
+object Issue505RegressionTest {
+  // ... the `value` in `(value: Long)`...
   @JsonCreator
-  def apply(long: Long): PositiveLong = new PositiveLong(long)
+  def apply(value: Long): Issue505RegressionTest = new Issue505RegressionTest(value)
+  // ... as well as the `value` in `(value: String)`.
   @JsonCreator
-  def apply(str: String): PositiveLong = new PositiveLong(str.toLong)
+  def apply(value: String): Issue505RegressionTest = new Issue505RegressionTest(value.toLong)
 }
 
 object CreatorTest
@@ -168,6 +172,6 @@ class CreatorTest extends DeserializationFixture {
 
   it should "support multiple creator annotations" in { f =>
     val node: JsonNode = f.valueToTree[IntNode](10)
-    f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
+    f.convertValue(node, new TypeReference[Issue505RegressionTest] {}).value shouldEqual node.asLong()
   }
 }
