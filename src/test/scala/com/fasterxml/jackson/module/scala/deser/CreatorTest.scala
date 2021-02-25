@@ -15,6 +15,20 @@ object PositiveLong {
   def apply(str: String): PositiveLong = new PositiveLong(str.toLong)
 }
 
+// Minimal reproducing class for the first failure case.
+// The `apply` methods have the same _parameter names_, which causes:
+//   Conflicting property-based creators: already had explicitly marked creator [method regression.ConflictingJsonCreator#apply(long)],
+//   encountered another: [method regression.ConflictingJsonCreator#apply(java.lang.String)]
+class ConflictingJsonCreator private (val value: Long) {
+  override def toString() = s"ConflictingJsonCreator($value)"
+}
+object ConflictingJsonCreator {
+  @JsonCreator
+  def apply(value: Long): ConflictingJsonCreator = new ConflictingJsonCreator(value)
+  @JsonCreator
+  def apply(value: String): ConflictingJsonCreator = new ConflictingJsonCreator(value.toLong)
+}
+
 object CreatorTest
 {
   class CreatorTestBean(val a: String, var b: String)
@@ -160,6 +174,20 @@ class CreatorTest extends DeserializationFixture {
   }
 
   it should "support multiple creator annotations" in { f =>
+    val node: JsonNode = f.valueToTree[IntNode](10)
+    f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
+  }
+
+  //works in jackson 2.13
+  it should "support multiple creator annotations with the same parameter names" ignore { f =>
+    val node: JsonNode = f.valueToTree[IntNode](10)
+    // Ensure that the parameters are actually named `value`
+    ConflictingJsonCreator(value=10L).value shouldEqual node.asLong()
+    ConflictingJsonCreator(value="10").value shouldEqual node.asLong()
+    f.convertValue(node, new TypeReference[ConflictingJsonCreator] {}).value shouldEqual node.asLong()
+  }
+
+  it should "not have a problem constructors and member name conflicts" in { f =>
     val node: JsonNode = f.valueToTree[IntNode](10)
     f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
   }
