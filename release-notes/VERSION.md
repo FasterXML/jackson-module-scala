@@ -18,6 +18,12 @@ Scala 2.11 and 2.12 and 2.13. Java 8 is now the minimum supported Java version. 
 There are no new fixes in this release; it serves to track the 2.11.4 release
 of the upstream Jackson projects.
 
+# Version: 2.11.4.1
+
+## Fixes
+* [[gh-451]](https://github.com/FasterXML/jackson-module-scala/issues/451)
+  Fixes binary compatibility with 2.9.x Jackson scala module.
+
 # Version: 2.11.3
 
 ## Fixes

@@ -16,4 +16,8 @@ object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
  * @deprecated use {@link com.fasterxml.jackson.module.scala.RequiredPropertiesSchemaModule}
  */
 @Deprecated
-trait RequiredPropertiesSchemaModule extends com.fasterxml.jackson.module.scala.RequiredPropertiesSchemaModule
+trait RequiredPropertiesSchemaModule extends com.fasterxml.jackson.module.scala.RequiredPropertiesSchemaModule {
+
+  //  This is to tell scala compiler to create RequiredPropertiesSchemaModule.$init$
+  assert(true)
+}
