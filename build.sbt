@@ -33,7 +33,7 @@ unmanagedSourceDirectories in Compile += {
 }
 
 val jacksonVersion = "2.13.0-SNAPSHOT"
-val jacksonJsonSchemaVersion = "2.12.1"
+val jacksonJsonSchemaVersion = "2.12.2"
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
