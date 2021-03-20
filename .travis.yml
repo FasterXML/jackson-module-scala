@@ -27,7 +27,7 @@ matrix:
       jdk: openjdk11
       env: SONATYPE_PUBLISH=false
     - scala: 2.13.5
-      jdk: openjdk15
+      jdk: openjdk16
       env: SONATYPE_PUBLISH=false      
 
 script:
