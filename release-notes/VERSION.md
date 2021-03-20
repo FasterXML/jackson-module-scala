@@ -6,7 +6,7 @@ Scala 2.11 and 2.12 and 2.13. Java 8 is the minimum supported Java version.
 Some deprecated code relating to the use of Scala Manifests has been removed - ScalaObjectMapper support is unaffected (but this class remains deprecated).
 
 
-# Version: 2.12.2 (Snapshot only)
+# Version: 2.12.2
 
 ## Fixes
 
