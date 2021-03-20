@@ -28,7 +28,10 @@ matrix:
       env: SONATYPE_PUBLISH=false
     - scala: 2.13.4
       jdk: openjdk15
-      env: SONATYPE_PUBLISH=false      
+      env: SONATYPE_PUBLISH=false
+     - scala: 2.13.4
+      jdk: openjdk16
+      env: SONATYPE_PUBLISH=false
 
 after_success:
   - >
@@ -40,10 +43,9 @@ after_success:
 branches:
   only:
     - master
-    - "2.9"
-    - "2.10"
     - "2.11"
     - "2.12"
+    - "2.13"
 env:
   global:
     - secure: "EAnt75OQNWHWvZomCAb8G5IdqcVMR0NqzngOKFOeSsjaB2CFVtfYoAq3dzp0utBqiOnWe1l5TCmcFUzMrkw+nuWbScKXYyiE6268LcA02/JBkAxnOcOo/6/xVh3oX0NhrBN5BSkJF5Hz5ffDXZArGM30s7FFhiijcmuo7J4/o0E="
