@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LookupCache, SimpleLookupCache}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, PropertyName}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
@@ -48,6 +48,18 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       case am: AnnotatedMethod => methodName(am).orNull
       case ap: AnnotatedParameter => paramName(ap).orNull
       case _ => None.orNull
+    }
+  }
+
+  override def findNameForDeserialization(mapperConfig: MapperConfig[_], ann: Annotated): PropertyName = {
+    ann match {
+      case member: AnnotatedMember => {
+        Option(findImplicitPropertyName(mapperConfig, member)) match {
+          case Some(name) => new PropertyName(name)
+          case _ => super.findNameForDeserialization(mapperConfig, ann)
+        }
+      }
+      case _ => super.findNameForDeserialization(mapperConfig, ann)
     }
   }
 
