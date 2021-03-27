@@ -55,7 +55,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     ann match {
       case member: AnnotatedMember => {
         Option(findImplicitPropertyName(mapperConfig, member)) match {
-          case Some(name) => new PropertyName(name)
+          case Some(name) if name.indexOf('-') >= 0 => new PropertyName(name)
           case _ => super.findNameForDeserialization(mapperConfig, ann)
         }
       }
