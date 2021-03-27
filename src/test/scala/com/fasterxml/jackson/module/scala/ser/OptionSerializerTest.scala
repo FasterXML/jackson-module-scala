@@ -4,7 +4,7 @@ import java.util
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator
 import com.fasterxml.jackson.databind.node.JsonNodeType
-import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule, RequiredPropertiesSchemaModule}
