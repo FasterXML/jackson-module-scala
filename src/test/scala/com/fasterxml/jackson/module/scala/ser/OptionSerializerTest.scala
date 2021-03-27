@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import java.util
-
 import com.fasterxml.jackson.annotation._
+import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema
@@ -211,6 +211,8 @@ class OptionSerializerTest extends SerializerTest {
     val expected = """{"name":"John Smith","email":"john.smith@unit.uk"}"""
     mapper.writeValueAsString(user) shouldEqual expected
     mapper.activateDefaultTyping(mapper.getPolymorphicTypeValidator)
+    mapper.writeValueAsString(user) shouldEqual expected
+    mapper.activateDefaultTyping(new DefaultBaseTypeLimitingValidator)
     mapper.writeValueAsString(user) shouldEqual expected
   }
 
