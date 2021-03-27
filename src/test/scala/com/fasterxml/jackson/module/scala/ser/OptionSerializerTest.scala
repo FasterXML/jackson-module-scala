@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule, ScalaObjectMapper}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import java.util
 import scala.annotation.meta.{field, getter}
@@ -129,10 +129,7 @@ class OptionSerializerTest extends SerializerTest {
 
   it should "support default typing" in {
     case class User(name: String, email: Option[String] = None)
-    val mapper = newMapper :: ScalaObjectMapper
-    //TODO fix
-    //mapper.enableDefaultTyping()
-    mapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) shouldBe """{"name":"John Smith","email":"john.smith@unit.uk"}"""
+    newMapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) shouldBe """{"name":"John Smith","email":"john.smith@unit.uk"}"""
   }
 
   it should "serialize JsonTypeInfo info in Option[T]" in {
