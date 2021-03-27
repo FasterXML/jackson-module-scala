@@ -207,8 +207,11 @@ class OptionSerializerTest extends SerializerTest {
   it should "support default typing" in {
     case class User(name: String, email: Option[String] = None)
     val mapper = newMapper
-    mapper.enableDefaultTyping()
-    mapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) shouldBe """{"name":"John Smith","email":"john.smith@unit.uk"}"""
+    val user = User("John Smith", Some("john.smith@unit.uk"))
+    val expected = """{"name":"John Smith","email":"john.smith@unit.uk"}"""
+    mapper.writeValueAsString(user) shouldEqual expected
+    mapper.activateDefaultTyping(mapper.getPolymorphicTypeValidator)
+    mapper.writeValueAsString(user) shouldEqual expected
   }
 
   it should "serialize JsonTypeInfo info in Option[T]" in {
