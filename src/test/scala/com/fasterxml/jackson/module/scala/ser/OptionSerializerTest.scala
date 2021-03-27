@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation._
+import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
@@ -129,7 +130,12 @@ class OptionSerializerTest extends SerializerTest {
 
   it should "support default typing" in {
     case class User(name: String, email: Option[String] = None)
-    newMapper.writeValueAsString(User("John Smith", Some("john.smith@unit.uk"))) shouldBe """{"name":"John Smith","email":"john.smith@unit.uk"}"""
+    val mapper = newMapper
+    val user = User("John Smith", Some("john.smith@unit.uk"))
+    val expected = """{"name":"John Smith","email":"john.smith@unit.uk"}"""
+    mapper.writeValueAsString(user) shouldEqual expected
+    val mapper2 = newBuilder.activateDefaultTyping(new DefaultBaseTypeLimitingValidator).build()
+    mapper2.writeValueAsString(user) shouldEqual expected
   }
 
   it should "serialize JsonTypeInfo info in Option[T]" in {
