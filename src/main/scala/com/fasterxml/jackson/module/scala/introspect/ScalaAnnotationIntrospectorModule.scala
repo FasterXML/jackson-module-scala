@@ -52,14 +52,17 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   override def findNameForDeserialization(mapperConfig: MapperConfig[_], ann: Annotated): PropertyName = {
-    ann match {
-      case member: AnnotatedMember => {
-        Option(findImplicitPropertyName(mapperConfig, member)) match {
-          case Some(name) if name.indexOf('-') >= 0 => new PropertyName(name)
-          case _ => super.findNameForDeserialization(mapperConfig, ann)
+    Option(mapperConfig.getPropertyNamingStrategy) match {
+      case Some(_) => None.orNull
+      case _ => {
+        val modifiedName = ann match {
+          case af: AnnotatedField if af.getName.contains("$") => fieldName(af)
+          case am: AnnotatedMethod if am.getName.contains("$") => methodName(am)
+          case ap: AnnotatedParameter if ap.getName.contains("$") => paramName(ap)
+          case _ => None
         }
+        modifiedName.map(new PropertyName(_)).orNull
       }
-      case _ => super.findNameForDeserialization(mapperConfig, ann)
     }
   }
 
