@@ -7,7 +7,7 @@ private[util] object TastyUtil {
   
   @tailrec
   def hasTastyFile(clz: Class[_]): Boolean = {
-    clz != null && {
+    clz != null && clz.getCanonicalName != null && {
       val baseName = clz.getCanonicalName.replace(".", "/")
       val classFileBase = if (baseName.endsWith("$")) {
         baseName.substring(0, baseName.length - 1)
