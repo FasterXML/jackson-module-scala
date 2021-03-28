@@ -7,7 +7,9 @@ import scala.util.Try
 trait ClassW extends PimpedType[Class[_]] {
 
   def extendsScalaClass: Boolean = {
-    ClassW.productClass.isAssignableFrom(value) || isScalaObject
+    ClassW.productClass.isAssignableFrom(value) ||
+      isScalaObject ||
+      TastyUtil.hasTastyFile(value)
   }
 
   def hasSignature: Boolean = {
