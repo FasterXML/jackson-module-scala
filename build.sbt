@@ -8,7 +8,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.13.5"
 
-crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5")
+crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5", "3.0.0-RC2")
 
 mimaPreviousArtifacts := Set(organization.value %% name.value % "2.12.1")
 
@@ -28,8 +28,23 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 // and we use it.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
-unmanagedSourceDirectories in Compile += {
-  (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
+unmanagedSourceDirectories in Compile ++= {
+  if (isDotty.value) {
+    Seq(
+      (baseDirectory in LocalRootProject).value / "src" / "main" / "scala-2.13",
+      (baseDirectory in LocalRootProject).value / "src" / "main" / "scala-3.0"
+    )
+  } else {
+    Seq(
+      (baseDirectory in LocalRootProject).value / "src" / "main" / "scala-2.+",
+      (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
+    )
+  }
+}
+
+unmanagedSourceDirectories in Test += {
+  val suffix = if (isDotty.value) "3.0" else "2.+"
+  (baseDirectory in LocalRootProject).value / "src" / "test" / s"scala-${suffix}"
 }
 
 val jacksonVersion = "2.13.0-SNAPSHOT"

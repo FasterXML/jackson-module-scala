@@ -2,13 +2,12 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-import java.io.ByteArrayOutputStream
-
 import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
-import org.scalatest.flatspec.FixtureAnyFlatSpec
 import org.scalatest.Outcome
+import org.scalatest.flatspec.FixtureAnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
+import java.io.ByteArrayOutputStream
 import scala.beans.BeanProperty
 
 class PojoWrittenInScala {
