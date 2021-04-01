@@ -31,6 +31,6 @@ class NamingStrategyTest extends FixtureAnyFlatSpec with Matchers {
     bytes.close()
     bytes.toString should include("foo_bar")
     val pojo = mapper.readValue(bytes.toByteArray, classOf[PojoWrittenInScala])
-    pojo.getFooBar() shouldEqual ""
+    pojo.fooBar shouldEqual ""
   }
 }
