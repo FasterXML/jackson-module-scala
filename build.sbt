@@ -10,7 +10,12 @@ scalaVersion := "2.13.5"
 
 crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5", "3.0.0-RC2")
 
-mimaPreviousArtifacts := Set(organization.value %% name.value % "2.12.1")
+mimaPreviousArtifacts := {
+  if (isDotty.value)
+    Set.empty
+  else
+    Set(organization.value %% name.value % "2.12.1")
+}
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
