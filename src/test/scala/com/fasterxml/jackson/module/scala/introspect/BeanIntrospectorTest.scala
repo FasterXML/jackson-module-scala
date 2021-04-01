@@ -302,4 +302,16 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
     props should have size 2
     props.forall ( _.getter.isDefined ) shouldBe true
   }
+
+  it should "handle case class with Seq member" in {
+    case class ModelWSeqString(strings: Seq[String])
+
+    val beanDesc = BeanIntrospector(classOf[ModelWSeqString])
+    val props = beanDesc.properties
+
+    props should have size 1
+    props.head.name shouldBe "strings"
+    //different scala versions provide different results
+    props.head.field.value.getAnnotatedType.getType.getTypeName should include("Seq")
+  }
 }
