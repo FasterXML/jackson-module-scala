@@ -224,8 +224,26 @@ object BeanIntrospector {
       beanSetter = findBeanSetter(cls, name)
     } yield PropertyDescriptor(name, None, None, Some(getter), setter, beanGetter, beanSetter)
 
+    val lazySuffix = "$lzy1"
+    val lazyValMethods = {
+      hierarchy.flatMap { hcls =>
+        val fieldNames = hcls.getDeclaredFields.map(_.getName)
+          .filter(_.endsWith(lazySuffix))
+          .map(s => s.substring(0, s.length - lazySuffix.length))
+          .toSet
+        for {
+          getter <- hcls.getDeclaredMethods
+          name = NameTransformer.decode(getter.getName)
+          if !name.contains('$')
+          if fieldNames.contains(name)
+          if isAcceptableGetter(getter)
+          setter = findSetter(cls, name)
+          beanGetter = findBeanGetter(cls, name)
+          beanSetter = findBeanSetter(cls, name)
+        } yield PropertyDescriptor(name, None, None, Some(getter), setter, beanGetter, beanSetter)
+      }
+    }
 
-    BeanDescriptor(cls, fields ++ methods)
+    BeanDescriptor(cls, fields ++ methods ++ lazyValMethods)
   }
-
 }
