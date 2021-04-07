@@ -20,15 +20,28 @@ matrix:
     - scala: 2.12.13
       jdk: openjdk11
       env: SONATYPE_PUBLISH=false
-    - scala: 2.13.4
+    - scala: 2.13.5
       jdk: openjdk8
       env: SONATYPE_PUBLISH=true
-    - scala: 2.13.4
+    - scala: 2.13.5
       jdk: openjdk11
       env: SONATYPE_PUBLISH=false
-    - scala: 2.13.4
+    - scala: 2.13.5
       jdk: openjdk16
       env: SONATYPE_PUBLISH=false
+
+install:
+  - |
+    # update this only when sbt-the-bash-script needs to be updated
+    export SBT_LAUNCHER=1.5.0
+    export SBT_OPTS="-Dfile.encoding=UTF-8"
+    curl -L --silent "https://github.com/sbt/sbt/releases/download/v$SBT_LAUNCHER/sbt-$SBT_LAUNCHER.tgz" > $HOME/sbt.tgz
+    tar zxf $HOME/sbt.tgz -C $HOME
+    sudo rm /usr/local/bin/sbt
+    sudo ln -s $HOME/sbt/bin/sbt /usr/local/bin/sbt
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION test mimaReportBinaryIssues
 
 after_success:
   - >
