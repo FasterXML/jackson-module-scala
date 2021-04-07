@@ -41,7 +41,7 @@ install:
     sudo ln -s $HOME/sbt/bin/sbt /usr/local/bin/sbt
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION test mimaReportBinaryIssues
+  - sbt ++$TRAVIS_SCALA_VERSION test
 
 after_success:
   - >
