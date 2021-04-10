@@ -25,7 +25,7 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 // and we use it.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
-unmanagedSourceDirectories in Compile += {
+Compile / unmanagedSourceDirectories += {
   (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
 }
 
@@ -43,8 +43,8 @@ libraryDependencies ++= Seq(
 )
 
 // build.properties
-resourceGenerators in Compile += Def.task {
-    val file = (resourceManaged in Compile).value / "com" / "fasterxml" / "jackson" / "module" / "scala" / "build.properties"
+Compile / resourceGenerators += Def.task {
+    val file = (Compile / resourceManaged).value / "com" / "fasterxml" / "jackson" / "module" / "scala" / "build.properties"
     val contents = "version=%s\ngroupId=%s\nartifactId=%s\n".format(version.value, organization.value, name.value)
     IO.write(file, contents)
     Seq(file)
