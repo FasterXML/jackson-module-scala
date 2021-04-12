@@ -32,7 +32,7 @@ unmanagedSourceDirectories in Compile += {
   (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
 }
 
-val jacksonVersion = "2.12.2"
+val jacksonVersion = "2.12.3"
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
@@ -57,7 +57,6 @@ resourceGenerators in Compile += Def.task {
 }.taskValue
 
 // site
-Global / useGpg := false
 enablePlugins(SiteScaladocPlugin)
 enablePlugins(GhpagesPlugin)
 git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
