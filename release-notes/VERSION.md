@@ -1,9 +1,12 @@
 # Version: 2.13.0 (Snapshot only)
 
-This patch release tracks Jackson 2.13. The 2.13 series has full support for
-Scala 2.11 and 2.12 and 2.13. Java 8 is the minimum supported Java version.
+This patch release tracks Jackson 2.13. The 2.13 series has full support for Scala 2.11 and 2.12 and 2.13. Java 8 is the minimum supported Java version.
 
-No functionality changes but the experimental package has been removed. The classes were moved in release 2.10.0 and experimental package was just kept to ease the transition. Some deprecated code relating to the use of Scala Manifests was also removed.
+Some deprecated code relating to the use of Scala Manifests has been removed - ScalaObjectMapper support is unaffected (but this class remains deprecated).
+
+Occasional snapshot releases are made for Scala 3 (currently 3.0.0-RC1) where most features appear to work but there are still some features that are broken (see https://github.com/FasterXML/jackson-module-scala/issues/479).
+
+[gh-512] add support for recognising Scala3 classes (TastyUtil)
 
 # Version: 2.12.3
 
