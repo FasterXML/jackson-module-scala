@@ -4,7 +4,7 @@ This patch release tracks Jackson 2.13. The 2.13 series has full support for Sca
 
 Some deprecated code relating to the use of Scala Manifests has been removed - ScalaObjectMapper support is unaffected (but this class remains deprecated).
 
-Occasional snapshot releases are made for Scala 3 (currently 3.0.0-RC1) where most features appear to work but there are still some features that are broken (see https://github.com/FasterXML/jackson-module-scala/issues/479).
+Occasional snapshot releases are made for Scala 3 (currently 3.0.0-RC2) where most features appear to work but there are still some features that are broken (see https://github.com/FasterXML/jackson-module-scala/issues/479).
 
 [gh-512] add support for recognising Scala3 classes (TastyUtil)
 
