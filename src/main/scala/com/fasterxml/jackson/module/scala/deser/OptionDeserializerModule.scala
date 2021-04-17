@@ -66,7 +66,7 @@ private class OptionDeserializer(fullType: JavaType,
   override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer): Option[AnyRef] = {
     val t = jp.currentToken()
     if (t == JsonToken.VALUE_NULL) {
-      getNullValue(ctxt).asInstanceOf[Option[AnyRef]]
+      getNullValue(ctxt)
     } else {
       typeDeserializer.deserializeTypedFromAny(jp, ctxt).asInstanceOf[Option[AnyRef]]
     }
@@ -85,7 +85,7 @@ private object OptionDeserializerResolver extends Deserializers.Base {
     if (!OPTION.isAssignableFrom(refType.getRawClass)) None.orNull
     else {
       val elementType = refType.getContentType
-      val typeDeser = Option(contentTypeDeserializer).orElse(Option(elementType.getTypeHandler[TypeDeserializer]))
+      val typeDeser = Option(contentTypeDeserializer).orElse(Option(elementType.getTypeHandler.asInstanceOf[TypeDeserializer]))
       val valDeser = Option(contentDeserializer).orElse(Option(elementType.getValueHandler)).asInstanceOf[Option[ValueDeserializer[AnyRef]]]
       new OptionDeserializer(refType, typeDeser, valDeser)
     }

@@ -158,8 +158,8 @@ private object EitherSerializerResolver extends Serializers.Base {
       val leftType = javaType.containedType(0)
       val rightType = javaType.containedType(1)
 
-      val typeSer = Option(contentTypeSerializer).orElse(Option(javaType.getTypeHandler[TypeSerializer]))
-      val valSer = Option(contentValueSerializer).orElse(Option(javaType.getValueHandler[ValueSerializer[AnyRef]]))
+      val typeSer = Option(contentTypeSerializer).orElse(Option(javaType.getTypeHandler.asInstanceOf[TypeSerializer]))
+      val valSer = Option(contentValueSerializer).orElse(Option(javaType.getValueHandler.asInstanceOf[ValueSerializer[AnyRef]]))
 
       val left = EitherDetails(Option(leftType), typeSer, valSer)
       val right = EitherDetails(Option(rightType), typeSer, valSer)
