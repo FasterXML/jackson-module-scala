@@ -26,7 +26,7 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
 Compile / unmanagedSourceDirectories += {
-  (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
+  (LocalRootProject / baseDirectory).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
 }
 
 val jacksonVersion = "3.0.0-SNAPSHOT"
