@@ -19,4 +19,3 @@ addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.8")
 
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.8.1")
 
-addSbtPlugin("ch.epfl.lamp" % "sbt-dotty" % "0.5.4")

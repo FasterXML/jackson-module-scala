@@ -10,14 +10,15 @@ scalaVersion := "2.13.5"
 
 crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5", "3.0.0-RC3")
 
-mimaPreviousArtifacts := {
-  if (isDotty.value)
-    Set.empty
-  else
-    Set(organization.value %% name.value % "2.12.1")
-}
-
 resolvers += Resolver.sonatypeRepo("snapshots")
+
+val scalaReleaseVersion = SettingKey[Int]("scalaReleaseVersion")
+scalaReleaseVersion := {
+  val v = scalaVersion.value
+  CrossVersion.partialVersion(v).map(_._1.toInt).getOrElse {
+    throw new RuntimeException(s"could not get Scala release version from $v")
+  }
+}
 
 val scalaMajorVersion = SettingKey[Int]("scalaMajorVersion")
 scalaMajorVersion := {
@@ -27,6 +28,13 @@ scalaMajorVersion := {
   }
 }
 
+mimaPreviousArtifacts := {
+  if (scalaReleaseVersion.value > 2)
+    Set.empty
+  else
+    Set(organization.value %% name.value % "2.12.1")
+}
+
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
 // Temporarily disable warnings as error since SerializationFeature.WRITE_NULL_MAP_VALUES has been deprecated
@@ -34,21 +42,21 @@ scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
 Compile / unmanagedSourceDirectories ++= {
-  if (isDotty.value) {
+  if (scalaReleaseVersion.value > 2) {
     Seq(
-      (baseDirectory in LocalRootProject).value / "src" / "main" / "scala-2.13",
-      (baseDirectory in LocalRootProject).value / "src" / "main" / "scala-3.0"
+      (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-2.13",
+      (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-3.0"
     )
   } else {
     Seq(
-      (baseDirectory in LocalRootProject).value / "src" / "main" / "scala-2.+",
-      (baseDirectory in LocalRootProject).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
+      (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-2.+",
+      (LocalRootProject / baseDirectory).value / "src" / "main" / s"scala-2.${scalaMajorVersion.value}"
     )
   }
 }
 
 Test / unmanagedSourceDirectories += {
-  val suffix = if (isDotty.value) "3.0" else "2.+"
+  val suffix = if (scalaReleaseVersion.value > 2) "3.0" else "2.+"
   (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-${suffix}"
 }
 
