@@ -7,7 +7,7 @@ object Build {
     st.log.info(info)
     val extracted = Project.extract(st)
     val ref: ProjectRef = extracted.get(thisProjectRef)
-    val (newState, _) = extracted.runTask(task in ref, st)
+    val (newState, _) = extracted.runTask(ref / task, st)
     newState
   }
 
