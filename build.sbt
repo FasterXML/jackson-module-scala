@@ -8,7 +8,7 @@ organization := "com.fasterxml.jackson.module"
 
 scalaVersion := "2.13.5"
 
-crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5", "3.0.0-RC3")
+crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5", "3.0.0")
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
@@ -74,7 +74,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
   "io.swagger" % "swagger-core" % "1.6.2" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.8" % Test
+  "org.scalatest" %% "scalatest" % "3.2.9" % Test
 )
 
 // build.properties
