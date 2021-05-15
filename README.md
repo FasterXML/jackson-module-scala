@@ -23,6 +23,24 @@ its subclasses, and Scala properties do not (by default) look like `Java Bean` p
 The Scala Module supports serialization and limited deserialization of
 Scala Case Classes, `Sequence`s, `Map`s, `Tuple`s, `Option`s, and Enumerations.
 
+# Version Support
+
+Jackson-module-scala follows the same release strategy of [jackson-databind](https://github.com/FasterXML/jackson-databind).
+Master branch is used for Jackson 3 development. The latest releases are v2.12.x.
+
+Scala 2.11, 2.12 and 2.13 are supported. Scala 2.10 support was dropped in v2.12.0. Java 8 is
+the minimum supported version now.
+
+## Scala 3
+
+Scala 3 support will be added in v2.13.0. This support is still deemed to be experimental. Code contributions are welcomed.
+* ScalaObjectMapper is not supported for Scala 3 (https://github.com/FasterXML/jackson-module-scala/issues/503)
+* v2.13.0-SNAPSHOT is published for Scala 3.0.0
+* There are still a number of tests that work with Scala 2 that fail with Scala 3
+* It is expected that most use cases should work ok with Scala 3
+  * Most of the broken tests relate to the use of [Jackson annotations](https://github.com/FasterXML/jackson-annotations) - many use cases work but some don't
+  * There has been no testing of using Scala 3 classes with Scala 2 jackson-module-scala or Scala 2 classes with Scala 3 jackson-module-scala
+
 # Usage
 
 To use the Scala Module in Jackson, simply register it with the
