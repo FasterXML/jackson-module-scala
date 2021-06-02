@@ -11,7 +11,12 @@ import scala.reflect.ClassTag
 object ClassTagExtensions {
   def ::(o: JsonMapper) = new Mixin(o)
   final class Mixin private[ClassTagExtensions](mapper: JsonMapper)
-    extends JsonMapper(mapper.rebuild()) with ClassTagExtensions
+    extends JsonMapper(mapper.rebuild()) with ClassTagExtensions {
+    override def readTree[T <: TreeNode](jsonParser: JsonParser): T = mapper match {
+      case objectMapper: ObjectMapper => objectMapper.readTree(jsonParser)
+      case _ => throw new RuntimeException("readTree only works for instances of ObjectMapper")
+    }
+  }
 }
 
 /**
