@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.`type`.TypeFactory
 import com.fasterxml.jackson.databind.json.JsonMapper
 
 import java.io.{File, InputStream, Reader}
@@ -15,11 +16,8 @@ object ClassTagExtensions {
 }
 
 /**
- * Experimental ClassTag equivalent of ScalaObjectMapper. This does not do a good job with
- * reference types that wrap primitives, eg Option[Int], Seq[Boolean].
- *
- * This is because ClassTags only provide access to the Java class and information
- * about the wrapped types is lost due to type erasure.
+ * Experimental ClassTag equivalent of ScalaObjectMapper.
+ * This only works with non parameterized types or parameterized types up to 5 type parameters.
  */
 trait ClassTagExtensions {
   self: ObjectMapper =>
@@ -56,6 +54,15 @@ trait ClassTagExtensions {
    **********************************************************
    */
 
+  /**
+   * Convenience method for constructing [[com.fasterxml.jackson.databind.JavaType]] out of given
+   * type (typically <code>java.lang.Class</code>), but without explicit
+   * context.
+   */
+  def constructType[T: JavaTypeable]: JavaType = {
+    implicitly[JavaTypeable[T]].asJavaType(getTypeFactory)
+  }
+
   /*
    **********************************************************
    * Public API (from ObjectCodec): deserialization
@@ -71,8 +78,8 @@ trait ClassTagExtensions {
    * and specifically needs to be used if the root type is a
    * parameterized (generic) container type.
    */
-  def readValue[T: ClassTag](jp: JsonParser): T = {
-    readValue(jp, classFor[T])
+  def readValue[T: JavaTypeable](jp: JsonParser): T = {
+    readValue(jp, constructType[T])
   }
 
   /**
@@ -87,8 +94,8 @@ trait ClassTagExtensions {
    * <p>
    * Note that [[com.fasterxml.jackson.databind.ObjectReader]] has more complete set of variants.
    */
-  def readValues[T: ClassTag](jp: JsonParser): MappingIterator[T] = {
-    readValues(jp, classFor[T])
+  def readValues[T: JavaTypeable](jp: JsonParser): MappingIterator[T] = {
+    readValues(jp, constructType[T])
   }
 
   /*
@@ -116,64 +123,64 @@ trait ClassTagExtensions {
    * convenience methods
    **********************************************************
    */
-  def readValue[T: ClassTag](src: File): T = {
-    readValue(src, classFor[T])
+  def readValue[T: JavaTypeable](src: File): T = {
+    readValue(src, constructType[T])
   }
 
-  def readValue[T: ClassTag](src: URL): T = {
-    readValue(src, classFor[T])
+  def readValue[T: JavaTypeable](src: URL): T = {
+    readValue(src, constructType[T])
   }
 
-  def readValue[T: ClassTag](content: String): T = {
-    readValue(content, classFor[T])
+  def readValue[T: JavaTypeable](content: String): T = {
+    readValue(content, constructType[T])
   }
 
-  def readValue[T: ClassTag](src: Reader): T = {
-    readValue(src, classFor[T])
+  def readValue[T: JavaTypeable](src: Reader): T = {
+    readValue(src, constructType[T])
   }
 
-  def readValue[T: ClassTag](src: InputStream): T = {
-    readValue(src, classFor[T])
+  def readValue[T: JavaTypeable](src: InputStream): T = {
+    readValue(src, constructType[T])
   }
 
-  def readValue[T: ClassTag](src: Array[Byte]): T = {
-    readValue(src, classFor[T])
+  def readValue[T: JavaTypeable](src: Array[Byte]): T = {
+    readValue(src, constructType[T])
   }
 
-  def readValue[T: ClassTag](src: Array[Byte], offset: Int, len: Int): T = {
-    readValue(src, offset, len, classFor[T])
+  def readValue[T: JavaTypeable](src: Array[Byte], offset: Int, len: Int): T = {
+    readValue(src, offset, len, constructType[T])
   }
 
-  def updateValue[T: ClassTag](valueToUpdate: T, src: File): T = {
+  def updateValue[T: JavaTypeable](valueToUpdate: T, src: File): T = {
     objectReaderFor(valueToUpdate).readValue(src)
   }
 
-  def updateValue[T: ClassTag](valueToUpdate: T, src: URL): T = {
+  def updateValue[T: JavaTypeable](valueToUpdate: T, src: URL): T = {
     objectReaderFor(valueToUpdate).readValue(src)
   }
 
-  def updateValue[T: ClassTag](valueToUpdate: T, content: String): T = {
+  def updateValue[T: JavaTypeable](valueToUpdate: T, content: String): T = {
     objectReaderFor(valueToUpdate).readValue(content)
   }
 
-  def updateValue[T: ClassTag](valueToUpdate: T, src: Reader): T = {
+  def updateValue[T: JavaTypeable](valueToUpdate: T, src: Reader): T = {
     objectReaderFor(valueToUpdate).readValue(src)
   }
 
-  def updateValue[T: ClassTag](valueToUpdate: T, src: InputStream): T = {
+  def updateValue[T: JavaTypeable](valueToUpdate: T, src: InputStream): T = {
     objectReaderFor(valueToUpdate).readValue(src)
   }
 
-  def updateValue[T: ClassTag](valueToUpdate: T, src: Array[Byte]): T = {
+  def updateValue[T: JavaTypeable](valueToUpdate: T, src: Array[Byte]): T = {
     objectReaderFor(valueToUpdate).readValue(src)
   }
 
-  def updateValue[T: ClassTag](valueToUpdate: T, src: Array[Byte], offset: Int, len: Int): T = {
+  def updateValue[T: JavaTypeable](valueToUpdate: T, src: Array[Byte], offset: Int, len: Int): T = {
     objectReaderFor(valueToUpdate).readValue(src, offset, len)
   }
 
-  private def objectReaderFor[T: ClassTag](valueToUpdate: T): ObjectReader = {
-    readerForUpdating(valueToUpdate).forType(classFor[T])
+  private def objectReaderFor[T: JavaTypeable](valueToUpdate: T): ObjectReader = {
+    readerForUpdating(valueToUpdate).forType(constructType[T])
   }
 
   /*
@@ -202,8 +209,8 @@ trait ClassTagExtensions {
    *
    * @since 2.5
    */
-  def writerFor[T: ClassTag]: ObjectWriter = {
-    writerFor(classFor[T])
+  def writerFor[T: JavaTypeable]: ObjectWriter = {
+    writerFor(constructType[T])
   }
 
   /*
@@ -217,8 +224,8 @@ trait ClassTagExtensions {
    * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectReader]] that will
    * read or update instances of specified type
    */
-  def readerFor[T: ClassTag]: ObjectReader = {
-    readerFor(classFor[T])
+  def readerFor[T: JavaTypeable]: ObjectReader = {
+    readerFor(constructType[T])
   }
 
   /**
@@ -247,11 +254,139 @@ trait ClassTagExtensions {
    *                                  if so, root cause will contain underlying checked exception data binding
    *                                  functionality threw
    */
-  def convertValue[T: ClassTag](fromValue: Any): T = {
-    convertValue(fromValue, classFor[T])
+  def convertValue[T: JavaTypeable](fromValue: Any): T = {
+    convertValue(fromValue, constructType[T])
   }
 
   private def classFor[T: ClassTag]: Class[T] = {
     implicitly[ClassTag[T]].runtimeClass.asInstanceOf[Class[T]]
   }
+}
+
+trait JavaTypeable[T] {
+  def asJavaType(typeFactory: TypeFactory): JavaType
+}
+
+object JavaTypeable {
+
+  implicit val anyJavaTypeable: JavaTypeable[Any] = {
+    new JavaTypeable[Any] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array()
+        typeFactory.constructParametricType(classOf[Object], typeArgs: _*)
+      }
+    }
+  }
+
+  implicit def optionJavaTypeable[T : JavaTypeable]: JavaTypeable[Option[T]] = {
+    new JavaTypeable[Option[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructReferenceType(classOf[Option[_]], typeArg0)
+      }
+    }
+  }
+
+  implicit def arrayJavaTypeable[T : JavaTypeable]: JavaTypeable[Array[T]] = {
+    new JavaTypeable[Array[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructArrayType(typeArg0)
+      }
+    }
+  }
+
+  implicit def mapJavaTypeable[M[_,_] <: Map[_,_], K : JavaTypeable, V: JavaTypeable](implicit ct: ClassTag[M[K,V]]): JavaTypeable[M[K, V]] = {
+    new JavaTypeable[M[K, V]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[K]].asJavaType(typeFactory)
+        val typeArg1 = implicitly[JavaTypeable[V]].asJavaType(typeFactory)
+        typeFactory.constructMapLikeType(ct.runtimeClass, typeArg0, typeArg1)
+      }
+    }
+  }
+
+  implicit def collectionJavaTypeable[I[_] <: Iterable[_], T : JavaTypeable](implicit ct: ClassTag[I[T]]): JavaTypeable[I[T]] = {
+    new JavaTypeable[I[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
+      }
+    }
+  }
+
+  implicit def gen5JavaTypeable[T[_, _, _, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable, D: JavaTypeable, E: JavaTypeable](implicit ct: ClassTag[T[A, B, C, D, E]]): JavaTypeable[T[A, B, C, D, E]] = {
+    new JavaTypeable[T[A, B, C, D, E]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[B]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[C]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[D]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[E]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
+    }
+  }
+
+  implicit def gen4JavaTypeable[T[_, _, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable, D: JavaTypeable](implicit ct: ClassTag[T[A, B, C, D]]): JavaTypeable[T[A, B, C, D]] = {
+    new JavaTypeable[T[A, B, C, D]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[B]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[C]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[D]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
+    }
+  }
+
+  implicit def gen3JavaTypeable[T[_, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable](implicit ct: ClassTag[T[A, B, C]]): JavaTypeable[T[A, B, C]] = {
+    new JavaTypeable[T[A, B, C]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[B]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[C]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
+    }
+  }
+
+  implicit def gen2JavaTypeable[T[_, _], A: JavaTypeable, B: JavaTypeable](implicit ct: ClassTag[T[A, B]]): JavaTypeable[T[A, B]] = {
+    new JavaTypeable[T[A, B]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[B]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
+    }
+  }
+
+  implicit def gen1JavaTypeable[T[_], A: JavaTypeable](implicit ct: ClassTag[T[A]]): JavaTypeable[T[A]] = {
+    new JavaTypeable[T[A]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
+    }
+  }
+
+  implicit def gen0JavaTypeable[T](implicit ct: ClassTag[T]): JavaTypeable[T] = {
+    new JavaTypeable[T] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array()
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
+    }
+  }
+
 }
