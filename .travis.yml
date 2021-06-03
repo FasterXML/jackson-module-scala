@@ -31,7 +31,7 @@ matrix:
       env: SONATYPE_PUBLISH=false      
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION test mimaReportBinaryIssues
+  - sbt ++$TRAVIS_SCALA_VERSION -jvm-opts travis/jvmopts test mimaReportBinaryIssues
 after_success:
   - >
       test "${TRAVIS_PULL_REQUEST}" = 'false' && test "${SONATYPE_PUBLISH}" = 'true' &&
