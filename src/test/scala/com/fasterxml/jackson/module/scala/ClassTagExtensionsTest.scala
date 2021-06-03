@@ -56,6 +56,11 @@ class ClassTagExtensionsTest extends JacksonTest {
     result should equal(genericInt)
   }
 
+  it should "construct the proper java type" in {
+    val result = mapper.constructType[Target]
+    result should equal(mapper.constructType(classOf[Target]))
+  }
+
   it should "read value from json parser" in {
     val parser = mapper.createParser(genericJson)
     val result = mapper.readValue[GenericTestClass[Int]](parser)
@@ -133,10 +138,9 @@ class ClassTagExtensionsTest extends JacksonTest {
     result should equal(Target.apply("foo", 0))
   }
 
-  it should "convert between types" ignore {
-    val result = mapper.convertValue[GenericTestClass[BigInt]](GenericTestClass("42"))
-    //assert fails with unboxing error
-    result.t.intValue should equal(genericInt.t)
+  it should "convert between types" in {
+    val result = mapper.convertValue[GenericTestClass[Int]](GenericTestClass("42"))
+    result should equal(genericInt)
   }
 
   it should "read values as Array from a JSON array" in {
@@ -144,17 +148,17 @@ class ClassTagExtensionsTest extends JacksonTest {
     result should equal(listGenericInt.toArray)
   }
 
-  it should "read values as Seq from a JSON array" ignore {
+  it should "read values as Seq from a JSON array" in {
     val result = mapper.readValue[Seq[GenericTestClass[Int]]](toplevelArrayJson)
     result should equal(listGenericInt)
   }
 
-  it should "read values as List from a JSON array" ignore {
+  it should "read values as List from a JSON array" in {
     val result = mapper.readValue[List[GenericTestClass[Int]]](toplevelArrayJson)
     result should equal(listGenericInt)
   }
 
-  it should "read values as Set from a JSON array" ignore {
+  it should "read values as Set from a JSON array" in {
     val result = mapper.readValue[Set[GenericTestClass[Int]]](toplevelArrayJson)
     result should equal(listGenericInt.toSet)
   }
@@ -175,7 +179,7 @@ class ClassTagExtensionsTest extends JacksonTest {
     result should equal(Map("first" -> "firstVal", "second" -> 2))
   }
 
-  it should "fail to read a Map from JSON with invalid types" ignore {
+  it should "fail to read a Map from JSON with invalid types" in {
     an [InvalidFormatException] should be thrownBy {
       mapper.readValue[Map[String, Int]](genericTwoFieldJson)
     }
@@ -186,7 +190,7 @@ class ClassTagExtensionsTest extends JacksonTest {
     assert(result.isInstanceOf[collection.Map[_, _]])
   }
 
-  it should "read option values into List from a JSON array" ignore {
+  it should "read option values into List from a JSON array" in {
     val result = mapper.readValue[java.util.ArrayList[Option[String]]](toplevelOptionArrayJson).asScala
     result(0) should equal(Some("some"))
     result(1) should equal(None)
@@ -198,48 +202,48 @@ class ClassTagExtensionsTest extends JacksonTest {
     result(1) should equal(None)
   }
 
-  it should "update value from file" ignore {
+  it should "update value from file" in {
     withFile(toplevelArrayJson) { file =>
       val result = mapper.updateValue(List.empty[GenericTestClass[Int]], file)
       result should equal(listGenericInt)
     }
   }
 
-  it should "update value from URL" ignore {
+  it should "update value from URL" in {
     withFile(toplevelArrayJson) { file =>
       val result = mapper.updateValue(List.empty[GenericTestClass[Int]], file.toURI.toURL)
       result should equal(listGenericInt)
     }
   }
 
-  it should "update value from string" ignore {
-    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], toplevelArrayJson)
+  it should "update value from string" in {
+    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson)
     result should equal(listGenericInt)
   }
 
-  it should "update value from Reader" ignore {
+  it should "update value from Reader" in {
     val reader = new InputStreamReader(new ByteArrayInputStream(toplevelArrayJson.getBytes(StandardCharsets.UTF_8)))
-    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], reader)
+    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], reader)
     result should equal(listGenericInt)
   }
 
-  it should "update value from stream" ignore {
+  it should "update value from stream" in {
     val stream = new ByteArrayInputStream(toplevelArrayJson.getBytes(StandardCharsets.UTF_8))
-    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], stream)
+    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], stream)
     result should equal(listGenericInt)
   }
 
-  it should "update value from byte array" ignore {
-    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], toplevelArrayJson.getBytes(StandardCharsets.UTF_8))
+  it should "update value from byte array" in {
+    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes(StandardCharsets.UTF_8))
     result should equal(listGenericInt)
   }
 
-  it should "update value from subset of byte array" ignore {
-    val result = mapper.updateValue(List.empty[GenericTestClass[BigInt]], toplevelArrayJson.getBytes(StandardCharsets.UTF_8), 0, toplevelArrayJson.length)
+  it should "update value from subset of byte array" in {
+    val result = mapper.updateValue(List.empty[GenericTestClass[Int]], toplevelArrayJson.getBytes(StandardCharsets.UTF_8), 0, toplevelArrayJson.length)
     result should equal(listGenericInt)
   }
 
-  it should "deserialize a type param wrapped option" ignore {
+  it should "deserialize a type param wrapped option" in {
     val json: String = """{"t": {"bar": "baz"}}"""
     val result = mapper.readValue[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)

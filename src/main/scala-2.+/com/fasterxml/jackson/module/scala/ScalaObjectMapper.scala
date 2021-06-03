@@ -14,7 +14,7 @@ object ScalaObjectMapper {
     extends JsonMapper(mapper.rebuild()) with ScalaObjectMapper
 }
 
-@deprecated("ScalaObjectMapper is deprecated because Manifests are not supported in Scala3", "2.12.1")
+@deprecated("ScalaObjectMapper is deprecated because Manifests are not supported in Scala3, you might want to use ClassTagExtensions as a replacement", "2.12.1")
 trait ScalaObjectMapper {
   self: ObjectMapper =>
 
