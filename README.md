@@ -35,7 +35,7 @@ the minimum supported version now.
 
 [Scala 3 support](https://github.com/FasterXML/jackson-module-scala/issues?q=is%3Aissue+is%3Aopen+label%3Ascala3) will be added in v2.13.0.
 This support is still deemed to be experimental. Code contributions are welcomed.
-* ScalaObjectMapper is not supported for Scala 3 (https://github.com/FasterXML/jackson-module-scala/issues/503)
+* ScalaObjectMapper is not supported for Scala 3 but ClassTagExtensions is its replacement. (https://github.com/FasterXML/jackson-module-scala/issues/503)
 * v2.13.0-SNAPSHOT is published for Scala 3.0.0
 * There are still a number of tests that work with Scala 2 that fail with Scala 3
 * It is expected that most use cases should work ok with Scala 3
