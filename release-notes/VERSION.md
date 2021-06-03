@@ -8,6 +8,7 @@ Some deprecated code relating to the use of Scala Manifests has been removed - S
 Occasional snapshot releases are made for Scala 3 (currently 3.0.0-RC2) where most features appear to work but there are still some features that are broken (see https://github.com/FasterXML/jackson-module-scala/issues/479).
 
 * [[gh-512]](https://github.com/FasterXML/jackson-module-scala/issues/512) add support for recognising Scala3 classes (TastyUtil)
+* [[gh-503]](https://github.com/FasterXML/jackson-module-scala/issues/503) big improvement to ClassTagExtensions, the Scala3 friendly replacement for ScalaObjectMapper. Big thanks to Gaël Jourdan-Weil.
 
 # Version: 2.12.3
 
