@@ -180,7 +180,7 @@ class CreatorTest extends DeserializationFixture {
   }
 
   //works in jackson 2.13
-  it should "support multiple creator annotations with the same parameter names" ignore { f =>
+  it should "support multiple creator annotations with the same parameter names" in { f =>
     val node: JsonNode = f.valueToTree[IntNode](10)
     // Ensure that the parameters are actually named `value`
     ConflictingJsonCreator(value=10L).value shouldEqual node.asLong()
