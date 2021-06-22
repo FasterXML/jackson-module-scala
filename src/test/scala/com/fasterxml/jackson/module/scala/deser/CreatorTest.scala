@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonCreator.Mode
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.databind.node.IntNode
@@ -23,9 +24,9 @@ class ConflictingJsonCreator private (val value: Long) {
   override def toString() = s"ConflictingJsonCreator($value)"
 }
 object ConflictingJsonCreator {
-  @JsonCreator
+  @JsonCreator(mode = Mode.DELEGATING)
   def apply(value: Long): ConflictingJsonCreator = new ConflictingJsonCreator(value)
-  @JsonCreator
+  @JsonCreator(mode = Mode.DELEGATING)
   def apply(value: String): ConflictingJsonCreator = new ConflictingJsonCreator(value.toLong)
 }
 
