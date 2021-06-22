@@ -17,7 +17,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  private val config = ConfigFactory.defaultApplication()
+  private val moduleConfig = ConfigFactory.defaultApplication()
 
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     val existingCache = _descriptorCache
@@ -107,7 +107,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       Option(args) match {
         case Some(array) => {
           array.map {
-            case creator: CreatorProperty =>
+            case creator: CreatorProperty if (moduleConfig.getBoolean("jackson.module.scala.deserializer.apply.default.values")) => {
               // Locate the constructor param that matches it
               descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
                 case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
@@ -118,6 +118,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
                   })
                 case _ => creator
               }
+            }
             case other => other
           }
         }
