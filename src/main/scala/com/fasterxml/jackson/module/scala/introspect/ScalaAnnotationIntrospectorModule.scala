@@ -11,10 +11,13 @@ import com.fasterxml.jackson.databind.util.{AccessPattern, LRUMap, LookupCache}
 import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
+import com.typesafe.config.ConfigFactory
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
+
+  private val config = ConfigFactory.defaultApplication()
 
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     val existingCache = _descriptorCache
