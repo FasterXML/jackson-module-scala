@@ -185,8 +185,6 @@ trait ClassTagExtensions {
    * Main reason for using this method is performance, as writer is able
    * to pre-fetch serializer to use before write, and if writer is used
    * more than once this avoids addition per-value serializer lookups.
-   *
-   * @since 2.5
    */
   def writerFor[T: JavaTypeable]: ObjectWriter = {
     writerFor(constructType[T])
