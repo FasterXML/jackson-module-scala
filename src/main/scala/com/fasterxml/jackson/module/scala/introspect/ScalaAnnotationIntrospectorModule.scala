@@ -9,15 +9,12 @@ import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LRUMap, LookupCache}
 import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext}
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{Configuration, JacksonModule}
 import com.fasterxml.jackson.module.scala.util.Implicits._
-import com.typesafe.config.ConfigFactory
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
-
-  private val moduleConfig = ConfigFactory.load()
 
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     val existingCache = _descriptorCache
@@ -107,7 +104,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       Option(args) match {
         case Some(array) => {
           array.map {
-            case creator: CreatorProperty if (moduleConfig.getBoolean("jackson.module.scala.deserializer.apply.default.values")) => {
+            case creator: CreatorProperty if (Configuration.getModuleConfig().getBoolean("jackson.module.scala.deserializer.apply.default.values")) => {
               // Locate the constructor param that matches it
               descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
                 case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
