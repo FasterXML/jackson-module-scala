@@ -102,9 +102,9 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
       val args = delegate.getFromObjectArguments(config)
       Option(args) match {
-        case Some(array) => {
+        case Some(array) if (Configuration.getModuleConfig().getBoolean("jackson.module.scala.deserializer.apply.default.values")) => {
           array.map {
-            case creator: CreatorProperty if (Configuration.getModuleConfig().getBoolean("jackson.module.scala.deserializer.apply.default.values")) => {
+            case creator: CreatorProperty => {
               // Locate the constructor param that matches it
               descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
                 case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
@@ -119,6 +119,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
             case other => other
           }
         }
+        case Some(array) => array
         case _ => Array.empty
       }
     }

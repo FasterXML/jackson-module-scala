@@ -9,7 +9,7 @@ object Configuration {
   def getModuleConfig(): Config = moduleConfig
 
   def setModuleConfig(moduleConfig: Config): Unit = {
-    this.moduleConfig = moduleConfig
+    this.moduleConfig = moduleConfig.withFallback(defaultConfig)
   }
 
   def resetModuleConfig(): Unit = {
