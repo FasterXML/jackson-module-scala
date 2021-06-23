@@ -17,7 +17,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  private val moduleConfig = ConfigFactory.defaultApplication()
+  private val moduleConfig = ConfigFactory.load()
 
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     val existingCache = _descriptorCache
