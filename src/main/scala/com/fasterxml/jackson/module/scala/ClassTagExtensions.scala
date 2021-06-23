@@ -249,100 +249,122 @@ object JavaTypeable {
   // order of implicits matters for performance reasons, place most useful implicits last
 
   implicit def gen5JavaTypeable[T[_, _, _, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable, D: JavaTypeable, E: JavaTypeable](implicit ct: ClassTag[T[A, B, C, D, E]]): JavaTypeable[T[A, B, C, D, E]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArgs: Array[JavaType] = Array(
-        implicitly[JavaTypeable[A]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[B]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[C]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[D]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[E]].asJavaType(typeFactory)
-      )
-      typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+    new JavaTypeable[T[A, B, C, D, E]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[B]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[C]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[D]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[E]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
     }
   }
 
   implicit def gen4JavaTypeable[T[_, _, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable, D: JavaTypeable](implicit ct: ClassTag[T[A, B, C, D]]): JavaTypeable[T[A, B, C, D]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArgs: Array[JavaType] = Array(
-        implicitly[JavaTypeable[A]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[B]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[C]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[D]].asJavaType(typeFactory)
-      )
-      typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+    new JavaTypeable[T[A, B, C, D]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[B]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[C]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[D]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
     }
   }
 
   implicit def gen3JavaTypeable[T[_, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable](implicit ct: ClassTag[T[A, B, C]]): JavaTypeable[T[A, B, C]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArgs: Array[JavaType] = Array(
-        implicitly[JavaTypeable[A]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[B]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[C]].asJavaType(typeFactory)
-      )
-      typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+    new JavaTypeable[T[A, B, C]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[B]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[C]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
     }
   }
 
   implicit def gen2JavaTypeable[T[_, _], A: JavaTypeable, B: JavaTypeable](implicit ct: ClassTag[T[A, B]]): JavaTypeable[T[A, B]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArgs: Array[JavaType] = Array(
-        implicitly[JavaTypeable[A]].asJavaType(typeFactory),
-        implicitly[JavaTypeable[B]].asJavaType(typeFactory)
-      )
-      typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+    new JavaTypeable[T[A, B]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory),
+          implicitly[JavaTypeable[B]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
     }
   }
 
   implicit def gen1JavaTypeable[T[_], A: JavaTypeable](implicit ct: ClassTag[T[A]]): JavaTypeable[T[A]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArgs: Array[JavaType] = Array(
-        implicitly[JavaTypeable[A]].asJavaType(typeFactory)
-      )
-      typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+    new JavaTypeable[T[A]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array(
+          implicitly[JavaTypeable[A]].asJavaType(typeFactory)
+        )
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
     }
   }
 
   implicit def gen0JavaTypeable[T](implicit ct: ClassTag[T]): JavaTypeable[T] = {
-    (typeFactory: TypeFactory) => {
-      val typeArgs: Array[JavaType] = Array()
-      typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+    new JavaTypeable[T] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array()
+        typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
     }
   }
 
   implicit def arrayJavaTypeable[T : JavaTypeable]: JavaTypeable[Array[T]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
-      typeFactory.constructArrayType(typeArg0)
+    new JavaTypeable[Array[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructArrayType(typeArg0)
+      }
     }
   }
 
   implicit def mapJavaTypeable[M[_,_] <: Map[_,_], K : JavaTypeable, V: JavaTypeable](implicit ct: ClassTag[M[K,V]]): JavaTypeable[M[K, V]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArg0 = implicitly[JavaTypeable[K]].asJavaType(typeFactory)
-      val typeArg1 = implicitly[JavaTypeable[V]].asJavaType(typeFactory)
-      typeFactory.constructMapLikeType(ct.runtimeClass, typeArg0, typeArg1)
+    new JavaTypeable[M[K, V]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[K]].asJavaType(typeFactory)
+        val typeArg1 = implicitly[JavaTypeable[V]].asJavaType(typeFactory)
+        typeFactory.constructMapLikeType(ct.runtimeClass, typeArg0, typeArg1)
+      }
     }
   }
 
   implicit def collectionJavaTypeable[I[_] <: Iterable[_], T : JavaTypeable](implicit ct: ClassTag[I[T]]): JavaTypeable[I[T]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
-      typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
+    new JavaTypeable[I[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
+      }
     }
   }
 
   implicit def optionJavaTypeable[T : JavaTypeable]: JavaTypeable[Option[T]] = {
-    (typeFactory: TypeFactory) => {
-      val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
-      typeFactory.constructReferenceType(classOf[Option[_]], typeArg0)
+    new JavaTypeable[Option[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructReferenceType(classOf[Option[_]], typeArg0)
+      }
     }
   }
 
   implicit val anyJavaTypeable: JavaTypeable[Any] = {
-    (typeFactory: TypeFactory) => {
-      val typeArgs: Array[JavaType] = Array()
-      typeFactory.constructParametricType(classOf[Object], typeArgs: _*)
+    new JavaTypeable[Any] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array()
+        typeFactory.constructParametricType(classOf[Object], typeArgs: _*)
+      }
     }
   }
 
