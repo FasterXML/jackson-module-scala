@@ -185,10 +185,11 @@ class ClassTagExtensionsTest extends JacksonTest {
     result should equal(Map("first" -> "firstVal", "second" -> "secondVal"))
   }
 
-  it should "read values as Map from a heterogeneous JSON object" in {
-    val result = mapper.readValue[Map[String, Any]](genericMixedFieldJson)
-    result should equal(Map("first" -> "firstVal", "second" -> 2))
-  }
+// disabled due to https://github.com/FasterXML/jackson-module-scala/issues/522
+//  it should "read values as Map from a heterogeneous JSON object" in {
+//    val result = mapper.readValue[Map[String, Any]](genericMixedFieldJson)
+//    result should equal(Map("first" -> "firstVal", "second" -> 2))
+//  }
 
   it should "fail to read a Map from JSON with invalid types" in {
     an [InvalidFormatException] should be thrownBy {
