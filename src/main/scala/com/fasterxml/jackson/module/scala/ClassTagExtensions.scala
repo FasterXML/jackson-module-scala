@@ -206,8 +206,6 @@ trait ClassTagExtensions {
    * Main reason for using this method is performance, as writer is able
    * to pre-fetch serializer to use before write, and if writer is used
    * more than once this avoids addition per-value serializer lookups.
-   *
-   * @since 2.5
    */
   def writerFor[T: JavaTypeable]: ObjectWriter = {
     writerFor(constructType[T])
@@ -269,51 +267,7 @@ trait JavaTypeable[T] {
 
 object JavaTypeable {
 
-  implicit val anyJavaTypeable: JavaTypeable[Any] = {
-    new JavaTypeable[Any] {
-      override def asJavaType(typeFactory: TypeFactory): JavaType = {
-        val typeArgs: Array[JavaType] = Array()
-        typeFactory.constructParametricType(classOf[Object], typeArgs: _*)
-      }
-    }
-  }
-
-  implicit def optionJavaTypeable[T : JavaTypeable]: JavaTypeable[Option[T]] = {
-    new JavaTypeable[Option[T]] {
-      override def asJavaType(typeFactory: TypeFactory): JavaType = {
-        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
-        typeFactory.constructReferenceType(classOf[Option[_]], typeArg0)
-      }
-    }
-  }
-
-  implicit def arrayJavaTypeable[T : JavaTypeable]: JavaTypeable[Array[T]] = {
-    new JavaTypeable[Array[T]] {
-      override def asJavaType(typeFactory: TypeFactory): JavaType = {
-        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
-        typeFactory.constructArrayType(typeArg0)
-      }
-    }
-  }
-
-  implicit def mapJavaTypeable[M[_,_] <: Map[_,_], K : JavaTypeable, V: JavaTypeable](implicit ct: ClassTag[M[K,V]]): JavaTypeable[M[K, V]] = {
-    new JavaTypeable[M[K, V]] {
-      override def asJavaType(typeFactory: TypeFactory): JavaType = {
-        val typeArg0 = implicitly[JavaTypeable[K]].asJavaType(typeFactory)
-        val typeArg1 = implicitly[JavaTypeable[V]].asJavaType(typeFactory)
-        typeFactory.constructMapLikeType(ct.runtimeClass, typeArg0, typeArg1)
-      }
-    }
-  }
-
-  implicit def collectionJavaTypeable[I[_] <: Iterable[_], T : JavaTypeable](implicit ct: ClassTag[I[T]]): JavaTypeable[I[T]] = {
-    new JavaTypeable[I[T]] {
-      override def asJavaType(typeFactory: TypeFactory): JavaType = {
-        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
-        typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
-      }
-    }
-  }
+  // order of implicits matters for performance reasons, place most useful implicits last
 
   implicit def gen5JavaTypeable[T[_, _, _, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable, D: JavaTypeable, E: JavaTypeable](implicit ct: ClassTag[T[A, B, C, D, E]]): JavaTypeable[T[A, B, C, D, E]] = {
     new JavaTypeable[T[A, B, C, D, E]] {
@@ -385,6 +339,52 @@ object JavaTypeable {
       override def asJavaType(typeFactory: TypeFactory): JavaType = {
         val typeArgs: Array[JavaType] = Array()
         typeFactory.constructParametricType(ct.runtimeClass, typeArgs: _*)
+      }
+    }
+  }
+
+  implicit def arrayJavaTypeable[T : JavaTypeable]: JavaTypeable[Array[T]] = {
+    new JavaTypeable[Array[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructArrayType(typeArg0)
+      }
+    }
+  }
+
+  implicit def mapJavaTypeable[M[_,_] <: Map[_,_], K : JavaTypeable, V: JavaTypeable](implicit ct: ClassTag[M[K,V]]): JavaTypeable[M[K, V]] = {
+    new JavaTypeable[M[K, V]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[K]].asJavaType(typeFactory)
+        val typeArg1 = implicitly[JavaTypeable[V]].asJavaType(typeFactory)
+        typeFactory.constructMapLikeType(ct.runtimeClass, typeArg0, typeArg1)
+      }
+    }
+  }
+
+  implicit def collectionJavaTypeable[I[_] <: Iterable[_], T : JavaTypeable](implicit ct: ClassTag[I[T]]): JavaTypeable[I[T]] = {
+    new JavaTypeable[I[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
+      }
+    }
+  }
+
+  implicit def optionJavaTypeable[T : JavaTypeable]: JavaTypeable[Option[T]] = {
+    new JavaTypeable[Option[T]] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
+        typeFactory.constructReferenceType(classOf[Option[_]], typeArg0)
+      }
+    }
+  }
+
+  implicit val anyJavaTypeable: JavaTypeable[Any] = {
+    new JavaTypeable[Any] {
+      override def asJavaType(typeFactory: TypeFactory): JavaType = {
+        val typeArgs: Array[JavaType] = Array()
+        typeFactory.constructParametricType(classOf[Object], typeArgs: _*)
       }
     }
   }
