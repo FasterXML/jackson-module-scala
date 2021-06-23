@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonCreator.Mode
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.databind.node.IntNode
+import com.fasterxml.jackson.module.scala.Configuration
+import com.typesafe.config.ConfigFactory
 
 class PositiveLong private (val value: Long) {
   override def toString() = s"PositiveLong($value)"
@@ -145,6 +147,21 @@ class CreatorTest extends DeserializationFixture {
     val deser2 = f.readValue("""{"s":"passed","i":5}""", classOf[ConstructorWithDefaultValues])
     deser2.s shouldEqual "passed"
     deser2.i shouldEqual 5
+  }
+
+  it should "ignore default values (when config is overridden)" in { f =>
+    try {
+      Configuration.setModuleConfig(ConfigFactory.parseString("jackson.module.scala.deserializer.apply.default.values=false"))
+      val deser = f.readValue("""{}""", classOf[ConstructorWithDefaultValues])
+      deser.s shouldEqual null
+      deser.i shouldEqual 0
+      deser.dummy shouldEqual null
+      val deser2 = f.readValue("""{"s":"passed","i":5}""", classOf[ConstructorWithDefaultValues])
+      deser2.s shouldEqual "passed"
+      deser2.i shouldEqual 5
+    } finally {
+      Configuration.resetModuleConfig()
+    }
   }
 
   it should "support options with default values" in { f =>

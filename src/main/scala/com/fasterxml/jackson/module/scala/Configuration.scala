@@ -3,11 +3,16 @@ package com.fasterxml.jackson.module.scala
 import com.typesafe.config.{Config, ConfigFactory}
 
 object Configuration {
-  private var moduleConfig = ConfigFactory.load()
+  private val defaultConfig = ConfigFactory.load()
+  private var moduleConfig = defaultConfig
 
   def getModuleConfig(): Config = moduleConfig
 
   def setModuleConfig(moduleConfig: Config): Unit = {
     this.moduleConfig = moduleConfig
+  }
+
+  def resetModuleConfig(): Unit = {
+    this.moduleConfig = defaultConfig
   }
 }
