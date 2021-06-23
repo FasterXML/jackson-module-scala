@@ -142,7 +142,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
             case std: StdValueInstantiator =>
               new ScalaValueInstantiator(std, config, descriptor)
             case other =>
-              throw new IllegalArgumentException("Cannot customise a non StdValueInstantiatiator: " + other.getClass)
+              throw new IllegalArgumentException("Cannot customise a non StdValueInstantiator: " + other.getClass)
           }
         } else defaultInstantiator
       }.getOrElse(defaultInstantiator)
