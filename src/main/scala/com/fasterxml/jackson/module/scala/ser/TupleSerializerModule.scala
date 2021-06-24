@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
 
@@ -17,7 +17,7 @@ private class TupleSerializer extends ValueSerializer[Product] {
   }
 }
 
-private object TupleSerializerResolver extends Serializers.Base {
+private class TupleSerializerResolver(builder: ScalaModule.ReadOnlyBuilder = ScalaModule.defaultBuilder) extends Serializers.Base {
 
   private val PRODUCT = classOf[Product]
 
@@ -34,5 +34,5 @@ private object TupleSerializerResolver extends Serializers.Base {
 }
 
 trait TupleSerializerModule extends JacksonModule {
-  this += (_ addSerializers TupleSerializerResolver)
+  this += (_ addSerializers new TupleSerializerResolver())
 }

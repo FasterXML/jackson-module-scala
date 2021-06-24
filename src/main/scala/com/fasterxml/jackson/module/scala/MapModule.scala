@@ -7,3 +7,5 @@ trait MapModule
   extends MapSerializerModule
     with UnsortedMapDeserializerModule
     with SortedMapDeserializerModule
+
+object MapModule extends MapModule

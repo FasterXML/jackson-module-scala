@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
 
@@ -13,7 +13,7 @@ private object SymbolDeserializer extends StdDeserializer[Symbol](classOf[Symbol
     Symbol(p.getValueAsString)
 }
 
-private object SymbolDeserializerResolver extends Deserializers.Base {
+private class SymbolDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder = ScalaModule.defaultBuilder) extends Deserializers.Base {
   private val SYMBOL = classOf[Symbol]
 
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[Symbol] =
@@ -28,5 +28,5 @@ private object SymbolDeserializerResolver extends Deserializers.Base {
 }
 
 trait SymbolDeserializerModule extends JacksonModule {
-  this += { _ addDeserializers SymbolDeserializerResolver }
+  this += { _ addDeserializers new SymbolDeserializerResolver() }
 }

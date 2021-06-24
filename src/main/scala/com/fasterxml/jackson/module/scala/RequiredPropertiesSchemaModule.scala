@@ -20,3 +20,5 @@ object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
 trait RequiredPropertiesSchemaModule extends JacksonModule {
   this += { _.insertAnnotationIntrospector(DefaultRequiredAnnotationIntrospector) }
 }
+
+object RequiredPropertiesSchemaModule extends RequiredPropertiesSchemaModule

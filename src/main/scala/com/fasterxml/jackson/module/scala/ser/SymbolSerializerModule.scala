@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
 
@@ -13,7 +13,7 @@ private object SymbolSerializer extends ValueSerializer[Symbol] {
     jgen.writeString(value.name)
 }
 
-private object SymbolSerializerResolver extends Serializers.Base {
+private class SymbolSerializerResolver(builder: ScalaModule.ReadOnlyBuilder = ScalaModule.defaultBuilder) extends Serializers.Base {
   private val SYMBOL = classOf[Symbol]
 
   override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
@@ -24,5 +24,5 @@ private object SymbolSerializerResolver extends Serializers.Base {
 }
 
 trait SymbolSerializerModule extends JacksonModule {
-  this += { _ addSerializers SymbolSerializerResolver }
+  this += { _ addSerializers new SymbolSerializerResolver() }
 }
