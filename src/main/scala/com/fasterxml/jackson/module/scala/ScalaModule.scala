@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModuleInstance
 
 object ScalaModule {
 
@@ -20,8 +20,8 @@ object ScalaModule {
     override def shouldApplyDefaultValuesWhenDeserializing(): Boolean = applyDefaultValuesWhenDeserializing
 
     def build(): JacksonModule = {
-      val builder = this
-      new ScalaAnnotationIntrospectorModule
+      val builderInstance = this
+      new ScalaAnnotationIntrospectorModuleInstance(builderInstance)
         with IteratorModule
         with EnumerationModule
         with OptionModule
@@ -33,9 +33,7 @@ object ScalaModule {
         with ScalaNumberDeserializersModule
         with UntypedObjectDeserializerModule
         with EitherModule
-        with SymbolModule {
-        override def builder: Builder = builder
-      }
+        with SymbolModule
     }
   }
 

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import java.lang.annotation.Annotation
 
-class ScalaAnnotationIntrospector(builder: ScalaModule.ReadOnlyBuilder) extends NopAnnotationIntrospector with ValueInstantiators {
+class ScalaAnnotationIntrospectorInstance(builder: ScalaModule.ReadOnlyBuilder) extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
 
@@ -188,14 +188,16 @@ class ScalaAnnotationIntrospector(builder: ScalaModule.ReadOnlyBuilder) extends 
   }
 }
 
-object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospector(ScalaModule.defaultBuilder)
+class ScalaAnnotationIntrospectorModuleInstance(override val builder: ScalaModule.ReadOnlyBuilder) extends ScalaAnnotationIntrospectorModule
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
-  protected def builder: ScalaModule.Builder = ScalaModule.builder()
+  protected def builder: ScalaModule.ReadOnlyBuilder = ScalaModule.defaultBuilder
   this += { _.appendAnnotationIntrospector(JavaAnnotationIntrospector) }
   this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
   this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
 }
+
+object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
 
 private class ScalaValueInstantiator(builder: ScalaModule.ReadOnlyBuilder, delegate: StdValueInstantiator,
                                      config: DeserializationConfig, descriptor: BeanDescriptor)
