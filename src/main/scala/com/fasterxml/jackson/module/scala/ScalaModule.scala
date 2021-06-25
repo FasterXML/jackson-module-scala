@@ -39,7 +39,7 @@ object ScalaModule {
       addModule(new ScalaAnnotationIntrospectorModuleInstance(this))
       addModule(UntypedObjectDeserializerModule)
       addModule(EitherModule)
-      addModule(SymbolModule)
+      addModule(new SymbolModuleInstance(this))
       this
     }
 
