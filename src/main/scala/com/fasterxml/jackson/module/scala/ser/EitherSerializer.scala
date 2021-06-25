@@ -138,7 +138,7 @@ private class EitherSerializer(left: EitherDetails,
   }
 }
 
-private class EitherSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
+private class EitherSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
   private val EITHER = classOf[Either[AnyRef, AnyRef]]
   private val LEFT = classOf[Left[AnyRef, AnyRef]]
@@ -171,5 +171,5 @@ private class EitherSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) ext
 }
 
 trait EitherSerializerModule extends EitherTypeModifierModule {
-  this += (_ addSerializers new EitherSerializerResolver(builder))
+  this += (_ addSerializers new EitherSerializerResolver(config))
 }

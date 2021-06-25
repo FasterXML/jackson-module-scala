@@ -13,7 +13,7 @@ private object SymbolDeserializer extends StdDeserializer[Symbol](classOf[Symbol
     Symbol(p.getValueAsString)
 }
 
-private class SymbolDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
+private class SymbolDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
   private val SYMBOL = classOf[Symbol]
 
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[Symbol] =
@@ -28,5 +28,5 @@ private class SymbolDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) e
 }
 
 trait SymbolDeserializerModule extends JacksonModule {
-  this += { _ addDeserializers new SymbolDeserializerResolver(builder) }
+  this += { _ addDeserializers new SymbolDeserializerResolver(config) }
 }

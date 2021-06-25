@@ -10,5 +10,5 @@ trait SymbolModule extends SymbolSerializerModule with SymbolDeserializerModule
 
 object SymbolModule extends SymbolModule
 
-class SymbolModuleInstance(override val builder: ScalaModule.ReadOnlyBuilder) extends SymbolModule
+class SymbolModuleInstance(override val config: ScalaModule.Config) extends SymbolModule
 

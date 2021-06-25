@@ -9,7 +9,7 @@ import scala.collection._
 
 trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
 
-  this += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory](builder) {
+  this += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory](config) {
 
     override val CLASS_DOMAIN: Class[Collection[_]] = classOf[SortedSet[_]]
 

@@ -99,7 +99,7 @@ private object EitherDeserializer {
 }
 
 
-private class EitherDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
+private class EitherDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val EITHER = classOf[Either[_, _]]
 
@@ -131,5 +131,5 @@ private class EitherDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) e
 }
 
 trait EitherDeserializerModule extends JacksonModule {
-  this += new EitherDeserializerResolver(builder)
+  this += new EitherDeserializerResolver(config)
 }

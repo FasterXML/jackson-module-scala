@@ -13,7 +13,7 @@ import scala.collection.mutable.ListBuffer
 import scala.collection.{Map, mutable}
 import scala.language.higherKinds
 
-abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
+abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](config: ScalaModule.Config) extends Deserializers.Base {
   type Collection[K, V] = CC[K, V]
   type Factory = CF[CC]
   type Builder[K, V] = mutable.Builder[(K, V), _ <: Collection[K, V]]

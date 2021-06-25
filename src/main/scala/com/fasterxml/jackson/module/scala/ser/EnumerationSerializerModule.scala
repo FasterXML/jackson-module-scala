@@ -39,7 +39,7 @@ private class AnnotatedEnumerationSerializer extends ValueSerializer[scala.Enume
   }
 }
 
-private class EnumerationSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
+private class EnumerationSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
   override def findSerializer(config: SerializationConfig,
                               javaType: JavaType,
@@ -57,5 +57,5 @@ private class EnumerationSerializerResolver(builder: ScalaModule.ReadOnlyBuilder
 }
 
 trait EnumerationSerializerModule extends JacksonModule {
-  this += new EnumerationSerializerResolver(builder)
+  this += new EnumerationSerializerResolver(config)
 }

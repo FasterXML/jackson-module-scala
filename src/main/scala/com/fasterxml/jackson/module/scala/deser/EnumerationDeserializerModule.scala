@@ -55,7 +55,7 @@ private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends ValueDes
   }
 }
 
-private class EnumerationDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
+private class EnumerationDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val ENUMERATION = classOf[scala.Enumeration#Value]
 
@@ -92,7 +92,7 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
   }
 }
 
-private class EnumerationKeyDeserializers(builder: ScalaModule.ReadOnlyBuilder) extends KeyDeserializers {
+private class EnumerationKeyDeserializers(config: ScalaModule.Config) extends KeyDeserializers {
   private val valueClass = classOf[scala.Enumeration#Value]
   def findKeyDeserializer(tp: JavaType, cfg: DeserializationConfig, desc: BeanDescription): KeyDeserializer = {
     if (valueClass.isAssignableFrom(tp.getRawClass)) {
@@ -104,7 +104,7 @@ private class EnumerationKeyDeserializers(builder: ScalaModule.ReadOnlyBuilder) 
 
 trait EnumerationDeserializerModule extends JacksonScalaModule {
   this += { ctxt =>
-    ctxt.addDeserializers(new EnumerationDeserializerResolver(builder))
-    ctxt.addKeyDeserializers(new EnumerationKeyDeserializers(builder))
+    ctxt.addDeserializers(new EnumerationDeserializerResolver(config))
+    ctxt.addKeyDeserializers(new EnumerationKeyDeserializers(config))
   }
 }

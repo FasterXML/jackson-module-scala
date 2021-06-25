@@ -66,7 +66,7 @@ private class TupleDeserializer(javaType: JavaType,
   }
 }
 
-private class TupleDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
+private class TupleDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val PRODUCT = classOf[Product]
 
@@ -98,5 +98,5 @@ private class TupleDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) ex
  * Adds deserialization support for Scala Tuples.
  */
 trait TupleDeserializerModule extends JacksonModule {
-  this += new TupleDeserializerResolver(builder)
+  this += new TupleDeserializerResolver(config)
 }

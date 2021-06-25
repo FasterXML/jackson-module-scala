@@ -74,7 +74,7 @@ private class OptionDeserializer(fullType: JavaType,
   }
 }
 
-private class OptionDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
+private class OptionDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val OPTION = classOf[Option[AnyRef]]
 
@@ -98,5 +98,5 @@ private class OptionDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) e
 }
 
 trait OptionDeserializerModule extends OptionTypeModifierModule {
-  this += new OptionDeserializerResolver(builder)
+  this += new OptionDeserializerResolver(config)
 }

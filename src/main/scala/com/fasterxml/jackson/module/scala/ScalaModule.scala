@@ -6,11 +6,11 @@ import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 
 object ScalaModule {
 
-  trait ReadOnlyBuilder {
+  trait Config {
     def shouldApplyDefaultValuesWhenDeserializing(): Boolean
   }
 
-  class Builder extends ReadOnlyBuilder {
+  class Builder extends Config {
     private val initializers = Seq.newBuilder[SetupContext => Unit]
     private var applyDefaultValuesWhenDeserializing = true
 
@@ -44,9 +44,9 @@ object ScalaModule {
     }
 
     def build(): JacksonModule = {
-      val builderInstance = this
+      val configInstance = this
       val module = new JacksonModule {
-        override val builder = builderInstance
+        override val config = configInstance
       }
       initializers.result().foreach(init => module += init)
       module
@@ -55,6 +55,6 @@ object ScalaModule {
 
   def builder(): Builder = new Builder()
 
-  val defaultBuilder: ReadOnlyBuilder = builder()
+  val defaultBuilder: Config = builder()
 }
 

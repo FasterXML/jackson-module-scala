@@ -13,7 +13,7 @@ import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import java.lang.annotation.Annotation
 
-class ScalaAnnotationIntrospectorInstance(builder: ScalaModule.ReadOnlyBuilder) extends NopAnnotationIntrospector with ValueInstantiators {
+class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
 
@@ -112,14 +112,14 @@ class ScalaAnnotationIntrospectorInstance(builder: ScalaModule.ReadOnlyBuilder) 
     }
   }
 
-  override def modifyValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription,
+  override def modifyValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription,
                                        defaultInstantiator: ValueInstantiator): ValueInstantiator = {
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
         if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
           defaultInstantiator match {
             case std: StdValueInstantiator =>
-              new ScalaValueInstantiator(builder, std, config, descriptor)
+              new ScalaValueInstantiator(config, std, deserializationConfig, descriptor)
             case other =>
               throw new IllegalArgumentException("Cannot customise a non StdValueInstantiator: " + other.getClass)
           }
@@ -188,25 +188,25 @@ class ScalaAnnotationIntrospectorInstance(builder: ScalaModule.ReadOnlyBuilder) 
   }
 }
 
-class ScalaAnnotationIntrospectorModuleInstance(override val builder: ScalaModule.ReadOnlyBuilder) extends ScalaAnnotationIntrospectorModule
+class ScalaAnnotationIntrospectorModuleInstance(override val config: ScalaModule.Config) extends ScalaAnnotationIntrospectorModule
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
-  val sai = new ScalaAnnotationIntrospectorInstance(builder)
-  this += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(builder)) }
+  val sai = new ScalaAnnotationIntrospectorInstance(config)
+  this += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(config)) }
   this += { _.appendAnnotationIntrospector(sai) }
   this += { _.addValueInstantiators(sai) }
 }
 
 object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
 
-private class ScalaValueInstantiator(builder: ScalaModule.ReadOnlyBuilder, delegate: StdValueInstantiator,
-                                     config: DeserializationConfig, descriptor: BeanDescriptor)
+private class ScalaValueInstantiator(config: ScalaModule.Config, delegate: StdValueInstantiator,
+                                     deserializationConfig: DeserializationConfig, descriptor: BeanDescriptor)
   extends StdValueInstantiator(delegate) {
 
   private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
-    val args = delegate.getFromObjectArguments(config)
+    val args = delegate.getFromObjectArguments(deserializationConfig)
     Option(args) match {
-      case Some(array) if builder.shouldApplyDefaultValuesWhenDeserializing() => {
+      case Some(array) if config.shouldApplyDefaultValuesWhenDeserializing() => {
         array.map {
           case creator: CreatorProperty =>
             // Locate the constructor param that matches it

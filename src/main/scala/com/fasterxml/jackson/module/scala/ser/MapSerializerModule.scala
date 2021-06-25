@@ -26,7 +26,7 @@ private class MapConverter(inputType: JavaType, config: SerializationConfig)
       .withValueHandler(inputType.getValueHandler)
 }
 
-private class MapSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
+private class MapSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
   private val BASE = classOf[collection.Map[_,_]]
 
@@ -47,5 +47,5 @@ private class MapSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extend
 }
 
 trait MapSerializerModule extends MapTypeModifierModule {
-  this += new MapSerializerResolver(builder)
+  this += new MapSerializerResolver(config)
 }

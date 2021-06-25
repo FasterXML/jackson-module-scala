@@ -7,7 +7,7 @@ import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import java.lang.reflect.Type
 import scala.collection._
 
-class ScalaTypeModifier(builder: ScalaModule.ReadOnlyBuilder) extends TypeModifier {
+class ScalaTypeModifier(config: ScalaModule.Config) extends TypeModifier {
 
   private val optionClass = classOf[Option[_]]
   private val eitherClass = classOf[Either[_, _]]
@@ -38,5 +38,5 @@ class ScalaTypeModifier(builder: ScalaModule.ReadOnlyBuilder) extends TypeModifi
 }
 
 trait ScalaTypeModifierModule extends JacksonModule {
-  this += new ScalaTypeModifier(builder)
+  this += new ScalaTypeModifier(config)
 }

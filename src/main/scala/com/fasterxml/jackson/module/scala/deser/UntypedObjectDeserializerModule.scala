@@ -41,7 +41,7 @@ private class UntypedScalaObjectDeserializer extends UntypedObjectDeserializer(n
 }
 
 
-private class UntypedObjectDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
+private class UntypedObjectDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val objectClass = classOf[AnyRef]
 
@@ -57,7 +57,7 @@ private class UntypedObjectDeserializerResolver(builder: ScalaModule.ReadOnlyBui
 }
 
 trait UntypedObjectDeserializerModule extends JacksonModule {
-  this += (_ addDeserializers new UntypedObjectDeserializerResolver(builder))
+  this += (_ addDeserializers new UntypedObjectDeserializerResolver(config))
 }
 
 object UntypedObjectDeserializerModule extends UntypedObjectDeserializerModule
