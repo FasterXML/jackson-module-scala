@@ -26,9 +26,28 @@ object ScalaModule {
       this
     }
 
+    def addAllBuiltinModules(): Builder = {
+      addModule(IteratorModule)
+      addModule(EnumerationModule)
+      addModule(OptionModule)
+      addModule(SeqModule)
+      addModule(IterableModule)
+      addModule(TupleModule)
+      addModule(MapModule)
+      addModule(SetModule)
+      addModule(ScalaNumberDeserializersModule)
+      addModule(new ScalaAnnotationIntrospectorModuleInstance(this))
+      addModule(UntypedObjectDeserializerModule)
+      addModule(EitherModule)
+      addModule(SymbolModule)
+      this
+    }
+
     def build(): JacksonModule = {
       val builderInstance = this
-      val module = new ScalaAnnotationIntrospectorModuleInstance(builderInstance)
+      val module = new JacksonModule {
+        override val builder = builderInstance
+      }
       initializers.result().foreach(init => module += init)
       module
     }

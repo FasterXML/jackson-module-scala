@@ -69,3 +69,5 @@ private class NumberDeserializers(builder: ScalaModule.ReadOnlyBuilder) extends 
 trait ScalaNumberDeserializersModule extends JacksonScalaModule {
   this += new NumberDeserializers(builder)
 }
+
+object ScalaNumberDeserializersModule extends ScalaNumberDeserializersModule

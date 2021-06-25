@@ -59,3 +59,5 @@ private class UntypedObjectDeserializerResolver(builder: ScalaModule.ReadOnlyBui
 trait UntypedObjectDeserializerModule extends JacksonModule {
   this += (_ addDeserializers new UntypedObjectDeserializerResolver(builder))
 }
+
+object UntypedObjectDeserializerModule extends UntypedObjectDeserializerModule

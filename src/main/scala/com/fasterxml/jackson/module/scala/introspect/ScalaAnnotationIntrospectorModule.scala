@@ -206,9 +206,9 @@ private class ScalaValueInstantiator(builder: ScalaModule.ReadOnlyBuilder, deleg
   private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
     val args = delegate.getFromObjectArguments(config)
     Option(args) match {
-      case Some(array) => {
+      case Some(array) if builder.shouldApplyDefaultValuesWhenDeserializing() => {
         array.map {
-          case creator: CreatorProperty if builder.shouldApplyDefaultValuesWhenDeserializing() =>
+          case creator: CreatorProperty =>
             // Locate the constructor param that matches it
             descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
               case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
@@ -222,6 +222,7 @@ private class ScalaValueInstantiator(builder: ScalaModule.ReadOnlyBuilder, deleg
           case other => other
         }
       }
+      case Some(array) => array
       case _ => Array.empty
     }
   }
