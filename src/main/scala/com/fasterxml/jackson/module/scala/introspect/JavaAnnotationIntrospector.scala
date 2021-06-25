@@ -3,11 +3,14 @@ package com.fasterxml.jackson.module.scala.introspect
 import com.fasterxml.jackson.databind.PropertyName
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedMember, AnnotatedParameter, NopAnnotationIntrospector}
+import com.fasterxml.jackson.module.scala.ScalaModule
 
 import java.lang.reflect.{Constructor, Field, Method, Parameter}
 import scala.reflect.NameTransformer
 
-object JavaAnnotationIntrospector extends NopAnnotationIntrospector {
+object JavaAnnotationIntrospector extends JavaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
+
+class JavaAnnotationIntrospectorInstance(builder: ScalaModule.ReadOnlyBuilder) extends NopAnnotationIntrospector {
 
   override def findNameForDeserialization(config: MapperConfig[_], a: Annotated): PropertyName = None.orNull
 

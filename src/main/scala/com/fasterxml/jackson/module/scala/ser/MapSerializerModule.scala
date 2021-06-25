@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.util.StdConverter
+import com.fasterxml.jackson.module.scala.ScalaModule
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
 import scala.collection.JavaConverters._
@@ -25,7 +26,7 @@ private class MapConverter(inputType: JavaType, config: SerializationConfig)
       .withValueHandler(inputType.getValueHandler)
 }
 
-private object MapSerializerResolver extends Serializers.Base {
+private class MapSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
 
   private val BASE = classOf[collection.Map[_,_]]
 
@@ -46,5 +47,5 @@ private object MapSerializerResolver extends Serializers.Base {
 }
 
 trait MapSerializerModule extends MapTypeModifierModule {
-  this += MapSerializerResolver
+  this += new MapSerializerResolver(builder)
 }

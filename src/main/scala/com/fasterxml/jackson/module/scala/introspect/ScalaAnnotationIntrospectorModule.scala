@@ -191,10 +191,10 @@ class ScalaAnnotationIntrospectorInstance(builder: ScalaModule.ReadOnlyBuilder) 
 class ScalaAnnotationIntrospectorModuleInstance(override val builder: ScalaModule.ReadOnlyBuilder) extends ScalaAnnotationIntrospectorModule
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
-  protected def builder: ScalaModule.ReadOnlyBuilder = ScalaModule.defaultBuilder
-  this += { _.appendAnnotationIntrospector(JavaAnnotationIntrospector) }
-  this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
-  this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
+  val sai = new ScalaAnnotationIntrospectorInstance(builder)
+  this += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(builder)) }
+  this += { _.appendAnnotationIntrospector(sai) }
+  this += { _.addValueInstantiators(sai) }
 }
 
 object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)

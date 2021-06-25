@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.jdk.UntypedObjectDeserializer
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
 
@@ -41,7 +41,7 @@ private class UntypedScalaObjectDeserializer extends UntypedObjectDeserializer(n
 }
 
 
-private object UntypedObjectDeserializerResolver extends Deserializers.Base {
+private class UntypedObjectDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
 
   private val objectClass = classOf[AnyRef]
 
@@ -57,5 +57,5 @@ private object UntypedObjectDeserializerResolver extends Deserializers.Base {
 }
 
 trait UntypedObjectDeserializerModule extends JacksonModule {
-  this += (_ addDeserializers UntypedObjectDeserializerResolver)
+  this += (_ addDeserializers new UntypedObjectDeserializerResolver(builder))
 }

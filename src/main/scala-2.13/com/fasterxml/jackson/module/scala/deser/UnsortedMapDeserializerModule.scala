@@ -7,7 +7,7 @@ import scala.collection._
 import scala.language.existentials
 
 trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
-  this += (_ addDeserializers new GenericMapFactoryDeserializerResolver[Map, MapFactory] {
+  this += (_ addDeserializers new GenericMapFactoryDeserializerResolver[Map, MapFactory](builder) {
 
     override val CLASS_DOMAIN: Class[Collection[_, _]] = classOf[Map[_, _]]
 

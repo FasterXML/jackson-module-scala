@@ -17,7 +17,7 @@ private class TupleSerializer extends ValueSerializer[Product] {
   }
 }
 
-private class TupleSerializerResolver(builder: ScalaModule.ReadOnlyBuilder = ScalaModule.defaultBuilder) extends Serializers.Base {
+private class TupleSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
 
   private val PRODUCT = classOf[Product]
 
@@ -34,5 +34,5 @@ private class TupleSerializerResolver(builder: ScalaModule.ReadOnlyBuilder = Sca
 }
 
 trait TupleSerializerModule extends JacksonModule {
-  this += (_ addSerializers new TupleSerializerResolver())
+  this += (_ addSerializers new TupleSerializerResolver(builder))
 }

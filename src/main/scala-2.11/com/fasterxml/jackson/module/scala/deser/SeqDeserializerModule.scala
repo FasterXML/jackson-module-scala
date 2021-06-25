@@ -7,7 +7,7 @@ import scala.collection._
 import scala.reflect.ClassTag
 
 trait SeqDeserializerModule extends ScalaTypeModifierModule {
-  this += (_ addDeserializers new GenericFactoryDeserializerResolver[Iterable, IterableFactory] {
+  this += (_ addDeserializers new GenericFactoryDeserializerResolver[Iterable, IterableFactory](builder) {
     override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Iterable[_]]
 
     override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.module.scala.ScalaModule
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 private class OptionDeserializer(fullType: JavaType,
@@ -73,7 +74,7 @@ private class OptionDeserializer(fullType: JavaType,
   }
 }
 
-private object OptionDeserializerResolver extends Deserializers.Base {
+private class OptionDeserializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
 
   private val OPTION = classOf[Option[AnyRef]]
 
@@ -97,5 +98,5 @@ private object OptionDeserializerResolver extends Deserializers.Base {
 }
 
 trait OptionDeserializerModule extends OptionTypeModifierModule {
-  this += OptionDeserializerResolver
+  this += new OptionDeserializerResolver(builder)
 }

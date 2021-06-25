@@ -181,7 +181,7 @@ class ResolvedOptionSerializer(
   }
 }
 
-private object OptionSerializerResolver extends Serializers.Base {
+private class OptionSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
 
   private val OPTION = classOf[Option[_]]
 
@@ -201,6 +201,6 @@ private object OptionSerializerResolver extends Serializers.Base {
 
 trait OptionSerializerModule extends OptionTypeModifierModule {
   this += { ctx =>
-    ctx addSerializers OptionSerializerResolver
+    ctx addSerializers new OptionSerializerResolver(builder)
   }
 }

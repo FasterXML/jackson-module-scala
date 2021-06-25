@@ -72,7 +72,7 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
     new UnresolvedIteratorSerializer(cls, et, staticTyping, newVts, elementSerializer)
 }
 
-private object ScalaIteratorSerializerResolver extends Serializers.Base {
+private class ScalaIteratorSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
   override def findCollectionLikeSerializer(config: SerializationConfig,
                                             collectionType: CollectionLikeType,
                                             beanDescription: BeanDescription,
@@ -87,5 +87,5 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
 }
 
 trait IteratorSerializerModule extends IteratorTypeModifierModule {
-  this += ScalaIteratorSerializerResolver
+  this += new ScalaIteratorSerializerResolver(builder)
 }

@@ -7,12 +7,13 @@ import com.fasterxml.jackson.databind.deser.jdk.MapDeserializer
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, StdValueInstantiator}
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.module.scala.ScalaModule
 
 import scala.collection.mutable.ListBuffer
 import scala.collection.{Map, mutable}
 import scala.language.higherKinds
 
-abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] extends Deserializers.Base {
+abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](builder: ScalaModule.ReadOnlyBuilder) extends Deserializers.Base {
   type Collection[K, V] = CC[K, V]
   type Factory = CF[CC]
   type Builder[K, V] = mutable.Builder[(K, V), _ <: Collection[K, V]]

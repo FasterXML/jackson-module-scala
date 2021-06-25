@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.impl.{PropertySerializerMap, UnknownSerializer}
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import com.fasterxml.jackson.module.scala.ScalaModule
 import com.fasterxml.jackson.module.scala.modifiers.EitherTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
@@ -137,7 +138,7 @@ private class EitherSerializer(left: EitherDetails,
   }
 }
 
-private object EitherSerializerResolver extends Serializers.Base {
+private class EitherSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
 
   private val EITHER = classOf[Either[AnyRef, AnyRef]]
   private val LEFT = classOf[Left[AnyRef, AnyRef]]
@@ -170,5 +171,5 @@ private object EitherSerializerResolver extends Serializers.Base {
 }
 
 trait EitherSerializerModule extends EitherTypeModifierModule {
-  this += (_ addSerializers EitherSerializerResolver)
+  this += (_ addSerializers new EitherSerializerResolver(builder))
 }

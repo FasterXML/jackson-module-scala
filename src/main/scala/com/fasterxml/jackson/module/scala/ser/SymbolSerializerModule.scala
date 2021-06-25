@@ -13,7 +13,7 @@ private object SymbolSerializer extends ValueSerializer[Symbol] {
     jgen.writeString(value.name)
 }
 
-private class SymbolSerializerResolver(builder: ScalaModule.ReadOnlyBuilder = ScalaModule.defaultBuilder) extends Serializers.Base {
+private class SymbolSerializerResolver(builder: ScalaModule.ReadOnlyBuilder) extends Serializers.Base {
   private val SYMBOL = classOf[Symbol]
 
   override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
@@ -24,5 +24,5 @@ private class SymbolSerializerResolver(builder: ScalaModule.ReadOnlyBuilder = Sc
 }
 
 trait SymbolSerializerModule extends JacksonModule {
-  this += { _ addSerializers new SymbolSerializerResolver() }
+  this += { _ addSerializers new SymbolSerializerResolver(builder) }
 }

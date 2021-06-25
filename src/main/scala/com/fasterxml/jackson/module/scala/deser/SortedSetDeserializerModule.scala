@@ -1,13 +1,15 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.{DeserializationConfig, JavaType}
+import com.fasterxml.jackson.module.scala.ScalaModule
 import com.fasterxml.jackson.module.scala.introspect.OrderingLocator
 import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 
 import scala.collection._
 
 trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
-  this += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory] {
+
+  this += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory](builder) {
 
     override val CLASS_DOMAIN: Class[Collection[_]] = classOf[SortedSet[_]]
 

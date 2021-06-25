@@ -8,7 +8,7 @@ import scala.collection.generic.GenMapFactory
 import scala.language.existentials
 
 trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
-  this += (_ addDeserializers new GenericMapFactoryDeserializerResolver[GenMap, GenMapFactory] {
+  this += (_ addDeserializers new GenericMapFactoryDeserializerResolver[GenMap, GenMapFactory](builder) {
 
     override val CLASS_DOMAIN: Class[Collection[_, _]] = classOf[GenMap[_, _]]
 
