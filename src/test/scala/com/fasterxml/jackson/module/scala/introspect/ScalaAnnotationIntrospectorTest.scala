@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
-import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, ObjectMapper, SerializerProvider}
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationFeature, JsonSerializer, ObjectMapper, SerializerProvider}
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
@@ -26,6 +26,9 @@ object ScalaAnnotationIntrospectorTest {
     @JsonProperty def getValue: Int = value
     @JsonProperty def setValue(value: Int): Unit = { this.value = value }
   }
+
+  case class CaseClassWithoutDefault(a: String)
+  case class CaseClassWithDefault(a: String = "defaultParam")
 }
 
 class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
@@ -124,6 +127,42 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     tree.has("value") shouldBe true
     tree.has("setValue") shouldBe false
     tree.has("getValue") shouldBe false
+  }
+
+  it should "respect APPLY_DEFAULT_VALUES true" in { mapper =>
+
+    mapper.configure(DeserializationFeature.APPLY_DEFAULT_VALUES, true)
+
+    val json = """
+        |{}
+        |""".stripMargin
+    val jsonWithKey = """
+                 |{"a": "notDefault"}
+                 |""".stripMargin
+
+      val withDefault = mapper.readValue(json, classOf[CaseClassWithDefault])
+      val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+
+      withDefault.a shouldBe "defaultParam"
+      withoutDefault.a shouldBe "notDefault"
+  }
+
+  it should "respect APPLY_DEFAULT_VALUES false" in { mapper =>
+    mapper.configure(DeserializationFeature.APPLY_DEFAULT_VALUES, false)
+
+    val json = """
+                 |{}
+                 |""".stripMargin
+    val jsonWithKey = """
+                        |{"a": "notDefault"}
+                        |""".stripMargin
+
+
+      val withDefault = mapper.readValue(json, classOf[CaseClassWithDefault])
+      val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+
+      withDefault.a shouldBe null
+      withoutDefault.a shouldBe "notDefault"
   }
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
