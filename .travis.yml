@@ -29,9 +29,6 @@ matrix:
     - scala: 2.13.6
       jdk: openjdk16
       env: SONATYPE_PUBLISH=false
-    - scala: 3.0.0
-      jdk: openjdk8
-      env: SONATYPE_PUBLISH=true
 
 install:
   - |
