@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationFeature, JsonSerializer, ObjectMapper, SerializerProvider}
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationFeature, JsonSerializer, MapperFeature, ObjectMapper, SerializerProvider}
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
@@ -130,7 +130,7 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
 
   it should "respect APPLY_DEFAULT_VALUES true" in { mapper =>
 
-    mapper.configure(DeserializationFeature.APPLY_DEFAULT_VALUES, true)
+    mapper.configure(MapperFeature.APPLY_DEFAULT_VALUES, true)
 
     val json = """
         |{}
@@ -139,15 +139,15 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
                  |{"a": "notDefault"}
                  |""".stripMargin
 
-      val withDefault = mapper.readValue(json, classOf[CaseClassWithDefault])
-      val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+    val withDefault = mapper.readValue(json, classOf[CaseClassWithDefault])
+    val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
 
-      withDefault.a shouldBe "defaultParam"
-      withoutDefault.a shouldBe "notDefault"
+    withDefault.a shouldBe "defaultParam"
+    withoutDefault.a shouldBe "notDefault"
   }
 
   it should "respect APPLY_DEFAULT_VALUES false" in { mapper =>
-    mapper.configure(DeserializationFeature.APPLY_DEFAULT_VALUES, false)
+    mapper.configure(MapperFeature.APPLY_DEFAULT_VALUES, false)
 
     val json = """
                  |{}
@@ -160,29 +160,6 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
 
       withDefault.a shouldBe null
       withoutDefault.a shouldBe "notDefault"
-  }
-
-  it should "be configurable per call in object reader use case" in { mapper =>
-
-    val json = """
-                 |{}
-                 |""".stripMargin
-
-    {
-      val reader = mapper.readerFor(classOf[CaseClassWithDefault])
-        .`with`(DeserializationFeature.APPLY_DEFAULT_VALUES)
-
-      val withDefault = reader.readValue(json, classOf[CaseClassWithDefault])
-      withDefault.a shouldBe "defaultParam"
-    }
-
-    {
-      val reader = mapper.readerFor(classOf[CaseClassWithDefault])
-        .without(DeserializationFeature.APPLY_DEFAULT_VALUES)
-      val withDefault = reader.readValue(json, classOf[CaseClassWithDefault])
-
-      withDefault.a shouldBe null
-    }
   }
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
