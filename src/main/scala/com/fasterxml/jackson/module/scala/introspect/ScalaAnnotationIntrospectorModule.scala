@@ -100,7 +100,6 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     extends StdValueInstantiator(delegate) {
 
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
-      val applyDefaultValues = config.hasDeserializationFeatures(DeserializationFeature.APPLY_DEFAULT_VALUES.getMask)
       val args = delegate.getFromObjectArguments(config)
       Option(args) match {
         case Some(array) => {
@@ -108,9 +107,14 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
             case creator: CreatorProperty =>
               // Locate the constructor param that matches it
               descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
-                case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) if applyDefaultValues=>
+                case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
                   creator.withNullProvider(new NullValueProvider {
-                    override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
+                    override def getNullValue(ctxt: DeserializationContext): AnyRef = {
+                      val applyDefaultValues = ctxt.isEnabled(DeserializationFeature.APPLY_DEFAULT_VALUES)
+                      if(applyDefaultValues){
+                        defaultValue()
+                      } else null
+                    }
 
                     override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
                   })

@@ -27,7 +27,6 @@ object ScalaAnnotationIntrospectorTest {
     @JsonProperty def setValue(value: Int): Unit = { this.value = value }
   }
 
-  case class CaseClassWithoutDefault(a: String)
   case class CaseClassWithDefault(a: String = "defaultParam")
 }
 
@@ -156,13 +155,34 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     val jsonWithKey = """
                         |{"a": "notDefault"}
                         |""".stripMargin
-
-
       val withDefault = mapper.readValue(json, classOf[CaseClassWithDefault])
       val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
 
       withDefault.a shouldBe null
       withoutDefault.a shouldBe "notDefault"
+  }
+
+  it should "be configurable per call in object reader use case" in { mapper =>
+
+    val json = """
+                 |{}
+                 |""".stripMargin
+
+    {
+      val reader = mapper.readerFor(classOf[CaseClassWithDefault])
+        .`with`(DeserializationFeature.APPLY_DEFAULT_VALUES)
+
+      val withDefault = reader.readValue(json, classOf[CaseClassWithDefault])
+      withDefault.a shouldBe "defaultParam"
+    }
+
+    {
+      val reader = mapper.readerFor(classOf[CaseClassWithDefault])
+        .without(DeserializationFeature.APPLY_DEFAULT_VALUES)
+      val withDefault = reader.readValue(json, classOf[CaseClassWithDefault])
+
+      withDefault.a shouldBe null
+    }
   }
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
