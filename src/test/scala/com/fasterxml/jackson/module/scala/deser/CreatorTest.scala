@@ -149,7 +149,7 @@ class CreatorTest extends DeserializationFixture {
     deser2.i shouldEqual 5
   }
 
-  it should "ignore default values (when config is overridden)" in { f =>
+  it should "ignore default values (when config is overridden)" in { _ =>
     val builder = JsonMapper.builder().disable(MapperFeature.APPLY_DEFAULT_VALUES).addModule(DefaultScalaModule)
     val mapper = builder.build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])

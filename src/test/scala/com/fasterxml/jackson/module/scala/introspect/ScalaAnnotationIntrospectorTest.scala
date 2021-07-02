@@ -132,9 +132,9 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     tree.has("getValue") shouldBe false
   }
 
-  it should "respect APPLY_DEFAULT_VALUES true" in { mapper =>
-
-    mapper.configure(MapperFeature.APPLY_DEFAULT_VALUES, true)
+  it should "respect APPLY_DEFAULT_VALUES true" in { _ =>
+    val builder = JsonMapper.builder().enable(MapperFeature.APPLY_DEFAULT_VALUES).addModule(DefaultScalaModule)
+    val mapper = builder.build()
 
     val json = """
         |{}
@@ -162,8 +162,9 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     withNulls.c shouldBe None
   }
 
-  it should "respect APPLY_DEFAULT_VALUES false" in { mapper =>
-    mapper.configure(MapperFeature.APPLY_DEFAULT_VALUES, false)
+  it should "respect APPLY_DEFAULT_VALUES false" in { _ =>
+    val builder = JsonMapper.builder().disable(MapperFeature.APPLY_DEFAULT_VALUES).addModule(DefaultScalaModule)
+    val mapper = builder.build()
 
     val json = """
                  |{}
