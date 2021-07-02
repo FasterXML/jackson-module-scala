@@ -4,6 +4,7 @@ package introspect
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
 import com.fasterxml.jackson.databind.{BeanDescription, DeserializationFeature, JsonSerializer, MapperFeature, ObjectMapper, SerializerProvider}
@@ -128,9 +129,10 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     tree.has("getValue") shouldBe false
   }
 
-  it should "respect APPLY_DEFAULT_VALUES true" in { mapper =>
+  it should "respect APPLY_DEFAULT_VALUES true" in { _ =>
 
-    mapper.configure(MapperFeature.APPLY_DEFAULT_VALUES, true)
+    val builder = JsonMapper.builder().enable(MapperFeature.APPLY_DEFAULT_VALUES).addModule(DefaultScalaModule)
+    val mapper = builder.build()
 
     val json = """
         |{}
@@ -158,8 +160,9 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     withNulls.c shouldBe None
   }
 
-  it should "respect APPLY_DEFAULT_VALUES false" in { mapper =>
-    mapper.configure(MapperFeature.APPLY_DEFAULT_VALUES, false)
+  it should "respect APPLY_DEFAULT_VALUES false" in { _ =>
+    val builder = JsonMapper.builder().disable(MapperFeature.APPLY_DEFAULT_VALUES).addModule(DefaultScalaModule)
+    val mapper = builder.build()
 
     val json = """
                  |{}
