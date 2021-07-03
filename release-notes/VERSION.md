@@ -1,4 +1,4 @@
-# Version: 2.13.0 (Snapshot only)
+# Version: 2.13.0-RC1 (Snapshot only)
 
 This patch release tracks Jackson 2.13. The 2.13 series has full support for
 Scala 2.11 and 2.12 and 2.13. Java 8 is the minimum supported Java version.
@@ -9,6 +9,7 @@ Occasional snapshot releases are made for Scala 3 (currently 3.0.0-RC2) where mo
 
 * [[gh-512]](https://github.com/FasterXML/jackson-module-scala/issues/512) add support for recognising Scala3 classes (TastyUtil)
 * [[gh-503]](https://github.com/FasterXML/jackson-module-scala/issues/503) big improvement to ClassTagExtensions, the Scala3 friendly replacement for ScalaObjectMapper. Big thanks to Gaël Jourdan-Weil.
+* [[gh-514]]https://github.com/FasterXML/jackson-module-scala/issues/514 support MapperFeature.APPLY_DEFAULT_VALUES (defaults to true)
 
 # Version: 2.12.3
 

@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LookupCache, SimpleLookupCache}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, PropertyName}
-import com.fasterxml.jackson.module.scala.util.Implicits._
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, MapperFeature, PropertyName}
 import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
+import com.fasterxml.jackson.module.scala.util.Implicits._
 
 import java.lang.annotation.Annotation
 
@@ -204,9 +204,11 @@ private class ScalaValueInstantiator(config: ScalaModule.Config, delegate: StdVa
   extends StdValueInstantiator(delegate) {
 
   private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
+    val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES) &&
+      config.shouldApplyDefaultValuesWhenDeserializing()
     val args = delegate.getFromObjectArguments(deserializationConfig)
     Option(args) match {
-      case Some(array) if config.shouldApplyDefaultValuesWhenDeserializing() => {
+      case Some(array) if applyDefaultValues => {
         array.map {
           case creator: CreatorProperty =>
             // Locate the constructor param that matches it
