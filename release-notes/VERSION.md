@@ -8,6 +8,11 @@ Occasional snapshot releases are made for Scala 3 (currently 3.0.0-RC2) where mo
 
 [gh-512] add support for recognising Scala3 classes (TastyUtil)
 
+# Version: 2.12.4
+
+There are no new fixes in this release; it serves to track the 2.12.4 release
+of the upstream Jackson projects.
+
 # Version: 2.12.3
 
 There are no new fixes in this release; it serves to track the 2.12.3 release
