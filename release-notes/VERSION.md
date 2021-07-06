@@ -11,6 +11,11 @@ Occasional snapshot releases are made for Scala 3 (currently 3.0.0-RC2) where mo
 * [[gh-503]](https://github.com/FasterXML/jackson-module-scala/issues/503) big improvement to ClassTagExtensions, the Scala3 friendly replacement for ScalaObjectMapper. Big thanks to Gaël Jourdan-Weil.
 * [[gh-514]]https://github.com/FasterXML/jackson-module-scala/issues/514 support MapperFeature.APPLY_DEFAULT_VALUES (defaults to true)
 
+# Version: 2.12.4
+
+There are no new fixes in this release; it serves to track the 2.12.4 release
+of the upstream Jackson projects.
+
 # Version: 2.12.3
 
 There are no new fixes in this release; it serves to track the 2.12.3 release
