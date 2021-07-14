@@ -6,9 +6,10 @@ Java 8 is the minimum supported Java version.
 
 Some deprecated code relating to the use of Scala Manifests has been removed - ScalaObjectMapper support is unaffected (but this class remains deprecated). ClassTagExtensions is the replacement for ScalaObjectMapper.
 
+* [[gh-512]](https://github.com/FasterXML/jackson-module-scala/issues/479) Scala3 support
 * [[gh-512]](https://github.com/FasterXML/jackson-module-scala/issues/512) add support for recognising Scala3 classes (TastyUtil)
 * [[gh-503]](https://github.com/FasterXML/jackson-module-scala/issues/503) big improvement to ClassTagExtensions, the Scala3 friendly replacement for ScalaObjectMapper. Big thanks to Gaël Jourdan-Weil.
-* [[gh-514]]https://github.com/FasterXML/jackson-module-scala/issues/514 support MapperFeature.APPLY_DEFAULT_VALUES (defaults to true)
+* [[gh-514]](https://github.com/FasterXML/jackson-module-scala/issues/514) support MapperFeature.APPLY_DEFAULT_VALUES (defaults to true)
 
 # Version: 2.12.4
 
