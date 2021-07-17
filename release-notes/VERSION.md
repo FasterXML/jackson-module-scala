@@ -1,6 +1,6 @@
 # Version: 2.13.0-rc1
 
-This patch release tracks Jackson 2.13. The 2.13 series has full support for
+This patch release tracks Jackson 2.13.0-rc1. The 2.13 series has full support for
 Scala 2.11, 2.12, 2.13 and 3.0. This is the first release to provide experimental support for Scala 3.
 Java 8 is the minimum supported Java version.
 
