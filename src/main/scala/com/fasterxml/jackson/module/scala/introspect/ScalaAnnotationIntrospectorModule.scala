@@ -197,6 +197,8 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   this += { _.addValueInstantiators(sai) }
 }
 
+object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
+
 object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
 
 private class ScalaValueInstantiator(config: ScalaModule.Config, delegate: StdValueInstantiator,
