@@ -21,4 +21,6 @@ trait RequiredPropertiesSchemaModule extends JacksonModule {
   this += { _.insertAnnotationIntrospector(DefaultRequiredAnnotationIntrospector) }
 }
 
+class RequiredPropertiesSchemaModuleInstance(override val config: ScalaModule.Config) extends RequiredPropertiesSchemaModule
+
 object RequiredPropertiesSchemaModule extends RequiredPropertiesSchemaModule

@@ -231,7 +231,7 @@ private class ScalaValueInstantiator(config: ScalaModule.Config, delegate: StdVa
     }
   }
 
-  override def getFromObjectArguments(config: DeserializationConfig): Array[SettableBeanProperty] = {
+  override def getFromObjectArguments(deserializationConfig: DeserializationConfig): Array[SettableBeanProperty] = {
     overriddenConstructorArguments
   }
 }

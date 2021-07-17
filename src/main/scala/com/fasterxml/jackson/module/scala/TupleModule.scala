@@ -8,4 +8,6 @@ import com.fasterxml.jackson.module.scala.ser.TupleSerializerModule
  */
 trait TupleModule extends TupleSerializerModule with TupleDeserializerModule
 
+class TupleModuleInstance(override val config: ScalaModule.Config) extends TupleModule
+
 object TupleModule extends TupleModule

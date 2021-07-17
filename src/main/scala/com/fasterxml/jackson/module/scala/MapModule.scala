@@ -8,4 +8,6 @@ trait MapModule
     with UnsortedMapDeserializerModule
     with SortedMapDeserializerModule
 
+class MapModuleInstance(override val config: ScalaModule.Config) extends MapModule
+
 object MapModule extends MapModule

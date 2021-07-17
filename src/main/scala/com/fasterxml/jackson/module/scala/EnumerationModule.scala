@@ -8,5 +8,6 @@ import com.fasterxml.jackson.module.scala.ser.EnumerationSerializerModule
  */
 trait EnumerationModule extends EnumerationSerializerModule with EnumerationDeserializerModule
 
-object EnumerationModule extends EnumerationModule
+class EnumerationModuleInstance(override val config: ScalaModule.Config) extends EnumerationModule
 
+object EnumerationModule extends EnumerationModule

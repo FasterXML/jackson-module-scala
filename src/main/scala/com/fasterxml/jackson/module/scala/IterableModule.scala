@@ -7,4 +7,6 @@ import com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
  */
 trait IterableModule extends IterableSerializerModule
 
+class IterableModuleInstance(override val config: ScalaModule.Config) extends IterableModule
+
 object IterableModule extends IterableModule
