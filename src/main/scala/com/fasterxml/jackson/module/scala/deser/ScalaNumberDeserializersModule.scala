@@ -45,7 +45,7 @@ private object BigDecimalDeserializer extends BigNumberDeserializer(BigDecimal.a
 
 private object BigIntDeserializer extends BigNumberDeserializer(BigInt.apply)
 
-private object NumberDeserializers extends Deserializers.Base
+private class NumberDeserializers(config: ScalaModule.Config) extends Deserializers.Base
 {
   val BigDecimalClass = BigDecimalDeserializer.handledType()
   val BigIntClass = BigIntDeserializer.handledType()
@@ -67,5 +67,7 @@ private object NumberDeserializers extends Deserializers.Base
 }
 
 trait ScalaNumberDeserializersModule extends JacksonScalaModule {
-  this += NumberDeserializers
+  this += new NumberDeserializers(config)
 }
+
+object ScalaNumberDeserializersModule extends ScalaNumberDeserializersModule

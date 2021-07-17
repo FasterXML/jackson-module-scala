@@ -7,13 +7,13 @@ import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LookupCache, SimpleLookupCache}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, DeserializationFeature, MapperFeature, PropertyName}
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, MapperFeature, PropertyName}
+import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
 import java.lang.annotation.Annotation
 
-object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
+class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
 
@@ -112,46 +112,14 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
-  private class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor)
-    extends StdValueInstantiator(delegate) {
-
-    private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
-      val applyDefaultValues = config.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
-      val args = delegate.getFromObjectArguments(config)
-      Option(args) match {
-        case Some(array) if applyDefaultValues => {
-          array.map {
-            case creator: CreatorProperty =>
-              // Locate the constructor param that matches it
-              descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
-                case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
-                  creator.withNullProvider(new NullValueProvider {
-                    override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
-                    override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
-                  })
-                case _ => creator
-              }
-            case other => other
-          }
-        }
-        case Some(array) => array
-        case _ => Array.empty
-      }
-    }
-
-    override def getFromObjectArguments(config: DeserializationConfig): Array[SettableBeanProperty] = {
-      overriddenConstructorArguments
-    }
-  }
-
-  override def modifyValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription,
+  override def modifyValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription,
                                        defaultInstantiator: ValueInstantiator): ValueInstantiator = {
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
         if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
           defaultInstantiator match {
             case std: StdValueInstantiator =>
-              new ScalaValueInstantiator(std, config, descriptor)
+              new ScalaValueInstantiator(config, std, deserializationConfig, descriptor)
             case other =>
               throw new IllegalArgumentException("Cannot customise a non StdValueInstantiator: " + other.getClass)
           }
@@ -220,8 +188,48 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 }
 
+class ScalaAnnotationIntrospectorModuleInstance(override val config: ScalaModule.Config) extends ScalaAnnotationIntrospectorModule
+
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
-  this += { _.appendAnnotationIntrospector(JavaAnnotationIntrospector) }
-  this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
-  this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
+  val sai = new ScalaAnnotationIntrospectorInstance(config)
+  this += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(config)) }
+  this += { _.appendAnnotationIntrospector(sai) }
+  this += { _.addValueInstantiators(sai) }
+}
+
+object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
+
+private class ScalaValueInstantiator(config: ScalaModule.Config, delegate: StdValueInstantiator,
+                                     deserializationConfig: DeserializationConfig, descriptor: BeanDescriptor)
+  extends StdValueInstantiator(delegate) {
+
+  private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
+    val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES) &&
+      config.shouldApplyDefaultValuesWhenDeserializing()
+    val args = delegate.getFromObjectArguments(deserializationConfig)
+    Option(args) match {
+      case Some(array) if applyDefaultValues => {
+        array.map {
+          case creator: CreatorProperty =>
+            // Locate the constructor param that matches it
+            descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
+              case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
+                creator.withNullProvider(new NullValueProvider {
+                  override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
+
+                  override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
+                })
+              case _ => creator
+            }
+          case other => other
+        }
+      }
+      case Some(array) => array
+      case _ => Array.empty
+    }
+  }
+
+  override def getFromObjectArguments(config: DeserializationConfig): Array[SettableBeanProperty] = {
+    overriddenConstructorArguments
+  }
 }

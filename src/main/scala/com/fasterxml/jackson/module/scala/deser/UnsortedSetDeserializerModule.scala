@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 import scala.collection._
 
 trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
-  this += (_ addDeserializers new GenericFactoryDeserializerResolver[Set, IterableFactory] {
+  this += (_ addDeserializers new GenericFactoryDeserializerResolver[Set, IterableFactory](config) {
 
     override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Set[_]]
 

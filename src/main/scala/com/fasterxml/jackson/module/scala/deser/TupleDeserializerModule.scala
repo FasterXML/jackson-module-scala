@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
 
@@ -66,7 +66,7 @@ private class TupleDeserializer(javaType: JavaType,
   }
 }
 
-private object TupleDeserializerResolver extends Deserializers.Base {
+private class TupleDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val PRODUCT = classOf[Product]
 
@@ -98,5 +98,5 @@ private object TupleDeserializerResolver extends Deserializers.Base {
  * Adds deserialization support for Scala Tuples.
  */
 trait TupleDeserializerModule extends JacksonModule {
-  this += TupleDeserializerResolver
+  this += new TupleDeserializerResolver(config)
 }

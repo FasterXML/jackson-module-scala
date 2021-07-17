@@ -37,7 +37,7 @@ object VersionExtractor {
 
 trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
 
-  private val initializers = Seq.newBuilder[SetupContext => Unit]
+  private[scala] val initializers = Seq.newBuilder[SetupContext => Unit]
 
   def getModuleName = "JacksonModule"
 
@@ -64,7 +64,9 @@ trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
     initializers.result().foreach(_ apply context)
   }
 
-  protected def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
+  protected def config: ScalaModule.Config = ScalaModule.defaultBuilder
+
+  protected[scala] def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
   protected def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
   protected def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
   protected def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)

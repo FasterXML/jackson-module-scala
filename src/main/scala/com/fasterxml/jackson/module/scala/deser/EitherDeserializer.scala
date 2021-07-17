@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import com.fasterxml.jackson.module.scala.deser.EitherDeserializer.ElementDeserializerConfig
 
 private class EitherDeserializer(javaType: JavaType,
@@ -99,7 +99,7 @@ private object EitherDeserializer {
 }
 
 
-private object EitherDeserializerResolver extends Deserializers.Base {
+private class EitherDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val EITHER = classOf[Either[_, _]]
 
@@ -131,5 +131,5 @@ private object EitherDeserializerResolver extends Deserializers.Base {
 }
 
 trait EitherDeserializerModule extends JacksonModule {
-  this += EitherDeserializerResolver
+  this += new EitherDeserializerResolver(config)
 }

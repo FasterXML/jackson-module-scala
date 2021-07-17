@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.module.scala.util.Implicits._
-import com.fasterxml.jackson.module.scala.{JacksonModule, JsonScalaEnumeration}
+import com.fasterxml.jackson.module.scala.{JacksonModule, JsonScalaEnumeration, ScalaModule}
 
 trait ContextualEnumerationSerializer
 {
@@ -39,7 +39,7 @@ private class AnnotatedEnumerationSerializer extends ValueSerializer[scala.Enume
   }
 }
 
-private object EnumerationSerializerResolver extends Serializers.Base {
+private class EnumerationSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
   override def findSerializer(config: SerializationConfig,
                               javaType: JavaType,
@@ -57,5 +57,5 @@ private object EnumerationSerializerResolver extends Serializers.Base {
 }
 
 trait EnumerationSerializerModule extends JacksonModule {
-  this += EnumerationSerializerResolver
+  this += new EnumerationSerializerResolver(config)
 }

@@ -7,13 +7,14 @@ import com.fasterxml.jackson.databind.deser.jdk.CollectionDeserializer
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, StdValueInstantiator}
 import com.fasterxml.jackson.databind.deser.{Deserializers, ValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.module.scala.ScalaModule
 
 import java.util
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.language.higherKinds
 
-abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deserializers.Base {
+abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: ScalaModule.Config) extends Deserializers.Base {
   type Collection[A] = CC[A]
   type Factory = CF[CC]
   type Builder[A] = mutable.Builder[A, _ <: Collection[A]]

@@ -76,7 +76,7 @@ private class UnresolvedIterableSerializer( cls: Class[_],
 
 }
 
-private object IterableSerializerResolver extends Serializers.Base {
+private class IterableSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
   override def findCollectionLikeSerializer(config: SerializationConfig,
                    collectionType: CollectionLikeType,
@@ -104,5 +104,5 @@ private object IterableSerializerResolver extends Serializers.Base {
 }
 
 trait IterableSerializerModule extends IterableTypeModifierModule {
-  this += IterableSerializerResolver
+  this += new IterableSerializerResolver(config)
 }

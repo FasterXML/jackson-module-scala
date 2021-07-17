@@ -7,3 +7,5 @@ import com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
  * Adds support for serializing and deserializing Scala sequences.
  */
 trait SeqModule extends IterableSerializerModule with SeqDeserializerModule
+
+object SeqModule extends SeqModule

@@ -9,7 +9,7 @@ import scala.collection.generic.SortedMapFactory
 import scala.language.existentials
 
 trait SortedMapDeserializerModule extends MapTypeModifierModule {
-  this += (_ addDeserializers new GenericMapFactoryDeserializerResolver[SortedMap, SortedMapFactory] {
+  this += (_ addDeserializers new GenericMapFactoryDeserializerResolver[SortedMap, SortedMapFactory](config) {
 
     override val CLASS_DOMAIN: Class[Collection[_, _]] = classOf[SortedMap[_, _]]
 

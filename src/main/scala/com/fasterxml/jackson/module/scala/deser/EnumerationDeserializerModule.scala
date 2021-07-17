@@ -19,7 +19,7 @@ private trait ContextualEnumerationDeserializer {
 /**
  * This class is mostly legacy logic to be deprecated/removed in 3.0
  */
-private class EnumerationDeserializer(theType:JavaType) extends ValueDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
+private class EnumerationDeserializer(theType: JavaType) extends ValueDeserializer[Enumeration#Value] with ContextualEnumerationDeserializer {
   override def deserialize(jp:JsonParser, ctxt:DeserializationContext): Enumeration#Value = {
     if (jp.currentToken() != JsonToken.START_OBJECT) {
       ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
@@ -55,7 +55,7 @@ private class AnnotatedEnumerationDeserializer(r: EnumResolver) extends ValueDes
   }
 }
 
-private object EnumerationDeserializerResolver extends Deserializers.Base {
+private class EnumerationDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val ENUMERATION = classOf[scala.Enumeration#Value]
 
@@ -92,7 +92,7 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
   }
 }
 
-private object EnumerationKeyDeserializers extends KeyDeserializers {
+private class EnumerationKeyDeserializers(config: ScalaModule.Config) extends KeyDeserializers {
   private val valueClass = classOf[scala.Enumeration#Value]
   def findKeyDeserializer(tp: JavaType, cfg: DeserializationConfig, desc: BeanDescription): KeyDeserializer = {
     if (valueClass.isAssignableFrom(tp.getRawClass)) {
@@ -104,7 +104,7 @@ private object EnumerationKeyDeserializers extends KeyDeserializers {
 
 trait EnumerationDeserializerModule extends JacksonScalaModule {
   this += { ctxt =>
-    ctxt.addDeserializers(EnumerationDeserializerResolver)
-    ctxt.addKeyDeserializers(EnumerationKeyDeserializers)
+    ctxt.addDeserializers(new EnumerationDeserializerResolver(config))
+    ctxt.addKeyDeserializers(new EnumerationKeyDeserializers(config))
   }
 }
