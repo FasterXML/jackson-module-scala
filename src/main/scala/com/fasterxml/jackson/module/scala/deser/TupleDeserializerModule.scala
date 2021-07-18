@@ -12,7 +12,7 @@ import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import scala.languageFeature.postfixOps
 
 private class TupleDeserializer(javaType: JavaType,
-                                config: DeserializationConfig,
+                                deserializationConfig: DeserializationConfig,
                                 valueDeserializers: Seq[ValueDeserializer[Object]] = Nil,
                                 typeDeserializers: Seq[TypeDeserializer] = Nil)
   extends StdDeserializer[Product](classOf[Product]) {
@@ -38,7 +38,7 @@ private class TupleDeserializer(javaType: JavaType,
       }
     }
 
-    new TupleDeserializer(javaType, config, paramDesers, typeDesers)
+    new TupleDeserializer(javaType, deserializationConfig, paramDesers, typeDesers)
   }
 
 
@@ -86,7 +86,7 @@ private class TupleDeserializerResolver(config: ScalaModule.Config) extends Dese
     }
   }
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = isOption(valueType)
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = isOption(valueType)
 
   private def isOption(cls: Class[_]): Boolean = {
     // If it's not *actually* a tuple, it's either a case class or a custom Product

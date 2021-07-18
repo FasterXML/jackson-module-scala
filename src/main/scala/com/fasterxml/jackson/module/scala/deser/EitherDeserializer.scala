@@ -12,7 +12,7 @@ import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import com.fasterxml.jackson.module.scala.deser.EitherDeserializer.ElementDeserializerConfig
 
 private class EitherDeserializer(javaType: JavaType,
-                                 config: DeserializationConfig,
+                                 deserializationConfig: DeserializationConfig,
                                  leftDeserializerConfig: ElementDeserializerConfig,
                                  rightDeserializerConfig: ElementDeserializerConfig)
   extends StdDeserializer[Either[AnyRef, AnyRef]](classOf[Either[AnyRef, AnyRef]]) {
@@ -32,7 +32,7 @@ private class EitherDeserializer(javaType: JavaType,
       case 2 =>
         val leftDeserializerConfig = deserializerConfigFor(0, javaType, property)
         val rightDeserializerConfig = deserializerConfigFor(1, javaType, property)
-        new EitherDeserializer(javaType, config, leftDeserializerConfig, rightDeserializerConfig)
+        new EitherDeserializer(javaType, deserializationConfig, leftDeserializerConfig, rightDeserializerConfig)
       case _ => this
     }
   }
@@ -105,29 +105,29 @@ private class EitherDeserializerResolver(config: ScalaModule.Config) extends Des
 
   private val EITHER = classOf[Either[_, _]]
 
-  override def findBeanDeserializer(`type`: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {
+  override def findBeanDeserializer(`type`: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {
     val rawClass = `type`.getRawClass
 
     if (!EITHER.isAssignableFrom(rawClass)) {
-      super.findBeanDeserializer(`type`, config, beanDesc)
+      super.findBeanDeserializer(`type`, deserializationConfig, beanDesc)
     } else {
-      new EitherDeserializer(`type`, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty)
+      new EitherDeserializer(`type`, deserializationConfig, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty)
     }
   }
 
-  override def findReferenceDeserializer(refType: ReferenceType, config: DeserializationConfig,
+  override def findReferenceDeserializer(refType: ReferenceType, deserializationConfig: DeserializationConfig,
                                          beanDesc: BeanDescription, contentTypeDeserializer: TypeDeserializer,
                                          contentDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     val rawClass = refType.getRawClass
 
     if (!EITHER.isAssignableFrom(rawClass)) {
-      super.findReferenceDeserializer(refType, config, beanDesc, contentTypeDeserializer, contentDeserializer)
+      super.findReferenceDeserializer(refType, deserializationConfig, beanDesc, contentTypeDeserializer, contentDeserializer)
     } else {
-      new EitherDeserializer(refType, config, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty)
+      new EitherDeserializer(refType, deserializationConfig, ElementDeserializerConfig.empty, ElementDeserializerConfig.empty)
     }
   }
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
     EITHER.isAssignableFrom(valueType)
   }
 }

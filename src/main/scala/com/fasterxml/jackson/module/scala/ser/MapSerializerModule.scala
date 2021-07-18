@@ -15,7 +15,7 @@ import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 import scala.collection.JavaConverters._
 import scala.collection.Map
 
-private class MapConverter(inputType: JavaType, config: SerializationConfig)
+private class MapConverter(inputType: JavaType, serializationConfig: SerializationConfig)
   extends StdConverter[Map[_,_],java.util.Map[_,_]]
 {
   def convert(value: Map[_,_]): java.util.Map[_,_] = value.asJava

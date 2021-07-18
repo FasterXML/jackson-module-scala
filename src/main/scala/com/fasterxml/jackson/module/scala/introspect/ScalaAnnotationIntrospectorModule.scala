@@ -131,7 +131,7 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
     } else defaultInstantiator
   }
 
-  override def findValueInstantiator(config: DeserializationConfig, beanDesc: BeanDescription): ValueInstantiator = {
+  override def findValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueInstantiator = {
     None.orNull
   }
 

@@ -52,7 +52,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
           }
         }
 
-        override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+        override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
           // TODO add implementation
           false
         }

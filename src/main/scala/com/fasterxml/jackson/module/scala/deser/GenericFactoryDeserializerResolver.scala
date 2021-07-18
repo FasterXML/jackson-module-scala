@@ -43,7 +43,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: Scala
     }
   }
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
     // TODO add implementation
     false
   }
@@ -102,8 +102,8 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: Scala
     def setInitialValue(init: Collection[A]): Unit = init.asInstanceOf[Iterable[A]].foreach(add)
   }
 
-  private class Instantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
-    extends StdValueInstantiator(config, collectionType) {
+  private class Instantiator(deserializationConfig: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
+    extends StdValueInstantiator(deserializationConfig, collectionType) {
 
     override def canCreateUsingDefault = true
 
