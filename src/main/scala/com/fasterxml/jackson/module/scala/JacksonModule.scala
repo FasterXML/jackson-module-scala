@@ -30,10 +30,19 @@ object JacksonModule {
   }
 
   class InitializerBuilder {
-    val initializers = Seq.newBuilder[SetupContext => Unit]
-    def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
-    def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
-    def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
+    private val initializers = Seq.newBuilder[SetupContext => Unit]
+    def +=(init: SetupContext => Unit): this.type = {
+      initializers += init
+      this
+    }
+    def +=(ser: Serializers): this.type = this += { context =>
+      println(s">>>> adding serializer $ser")
+      context.addSerializers(ser)
+    }
+    def +=(deser: Deserializers): this.type = this += { context =>
+      println(s">>>> adding deserializer $deser")
+      context.addDeserializers(deser)
+    }
     def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
     def +=(beanSerMod: ValueSerializerModifier): this.type = this += (_ addSerializerModifier beanSerMod)
     def build(): Seq[SetupContext => Unit] = initializers.result()
@@ -68,7 +77,9 @@ trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
         throw DatabindException.from(null.asInstanceOf[JsonParser], databindVersionError)
     }
 
-    getInitializers(config).foreach(_ apply context)
+    getInitializers(config).map { initFunction =>
+      initFunction(context)
+    }
   }
 
   protected def config: ScalaModule.Config = ScalaModule.defaultBuilder

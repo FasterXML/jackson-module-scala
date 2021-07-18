@@ -14,7 +14,7 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()
-      builder += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory](config) {
+      builder += new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory](config) {
 
         override val CLASS_DOMAIN: Class[Collection[_]] = classOf[SortedSet[_]]
 
@@ -33,7 +33,7 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
           // TODO add implementation
           false
         }
-      })
+      }
       builder.build()
     }
   }

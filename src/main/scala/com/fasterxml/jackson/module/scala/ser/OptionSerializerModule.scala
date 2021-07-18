@@ -205,7 +205,7 @@ trait OptionSerializerModule extends OptionTypeModifierModule {
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()
-      builder += { ctx => ctx addSerializers(new OptionSerializerResolver(config)) }
+      builder += new OptionSerializerResolver(config)
       builder.build()
     }
   }

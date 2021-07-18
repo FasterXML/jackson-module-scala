@@ -176,7 +176,7 @@ trait EitherSerializerModule extends EitherTypeModifierModule {
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()
-      builder += (_ addSerializers new EitherSerializerResolver(config))
+      builder += new EitherSerializerResolver(config)
       builder.build()
     }
   }

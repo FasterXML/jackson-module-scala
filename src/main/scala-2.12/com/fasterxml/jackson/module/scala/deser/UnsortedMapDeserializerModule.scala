@@ -14,7 +14,7 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()
-      builder += (_ addDeserializers new GenericMapFactoryDeserializerResolver[GenMap, GenMapFactory](config) {
+      builder += new GenericMapFactoryDeserializerResolver[GenMap, GenMapFactory](config) {
 
         override val CLASS_DOMAIN: Class[Collection[_, _]] = classOf[GenMap[_, _]]
 
@@ -38,7 +38,7 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
           // TODO add implementation
           false
         }
-      })
+      }
       builder.build()
     }
 

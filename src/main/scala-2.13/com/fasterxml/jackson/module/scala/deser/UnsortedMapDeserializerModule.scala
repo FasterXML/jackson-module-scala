@@ -13,7 +13,7 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()
-      builder += (_ addDeserializers new GenericMapFactoryDeserializerResolver[Map, MapFactory](config) {
+      builder += new GenericMapFactoryDeserializerResolver[Map, MapFactory](config) {
 
         override val CLASS_DOMAIN: Class[Collection[_, _]] = classOf[Map[_, _]]
 
@@ -32,7 +32,7 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
         ))
 
         override def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V] = factory.newBuilder[K, V]
-      })
+      }
       builder.build()
     }
   }

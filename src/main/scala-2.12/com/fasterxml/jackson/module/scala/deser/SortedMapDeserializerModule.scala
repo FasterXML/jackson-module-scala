@@ -15,7 +15,7 @@ trait SortedMapDeserializerModule extends MapTypeModifierModule {
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()
-      builder += (_ addDeserializers new GenericMapFactoryDeserializerResolver[SortedMap, SortedMapFactory](config) {
+      builder += new GenericMapFactoryDeserializerResolver[SortedMap, SortedMapFactory](config) {
 
         override val CLASS_DOMAIN: Class[Collection[_, _]] = classOf[SortedMap[_, _]]
 
@@ -29,7 +29,7 @@ trait SortedMapDeserializerModule extends MapTypeModifierModule {
 
         override def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V] =
           factory.newBuilder[K, V](OrderingLocator.locate[K](keyType))
-      })
+      }
       builder.build()
     }
   }

@@ -13,7 +13,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()
-      builder += (_ addDeserializers new GenericFactoryDeserializerResolver[Iterable, IterableFactory](config) {
+      builder += new GenericFactoryDeserializerResolver[Iterable, IterableFactory](config) {
         override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Iterable[_]]
 
         override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
@@ -51,7 +51,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
             super.builderFor[A](cls, valueType)
           }
         }
-      })
+      }
       builder.build()
     }
   }

@@ -11,7 +11,7 @@ import scala.collection._
 trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
-    builder += (_ addDeserializers new GenericFactoryDeserializerResolver[Set, IterableFactory](config) {
+    builder += new GenericFactoryDeserializerResolver[Set, IterableFactory](config) {
 
       override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Set[_]]
 
@@ -31,7 +31,7 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
         // TODO add implementation
         false
       }
-    })
+    }
     builder.build()
   }
 }

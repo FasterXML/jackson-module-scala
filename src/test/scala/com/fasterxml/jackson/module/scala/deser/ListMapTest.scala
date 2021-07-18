@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{DeserializationFeature, SerializationFeature}
-import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule}
+import com.fasterxml.jackson.module.scala.{BaseSpec, DefaultScalaModule, MapModule, ScalaModule}
 import org.scalatest.prop.TableDrivenPropertyChecks
 
 import java.io.StringWriter
@@ -13,7 +13,8 @@ import scala.collection.immutable.{ListMap, Queue, TreeMap}
 
 class ListMapTest extends BaseSpec with TableDrivenPropertyChecks {
   private val mapper = {
-    val builder = JsonMapper.builder().addModule(new DefaultScalaModule)
+    val moduleBuilder = ScalaModule.builder().addAllBuiltinModules()
+    val builder = JsonMapper.builder().addModule(moduleBuilder.build())
       .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
       .disable(SerializationFeature.INDENT_OUTPUT)
     builder.build()
