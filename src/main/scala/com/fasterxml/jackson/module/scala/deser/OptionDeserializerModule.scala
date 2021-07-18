@@ -79,7 +79,7 @@ private class OptionDeserializerResolver(config: ScalaModule.Config) extends Des
   private val OPTION = classOf[Option[AnyRef]]
 
   override def findReferenceDeserializer(refType: ReferenceType,
-                                         config: DeserializationConfig,
+                                         deserializationConfig: DeserializationConfig,
                                          beanDesc: BeanDescription,
                                          contentTypeDeserializer: TypeDeserializer,
                                          contentDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
@@ -92,7 +92,7 @@ private class OptionDeserializerResolver(config: ScalaModule.Config) extends Des
     }
   }
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
     OPTION.isAssignableFrom(valueType)
   }
 }

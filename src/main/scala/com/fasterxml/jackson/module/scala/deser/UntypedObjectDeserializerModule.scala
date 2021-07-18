@@ -46,12 +46,12 @@ private class UntypedObjectDeserializerResolver(config: ScalaModule.Config) exte
   private val objectClass = classOf[AnyRef]
 
   override def findBeanDeserializer(javaType: JavaType,
-                                    config: DeserializationConfig,
+                                    deserializationConfig: DeserializationConfig,
                                     beanDesc: BeanDescription) =
     if (!objectClass.equals(javaType.getRawClass)) null
     else new UntypedScalaObjectDeserializer
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
     objectClass == valueType
   }
 }

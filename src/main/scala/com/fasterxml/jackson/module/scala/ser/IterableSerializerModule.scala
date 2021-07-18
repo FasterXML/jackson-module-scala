@@ -78,7 +78,7 @@ private class UnresolvedIterableSerializer( cls: Class[_],
 
 private class IterableSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
-  override def findCollectionLikeSerializer(config: SerializationConfig,
+  override def findCollectionLikeSerializer(serializationConfig: SerializationConfig,
                    collectionType: CollectionLikeType,
                    beanDescription: BeanDescription,
                    formatOverrides: JsonFormat.Value,
@@ -96,7 +96,7 @@ private class IterableSerializerResolver(config: ScalaModule.Config) extends Ser
       //
       // The workaround is to let Jackson know that it can't rely on the element type
       // by telling it the element type is AnyRef.
-      new UnresolvedIterableSerializer(rawClass, config.constructType(classOf[AnyRef]), false, elementTypeSerializer, elementSerializer)
+      new UnresolvedIterableSerializer(rawClass, serializationConfig.constructType(classOf[AnyRef]), false, elementTypeSerializer, elementSerializer)
     }
 
   }

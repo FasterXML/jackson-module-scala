@@ -10,7 +10,7 @@ import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import scala.languageFeature.postfixOps
 
 private class TupleDeserializer(javaType: JavaType,
-                                config: DeserializationConfig,
+                                deserializationConfig: DeserializationConfig,
                                 valueDeserializers: Seq[ValueDeserializer[Object]] = Nil,
                                 typeDeserializers: Seq[TypeDeserializer] = Nil)
   extends StdDeserializer[Product](classOf[Product]) {
@@ -36,7 +36,7 @@ private class TupleDeserializer(javaType: JavaType,
       }
     }
 
-    new TupleDeserializer(javaType, config, paramDesers, typeDesers)
+    new TupleDeserializer(javaType, deserializationConfig, paramDesers, typeDesers)
   }
 
 
@@ -71,20 +71,20 @@ private class TupleDeserializerResolver(config: ScalaModule.Config) extends Dese
   private val PRODUCT = classOf[Product]
 
   override def findBeanDeserializer(javaType: JavaType,
-                                    config: DeserializationConfig,
+                                    deserializationConfig: DeserializationConfig,
                                     beanDesc: BeanDescription): ValueDeserializer[_] = {
     val cls = javaType.getRawClass
     if (!PRODUCT.isAssignableFrom(cls)) null else
     // If it's not *actually* a tuple, it's either a case class or a custom Product
     // which either way we shouldn't handle here.
     if (isOption(cls)) {
-      new TupleDeserializer(javaType, config)
+      new TupleDeserializer(javaType, deserializationConfig)
     } else {
-      super.findBeanDeserializer(javaType, config, beanDesc)
+      super.findBeanDeserializer(javaType, deserializationConfig, beanDesc)
     }
   }
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = isOption(valueType)
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = isOption(valueType)
 
   private def isOption(cls: Class[_]): Boolean = {
     // If it's not *actually* a tuple, it's either a case class or a custom Product

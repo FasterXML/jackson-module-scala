@@ -185,14 +185,14 @@ private class OptionSerializerResolver(config: ScalaModule.Config) extends Seria
 
   private val OPTION = classOf[Option[_]]
 
-  override def findReferenceSerializer(config: SerializationConfig,
+  override def findReferenceSerializer(serializationConfig: SerializationConfig,
                                        refType: ReferenceType,
                                        beanDesc: BeanDescription,
                                        formatOverrides: JsonFormat.Value,
                                        contentTypeSerializer: TypeSerializer,
                                        contentValueSerializer: ValueSerializer[AnyRef]): ValueSerializer[_] = {
     if (!OPTION.isAssignableFrom(refType.getRawClass)) return null
-    val staticTyping = contentTypeSerializer == null && config.isEnabled(
+    val staticTyping = contentTypeSerializer == null && serializationConfig.isEnabled(
       MapperFeature.USE_STATIC_TYPING
     )
     new OptionSerializer(refType, staticTyping, contentTypeSerializer, contentValueSerializer)

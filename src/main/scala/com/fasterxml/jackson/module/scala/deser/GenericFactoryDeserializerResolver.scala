@@ -31,21 +31,21 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: Scala
     .getOrElse(throw new IllegalStateException(s"Could not find deserializer for ${cls.getCanonicalName}. File issue on github:fasterxml/jackson-scala-module."))
 
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
-                                              config: DeserializationConfig,
+                                              deserializationConfig: DeserializationConfig,
                                               beanDesc: BeanDescription,
                                               elementTypeDeserializer: TypeDeserializer,
                                               elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     if (!CLASS_DOMAIN.isAssignableFrom(collectionType.getRawClass)) null
     else {
       val deser = elementDeserializer.asInstanceOf[ValueDeserializer[AnyRef]]
-      val instantiator = new Instantiator(config, collectionType, collectionType.getContentType)
+      val instantiator = new Instantiator(deserializationConfig, collectionType, collectionType.getContentType)
       new Deserializer(collectionType, deser, elementTypeDeserializer, instantiator)
     }
   }
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
     // TODO add implementation
-    ???
+    false
   }
 
   protected def sortFactories(factories: IndexedSeq[(Class[_], Factory)]): Seq[(Class[_], Factory)] = {
@@ -102,8 +102,8 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: Scala
     def setInitialValue(init: Collection[A]): Unit = init.asInstanceOf[Iterable[A]].foreach(add)
   }
 
-  private class Instantiator(config: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
-    extends StdValueInstantiator(config, collectionType) {
+  private class Instantiator(deserializationConfig: DeserializationConfig, collectionType: JavaType, valueType: JavaType)
+    extends StdValueInstantiator(deserializationConfig, collectionType) {
 
     override def canCreateUsingDefault = true
 

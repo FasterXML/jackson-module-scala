@@ -22,9 +22,9 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
 
     override def builderFor[A](cf: Factory, javaType: JavaType): Builder[A] = cf.newBuilder[A]
 
-    override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+    override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
       // TODO add implementation
-      ???
+      false
     }
   })
 }

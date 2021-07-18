@@ -16,7 +16,7 @@ private object SymbolSerializer extends ValueSerializer[Symbol] {
 private class SymbolSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
   private val SYMBOL = classOf[Symbol]
 
-  override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
+  override def findSerializer(serializationConfig: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
                               formatOverrides: JsonFormat.Value): ValueSerializer[Symbol] =
     if (SYMBOL isAssignableFrom javaType.getRawClass)
       SymbolSerializer

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 import scala.collection.JavaConverters._
 import scala.collection.Map
 
-private class MapConverter(inputType: JavaType, config: SerializationConfig)
+private class MapConverter(inputType: JavaType, serializationConfig: SerializationConfig)
   extends StdConverter[Map[_,_],java.util.Map[_,_]]
 {
   def convert(value: Map[_,_]): java.util.Map[_,_] = value.asJava
@@ -30,7 +30,7 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
 
   private val BASE = classOf[collection.Map[_,_]]
 
-  override def findMapLikeSerializer(config: SerializationConfig,
+  override def findMapLikeSerializer(serializationConfig: SerializationConfig,
                                      mapLikeType : MapLikeType,
                                      beanDesc: BeanDescription,
                                      formatOverrides: JsonFormat.Value,
@@ -41,7 +41,7 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
     val rawClass = mapLikeType.getRawClass
 
     if (!BASE.isAssignableFrom(rawClass)) null
-    else new StdDelegatingSerializer(new MapConverter(mapLikeType, config))
+    else new StdDelegatingSerializer(new MapConverter(mapLikeType, serializationConfig))
   }
 
 }
