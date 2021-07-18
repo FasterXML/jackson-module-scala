@@ -38,3 +38,5 @@ trait TupleSerializerModule extends JacksonModule {
     this += (_ addSerializers new TupleSerializerResolver(config))
   }
 }
+
+object TupleSerializerModule extends TupleSerializerModule

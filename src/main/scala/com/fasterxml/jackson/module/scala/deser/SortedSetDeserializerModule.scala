@@ -33,3 +33,5 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
     })
   }
 }
+
+object SortedSetDeserializerModule extends SortedSetDeserializerModule

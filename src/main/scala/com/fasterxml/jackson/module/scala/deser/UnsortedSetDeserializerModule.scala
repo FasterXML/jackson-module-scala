@@ -31,3 +31,5 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
     })
   }
 }
+
+object UnsortedSetDeserializerModule extends UnsortedSetDeserializerModule

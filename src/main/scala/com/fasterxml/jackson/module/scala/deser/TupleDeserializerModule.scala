@@ -102,3 +102,5 @@ trait TupleDeserializerModule extends JacksonModule {
     this += new TupleDeserializerResolver(config)
   }
 }
+
+object TupleDeserializerModule extends TupleDeserializerModule

@@ -88,6 +88,7 @@ private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extend
 
 trait IteratorSerializerModule extends IteratorTypeModifierModule {
   override def initScalaModule(config: ScalaModule.Config): Unit = {
+    super.initScalaModule(config)
     this += new ScalaIteratorSerializerResolver(config)
   }
 }

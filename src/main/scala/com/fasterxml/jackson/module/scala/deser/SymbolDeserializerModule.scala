@@ -34,3 +34,5 @@ trait SymbolDeserializerModule extends JacksonModule {
     }
   }
 }
+
+object SymbolDeserializerModule extends SymbolDeserializerModule
