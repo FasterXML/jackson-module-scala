@@ -165,7 +165,7 @@ class CreatorTest extends DeserializationFixture {
     deser2.i shouldEqual 5
   }
 
-  it should "ignore default values when builder is overridden (" in { f =>
+  it should "ignore default values when builder is overridden (using just ScalaAnnotationIntrospectorModule)" in { f =>
     val scalaModule = ScalaModule.builder()
       .addModule(ScalaAnnotationIntrospectorModule)
       .applyDefaultValuesWhenDeserializing(false)
