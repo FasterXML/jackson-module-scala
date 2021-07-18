@@ -42,7 +42,7 @@ class ScalaTypeModifier(config: ScalaModule.Config) extends TypeModifier {
 trait ScalaTypeModifierModule extends JacksonModule {
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
-    builder += { _ => new ScalaTypeModifier(config) }
+    builder += new ScalaTypeModifier(config)
     builder.build()
   }
 }

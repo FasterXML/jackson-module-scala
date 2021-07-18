@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ser.{Serializers, ValueSerializerModifier}
 
 import java.util.Properties
 import scala.collection.JavaConverters._
-import scala.languageFeature.postfixOps
 
 object JacksonModule {
   private val cls = classOf[JacksonModule]
@@ -36,21 +35,23 @@ object JacksonModule {
       this
     }
     def +=(ser: Serializers): this.type = this += { context =>
-      println(s">>>> adding serializer $ser")
       context.addSerializers(ser)
     }
     def +=(deser: Deserializers): this.type = this += { context =>
-      println(s">>>> adding deserializer $deser")
       context.addDeserializers(deser)
     }
-    def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
-    def +=(beanSerMod: ValueSerializerModifier): this.type = this += (_ addSerializerModifier beanSerMod)
+    def +=(typeMod: TypeModifier): this.type = this += { context =>
+      context.addTypeModifier(typeMod)
+    }
+    def +=(beanSerMod: ValueSerializerModifier): this.type = this += { context =>
+      context.addSerializerModifier(beanSerMod)
+    }
     def build(): Seq[SetupContext => Unit] = initializers.result()
   }
 }
 
 object VersionExtractor {
-  def unapply(v: Version) = Some(v.getMajorVersion, v.getMinorVersion)
+  def unapply(v: Version): Option[(Int, Int)] = Some(v.getMajorVersion, v.getMinorVersion)
 }
 
 trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
