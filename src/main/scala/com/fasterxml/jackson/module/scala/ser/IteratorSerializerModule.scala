@@ -73,7 +73,7 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
 }
 
 private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
-  override def findCollectionLikeSerializer(config: SerializationConfig,
+  override def findCollectionLikeSerializer(serializationConfig: SerializationConfig,
                                             collectionType: CollectionLikeType,
                                             beanDescription: BeanDescription,
                                             formatOverrides: JsonFormat.Value,
@@ -87,5 +87,7 @@ private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extend
 }
 
 trait IteratorSerializerModule extends IteratorTypeModifierModule {
-  this += new ScalaIteratorSerializerResolver(config)
+  override protected def initScalaModule(config: ScalaModule.Config): Unit = {
+    this += new ScalaIteratorSerializerResolver(config)
+  }
 }

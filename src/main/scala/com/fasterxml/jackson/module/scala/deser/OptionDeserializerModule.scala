@@ -98,5 +98,7 @@ private class OptionDeserializerResolver(config: ScalaModule.Config) extends Des
 }
 
 trait OptionDeserializerModule extends OptionTypeModifierModule {
-  this += new OptionDeserializerResolver(config)
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
+    this += new OptionDeserializerResolver(config)
+  }
 }

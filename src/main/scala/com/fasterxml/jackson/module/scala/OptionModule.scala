@@ -8,6 +8,4 @@ import com.fasterxml.jackson.module.scala.ser.OptionSerializerModule
  */
 trait OptionModule extends OptionSerializerModule with OptionDeserializerModule
 
-class OptionModuleInstance(override val config: ScalaModule.Config) extends OptionModule
-
 object OptionModule extends OptionModule

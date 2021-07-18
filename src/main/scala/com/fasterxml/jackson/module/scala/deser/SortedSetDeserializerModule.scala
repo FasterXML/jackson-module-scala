@@ -9,24 +9,26 @@ import scala.collection._
 
 trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
 
-  this += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory](config) {
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
+    this += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory](config) {
 
-    override val CLASS_DOMAIN: Class[Collection[_]] = classOf[SortedSet[_]]
+      override val CLASS_DOMAIN: Class[Collection[_]] = classOf[SortedSet[_]]
 
-    override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
-      (classOf[SortedSet[_]], SortedSet.asInstanceOf[Factory]),
-      (classOf[immutable.TreeSet[_]], immutable.TreeSet.asInstanceOf[Factory]),
-      (classOf[immutable.SortedSet[_]], immutable.SortedSet.asInstanceOf[Factory]),
-      (classOf[mutable.TreeSet[_]], mutable.TreeSet.asInstanceOf[Factory]),
-      (classOf[mutable.SortedSet[_]], mutable.SortedSet.asInstanceOf[Factory])
-    ))
+      override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
+        (classOf[SortedSet[_]], SortedSet.asInstanceOf[Factory]),
+        (classOf[immutable.TreeSet[_]], immutable.TreeSet.asInstanceOf[Factory]),
+        (classOf[immutable.SortedSet[_]], immutable.SortedSet.asInstanceOf[Factory]),
+        (classOf[mutable.TreeSet[_]], mutable.TreeSet.asInstanceOf[Factory]),
+        (classOf[mutable.SortedSet[_]], mutable.SortedSet.asInstanceOf[Factory])
+      ))
 
-    override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] =
-      cf.newBuilder[A](OrderingLocator.locate(valueType).asInstanceOf[Ordering[A]])
+      override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] =
+        cf.newBuilder[A](OrderingLocator.locate(valueType).asInstanceOf[Ordering[A]])
 
-    override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
-      // TODO add implementation
-      ???
-    }
-  })
+      override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
+        // TODO add implementation
+        false
+      }
+    })
+  }
 }

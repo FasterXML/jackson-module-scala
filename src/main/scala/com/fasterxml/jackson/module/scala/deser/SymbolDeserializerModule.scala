@@ -16,17 +16,21 @@ private object SymbolDeserializer extends StdDeserializer[Symbol](classOf[Symbol
 private class SymbolDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
   private val SYMBOL = classOf[Symbol]
 
-  override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[Symbol] =
+  override def findBeanDeserializer(javaType: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[Symbol] =
     if (SYMBOL isAssignableFrom javaType.getRawClass)
       SymbolDeserializer
     else null
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
     SYMBOL isAssignableFrom valueType
   }
 
 }
 
 trait SymbolDeserializerModule extends JacksonModule {
-  this += { _ addDeserializers new SymbolDeserializerResolver(config) }
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
+    this += {
+      _ addDeserializers new SymbolDeserializerResolver(config)
+    }
+  }
 }

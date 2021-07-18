@@ -30,21 +30,21 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](conf
     .getOrElse(throw new IllegalStateException(s"Could not find deserializer for ${cls.getCanonicalName}. File issue on github:fasterxml/jackson-scala-module."))
 
   override def findMapLikeDeserializer(theType: MapLikeType,
-                                       config: DeserializationConfig,
+                                       deserializationConfig: DeserializationConfig,
                                        beanDesc: BeanDescription,
                                        keyDeserializer: KeyDeserializer,
                                        elementTypeDeserializer: TypeDeserializer,
                                        elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     if (!CLASS_DOMAIN.isAssignableFrom(theType.getRawClass)) null
     else {
-      val instantiator = new Instantiator(config, theType)
+      val instantiator = new Instantiator(deserializationConfig, theType)
       new Deserializer(theType, instantiator, keyDeserializer, elementDeserializer, elementTypeDeserializer)
     }
   }
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
     // TODO add implementation
-    ???
+    false
   }
 
   protected def sortFactories(factories: IndexedSeq[(Class[_], Factory)]): Seq[(Class[_], Factory)] = {

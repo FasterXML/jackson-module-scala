@@ -144,7 +144,7 @@ private class EitherSerializerResolver(config: ScalaModule.Config) extends Seria
   private val LEFT = classOf[Left[AnyRef, AnyRef]]
   private val RIGHT = classOf[Right[AnyRef, AnyRef]]
 
-  override def findReferenceSerializer(config: SerializationConfig,
+  override def findReferenceSerializer(serializationConfig: SerializationConfig,
                                        refType: ReferenceType,
                                        beanDesc: BeanDescription,
                                        formatOverrides: JsonFormat.Value,
@@ -171,5 +171,10 @@ private class EitherSerializerResolver(config: ScalaModule.Config) extends Seria
 }
 
 trait EitherSerializerModule extends EitherTypeModifierModule {
-  this += (_ addSerializers new EitherSerializerResolver(config))
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
+    super.initScalaModule(config)
+    this += (_ addSerializers new EitherSerializerResolver(config))
+  }
 }
+
+object EitherSerializerModule extends EitherSerializerModule

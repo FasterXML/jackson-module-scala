@@ -131,5 +131,9 @@ private class EitherDeserializerResolver(config: ScalaModule.Config) extends Des
 }
 
 trait EitherDeserializerModule extends JacksonModule {
-  this += new EitherDeserializerResolver(config)
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
+    this += new EitherDeserializerResolver(config)
+  }
 }
+
+object EitherDeserializerModule extends EitherDeserializerModule

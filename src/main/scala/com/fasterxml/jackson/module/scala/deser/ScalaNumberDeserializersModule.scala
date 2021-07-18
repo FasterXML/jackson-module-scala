@@ -50,14 +50,14 @@ private class NumberDeserializers(config: ScalaModule.Config) extends Deserializ
   val BigDecimalClass = BigDecimalDeserializer.handledType()
   val BigIntClass = BigIntDeserializer.handledType()
 
-  override def findBeanDeserializer(tpe: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] =
+  override def findBeanDeserializer(tpe: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] =
     tpe.getRawClass match {
       case BigDecimalClass => BigDecimalDeserializer
       case BigIntClass => BigIntDeserializer
       case _ => None.orNull
     }
 
-  override def hasDeserializerFor(config: DeserializationConfig, valueType: Class[_]): Boolean = {
+  override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
     valueType match {
       case BigDecimalClass => true
       case BigIntClass => true
@@ -67,7 +67,9 @@ private class NumberDeserializers(config: ScalaModule.Config) extends Deserializ
 }
 
 trait ScalaNumberDeserializersModule extends JacksonScalaModule {
-  this += new NumberDeserializers(config)
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
+    this += new NumberDeserializers(config)
+  }
 }
 
 object ScalaNumberDeserializersModule extends ScalaNumberDeserializersModule

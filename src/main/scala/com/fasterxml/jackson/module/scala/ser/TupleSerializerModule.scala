@@ -21,7 +21,7 @@ private class TupleSerializerResolver(config: ScalaModule.Config) extends Serial
 
   private val PRODUCT = classOf[Product]
 
-  override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
+  override def findSerializer(serializationConfig: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
                               formatOverrides: JsonFormat.Value) = {
     val cls = javaType.getRawClass
     if (!PRODUCT.isAssignableFrom(cls)) null else
@@ -34,5 +34,7 @@ private class TupleSerializerResolver(config: ScalaModule.Config) extends Serial
 }
 
 trait TupleSerializerModule extends JacksonModule {
-  this += (_ addSerializers new TupleSerializerResolver(config))
+  override protected def initScalaModule(config: ScalaModule.Config): Unit = {
+    this += (_ addSerializers new TupleSerializerResolver(config))
+  }
 }

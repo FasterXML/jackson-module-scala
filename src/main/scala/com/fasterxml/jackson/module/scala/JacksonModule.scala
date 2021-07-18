@@ -71,4 +71,6 @@ trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
   protected def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
   protected def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
   protected def +=(beanSerMod: ValueSerializerModifier): this.type = this += (_ addSerializerModifier beanSerMod)
+
+  protected def initScalaModule(config: ScalaModule.Config): Unit
 }
