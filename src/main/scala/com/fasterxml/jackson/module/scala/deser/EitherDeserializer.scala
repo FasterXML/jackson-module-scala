@@ -1,11 +1,13 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import com.fasterxml.jackson.module.scala.deser.EitherDeserializer.ElementDeserializerConfig
 
@@ -131,5 +133,11 @@ private class EitherDeserializerResolver(config: ScalaModule.Config) extends Des
 }
 
 trait EitherDeserializerModule extends JacksonModule {
-  this += new EitherDeserializerResolver(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += new EitherDeserializerResolver(config)
+    builder.build()
+  }
 }
+
+object EitherDeserializerModule extends EitherDeserializerModule

@@ -1,13 +1,17 @@
 package com.fasterxml.jackson.module.scala
 
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.module.scala.deser.SeqDeserializerModule
 import com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
 
 /**
  * Adds support for serializing and deserializing Scala sequences.
  */
-trait SeqModule extends IterableSerializerModule with SeqDeserializerModule
-
-class SeqModuleInstance(override val config: ScalaModule.Config) extends SeqModule
+trait SeqModule extends IterableSerializerModule with SeqDeserializerModule {
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    IterableSerializerModule.getInitializers(config) ++
+      SeqDeserializerModule.getInitializers(config)
+  }
+}
 
 object SeqModule extends SeqModule

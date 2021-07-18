@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{JsonNode, MapperFeature, ObjectMapper}
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.IntNode
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModuleInstance
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaModule}
 
 class PositiveLong private (val value: Long) {
@@ -166,10 +166,9 @@ class CreatorTest extends DeserializationFixture {
   }
 
   it should "ignore default values when builder is overridden (" in { f =>
-    val scalaModuleBuilder = ScalaModule.builder()
+    val scalaModule = ScalaModule.builder()
+      .addModule(ScalaAnnotationIntrospectorModule)
       .applyDefaultValuesWhenDeserializing(false)
-    val scalaModule = scalaModuleBuilder
-      .addModule(new ScalaAnnotationIntrospectorModuleInstance(scalaModuleBuilder))
       .build()
     val mapper = JsonMapper.builder().addModule(scalaModule).build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])

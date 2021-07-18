@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.`type`.ClassKey
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser._
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LookupCache, SimpleLookupCache}
 import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, MapperFeature, PropertyName}
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
@@ -188,13 +190,17 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
   }
 }
 
-class ScalaAnnotationIntrospectorModuleInstance(override val config: ScalaModule.Config) extends ScalaAnnotationIntrospectorModule
-
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
-  val sai = new ScalaAnnotationIntrospectorInstance(config)
-  this += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(config)) }
-  this += { _.appendAnnotationIntrospector(sai) }
-  this += { _.addValueInstantiators(sai) }
+
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    val sai = new ScalaAnnotationIntrospectorInstance(config)
+    builder += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(config)) }
+    builder += { _.appendAnnotationIntrospector(sai) }
+    builder += { _.addValueInstantiators(sai) }
+    builder.build()
+  }
+
 }
 
 object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule

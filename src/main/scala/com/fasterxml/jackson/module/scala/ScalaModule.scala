@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModuleInstance
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 object ScalaModule {
 
@@ -11,7 +11,7 @@ object ScalaModule {
   }
 
   class Builder extends Config {
-    private val initializers = Seq.newBuilder[SetupContext => Unit]
+    private val modules = Seq.newBuilder[JacksonModule]
     private var applyDefaultValuesWhenDeserializing = true
 
     def applyDefaultValuesWhenDeserializing(applyDefaultValues: Boolean): Builder = {
@@ -22,7 +22,7 @@ object ScalaModule {
     override def shouldApplyDefaultValuesWhenDeserializing(): Boolean = applyDefaultValuesWhenDeserializing
 
     def addModule(module: JacksonModule): Builder = {
-      module.initializers.result().foreach(init => initializers += init)
+      modules.addOne(module)
       this
     }
 
@@ -36,10 +36,10 @@ object ScalaModule {
       addModule(MapModule)
       addModule(SetModule)
       addModule(ScalaNumberDeserializersModule)
-      addModule(new ScalaAnnotationIntrospectorModuleInstance(this))
+      addModule(ScalaAnnotationIntrospectorModule)
       addModule(UntypedObjectDeserializerModule)
       addModule(EitherModule)
-      addModule(new SymbolModuleInstance(this))
+      addModule(SymbolModule)
       this
     }
 
@@ -47,8 +47,10 @@ object ScalaModule {
       val configInstance = this
       val module = new JacksonModule {
         override val config = configInstance
+        override def getInitializers(config: Config): Seq[SetupContext => Unit] = {
+          modules.result().flatMap(_.getInitializers(config))
+        }
       }
-      initializers.result().foreach(init => module += init)
       module
     }
   }

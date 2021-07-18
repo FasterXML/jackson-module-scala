@@ -2,8 +2,10 @@ package com.fasterxml.jackson.module.scala
 package deser
 
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.{ContextualKeyDeserializer, Deserializers, KeyDeserializers}
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.util.EnumResolver
 import com.fasterxml.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 
@@ -94,7 +96,7 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
 
 private class EnumerationKeyDeserializers(config: ScalaModule.Config) extends KeyDeserializers {
   private val valueClass = classOf[scala.Enumeration#Value]
-  def findKeyDeserializer(tp: JavaType, cfg: DeserializationConfig, desc: BeanDescription): KeyDeserializer = {
+  def findKeyDeserializer(tp: JavaType, deserializationConfig: DeserializationConfig, desc: BeanDescription): KeyDeserializer = {
     if (valueClass.isAssignableFrom(tp.getRawClass)) {
       new EnumerationKeyDeserializer(None)
     }
@@ -103,8 +105,14 @@ private class EnumerationKeyDeserializers(config: ScalaModule.Config) extends Ke
 }
 
 trait EnumerationDeserializerModule extends JacksonScalaModule {
-  this += { ctxt =>
-    ctxt.addDeserializers(new EnumerationDeserializerResolver(config))
-    ctxt.addKeyDeserializers(new EnumerationKeyDeserializers(config))
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += { ctxt =>
+      ctxt.addDeserializers(new EnumerationDeserializerResolver(config))
+      ctxt.addKeyDeserializers(new EnumerationKeyDeserializers(config))
+    }
+    builder.build()
   }
 }
+
+object EnumerationDeserializerModule extends EnumerationDeserializerModule

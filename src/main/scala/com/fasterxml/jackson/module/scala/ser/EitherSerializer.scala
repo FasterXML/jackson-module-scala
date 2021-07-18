@@ -2,12 +2,14 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.{JsonFormat, JsonInclude}
 import com.fasterxml.jackson.core.{JsonGenerator, JsonToken}
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.impl.{PropertySerializerMap, UnknownSerializer}
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.ScalaModule
 import com.fasterxml.jackson.module.scala.modifiers.EitherTypeModifierModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
@@ -171,5 +173,13 @@ private class EitherSerializerResolver(config: ScalaModule.Config) extends Seria
 }
 
 trait EitherSerializerModule extends EitherTypeModifierModule {
-  this += (_ addSerializers new EitherSerializerResolver(config))
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    super.getInitializers(config) ++ {
+      val builder = new InitializerBuilder()
+      builder += new EitherSerializerResolver(config)
+      builder.build()
+    }
+  }
 }
+
+object EitherSerializerModule extends EitherSerializerModule

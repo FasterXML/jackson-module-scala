@@ -4,11 +4,13 @@ package ser
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.std.{AsArraySerializerBase, StdContainerSerializer}
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.modifiers.IterableTypeModifierModule
 
 import java.{lang => jl}
@@ -104,5 +106,11 @@ private class IterableSerializerResolver(config: ScalaModule.Config) extends Ser
 }
 
 trait IterableSerializerModule extends IterableTypeModifierModule {
-  this += new IterableSerializerResolver(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += new IterableSerializerResolver(config)
+    builder.build()
+  }
 }
+
+object IterableSerializerModule extends IterableSerializerModule

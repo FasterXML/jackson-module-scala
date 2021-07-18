@@ -1,10 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.deser.{BeanDeserializerFactory, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
@@ -98,5 +100,11 @@ private class TupleDeserializerResolver(config: ScalaModule.Config) extends Dese
  * Adds deserialization support for Scala Tuples.
  */
 trait TupleDeserializerModule extends JacksonModule {
-  this += new TupleDeserializerResolver(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += new TupleDeserializerResolver(config)
+    builder.build()
+  }
 }
+
+object TupleDeserializerModule extends TupleDeserializerModule

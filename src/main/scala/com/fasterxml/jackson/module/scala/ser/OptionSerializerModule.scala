@@ -3,6 +3,7 @@ package module.scala
 package ser
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.ReferenceType
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer
 import com.fasterxml.jackson.databind.util.NameTransformer
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 import scala.languageFeature.postfixOps
@@ -200,7 +202,13 @@ private class OptionSerializerResolver(config: ScalaModule.Config) extends Seria
 }
 
 trait OptionSerializerModule extends OptionTypeModifierModule {
-  this += { ctx =>
-    ctx addSerializers new OptionSerializerResolver(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    super.getInitializers(config) ++ {
+      val builder = new InitializerBuilder()
+      builder += new OptionSerializerResolver(config)
+      builder.build()
+    }
   }
 }
+
+object OptionSerializerModule extends OptionSerializerModule

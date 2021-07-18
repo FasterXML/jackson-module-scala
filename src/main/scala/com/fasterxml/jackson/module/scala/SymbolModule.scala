@@ -1,14 +1,17 @@
 package com.fasterxml.jackson.module.scala
 
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.module.scala.deser.SymbolDeserializerModule
 import com.fasterxml.jackson.module.scala.ser.SymbolSerializerModule
 
 /**
  * Adds support for serializing and deserializing Scala Symbols without the '.
  */
-trait SymbolModule extends SymbolSerializerModule with SymbolDeserializerModule
+trait SymbolModule extends SymbolSerializerModule with SymbolDeserializerModule {
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    SymbolSerializerModule.getInitializers(config) ++
+      SymbolDeserializerModule.getInitializers(config)
+  }
+}
 
 object SymbolModule extends SymbolModule
-
-class SymbolModuleInstance(override val config: ScalaModule.Config) extends SymbolModule
-
