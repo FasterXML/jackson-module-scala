@@ -102,3 +102,5 @@ trait OptionDeserializerModule extends OptionTypeModifierModule {
     this += new OptionDeserializerResolver(config)
   }
 }
+
+object OptionDeserializerModule extends OptionDeserializerModule

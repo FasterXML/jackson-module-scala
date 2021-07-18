@@ -91,3 +91,5 @@ trait IteratorSerializerModule extends IteratorTypeModifierModule {
     this += new ScalaIteratorSerializerResolver(config)
   }
 }
+
+object IteratorSerializerModule extends IteratorSerializerModule

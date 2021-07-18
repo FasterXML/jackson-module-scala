@@ -108,3 +108,5 @@ trait IterableSerializerModule extends IterableTypeModifierModule {
     this += new IterableSerializerResolver(config)
   }
 }
+
+object IterableSerializerModule extends IterableSerializerModule

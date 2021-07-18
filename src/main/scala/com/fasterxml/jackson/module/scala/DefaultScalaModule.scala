@@ -31,6 +31,25 @@ class DefaultScalaModule
      with SymbolModule
 {
   override def getModuleName = "DefaultScalaModule"
+
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
+    super.initScalaModule(config)
+    IteratorModule.initScalaModule(config)
+    EnumerationModule.initScalaModule(config)
+    OptionModule.initScalaModule(config)
+    SeqModule.initScalaModule(config)
+    IterableModule.initScalaModule(config)
+    TupleModule.initScalaModule(config)
+    MapModule.initScalaModule(config)
+    SetModule.initScalaModule(config)
+    ScalaNumberDeserializersModule.initScalaModule(config)
+    ScalaAnnotationIntrospectorModule.initScalaModule(config)
+    UntypedObjectDeserializerModule.initScalaModule(config)
+    EitherModule.initScalaModule(config)
+    SymbolModule.initScalaModule(config)
+  }
+
+  initScalaModule(config)
 }
 
 object DefaultScalaModule extends DefaultScalaModule

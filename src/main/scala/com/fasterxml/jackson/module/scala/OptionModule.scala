@@ -6,6 +6,11 @@ import com.fasterxml.jackson.module.scala.ser.OptionSerializerModule
 /**
  * Adds support for serializing and deserializing Scala Options.
  */
-trait OptionModule extends OptionSerializerModule with OptionDeserializerModule
+trait OptionModule extends OptionSerializerModule with OptionDeserializerModule {
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
+    OptionSerializerModule.initScalaModule(config)
+    OptionDeserializerModule.initScalaModule(config)
+  }
+}
 
 object OptionModule extends OptionModule

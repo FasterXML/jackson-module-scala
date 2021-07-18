@@ -205,3 +205,5 @@ trait OptionSerializerModule extends OptionTypeModifierModule {
     this += { ctx => ctx addSerializers new OptionSerializerResolver(config) }
   }
 }
+
+object OptionSerializerModule extends OptionSerializerModule
