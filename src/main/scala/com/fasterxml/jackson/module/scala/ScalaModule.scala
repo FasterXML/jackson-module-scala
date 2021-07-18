@@ -22,7 +22,7 @@ object ScalaModule {
     override def shouldApplyDefaultValuesWhenDeserializing(): Boolean = applyDefaultValuesWhenDeserializing
 
     def addModule(module: JacksonModule): Builder = {
-      modules.addOne(module)
+      modules.+=(module)
       this
     }
 

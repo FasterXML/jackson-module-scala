@@ -36,6 +36,7 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
       }
       builder.build()
     }
+  }
 }
 
 object UnsortedMapDeserializerModule extends UnsortedMapDeserializerModule
