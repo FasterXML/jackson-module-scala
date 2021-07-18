@@ -47,7 +47,7 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
 }
 
 trait MapSerializerModule extends MapTypeModifierModule {
-  override protected def initScalaModule(config: ScalaModule.Config): Unit = {
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
     this += new MapSerializerResolver(config)
   }
 }

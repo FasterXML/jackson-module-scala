@@ -200,7 +200,7 @@ private class OptionSerializerResolver(config: ScalaModule.Config) extends Seria
 }
 
 trait OptionSerializerModule extends OptionTypeModifierModule {
-  override protected def initScalaModule(config: ScalaModule.Config): Unit = {
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
     super.initScalaModule(config)
     this += { ctx => ctx addSerializers new OptionSerializerResolver(config) }
   }

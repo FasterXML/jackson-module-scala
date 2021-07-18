@@ -38,7 +38,7 @@ class ScalaTypeModifier(config: ScalaModule.Config) extends TypeModifier {
 }
 
 trait ScalaTypeModifierModule extends JacksonModule {
-  override protected def initScalaModule(config: ScalaModule.Config): Unit = {
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
     this += new ScalaTypeModifier(config)
   }
 }

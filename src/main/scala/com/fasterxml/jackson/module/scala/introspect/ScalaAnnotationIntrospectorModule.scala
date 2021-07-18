@@ -190,7 +190,7 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
-  override protected def initScalaModule(config: ScalaModule.Config): Unit = {
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
     val sai = new ScalaAnnotationIntrospectorInstance(config)
     this += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(config)) }
     this += { _.appendAnnotationIntrospector(sai) }

@@ -18,7 +18,7 @@ object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
 }
 
 trait RequiredPropertiesSchemaModule extends JacksonModule {
-  override protected def initScalaModule(config: ScalaModule.Config): Unit = {
+  override def initScalaModule(config: ScalaModule.Config): Unit = {
     this += { _.insertAnnotationIntrospector(DefaultRequiredAnnotationIntrospector) }
   }
 }
