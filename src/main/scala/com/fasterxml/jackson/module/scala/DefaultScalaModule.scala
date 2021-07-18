@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
@@ -14,42 +15,24 @@ import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
  *
  * @since 1.9.0
  */
-class DefaultScalaModule
-  extends JacksonModule
-     with IteratorModule
-     with EnumerationModule
-     with OptionModule
-     with SeqModule
-     with IterableModule
-     with TupleModule
-     with MapModule
-     with SetModule
-     with ScalaNumberDeserializersModule
-     with ScalaAnnotationIntrospectorModule
-     with UntypedObjectDeserializerModule
-     with EitherModule
-     with SymbolModule
-{
+class DefaultScalaModule extends JacksonModule {
   override def getModuleName = "DefaultScalaModule"
 
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    super.initScalaModule(config)
-    IteratorModule.initScalaModule(config)
-    EnumerationModule.initScalaModule(config)
-    OptionModule.initScalaModule(config)
-    SeqModule.initScalaModule(config)
-    IterableModule.initScalaModule(config)
-    TupleModule.initScalaModule(config)
-    MapModule.initScalaModule(config)
-    SetModule.initScalaModule(config)
-    ScalaNumberDeserializersModule.initScalaModule(config)
-    ScalaAnnotationIntrospectorModule.initScalaModule(config)
-    UntypedObjectDeserializerModule.initScalaModule(config)
-    EitherModule.initScalaModule(config)
-    SymbolModule.initScalaModule(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    IteratorModule.getInitializers(config) ++
+      EnumerationModule.getInitializers(config)  ++
+      OptionModule.getInitializers(config) ++
+      SeqModule.getInitializers(config) ++
+      IterableModule.getInitializers(config) ++
+      TupleModule.getInitializers(config) ++
+      MapModule.getInitializers(config) ++
+      SetModule.getInitializers(config) ++
+      ScalaNumberDeserializersModule.getInitializers(config) ++
+      ScalaAnnotationIntrospectorModule.getInitializers(config) ++
+      UntypedObjectDeserializerModule.getInitializers(config) ++
+      EitherModule.getInitializers(config) ++
+      SymbolModule.getInitializers(config)
   }
-
-  initScalaModule(config)
 }
 
 object DefaultScalaModule extends DefaultScalaModule

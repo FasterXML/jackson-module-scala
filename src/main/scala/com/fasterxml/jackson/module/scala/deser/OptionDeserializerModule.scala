@@ -1,11 +1,13 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.ScalaModule
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 
@@ -98,8 +100,12 @@ private class OptionDeserializerResolver(config: ScalaModule.Config) extends Des
 }
 
 trait OptionDeserializerModule extends OptionTypeModifierModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    this += new OptionDeserializerResolver(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    super.getInitializers(config) ++ {
+      val builder = new InitializerBuilder()
+      builder += new OptionDeserializerResolver(config)
+      builder.build()
+    }
   }
 }
 

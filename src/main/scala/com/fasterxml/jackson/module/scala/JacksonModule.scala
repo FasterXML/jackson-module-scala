@@ -10,13 +10,12 @@ import com.fasterxml.jackson.databind.ser.{Serializers, ValueSerializerModifier}
 
 import java.util.Properties
 import scala.collection.JavaConverters._
-import scala.collection.mutable
 import scala.languageFeature.postfixOps
 
 object JacksonModule {
   private val cls = classOf[JacksonModule]
   private val buildPropsFilename = cls.getPackage.getName.replace('.','/') + "/build.properties"
-  lazy val buildProps: mutable.Map[String, String] = {
+  lazy val buildProps: scala.collection.mutable.Map[String, String] = {
     val props = new Properties
     val stream = cls.getClassLoader.getResourceAsStream(buildPropsFilename)
     if (stream ne null) props.load(stream)
@@ -29,6 +28,16 @@ object JacksonModule {
     val version = buildProps("version")
     VersionUtil.parseVersion(version, groupId, artifactId)
   }
+
+  class InitializerBuilder {
+    val initializers = Seq.newBuilder[SetupContext => Unit]
+    def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
+    def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
+    def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
+    def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
+    def +=(beanSerMod: ValueSerializerModifier): this.type = this += (_ addSerializerModifier beanSerMod)
+    def build(): Seq[SetupContext => Unit] = initializers.result()
+  }
 }
 
 object VersionExtractor {
@@ -36,8 +45,6 @@ object VersionExtractor {
 }
 
 trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
-
-  private[scala] val initializers = Seq.newBuilder[SetupContext => Unit]
 
   def getModuleName = "JacksonModule"
 
@@ -61,16 +68,10 @@ trait JacksonModule extends com.fasterxml.jackson.databind.JacksonModule {
         throw DatabindException.from(null.asInstanceOf[JsonParser], databindVersionError)
     }
 
-    initializers.result().foreach(_ apply context)
+    getInitializers(config).foreach(_ apply context)
   }
 
   protected def config: ScalaModule.Config = ScalaModule.defaultBuilder
 
-  protected def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
-  protected def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
-  protected def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
-  protected def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
-  protected def +=(beanSerMod: ValueSerializerModifier): this.type = this += (_ addSerializerModifier beanSerMod)
-
-  def initScalaModule(config: ScalaModule.Config): Unit
+  def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit]
 }

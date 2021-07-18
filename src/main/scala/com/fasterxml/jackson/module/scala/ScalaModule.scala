@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
@@ -46,9 +47,10 @@ object ScalaModule {
       val configInstance = this
       val module = new JacksonModule {
         override val config = configInstance
-        override def initScalaModule(config: Config): Unit = ()
+        override def getInitializers(config: Config): Seq[SetupContext => Unit] = {
+          modules.result().flatMap(_.getInitializers(config))
+        }
       }
-      modules.result().foreach(module => module.initScalaModule(configInstance))
       module
     }
   }

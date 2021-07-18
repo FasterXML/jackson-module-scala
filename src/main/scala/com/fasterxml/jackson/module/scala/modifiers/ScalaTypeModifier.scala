@@ -1,7 +1,9 @@
 package com.fasterxml.jackson.module.scala.modifiers
 
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.`type`._
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import java.lang.reflect.Type
@@ -38,7 +40,9 @@ class ScalaTypeModifier(config: ScalaModule.Config) extends TypeModifier {
 }
 
 trait ScalaTypeModifierModule extends JacksonModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    this += new ScalaTypeModifier(config)
+  override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += { _ => new ScalaTypeModifier(config) }
+    builder.build()
   }
 }

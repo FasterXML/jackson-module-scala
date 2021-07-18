@@ -5,9 +5,11 @@ package deser
 import com.fasterxml.jackson.core.JsonToken.{START_ARRAY, VALUE_NUMBER_FLOAT, VALUE_NUMBER_INT, VALUE_STRING}
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 
 import scala.reflect.{ClassTag, classTag}
@@ -67,8 +69,10 @@ private class NumberDeserializers(config: ScalaModule.Config) extends Deserializ
 }
 
 trait ScalaNumberDeserializersModule extends JacksonScalaModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    this += new NumberDeserializers(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += new NumberDeserializers(config)
+    builder.build()
   }
 }
 

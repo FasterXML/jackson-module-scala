@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.databind.{AbstractTypeResolver, DeserializationConfig, JavaType}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule, ScalaModule}
@@ -37,8 +38,10 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
     }
 
     object AtrModule extends JacksonModule {
-      override def initScalaModule(config: ScalaModule.Config): Unit = {
-        this += (_ addAbstractTypeResolver ATR)
+      override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+        val builder = new JacksonModule.InitializerBuilder()
+        builder += (_ addAbstractTypeResolver ATR)
+        builder.build()
       }
     }
 

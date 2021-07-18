@@ -2,8 +2,10 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.ser.Serializers
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
@@ -24,10 +26,10 @@ private class SymbolSerializerResolver(config: ScalaModule.Config) extends Seria
 }
 
 trait SymbolSerializerModule extends JacksonModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    this += {
-      _ addSerializers new SymbolSerializerResolver(config)
-    }
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += { _ addSerializers new SymbolSerializerResolver(config) }
+    builder.build()
   }
 }
 

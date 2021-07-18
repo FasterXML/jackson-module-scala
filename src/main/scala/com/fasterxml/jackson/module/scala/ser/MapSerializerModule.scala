@@ -1,12 +1,14 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.{MapLikeType, TypeFactory}
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.Serializers
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer
 import com.fasterxml.jackson.databind.util.StdConverter
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.ScalaModule
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
@@ -47,9 +49,12 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
 }
 
 trait MapSerializerModule extends MapTypeModifierModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    super.initScalaModule(config)
-    this += new MapSerializerResolver(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    super.getInitializers(config) ++ {
+      val builder = new InitializerBuilder()
+      builder += new MapSerializerResolver(config)
+      builder.build()
+    }
   }
 }
 

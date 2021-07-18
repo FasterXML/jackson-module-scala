@@ -1,14 +1,17 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.{DeserializationConfig, JavaType}
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.ScalaModule
 import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 
 import scala.collection._
 
 trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    this += (_ addDeserializers new GenericFactoryDeserializerResolver[Set, IterableFactory](config) {
+  override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += (_ addDeserializers new GenericFactoryDeserializerResolver[Set, IterableFactory](config) {
 
       override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Set[_]]
 
@@ -29,6 +32,7 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
         false
       }
     })
+    builder.build()
   }
 }
 

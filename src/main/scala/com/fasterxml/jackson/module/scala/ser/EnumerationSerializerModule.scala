@@ -2,8 +2,10 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.ser.Serializers
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.util.Implicits._
 import com.fasterxml.jackson.module.scala.{JacksonModule, JsonScalaEnumeration, ScalaModule}
 
@@ -57,8 +59,10 @@ private class EnumerationSerializerResolver(config: ScalaModule.Config) extends 
 }
 
 trait EnumerationSerializerModule extends JacksonModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    this += new EnumerationSerializerResolver(config)
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += new EnumerationSerializerResolver(config)
+    builder.build()
   }
 }
 

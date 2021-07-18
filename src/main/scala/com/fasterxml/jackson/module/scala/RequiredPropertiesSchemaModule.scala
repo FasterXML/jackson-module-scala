@@ -1,8 +1,10 @@
 package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.introspect.{AnnotatedMember, NopAnnotationIntrospector}
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 
 object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
 
@@ -18,8 +20,10 @@ object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
 }
 
 trait RequiredPropertiesSchemaModule extends JacksonModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    this += { _.insertAnnotationIntrospector(DefaultRequiredAnnotationIntrospector) }
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += { _.insertAnnotationIntrospector(DefaultRequiredAnnotationIntrospector) }
+    builder.build()
   }
 }
 

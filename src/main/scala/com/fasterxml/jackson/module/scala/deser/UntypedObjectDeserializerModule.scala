@@ -1,9 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.jdk.UntypedObjectDeserializer
+import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
@@ -57,8 +59,10 @@ private class UntypedObjectDeserializerResolver(config: ScalaModule.Config) exte
 }
 
 trait UntypedObjectDeserializerModule extends JacksonModule {
-  override def initScalaModule(config: ScalaModule.Config): Unit = {
-    this += (_ addDeserializers new UntypedObjectDeserializerResolver(config))
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+    val builder = new InitializerBuilder()
+    builder += (_ addDeserializers new UntypedObjectDeserializerResolver(config))
+    builder.build()
   }
 }
 
