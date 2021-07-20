@@ -26,7 +26,8 @@ class CustomScalaModuleTest extends BaseSpec {
       with UntypedObjectDeserializerModule
       with EitherModule
 
-  "A custom scala module" should "be buildable outside of the module package" in {
+  //no longer works in jackson-module-scala 3 (use ScalaModule.builder instead)
+  "A custom scala module" should "be buildable outside of the module package" ignore {
     val builder = JsonMapper.builder().addModule(new CustomScalaModule)
     val mapper = builder.build()
     val testInstance = CustomScalaModuleTest.TestClass(BigDecimal("1.23"), Map("key" -> "value"))
@@ -34,7 +35,7 @@ class CustomScalaModuleTest extends BaseSpec {
     mapper.readValue(text, classOf[CustomScalaModuleTest.TestClass]) shouldEqual testInstance
   }
 
-  it should "be buildable outside of the module package (ScalaModule.builder)" in {
+  "A custom scala module" should "be buildable outside of the module package (ScalaModule.builder)" in {
     val scalaModule = ScalaModule.builder()
       .addModule(IteratorModule)
       .addModule(EnumerationModule)
