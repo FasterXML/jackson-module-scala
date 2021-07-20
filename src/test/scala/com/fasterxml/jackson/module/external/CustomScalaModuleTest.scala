@@ -33,4 +33,26 @@ class CustomScalaModuleTest extends BaseSpec {
     val text = mapper.writeValueAsString(testInstance)
     mapper.readValue(text, classOf[CustomScalaModuleTest.TestClass]) shouldEqual testInstance
   }
+
+  it should "be buildable outside of the module package (ScalaModule.builder)" in {
+    val scalaModule = ScalaModule.builder()
+      .addModule(IteratorModule)
+      .addModule(EnumerationModule)
+      .addModule(OptionModule)
+      .addModule(SeqModule)
+      .addModule(IterableModule)
+      .addModule(TupleModule)
+      .addModule(MapModule)
+      .addModule(SetModule)
+      .addModule(ScalaNumberDeserializersModule)
+      .addModule(ScalaAnnotationIntrospectorModule)
+      .addModule(UntypedObjectDeserializerModule)
+      .addModule(EitherModule)
+      .build()
+    val builder = JsonMapper.builder().addModule(scalaModule)
+    val mapper = builder.build()
+    val testInstance = CustomScalaModuleTest.TestClass(BigDecimal("1.23"), Map("key" -> "value"))
+    val text = mapper.writeValueAsString(testInstance)
+    mapper.readValue(text, classOf[CustomScalaModuleTest.TestClass]) shouldEqual testInstance
+  }
 }
