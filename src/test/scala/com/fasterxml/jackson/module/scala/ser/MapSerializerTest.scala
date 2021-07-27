@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonSubTypes
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.{SerializerProvider, ValueSerializer}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import scala.annotation.meta.getter
