@@ -1,6 +1,13 @@
+# Version: 2.13.0 (not yet released)
+
+This patch release tracks Jackson 2.13.0. The 2.13 series has full support for Scala 2.11, 2.12, 2.13 and 3.0.
+Java 8 is the minimum supported Java version.
+
+DefaultRequiredAnnotationIntrospector and RequiredPropertiesSchemaModule have been deprecated in this release due to fact that [jackson-module-jsonSchema ](https://github.com/FasterXML/jackson-module-jsonSchema) is being discontinued in Jackson 3.
+
 # Version: 2.13.0-rc1
 
-This patch release tracks Jackson 2.13. The 2.13 series has full support for
+This patch release tracks Jackson 2.13.0-rc1. The 2.13 series has full support for
 Scala 2.11, 2.12, 2.13 and 3.0. This is the first release to provide experimental support for Scala 3.
 Java 8 is the minimum supported Java version.
 
