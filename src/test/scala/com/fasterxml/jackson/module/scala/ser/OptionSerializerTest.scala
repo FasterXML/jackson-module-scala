@@ -49,6 +49,8 @@ object OptionSerializerTest {
   trait M1
   case class F1(label: String) extends M1
   case class C1(m: Option[M1])
+
+  case class DefaultOptionSchema(nonOptionValue: String, stringValue: Option[String])
 }
 
 // For issue #240, these need to be outside of the object to reproduce
@@ -167,7 +169,6 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   it should "support reversing the default for required properties in schema" in {
-    case class DefaultOptionSchema(nonOptionValue: String, stringValue: Option[String])
 
     val m = newMapper
     m.registerModule(new RequiredPropertiesSchemaModule{})
