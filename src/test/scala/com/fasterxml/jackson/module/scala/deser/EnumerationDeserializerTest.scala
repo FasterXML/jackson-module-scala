@@ -28,6 +28,7 @@ object EnumerationDeserializerTest  {
   class HolderImpl extends BeanPropertyEnumMapHolder
 }
 
+// see EnumerationScala2DeserializerTest for tests that only in Scala2
 class EnumerationDeserializerTest extends DeserializerTest {
   import com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerTest._
 
@@ -50,21 +51,9 @@ class EnumerationDeserializerTest extends DeserializerTest {
     result.weekday should be (Weekday.Fri)
   }
 
-  it should "deserialize an annotated Enumeration as a key" in {
-    val result = deserialize(weekdayMapJson, classOf[EnumMapHolder])
-    result.weekdayMap should contain key Weekday.Mon
-  }
-
-  it should "locate the annotation on BeanProperty fields" in {
-    val result = deserialize(weekdayMapJson, classOf[HolderImpl])
-    result.weekdayMap should contain key Weekday.Mon
-  }
-
   val fridayEnumJson = """{"day": {"enumClass":"com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}}"""
 
   val fridayInnerEnumJson = """{"day": {"enumClass":"com.fasterxml.jackson.module.scala.OuterWeekday$InnerWeekday","value":"Fri"}}"""
 
   val annotatedFridayJson = """{"weekday":"Fri"}"""
-
-  val weekdayMapJson = """{"weekdayMap":{"Mon":"Boo","Fri":"Hooray!"}}"""
 }
