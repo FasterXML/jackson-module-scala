@@ -75,64 +75,11 @@ object BeanIntrospectorTest {
   }
 }
 
+// see also BeanIntrospectorScala2Test for tests that only pass with Scala2
 class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with OptionValues with DecodedNameMatcher {
   import BeanIntrospectorTest._
 
   behavior of "BeanIntrospector"
-
-  it should "recognize a private [this] val field" in {
-
-    class Bean {
-      private [this] val `field-name` = 0
-    }
-
-    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
-    val props = beanDesc.properties
-
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
-      n shouldBe "field-name"
-      p shouldBe empty
-      f.value should have (decodedName ("field-name"))
-      g shouldBe empty
-      s shouldBe empty
-    }
-  }
-
-  it should "recognize a val field" in {
-
-    class Bean {
-      private val `field-name` = 0
-    }
-
-    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
-    val props = beanDesc.properties
-
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
-      n shouldBe "field-name"
-      p shouldBe empty
-      f.value should have (decodedName ("field-name"))
-      g.value should have (decodedName ("field-name"))
-      s shouldBe empty
-    }
-  }
-
-  it should "recognize a var field" in {
-
-    class Bean {
-      private var `field-name` = 0
-    }
-
-    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
-    val props = beanDesc.properties
-
-    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
-      n shouldBe "field-name"
-      p shouldBe empty
-      f.value should have (decodedName ("field-name"))
-      g.value should have (decodedName ("field-name"))
-      s.value should have (decodedName ("field-name_="))
-    }
-  }
 
   it should "recognize a method property" in {
 
