@@ -68,10 +68,10 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
     }
   }
 
-  override def hasIgnoreMarker(m: AnnotatedMember): Boolean = {
+  override def hasIgnoreMarker(mapperConfig: MapperConfig[_], m: AnnotatedMember): Boolean = {
     val name = m.getName
     //special cases to prevent shadow fields associated with lazy vals being serialized
-    name == "0bitmap$1" || name.endsWith("$lzy1") || super.hasIgnoreMarker(m)
+    name == "0bitmap$1" || name.endsWith("$lzy1") || super.hasIgnoreMarker(mapperConfig, m)
   }
 
   private def hasCreatorAnnotation(a: Annotated): Boolean = {
