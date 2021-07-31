@@ -72,8 +72,15 @@ private class OptionDeserializer(fullType: JavaType,
     if (t == JsonToken.VALUE_NULL) {
       getNullValue(ctxt)
     } else {
-      val value = valueTypeDeserializer.get.deserializeTypedFromAny(jp, ctxt)
-      Option(value)
+      valueTypeDeserializer match {
+        case Some(vtd) => Option(vtd.deserializeTypedFromAny(jp, ctxt))
+        case _ => {
+          typeDeserializer.deserializeTypedFromAny(jp, ctxt) match {
+            case Some(any) => referenceValue(any)
+            case any => referenceValue(any)
+          }
+        }
+      }
     }
   }
 
