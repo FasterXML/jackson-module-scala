@@ -61,12 +61,6 @@ case class PrivateDefaultFields(
   @JsonProperty lastName: String = "Freeman"
 )
 
-case class LazyClass(data: String) {
-  lazy val lazyString: String = data
-  @JsonIgnore
-  lazy val lazyIgnoredString: String = data
-}
-
 class CaseClassSerializerTest extends SerializerTest {
 
   case class NestedClass(field: String)
@@ -198,16 +192,5 @@ class CaseClassSerializerTest extends SerializerTest {
     }
     val foo = new Foo(java.util.Arrays.asList("foo", "bar"))
     serialize(foo) should equal ("""{"strings":["foo","bar"]}""")
-  }
-
-  //see also LazyValSerializerTest
-  it should "exclude bitmap$0 field from serialization" in {
-    val lazyInstance = LazyClass("test")
-    val resultJson = serialize(lazyInstance)
-    resultJson should include(""""data":"test"""")
-    resultJson should include(""""lazyString":"test"""")
-    resultJson should not include("bitmap$0")
-    //TODO with Scala3 some extra fields are emitted - these still need investigation
-    //"0bitmap$1":0,"lazyString$lzy1":null,"lazyIgnoredString$lzy1":null
   }
 }
