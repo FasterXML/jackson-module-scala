@@ -12,7 +12,7 @@ private class OptionDeserializer(fullType: JavaType,
                                  valueTypeDeserializer: Option[TypeDeserializer],
                                  valueDeserializer: Option[JsonDeserializer[AnyRef]],
                                  beanProperty: Option[BeanProperty] = None)
-  extends ReferenceTypeDeserializer[Option[AnyRef]](fullType, valueTypeDeserializer.orNull, valueDeserializer.orNull) with ContextualDeserializer {
+  extends ReferenceTypeDeserializer[Option[AnyRef]](fullType, None.orNull, valueTypeDeserializer.orNull, valueDeserializer.orNull) with ContextualDeserializer {
 
   override def getValueType: JavaType = fullType
 
