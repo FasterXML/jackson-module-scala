@@ -29,9 +29,10 @@ private class OptionDeserializer(fullType: JavaType,
       typeDeser == this.valueTypeDeserializer &&
       valueDeser == this.valueDeserializer &&
       beanProperty == this.beanProperty) {
-      return this
+      this
+    } else {
+      new OptionDeserializer(fullType, typeDeser, valueDeser.asInstanceOf[Option[JsonDeserializer[AnyRef]]], beanProperty)
     }
-    new OptionDeserializer(fullType, typeDeser, valueDeser.asInstanceOf[Option[JsonDeserializer[AnyRef]]], beanProperty)
   }
 
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[Option[AnyRef]] = {
@@ -71,20 +72,14 @@ private class OptionDeserializer(fullType: JavaType,
     if (t == JsonToken.VALUE_NULL) {
       getNullValue(ctxt)
     } else {
-      try {
-        typeDeserializer.deserializeTypedFromAny(jp, ctxt).asInstanceOf[Option[AnyRef]]
-      } catch {
-        case NonFatal(_) => {
-          val value = valueTypeDeserializer.get.deserializeTypedFromAny(jp, ctxt)
-          Option(value)
-        }
-      }
+      val value = valueTypeDeserializer.get.deserializeTypedFromAny(jp, ctxt)
+      Option(value)
     }
   }
 
   override def referenceValue(contents: Any): Option[AnyRef] = {
     Option(contents) match {
-      case o@Some(anyRef: AnyRef) => Some(anyRef)
+      case Some(anyRef: AnyRef) => Some(anyRef)
       case _ => None
     }
   }
