@@ -107,11 +107,10 @@ class OptionDeserializerTest extends DeserializerTest {
   it should "handle generics" in {
     val mapper = new ObjectMapper
     mapper.registerModule(DefaultScalaModule)
-    mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, "_t")
+    mapper.activateDefaultTypingAsProperty(mapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, "_t")
     val v = XMarker(Some(AMarker(1)))
     val str = mapper.writeValueAsString(v)
-    println(str) // 1
-    val d = mapper.readValue(str, classOf[XMarker]) // 2
-    println(d)
+    val v2 = mapper.readValue(str, classOf[XMarker])
+    v2 shouldEqual v
   }
 }
