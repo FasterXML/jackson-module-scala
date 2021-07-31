@@ -33,6 +33,10 @@ object OptionDeserializerTest {
 
   case class Foo(bar: String)
   case class Wrapper[T](t: T)
+
+  trait Marker
+  case class AMarker(a: Int) extends Marker
+  case class XMarker(x: Option[Marker])
 }
 
 class OptionDeserializerTest extends DeserializerTest {
@@ -96,5 +100,17 @@ class OptionDeserializerTest extends DeserializerTest {
     result1 shouldEqual JavaOptionalWrapper(java.util.Optional.empty[String]())
     val result2 = mapper.readValue(json, classOf[OptionWrapper])
     result2 shouldEqual OptionWrapper(None)
+  }
+
+  //https://github.com/FasterXML/jackson-module-scala/issues/382
+  it should "handle generics" in {
+    val mapper = newBuilder.
+    mapper.registerModule(DefaultScalaModule)
+    mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, "_t")
+    val v = XMarker(Some(AMarker(1)))
+    val str = mapper.writeValueAsString(v)
+    println(str) // 1
+    val d = mapper.readValue(str, classOf[XMarker]) // 2
+    println(d)
   }
 }
