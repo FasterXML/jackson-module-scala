@@ -51,11 +51,15 @@ class JsonTypeSerializerTest extends SerializerTest {
     val mapper = newBuilder.build()
     val con1JsonStr = mapper.writeValueAsString(con)
     con1JsonStr shouldEqual """{"foo":{"typeMarker":"foo1","name1":"foo1","prop":"foo1"}}"""
+
+    val con2 = mapper.readValue(con1JsonStr, classOf[AnnotatedCon])
+    con2 shouldEqual con
   }
   it should "not duplicate fields (no annotations)" in {
     val con = Con(Foo1("foo1", "foo1"))
     val mapper = newBuilder.build()
     val con1JsonStr = mapper.writeValueAsString(con)
     con1JsonStr shouldEqual """{"foo":{"name1":"foo1","prop":"foo1"}}"""
+    // we cannot deserialize this json back to Con instance as we don't have the typeMarker that we have in the previous test
   }
 }
