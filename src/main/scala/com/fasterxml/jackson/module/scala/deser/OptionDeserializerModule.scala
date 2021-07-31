@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.deser.std.ReferenceTypeDeserializer
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
@@ -12,7 +12,7 @@ private class OptionDeserializer(fullType: JavaType,
                                  valueTypeDeserializer: Option[TypeDeserializer],
                                  valueDeserializer: Option[JsonDeserializer[AnyRef]],
                                  beanProperty: Option[BeanProperty] = None)
-  extends StdDeserializer[Option[AnyRef]](fullType) with ContextualDeserializer {
+  extends ReferenceTypeDeserializer[Option[AnyRef]](fullType, valueTypeDeserializer.orNull, valueDeserializer.orNull) with ContextualDeserializer {
 
   override def getValueType: JavaType = fullType
 
@@ -72,6 +72,21 @@ private class OptionDeserializer(fullType: JavaType,
       typeDeserializer.deserializeTypedFromAny(jp, ctxt).asInstanceOf[Option[AnyRef]]
     }
   }
+
+  override def referenceValue(contents: Any): Option[AnyRef] = {
+    Option(contents) match {
+      case o@Some(anyRef: AnyRef) => Some(anyRef)
+      case _ => None
+    }
+  }
+
+  override def withResolved(typeDeser: TypeDeserializer, valueDeser: JsonDeserializer[_]): ReferenceTypeDeserializer[Option[AnyRef]] = {
+    new OptionDeserializer(fullType, Some(typeDeser), valueDeser.asInstanceOf[Option[JsonDeserializer[AnyRef]]], beanProperty)
+  }
+
+  override def updateReference(reference: Option[AnyRef], contents: Any): Option[AnyRef] = referenceValue(contents)
+
+  override def getReferenced(reference: Option[AnyRef]): AnyRef = reference.orNull
 }
 
 private object OptionDeserializerResolver extends Deserializers.Base {
