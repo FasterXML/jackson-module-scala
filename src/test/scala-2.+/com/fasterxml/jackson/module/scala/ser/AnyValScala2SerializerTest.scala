@@ -26,7 +26,7 @@ class AnyValScala2SerializerTest extends BaseFixture {
 
   it should "serialize an Int AnyVal" in { mapper =>
     val value = IntAnyVal(42)
-    mapper.writeValueAsString(value) shouldBe """42"""
+    mapper.writeValueAsString(value) shouldBe "42"
     mapper.writeValueAsString(IntAnyValHolder(value)) shouldBe """{"value":42}"""
   }
 
