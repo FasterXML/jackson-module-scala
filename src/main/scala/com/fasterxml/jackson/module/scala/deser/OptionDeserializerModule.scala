@@ -3,16 +3,18 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.{ReferenceType, TypeFactory}
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.deser.std.ReferenceTypeDeserializer
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
+
+import scala.util.control.NonFatal
 
 private class OptionDeserializer(fullType: JavaType,
                                  valueTypeDeserializer: Option[TypeDeserializer],
                                  valueDeserializer: Option[JsonDeserializer[AnyRef]],
                                  beanProperty: Option[BeanProperty] = None)
-  extends StdDeserializer[Option[AnyRef]](fullType) with ContextualDeserializer {
+  extends ReferenceTypeDeserializer[Option[AnyRef]](fullType, valueTypeDeserializer.orNull, valueDeserializer.orNull) with ContextualDeserializer {
 
   override def getValueType: JavaType = fullType
 
@@ -27,9 +29,10 @@ private class OptionDeserializer(fullType: JavaType,
       typeDeser == this.valueTypeDeserializer &&
       valueDeser == this.valueDeserializer &&
       beanProperty == this.beanProperty) {
-      return this
+      this
+    } else {
+      new OptionDeserializer(fullType, typeDeser, valueDeser.asInstanceOf[Option[JsonDeserializer[AnyRef]]], beanProperty)
     }
-    new OptionDeserializer(fullType, typeDeser, valueDeser.asInstanceOf[Option[JsonDeserializer[AnyRef]]], beanProperty)
   }
 
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[Option[AnyRef]] = {
@@ -69,9 +72,32 @@ private class OptionDeserializer(fullType: JavaType,
     if (t == JsonToken.VALUE_NULL) {
       getNullValue(ctxt)
     } else {
-      typeDeserializer.deserializeTypedFromAny(jp, ctxt).asInstanceOf[Option[AnyRef]]
+      valueTypeDeserializer match {
+        case Some(vtd) => Option(vtd.deserializeTypedFromAny(jp, ctxt))
+        case _ => {
+          typeDeserializer.deserializeTypedFromAny(jp, ctxt) match {
+            case Some(any) => referenceValue(any)
+            case any => referenceValue(any)
+          }
+        }
+      }
     }
   }
+
+  override def referenceValue(contents: Any): Option[AnyRef] = {
+    Option(contents) match {
+      case Some(anyRef: AnyRef) => Some(anyRef)
+      case _ => None
+    }
+  }
+
+  override def withResolved(typeDeser: TypeDeserializer, valueDeser: JsonDeserializer[_]): ReferenceTypeDeserializer[Option[AnyRef]] = {
+    new OptionDeserializer(fullType, Some(typeDeser), valueDeser.asInstanceOf[Option[JsonDeserializer[AnyRef]]], beanProperty)
+  }
+
+  override def updateReference(reference: Option[AnyRef], contents: Any): Option[AnyRef] = referenceValue(contents)
+
+  override def getReferenced(reference: Option[AnyRef]): AnyRef = reference.orNull
 }
 
 private object OptionDeserializerResolver extends Deserializers.Base {
