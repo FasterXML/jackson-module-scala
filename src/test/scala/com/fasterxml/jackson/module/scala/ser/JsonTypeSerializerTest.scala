@@ -5,11 +5,25 @@ import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 object JsonTypeSerializerTest {
-  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "prop")
+  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "typeMarker")
   @JsonSubTypes(Array(
-    new Type(value = classOf[Foo1], name = "foo1"),
-    new Type(value = classOf[Foo2], name = "foo2")
+    new Type(value = classOf[AnnotatedFoo1], name = "foo1"),
+    new Type(value = classOf[AnnotatedFoo2], name = "foo2")
   ))
+  sealed trait AnnotatedFoo {
+    val prop: String
+  }
+
+  case class AnnotatedFoo1(name1: String, prop: String) extends AnnotatedFoo {
+    def this() = this(null, null)
+  }
+
+  case class AnnotatedFoo2(name2: String, prop: String) extends AnnotatedFoo {
+    def this() = this(null, null)
+  }
+
+  case class AnnotatedCon(foo: AnnotatedFoo)
+
   sealed trait Foo {
     val prop: String
   }
@@ -33,10 +47,15 @@ class JsonTypeSerializerTest extends SerializerTest {
 
   //https://github.com/FasterXML/jackson-module-scala/issues/309
   "JsonTypeSerializer" should "not duplicate fields" in {
+    val con = AnnotatedCon(AnnotatedFoo1("foo1", "foo1"))
+    val mapper = newBuilder.build()
+    val con1JsonStr = mapper.writeValueAsString(con)
+    con1JsonStr shouldEqual """{"foo":{"typeMarker":"foo1","name1":"foo1","prop":"foo1"}}"""
+  }
+  it should "not duplicate fields (no annotations)" in {
     val con = Con(Foo1("foo1", "foo1"))
     val mapper = newBuilder.build()
     val con1JsonStr = mapper.writeValueAsString(con)
-    //TODO fix - this result is wrong as it duplicates the "prop" element
-    con1JsonStr shouldEqual """{"foo":{"prop":"foo1","name1":"foo1","prop":"foo1"}}"""
+    con1JsonStr shouldEqual """{"foo":{"name1":"foo1","prop":"foo1"}}"""
   }
 }
