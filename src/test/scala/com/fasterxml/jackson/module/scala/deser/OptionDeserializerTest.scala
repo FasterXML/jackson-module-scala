@@ -2,6 +2,8 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.DefaultTyping
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.annotation.meta.field
@@ -33,6 +35,10 @@ object OptionDeserializerTest {
 
   case class Foo(bar: String)
   case class Wrapper[T](t: T)
+
+  trait Marker
+  case class AMarker(a: Int) extends Marker
+  case class XMarker(x: Option[Marker])
 }
 
 class OptionDeserializerTest extends DeserializerTest {
@@ -96,5 +102,19 @@ class OptionDeserializerTest extends DeserializerTest {
     result1 shouldEqual JavaOptionalWrapper(java.util.Optional.empty[String]())
     val result2 = mapper.readValue(json, classOf[OptionWrapper])
     result2 shouldEqual OptionWrapper(None)
+  }
+
+  //https://github.com/FasterXML/jackson-module-scala/issues/382
+  it should "handle generics" in {
+    val builder = newBuilder
+    val polymorphicTypeValidator = BasicPolymorphicTypeValidator.builder()
+      .allowIfBaseType(classOf[Any])
+      .build()
+    builder.activateDefaultTypingAsProperty(polymorphicTypeValidator, DefaultTyping.OBJECT_AND_NON_CONCRETE, "_t")
+    val mapper = builder.build()
+    val v = XMarker(Some(AMarker(1)))
+    val str = mapper.writeValueAsString(v)
+    val v2 = mapper.readValue(str, classOf[XMarker])
+    v2 shouldEqual v
   }
 }
