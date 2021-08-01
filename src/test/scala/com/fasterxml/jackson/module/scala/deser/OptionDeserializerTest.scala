@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.DefaultTyping
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.annotation.meta.field
@@ -106,7 +107,10 @@ class OptionDeserializerTest extends DeserializerTest {
   //https://github.com/FasterXML/jackson-module-scala/issues/382
   it should "handle generics" in {
     val builder = newBuilder
-    builder.activateDefaultTypingAsProperty(builder.baseSettings().getPolymorphicTypeValidator(), DefaultTyping.OBJECT_AND_NON_CONCRETE, "_t")
+    val polymorphicTypeValidator = BasicPolymorphicTypeValidator.builder()
+      .allowIfBaseType(classOf[Any])
+      .build()
+    builder.activateDefaultTypingAsProperty(polymorphicTypeValidator, DefaultTyping.OBJECT_AND_NON_CONCRETE, "_t")
     val mapper = builder.build()
     val v = XMarker(Some(AMarker(1)))
     val str = mapper.writeValueAsString(v)
