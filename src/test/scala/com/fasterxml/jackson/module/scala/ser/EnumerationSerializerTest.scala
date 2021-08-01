@@ -27,6 +27,19 @@ object EnumerationSerializerTest {
   case class OptionTypeKeyedMapHolder(
     @JsonScalaEnumeration(classOf[OptionTypeReference]) @BeanProperty map: Map[OptionType.Value, String]
   )
+
+  object EnumTest extends Enumeration {
+    type EnumTest = Value
+    val A, B = Value
+  }
+  class EnumTestType extends TypeReference[EnumTest.type]
+
+  import EnumTest._
+  case class EnumTestCaseClass(@JsonScalaEnumeration(classOf[EnumTestType]) a: EnumTest, label: String)
+  case class EnumTestCaseClassWithExtraConstructors(@JsonScalaEnumeration(classOf[EnumTestType]) a: EnumTest, label: String) {
+    def this(b: String) = this(EnumTest.A, "None")
+    def this(a: EnumTest) = this(a, "None")
+  }
 }
 
 class EnumerationSerializerTest extends SerializerTest {
@@ -64,5 +77,12 @@ class EnumerationSerializerTest extends SerializerTest {
   it should "serialize a Map keyed with annotated Option[Enumeration]" in {
     val holder = OptionTypeKeyedMapHolder(Map(OptionType.STRING -> "foo"))
     serialize(holder) shouldBe """{"map":{"string":"foo"}}"""
+  }
+
+  it should "serialize an case class with enum (case class has extra constructors)" in {
+    val case1 = EnumTestCaseClass(EnumTest.A, "None")
+    serialize(case1) shouldBe """{"a":"A","label":"None"}"""
+    val case2 = EnumTestCaseClassWithExtraConstructors(EnumTest.A, "None")
+    serialize(case1) shouldBe """{"a":"A","label":"None"}"""
   }
 }
