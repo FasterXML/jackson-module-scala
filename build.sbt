@@ -30,7 +30,7 @@ scalaMajorVersion := {
 scalacOptions ++= {
   val additionalSettings =
     if (scalaReleaseVersion.value == 2 && scalaMajorVersion.value <= 12) {
-      Seq("-language:higherKinds")
+      Seq("-language:higherKinds", "-language:existentials")
     } else {
       Seq.empty[String]
     }
