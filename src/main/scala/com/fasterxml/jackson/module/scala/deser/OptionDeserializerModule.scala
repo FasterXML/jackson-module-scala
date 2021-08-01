@@ -92,7 +92,7 @@ private class OptionDeserializer(fullType: JavaType,
   }
 
   override def withResolved(typeDeser: TypeDeserializer, valueDeser: ValueDeserializer[_]): ReferenceTypeDeserializer[Option[AnyRef]] = {
-    new OptionDeserializer(fullType, Some(typeDeser), valueDeser.asInstanceOf[Option[ValueDeserializer[AnyRef]]], beanProperty)
+    new OptionDeserializer(fullType, Option(typeDeser), Option(valueDeser).map(_.asInstanceOf[ValueDeserializer[AnyRef]]), beanProperty)
   }
 
   override def updateReference(reference: Option[AnyRef], contents: Any): Option[AnyRef] = referenceValue(contents)
