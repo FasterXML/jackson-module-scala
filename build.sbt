@@ -81,6 +81,27 @@ Compile / resourceGenerators += Def.task {
     Seq(file)
 }.taskValue
 
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches :=
+  Seq(RefPredicate.StartsWith(Ref.Tag("v")))
+
+ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
+
+ThisBuild / githubWorkflowPublishTargetBranches +=
+  RefPredicate.StartsWith(Ref.Tag("v"))
+
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.CI_DEPLOY_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.CI_DEPLOY_USERNAME }}"
+    )
+  )
+)
+
 // site
 enablePlugins(SiteScaladocPlugin)
 enablePlugins(GhpagesPlugin)
