@@ -11,6 +11,7 @@ class BeanIntrospectorScala2Test extends BaseSpec with Inside with LoneElement w
 
   it should "recognize a private [this] val field" in {
 
+    //see equivalent test in BeanIntrospectorTest
     class Bean {
       private [this] val `field-name` = 0
     }
@@ -29,6 +30,7 @@ class BeanIntrospectorScala2Test extends BaseSpec with Inside with LoneElement w
 
   it should "recognize a val field" in {
 
+    //see equivalent test in BeanIntrospectorTest
     class Bean {
       private val `field-name` = 0
     }
@@ -47,6 +49,7 @@ class BeanIntrospectorScala2Test extends BaseSpec with Inside with LoneElement w
 
   it should "recognize a var field" in {
 
+    //see equivalent test in BeanIntrospectorTest
     class Bean {
       private var `field-name` = 0
     }

@@ -81,6 +81,71 @@ class BeanIntrospectorTest extends BaseSpec with Inside with LoneElement with Op
 
   behavior of "BeanIntrospector"
 
+  it should "recognize a private [this] val field" in {
+
+    //in Scala 3, the compiler optimises this and `field-name` variable is not accessible unless it is used
+    //elsewhere in the class - in Scala 2, this is not the case (see BeanIntrospectorScala2Test)
+    class Bean {
+      private [this] val `field-name` = 0
+
+      override def toString: String = s"field-name=${`field-name`}"
+    }
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
+      n shouldBe "field-name"
+      p shouldBe empty
+      f.value should have (decodedName ("field-name"))
+      g shouldBe empty
+      s shouldBe empty
+    }
+  }
+
+  it should "recognize a val field" in {
+
+    //in Scala 3, the compiler optimises this and `field-name` variable is not accessible unless it is used
+    //elsewhere in the class - in Scala 2, this is not the case (see BeanIntrospectorScala2Test)
+    class Bean {
+      private val `field-name` = 0
+
+      override def toString: String = s"field-name=${`field-name`}"
+    }
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
+      n shouldBe "field-name"
+      p shouldBe empty
+      f.value should have (decodedName ("field-name"))
+      //g is None when run with Scala 3 but has a value with Scala 2 (not expected to have major impact)
+      s shouldBe empty
+    }
+  }
+
+  //in Scala 3, the compiler optimises this and `field-name` variable is not accessible unless it is used
+  //elsewhere in the class - in Scala 2, this is not the case (see BeanIntrospectorScala2Test)
+  it should "recognize a var field" in {
+
+    class Bean {
+      private var `field-name` = 0
+
+      override def toString: String = s"field-name=${`field-name`}"
+    }
+
+    val beanDesc = BeanIntrospector[Bean](classOf[Bean])
+    val props = beanDesc.properties
+
+    inside (props.loneElement) { case PropertyDescriptor(n,p,f,g,s,_,_) =>
+      n shouldBe "field-name"
+      p shouldBe empty
+      f.value should have (decodedName ("field-name"))
+      //g and s are None when run with Scala 3 but have values with Scala 2 (not expected to have major impact)
+    }
+  }
+
   it should "recognize a method property" in {
 
     class Bean {
