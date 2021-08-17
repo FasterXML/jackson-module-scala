@@ -88,8 +88,6 @@ ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.StartsWith(Ref.Tag("v"))
 )
 
-ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
-
 ThisBuild / githubWorkflowPublish := Seq(
   WorkflowStep.Sbt(
     List("ci-release"),
