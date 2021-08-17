@@ -82,8 +82,11 @@ Compile / resourceGenerators += Def.task {
 }.taskValue
 
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
-ThisBuild / githubWorkflowPublishTargetBranches +=
+ThisBuild / githubWorkflowPublishTargetBranches := Seq(
+  RefPredicate.Equals(Ref.Branch("master")),
+  RefPredicate.Equals(Ref.Branch("2.13")),
   RefPredicate.StartsWith(Ref.Tag("v"))
+)
 
 ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
 
