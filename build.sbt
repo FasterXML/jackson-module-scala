@@ -10,8 +10,6 @@ ThisBuild / scalaVersion := "2.13.6"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.14", "2.13.6", "3.0.1")
 
-ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
-
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 val scalaReleaseVersion = SettingKey[Int]("scalaReleaseVersion")
@@ -94,6 +92,26 @@ Compile / resourceGenerators += Def.task {
     IO.write(file, contents)
     Seq(file)
 }.taskValue
+
+ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches := Seq(
+  RefPredicate.Equals(Ref.Branch("master")),
+  RefPredicate.Equals(Ref.Branch("2.13")),
+  RefPredicate.StartsWith(Ref.Tag("v"))
+)
+
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.CI_DEPLOY_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.CI_DEPLOY_USERNAME }}"
+    )
+  )
+)
 
 // site
 enablePlugins(SiteScaladocPlugin)
