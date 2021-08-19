@@ -68,7 +68,7 @@ Test / unmanagedSourceDirectories += {
   (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-${suffix}"
 }
 
-val jacksonVersion = "2.13.0-SNAPSHOT"
+val jacksonVersion = "2.13.0-rc2-SNAPSHOT"
 val jacksonJsonSchemaVersion = "2.13.0-rc1"
 
 libraryDependencies ++= Seq(
