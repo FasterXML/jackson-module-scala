@@ -1,4 +1,3 @@
-import ReleaseTransformations._
 import com.typesafe.sbt.osgi.OsgiKeys
 
 // OSGI bundles
@@ -8,21 +7,6 @@ lazy val jacksonOsgiSettings = osgiSettings ++ Seq(
 )
 
 lazy val jacksonProject = project.in(file(".")).enablePlugins(SbtOsgi).settings(jacksonOsgiSettings:_*)
-
-// publishing
-publishMavenStyle := true
-
-releaseCrossBuild := true
-
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials_sonatype")
-
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (version.value.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
 
 Test / publishArtifact := false
 
@@ -37,11 +21,6 @@ pomExtra := {
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <scm>
-    <connection>scm:git:git@github.com:FasterXML/jackson-module-scala.git</connection>
-    <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-scala.git</developerConnection>
-    <url>https://github.com/FasterXML/jackson-module-scala</url>
-  </scm>
   <developers>
     <developer>
       <id>tatu</id>
@@ -68,25 +47,3 @@ pomExtra := {
     </contributor>
   </contributors>
 }
-
-// use maven style tag name
-releaseTagName := s"${name.value}-${(ThisBuild / version).value}"
-
-// sign artifacts
-
-releasePublishArtifactsAction := PgpKeys.publishSigned.value
-
-// don't push changes (so they can be verified first)
-releaseProcess := Seq(
-  checkSnapshotDependencies,
-  inquireVersions,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  publishArtifacts,
-  setNextVersion,
-  commitNextVersion,
-  pushChanges,
-  releaseStepCommand("sonatypeRelease")
-)
