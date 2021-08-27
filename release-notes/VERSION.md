@@ -1,12 +1,28 @@
-# Version: 2.13.0 (Snapshot only)
+# Version: 2.13.0 (not yet released)
 
-This patch release tracks Jackson 2.13. The 2.13 series has full support for Scala 2.11 and 2.12 and 2.13. Java 8 is the minimum supported Java version.
+This patch release tracks Jackson 2.13.0. The 2.13 series has full support for Scala 2.11, 2.12, 2.13 and 3.0.
+Java 8 is the minimum supported Java version.
+
+DefaultRequiredAnnotationIntrospector and RequiredPropertiesSchemaModule have been deprecated in this release due to fact that [jackson-module-jsonSchema ](https://github.com/FasterXML/jackson-module-jsonSchema) is being discontinued in Jackson 3.
+
+# Version: 2.13.0-rc1
+
+This patch release tracks Jackson 2.13.0-rc1. The 2.13 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.0. This is the first release to provide experimental support for Scala 3.
+Java 8 is the minimum supported Java version.
 
 Some deprecated code relating to the use of Scala Manifests has been removed - ScalaObjectMapper support is unaffected (but this class remains deprecated).
+ScalaObjectMapper does not appear in the Scala3 jar because it does not compile with Scala3. ClassTagExtensions is the replacement for ScalaObjectMapper.
 
-Occasional snapshot releases are made for Scala 3 (currently 3.0.0-RC2) where most features appear to work but there are still some features that are broken (see https://github.com/FasterXML/jackson-module-scala/issues/479).
+* [[gh-479]](https://github.com/FasterXML/jackson-module-scala/issues/479) Scala3 support
+* [[gh-512]](https://github.com/FasterXML/jackson-module-scala/issues/512) add support for recognising Scala3 classes (TastyUtil)
+* [[gh-503]](https://github.com/FasterXML/jackson-module-scala/issues/503) big improvement to ClassTagExtensions, the Scala3 friendly replacement for ScalaObjectMapper. Big thanks to Gaël Jourdan-Weil.
+* [[gh-514]](https://github.com/FasterXML/jackson-module-scala/issues/514) support MapperFeature.APPLY_DEFAULT_VALUES (defaults to true)
 
-[gh-512] add support for recognising Scala3 classes (TastyUtil)
+# Version: 2.12.5
+
+There are no new fixes in this release; it serves to track the 2.12.5 release
+of the upstream Jackson projects.
 
 # Version: 2.12.4
 
