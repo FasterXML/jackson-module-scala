@@ -21,9 +21,17 @@ class PrimitiveContainerTest extends DeserializationFixture
 
   behavior of "Primitive Containers"
 
-  it should "support deserializing primitives" in { f =>
+  it should "support deserializing primitives (int)" in { f =>
     val value = f.readValue("""{"value":1}""", new TypeReference[OptionInt] {})
     value.value shouldBe Some(1)
+  }
+
+  it should "support deserializing primitives (long)" in { f =>
+    val value = f.readValue("""{"value":1}""", new TypeReference[OptionLong] {})
+    value.value shouldBe Some(1L)
+    val max = Long.MaxValue
+    val value2 = f.readValue(s"""{"value":$max}""", new TypeReference[OptionLong] {})
+    value2.value shouldBe Some(max)
   }
 
   it should "support primitive conversions in" in { f =>
