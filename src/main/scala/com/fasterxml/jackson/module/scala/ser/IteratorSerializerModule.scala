@@ -75,6 +75,8 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
 }
 
 private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
+  private val JSONSERIALIZABLE_CLASS = classOf[JsonSerializable]
+
   override def findCollectionLikeSerializer(serializationConfig: SerializationConfig,
                                             collectionType: CollectionLikeType,
                                             beanDescription: BeanDescription,
@@ -83,8 +85,8 @@ private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extend
                                             elementSerializer: ValueSerializer[Object]): ValueSerializer[_] = {
 
     val rawClass = collectionType.getRawClass
-    if (!classOf[collection.Iterator[Any]].isAssignableFrom(rawClass)) null else
-    new UnresolvedIteratorSerializer(rawClass, collectionType.getContentType, false, elementTypeSerializer, elementSerializer)
+    if (!classOf[collection.Iterator[_]].isAssignableFrom(rawClass) || JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
+    else new UnresolvedIteratorSerializer(rawClass, collectionType.getContentType, false, elementTypeSerializer, elementSerializer)
   }
 }
 

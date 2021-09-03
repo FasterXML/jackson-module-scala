@@ -30,7 +30,8 @@ private class MapConverter(inputType: JavaType, serializationConfig: Serializati
 
 private class MapSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
-  private val BASE = classOf[collection.Map[_,_]]
+  private val BASE_CLASS = classOf[collection.Map[_,_]]
+  private val JSONSERIALIZABLE_CLASS = classOf[JsonSerializable]
 
   override def findMapLikeSerializer(serializationConfig: SerializationConfig,
                                      mapLikeType : MapLikeType,
@@ -42,7 +43,7 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
 
     val rawClass = mapLikeType.getRawClass
 
-    if (!BASE.isAssignableFrom(rawClass)) null
+    if (!BASE_CLASS.isAssignableFrom(rawClass) || JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
     else new StdDelegatingSerializer(new MapConverter(mapLikeType, serializationConfig))
   }
 

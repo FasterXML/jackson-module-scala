@@ -80,6 +80,8 @@ private class UnresolvedIterableSerializer( cls: Class[_],
 
 private class IterableSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
+  private val JSONSERIALIZABLE_CLASS = classOf[JsonSerializable]
+
   override def findCollectionLikeSerializer(serializationConfig: SerializationConfig,
                    collectionType: CollectionLikeType,
                    beanDescription: BeanDescription,
@@ -87,8 +89,9 @@ private class IterableSerializerResolver(config: ScalaModule.Config) extends Ser
                    elementTypeSerializer: TypeSerializer,
                    elementSerializer: ValueSerializer[Object]): ValueSerializer[_] = {
     val rawClass = collectionType.getRawClass
-    if (!classOf[collection.Iterable[Any]].isAssignableFrom(rawClass)) null
-    else if (classOf[collection.Map[Any,Any]].isAssignableFrom(rawClass)) null
+    if (!classOf[collection.Iterable[_]].isAssignableFrom(rawClass)) None.orNull
+    else if (classOf[collection.Map[_,_]].isAssignableFrom(rawClass)) None.orNull
+    else if (JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
     else {
       // CollectionSerializer *needs* an elementType, but AsArraySerializerBase *forces*
       // static typing if the element type is final. This makes sense to Java, but Scala
