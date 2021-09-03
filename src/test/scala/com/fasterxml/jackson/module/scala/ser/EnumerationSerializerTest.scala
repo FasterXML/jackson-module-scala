@@ -39,7 +39,15 @@ class EnumerationSerializerTest extends SerializerTest {
 
   it should "serialize an annotated Enumeration" in {
     val holder = AnnotationHolder(Weekday.Fri)
-    serialize(holder) should be ("""{"weekday":"Fri"}""")
+    serialize(holder) shouldEqual """{"weekday":"Fri"}"""
+  }
+
+  it should "roundtrip an annotated Enumeration" in {
+    val mapper = newMapper
+    val holder = AnnotationHolder(Weekday.Fri)
+    val json = serialize(holder, mapper)
+    json shouldEqual """{"weekday":"Fri"}"""
+    mapper.readValue(json, classOf[AnnotationHolder]) shouldEqual holder
   }
 
   it should "serialize an Enumeration" in {
