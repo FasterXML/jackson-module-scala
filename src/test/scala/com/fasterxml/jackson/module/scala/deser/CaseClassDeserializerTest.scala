@@ -56,6 +56,10 @@ object CaseClassDeserializerTest
     def this(path: String, value: Double) = this(new MetricPath(path), value, LocalDateTime.now().toString, Set())
     def this(path: String, value: Double, time: String) = this(new MetricPath(path), value, time, Set())
   }
+
+  case class Person(id: Int, name: String = "") {
+    def this() = this(1, "")
+  }
 }
 
 class CaseClassDeserializerTest extends DeserializerTest {
@@ -67,9 +71,14 @@ class CaseClassDeserializerTest extends DeserializerTest {
     deserialize("""{"intValue":1,"stringValue":"foo"}""", classOf[ConstructorTestCaseClass]) should be (ConstructorTestCaseClass(1,"foo"))
   }
 
-  it should "deserialize a case class with multiple constructors" in {
+  it should "deserialize a case class with multiple constructors (Metric)" in {
     val json = """{"path":{"path":"/path","level":1,"isRoot":false},"value":0.5,"time":"2017-05-10T00:00:00.000+02:00","tags":[]}"""
     deserialize(json, classOf[Metric]) shouldBe Metric(MetricPath("/path", 1, false), 0.5, "2017-05-10T00:00:00.000+02:00")
+  }
+
+  it should "deserialize a case class with multiple constructors (Person)" in {
+    val result = deserialize("""{"id":1}""", classOf[Person])
+    result shouldEqual Person(1, "")
   }
 
   it should "deserialize a case class with var properties" in {
