@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.core.JsonGenerator
 
 object JsonSerializableSpec {
-  class SerializableIterable extends Iterable[String] with JsonSerializable {
+  class SerializableIterable extends JsonSerializable.Base with Iterable[String] {
     override def iterator: Iterator[String] = throw new IllegalArgumentException("This shouldn't get called")
     override def serialize(jgen: JsonGenerator, provider: SerializerProvider): Unit = {
       jgen.writeNumber(10)
@@ -17,7 +17,7 @@ object JsonSerializableSpec {
     }
   }
 
-  class SerializableIterator extends Iterator[String] with JsonSerializable {
+  class SerializableIterator extends JsonSerializable.Base with Iterator[String] {
     override def serialize(jgen: JsonGenerator, provider: SerializerProvider): Unit = {
       jgen.writeNumber(10)
     }
