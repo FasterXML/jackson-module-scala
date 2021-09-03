@@ -1,12 +1,12 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.{JsonSerializable, SerializerProvider}
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
+import com.fasterxml.jackson.databind.{JacksonSerializable, SerializerProvider}
 
 import scala.collection.immutable.AbstractMap
 
-class SerializableMap extends AbstractMap[String, String] with JsonSerializable {
+class SerializableMap extends AbstractMap[String, String] with JacksonSerializable {
 
   // Members declared in scala.collection.MapLike
   def get(key: String): Option[String] = None

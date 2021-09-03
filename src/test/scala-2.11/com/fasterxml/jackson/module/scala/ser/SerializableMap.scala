@@ -1,12 +1,12 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.{JsonSerializable, SerializerProvider}
+import com.fasterxml.jackson.databind.{JacksonSerializable, SerializerProvider}
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 
 import scala.collection.immutable.AbstractMap
 
-class SerializableMap extends AbstractMap[String, String] with JsonSerializable {
+class SerializableMap extends AbstractMap[String, String] with JacksonSerializable {
 
   // Members declared in scala.collection.MapLike
   def +[B1 >: String](kv: (String, B1)) = this
