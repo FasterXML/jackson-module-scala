@@ -42,4 +42,7 @@ class JsonSerializableSpec extends BaseFixture {
   it should "use serialize method in JsonSerializable (Iterator)" in { mapper =>
     mapper.writeValueAsString(new JsonSerializableSpec.SerializableIterator()) shouldBe "10"
   }
+  it should "use serialize method in JsonSerializable (Option[Iterable])" in { mapper =>
+    mapper.writeValueAsString(Some(new JsonSerializableSpec.SerializableIterator())) shouldBe "10"
+  }
 }
