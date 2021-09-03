@@ -65,9 +65,17 @@ Compile / unmanagedSourceDirectories ++= {
   }
 }
 
-Test / unmanagedSourceDirectories += {
-  val suffix = if (scalaReleaseVersion.value > 2) "3.0" else "2.+"
-  (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-${suffix}"
+Test / unmanagedSourceDirectories ++= {
+  if (scalaReleaseVersion.value > 2) {
+    Seq(
+      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3.0"
+    )
+  } else {
+    Seq(
+      (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-2.+",
+      (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-2.${scalaMajorVersion.value}"
+    )
+  }
 }
 
 val jacksonVersion = "2.13.0-rc2"
