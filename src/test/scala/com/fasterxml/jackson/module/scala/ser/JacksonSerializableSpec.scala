@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.core.JsonGenerator
 
-object JsonSerializableSpec {
-  class SerializableIterable extends Iterable[String] with JacksonSerializable {
+object JacksonSerializableSpec {
+  class SerializableIterable extends JacksonSerializable.Base with Iterable[String] {
     override def iterator: Iterator[String] = throw new IllegalArgumentException("This shouldn't get called")
     override def serialize(jgen: JsonGenerator, provider: SerializerProvider): Unit = {
       jgen.writeNumber(10)
@@ -17,7 +17,7 @@ object JsonSerializableSpec {
     }
   }
 
-  class SerializableIterator extends Iterator[String] with JacksonSerializable {
+  class SerializableIterator extends JacksonSerializable.Base with Iterator[String] {
     override def serialize(jgen: JsonGenerator, provider: SerializerProvider): Unit = {
       jgen.writeNumber(10)
     }
@@ -31,15 +31,15 @@ object JsonSerializableSpec {
   }
 }
 
-class JsonSerializableSpec extends BaseFixture {
+class JacksonSerializableSpec extends BaseFixture {
 
   it should "use serialize method in JsonSerializable (Map)" in { mapper =>
     mapper.writeValueAsString(new SerializableMap()) shouldBe "10"
   }
   it should "use serialize method in JsonSerializable (Iterable)" in { mapper =>
-    mapper.writeValueAsString(new JsonSerializableSpec.SerializableIterable()) shouldBe "10"
+    mapper.writeValueAsString(new JacksonSerializableSpec.SerializableIterable()) shouldBe "10"
   }
   it should "use serialize method in JsonSerializable (Iterator)" in { mapper =>
-    mapper.writeValueAsString(new JsonSerializableSpec.SerializableIterator()) shouldBe "10"
+    mapper.writeValueAsString(new JacksonSerializableSpec.SerializableIterator()) shouldBe "10"
   }
 }
