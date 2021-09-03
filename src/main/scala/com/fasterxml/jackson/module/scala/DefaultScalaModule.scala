@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
 import com.fasterxml.jackson.databind.JacksonModule.SetupContext
-import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
+import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, ScalaObjectDeserializerModule, UntypedObjectDeserializerModule}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 /**
@@ -28,6 +28,7 @@ class DefaultScalaModule extends JacksonModule {
       MapModule.getInitializers(config) ++
       SetModule.getInitializers(config) ++
       ScalaNumberDeserializersModule.getInitializers(config) ++
+      ScalaObjectDeserializerModule.getInitializers(config) ++
       ScalaAnnotationIntrospectorModule.getInitializers(config) ++
       UntypedObjectDeserializerModule.getInitializers(config) ++
       EitherModule.getInitializers(config) ++
