@@ -1,8 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.module.scala.BaseFixture
-import com.fasterxml.jackson.databind.JacksonSerializable
-import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.{JacksonSerializable, SerializerProvider}
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.core.JsonGenerator
 
@@ -41,5 +40,8 @@ class JacksonSerializableSpec extends BaseFixture {
   }
   it should "use serialize method in JsonSerializable (Iterator)" in { mapper =>
     mapper.writeValueAsString(new JacksonSerializableSpec.SerializableIterator()) shouldBe "10"
+  }
+  it should "use serialize method in JsonSerializable (Option[Iterable])" in { mapper =>
+    mapper.writeValueAsString(Some(new JacksonSerializableSpec.SerializableIterator())) shouldBe "10"
   }
 }
