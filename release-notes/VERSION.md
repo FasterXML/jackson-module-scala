@@ -3,7 +3,14 @@
 This patch release tracks Jackson 2.13.0. The 2.13 series has full support for Scala 2.11, 2.12, 2.13 and 3.0.
 Java 8 is the minimum supported Java version.
 
-DefaultRequiredAnnotationIntrospector and RequiredPropertiesSchemaModule have been deprecated in this release due to fact that [jackson-module-jsonSchema ](https://github.com/FasterXML/jackson-module-jsonSchema) is being discontinued in Jackson 3.
+DefaultRequiredAnnotationIntrospector and RequiredPropertiesSchemaModule have been deprecated in this release due to fact that [jackson-module-jsonSchema](https://github.com/FasterXML/jackson-module-jsonSchema) is being discontinued in Jackson 3.
+
+# Version: 2.13.0-rc2
+
+This patch release tracks Jackson 2.13.0-rc2. The 2.13 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.0. Java 8 is the minimum supported Java version.
+
+* [[gh-382]](https://github.com/FasterXML/jackson-module-scala/issues/382) Fix issue with support of ObjectMapper activateDefaultTypingAsProperty (that allows case classes with members that have traits to be serialized/deserialized)
 
 # Version: 2.13.0-rc1
 
