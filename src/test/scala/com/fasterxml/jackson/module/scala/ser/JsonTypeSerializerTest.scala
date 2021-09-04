@@ -52,6 +52,17 @@ object JsonTypeSerializerTest {
     require(`type` == "request serial", "Parameter 'type' is invalid.")
     require(messageReference > 0, "Empty parameter 'message_reference'.")
   }
+
+  sealed trait Parent
+
+  case class ChildA(dataA: String) extends Parent
+
+  case class Wrapper(typ: String,
+                     @JsonSubTypes(Array(
+                       new Type(value = classOf[ChildA], name = "ChildA")
+                     ))
+                     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "typ")
+                     polymorphic: Parent)
 }
 
 class JsonTypeSerializerTest extends SerializerTest {
@@ -83,5 +94,12 @@ class JsonTypeSerializerTest extends SerializerTest {
     val mapper = newBuilder.build()
     val jsonStr = mapper.writeValueAsString(request)
     jsonStr shouldEqual """{"type":"request serial","messageReference":10}"""
+    mapper.readValue(jsonStr, classOf[RequestSerial]) shouldEqual request
+  }
+  //https://github.com/FasterXML/jackson-module-scala/issues/200
+  it should "deserialize Wrapper" in {
+    val mapper = newBuilder.build()
+    val json = """{"typ":"ChildA", "polymorphic" : { "dataA":"xxx"}}"""
+    mapper.readValue(json, classOf[Wrapper]) shouldEqual Wrapper(typ = "ChildA", polymorphic = ChildA("xxx"))
   }
 }
