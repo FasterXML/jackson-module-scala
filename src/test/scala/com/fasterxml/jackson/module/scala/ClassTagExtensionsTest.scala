@@ -276,6 +276,24 @@ class ClassTagExtensionsTest extends JacksonTest {
     result shouldEqual 11
   }
 
+  "JavaTypeable" should "handle Option[Int]" in {
+    val jt = implicitly[JavaTypeable[Option[Int]]].asJavaType(mapper.getTypeFactory)
+    jt.getRawClass shouldEqual classOf[Option[_]]
+    jt.containedType(0).getRawClass shouldEqual classOf[Int]
+  }
+
+  it should "handle Option[Boolean]" in {
+    val jt = implicitly[JavaTypeable[Option[Boolean]]].asJavaType(mapper.getTypeFactory)
+    jt.getRawClass shouldEqual classOf[Option[_]]
+    jt.containedType(0).getRawClass shouldEqual classOf[Boolean]
+  }
+
+  it should "handle Seq[Int]" in {
+    val jt = implicitly[JavaTypeable[Seq[Int]]].asJavaType(mapper.getTypeFactory)
+    jt.getRawClass shouldEqual classOf[Seq[_]]
+    jt.containedType(0).getRawClass shouldEqual classOf[Int]
+  }
+
   private val genericJson = """{"t":42}"""
   private val genericInt = GenericTestClass(42)
   private val listGenericJson = """{"t":42}{"t":31}"""
