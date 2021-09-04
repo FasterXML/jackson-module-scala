@@ -37,6 +37,21 @@ object JsonTypeSerializerTest {
   }
 
   case class Con(foo: Foo)
+
+  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
+  @JsonSubTypes(Array(
+    new Type(value = classOf[RequestSerial], name = "request serial")))
+  trait RequestMessage {
+    val `type`: String
+    val messageReference: Int
+  }
+
+  case class RequestSerial(`type`: String = "request serial",
+                           messageReference: Int) extends RequestMessage {
+
+    require(`type` == "request serial", "Parameter 'type' is invalid.")
+    require(messageReference > 0, "Empty parameter 'message_reference'.")
+  }
 }
 
 class JsonTypeSerializerTest extends SerializerTest {
@@ -61,5 +76,12 @@ class JsonTypeSerializerTest extends SerializerTest {
     val con1JsonStr = mapper.writeValueAsString(con)
     con1JsonStr shouldEqual """{"foo":{"name1":"foo1","prop":"foo1"}}"""
     // we cannot deserialize this json back to Con instance as we don't have the typeMarker that we have in the previous test
+  }
+  //https://github.com/FasterXML/jackson-module-scala/issues/207
+  it should "serialize RequestSerial" in {
+    val request = RequestSerial("request serial", 10)
+    val mapper = newBuilder.build()
+    val jsonStr = mapper.writeValueAsString(request)
+    jsonStr shouldEqual """{"type":"request serial","messageReference":10}"""
   }
 }
