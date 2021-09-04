@@ -47,6 +47,10 @@ object ScalaObjectMapperTest {
   private class Mixin(val foo: String)
 
   private case class GenericTestClass[T](t: T)
+
+  class MapWrapper {
+    val stringLongMap = Map[String, Long]("1" -> 11L, "2" -> 22L)
+  }
 }
 
 class ScalaObjectMapperTest extends JacksonTest {
@@ -278,6 +282,15 @@ class ScalaObjectMapperTest extends JacksonTest {
     val json: String = """{"t": {"bar": "baz"}}"""
     val result = mapper.readValue[Wrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
+  }
+
+  //https://github.com/FasterXML/jackson-module-scala/issues/241 -- currently fails
+  it should "deserialize MapWrapper" ignore {
+    val mw = new MapWrapper
+    val json = mapper.writeValueAsString(mw)
+    val mm = mapper.readValue[MapWrapper](json)
+    val result = mm.stringLongMap("1")
+    result shouldEqual 11
   }
 
   // No tests for the following functions:
