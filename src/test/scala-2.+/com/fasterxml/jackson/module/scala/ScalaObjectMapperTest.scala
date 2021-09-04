@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.TreeNode
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.{JsonMappingException, Module, ObjectMapper}
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
@@ -49,6 +50,11 @@ object ScalaObjectMapperTest {
   private case class GenericTestClass[T](t: T)
 
   class MapWrapper {
+    val stringLongMap = Map[String, Long]("1" -> 11L, "2" -> 22L)
+  }
+
+  class AnnotatedMapWrapper {
+    @JsonDeserialize(contentAs = classOf[Long])
     val stringLongMap = Map[String, Long]("1" -> 11L, "2" -> 22L)
   }
 }
@@ -289,6 +295,14 @@ class ScalaObjectMapperTest extends JacksonTest {
     val mw = new MapWrapper
     val json = mapper.writeValueAsString(mw)
     val mm = mapper.readValue[MapWrapper](json)
+    val result = mm.stringLongMap("1")
+    result shouldEqual 11
+  }
+
+  it should "deserialize AnnotatedMapWrapper" in {
+    val mw = new AnnotatedMapWrapper
+    val json = mapper.writeValueAsString(mw)
+    val mm = mapper.readValue[AnnotatedMapWrapper](json)
     val result = mm.stringLongMap("1")
     result shouldEqual 11
   }
