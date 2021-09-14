@@ -57,6 +57,12 @@ object ScalaObjectMapperTest {
     @JsonDeserialize(contentAs = classOf[Long])
     val stringLongMap = Map[String, Long]("1" -> 11L, "2" -> 22L)
   }
+
+  object BarWrapper {
+    object Bar {
+      final case class Baz(num: Int)
+    }
+  }
 }
 
 class ScalaObjectMapperTest extends JacksonTest {
@@ -305,6 +311,11 @@ class ScalaObjectMapperTest extends JacksonTest {
     val mm = mapper.readValue[AnnotatedMapWrapper](json)
     val result = mm.stringLongMap("1")
     result shouldEqual 11
+  }
+
+  it should "deserialize BarWrapper.Bar.Baz" in {
+    val baz = mapper.readValue[BarWrapper.Bar.Baz]("""{"num": "3"}""")
+    baz.num shouldEqual 3
   }
 
   // No tests for the following functions:
