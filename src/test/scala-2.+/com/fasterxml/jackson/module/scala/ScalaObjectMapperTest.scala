@@ -63,6 +63,8 @@ object ScalaObjectMapperTest {
       final case class Baz(num: Int)
     }
   }
+
+  class Qux(val qux: BarWrapper.Bar.Baz)
 }
 
 class ScalaObjectMapperTest extends JacksonTest {
@@ -316,6 +318,11 @@ class ScalaObjectMapperTest extends JacksonTest {
   it should "deserialize BarWrapper.Bar.Baz" in {
     val baz = mapper.readValue[BarWrapper.Bar.Baz]("""{"num": "3"}""")
     baz.num shouldEqual 3
+  }
+
+  it should "deserialize Qux" in {
+    val qux = mapper.readValue[Qux]("""{"qux":{"num": "3"}}""")
+    qux.qux.num shouldEqual 3
   }
 
   // No tests for the following functions:
