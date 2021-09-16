@@ -18,7 +18,7 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
   import ParamWithDashNameDeserializerTest._
 
   private def useOptionLong(v: Option[Long]): Long = v.map(_ * 2).getOrElse(0L)
-  
+
   "JacksonModuleScala" should "support param names with dashes" in {
     // check deserialization
     val typeRef = new TypeReference[OptionLongWithDash] {}
