@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 object ParamWithDashNameDeserializerTest {
-  case class AnnotatedOptionLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) valueLong: Option[Long])
-
   case class OptionLongWithDash(`value-long`: Option[Long])
 
   case class AnnotatedOptionLongWithDash(@JsonDeserialize(contentAs = classOf[java.lang.Long]) `value-long`: Option[Long])
@@ -20,20 +18,8 @@ class ParamWithDashNameDeserializerTest extends DeserializerTest {
   import ParamWithDashNameDeserializerTest._
 
   private def useOptionLong(v: Option[Long]): Long = v.map(_ * 2).getOrElse(0L)
-
-  "JacksonModuleScala" should "support standard param names" in {
-    // check deserialization
-    val v1 = deserialize("""{"valueLong":151}""", classOf[AnnotatedOptionLong])
-    v1 shouldBe AnnotatedOptionLong(Some(151L))
-    v1.valueLong.get shouldBe 151L
-    
-    val v2 = deserialize(serialize(AnnotatedOptionLong(Some(152))), classOf[AnnotatedOptionLong])
-    v2 shouldBe AnnotatedOptionLong(Some(152L))
-    v2.valueLong.get shouldBe 152L
-    useOptionLong(v2.valueLong) shouldBe 304L
-  }
-
-  it should "support param names with dashes" in {
+  
+  "JacksonModuleScala" should "support param names with dashes" in {
     // check deserialization
     val typeRef = new TypeReference[OptionLongWithDash] {}
     val v1 = deserialize("""{"value-long":251}""", typeRef)
