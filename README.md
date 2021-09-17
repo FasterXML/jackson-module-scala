@@ -1,5 +1,6 @@
 ![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13)
+[![Sonatype Snapshots](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.fasterxml.jackson.module/jackson-module-scala_2.13.svg)](https://oss.sonatype.org/content/repositories/snapshots/com/fasterxml/jackson/module/jackson-module-scala_2.13/)
 
 # Overview
 
