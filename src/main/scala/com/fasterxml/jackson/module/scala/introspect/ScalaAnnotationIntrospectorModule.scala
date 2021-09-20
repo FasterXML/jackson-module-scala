@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.`type`.{ClassKey, CollectionLikeType, CollectionType, ReferenceType, SimpleType}
+import com.fasterxml.jackson.databind.`type`.{ClassKey, CollectionLikeType, ReferenceType, SimpleType}
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
