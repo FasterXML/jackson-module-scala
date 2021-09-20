@@ -109,22 +109,27 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       val applyDefaultValues = config.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
       val args = delegate.getFromObjectArguments(config)
       Option(args) match {
-        case Some(array) if applyDefaultValues => {
+        case Some(array) => {
           array.map {
-            case creator: CreatorProperty =>
-              // Locate the constructor param that matches it
-              descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
-                case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
-                  creator.withNullProvider(new NullValueProvider {
-                    override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
-                    override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
-                  })
-                case _ => creator
+            case creator: CreatorProperty => {
+              if (applyDefaultValues) {
+                // Locate the constructor param that matches it
+                descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
+                  case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
+                    creator.withNullProvider(new NullValueProvider {
+                      override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
+
+                      override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
+                    })
+                  case _ => creator
+                }
+              } else {
+                creator
               }
+            }
             case other => other
           }
         }
-        case Some(array) => array
         case _ => Array.empty
       }
     }

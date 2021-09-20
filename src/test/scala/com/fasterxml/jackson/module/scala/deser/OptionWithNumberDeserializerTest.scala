@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.introspect.BeanIntrospector
 
 object OptionWithNumberDeserializerTest {
   case class AnnotatedOptionLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) valueLong: Option[Long])
@@ -34,12 +35,13 @@ class OptionWithNumberDeserializerTest extends DeserializerTest {
   }
 
   it should "support OptionLong" in {
+    BeanIntrospector.registerReferencedType(classOf[OptionLong], "valueLong", classOf[Long])
     val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
     v1 shouldBe OptionLong(Some(151L))
     v1.valueLong.get shouldBe 151L
-    //next assert fails due to unboxing issue -- without the @JsonDeserialize to help, jackson will
-    //erroneously create an Option[Int] instead of Option[Long] leading to a class cast exception
-    //useOptionLong(v1.valueLong) shouldBe 302L
+    //this will next call will fail with a Scala unboxing exception unless you BeanIntrospector.registerReferencedType
+    //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+    useOptionLong(v1.valueLong) shouldBe 302L
   }
 
   it should "support OptionJavaLong" in {
