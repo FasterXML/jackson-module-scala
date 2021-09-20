@@ -45,7 +45,7 @@ class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAf
     val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
     v1 shouldBe OptionLong(Some(151L))
     v1.valueLong.get shouldBe 151L
-    //this will next call will fail with a Scala unboxing exception unless you BeanIntrospector.registerReferencedType
+    //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedType
     //or use one of the equivalent classes in OptionWithNumberDeserializerTest
     useOptionLong(v1.valueLong) shouldBe 302L
   }
