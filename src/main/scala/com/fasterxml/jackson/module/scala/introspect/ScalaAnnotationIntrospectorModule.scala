@@ -16,6 +16,28 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
+  private case class FieldKey(clazz: Class[_], fieldName: String)
+
+  private val overrideMap = scala.collection.mutable.Map[FieldKey, Class[_]]()
+
+  /**
+   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
+   * Scala primitives (eg Int, Long, Boolean). There are general issues with serializing and deserializing
+   * Scala 2 Enumerations. These issues can be worked around by adding Jackson annotations on the affected fields.
+   * This function is designed to be used when it is not possible to apply Jackson annotations.
+   *
+   * @param clazz
+   * @param fieldName
+   * @param referencedType
+   */
+  def registerReferencedType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
+    overrideMap.update(FieldKey(clazz, fieldName), referencedType)
+  }
+
+  def clearRegisteredReferencedTypes(): Unit = {
+    overrideMap.clear()
+  }
+
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     val existingCache = _descriptorCache
     _descriptorCache = cache
@@ -109,27 +131,33 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       val applyDefaultValues = config.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
       val args = delegate.getFromObjectArguments(config)
       Option(args) match {
-        case Some(array) => {
+        case Some(array) if (applyDefaultValues || overrideMap.nonEmpty) => {
           array.map {
             case creator: CreatorProperty => {
-              if (applyDefaultValues) {
-                // Locate the constructor param that matches it
-                descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
-                  case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
-                    creator.withNullProvider(new NullValueProvider {
-                      override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
+              // Locate the constructor param that matches it
+              descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
+                case Some(pd) => {
+                  if (applyDefaultValues) {
+                    pd match {
+                      case PropertyDescriptor(_, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _) => {
+                        creator.withNullProvider(new NullValueProvider {
+                          override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
 
-                      override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
-                    })
-                  case _ => creator
+                          override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
+                        })
+                      }
+                      case _ => creator
+                    }
+                  } else {
+                    creator
+                  }
                 }
-              } else {
-                creator
+                case _ => creator
               }
             }
-            case other => other
           }
         }
+        case Some(array) => array
         case _ => Array.empty
       }
     }

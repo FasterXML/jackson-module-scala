@@ -37,10 +37,6 @@ import scala.reflect.NameTransformer
 
 object BeanIntrospector {
 
-  private case class FieldKey(clazz: Class[_], fieldName: String)
-
-  private val overrideMap = scala.collection.mutable.Map[FieldKey, Class[_]]()
-
   def apply[T <: AnyRef](cls: Class[_]) = {
 
     /**
@@ -244,20 +240,6 @@ object BeanIntrospector {
     }
 
     BeanDescriptor(cls, fields ++ methods ++ lazyValMethods)
-  }
-
-  /**
-   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
-   * Scala primitives (eg Int, Long, Boolean). There are general issues with serializing and deserializing
-   * Scala 2 Enumerations. These issues can be worked around by adding Jackson annotations on the affected fields.
-   * This function is designed to be used when it is not possible to apply Jackson annotations.
-   *
-   * @param clazz
-   * @param fieldName
-   * @param referencedType
-   */
-  def registerReferencedType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
-    overrideMap.update(FieldKey(clazz, fieldName), referencedType)
   }
 
   private def getCtorParams(ctor: Constructor[_]): Seq[String] = {

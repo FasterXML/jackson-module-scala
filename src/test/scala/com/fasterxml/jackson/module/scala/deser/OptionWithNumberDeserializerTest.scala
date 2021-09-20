@@ -2,7 +2,8 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.introspect.BeanIntrospector
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
+import org.scalatest.BeforeAndAfterEach
 
 object OptionWithNumberDeserializerTest {
   case class AnnotatedOptionLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) valueLong: Option[Long])
@@ -12,13 +13,18 @@ object OptionWithNumberDeserializerTest {
   case class OptionBigInt(value: Option[BigInt])
 }
 
-class OptionWithNumberDeserializerTest extends DeserializerTest {
+class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAfterEach {
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
   import OptionWithNumberDeserializerTest._
 
   private def useOptionLong(v: Option[Long]): Long = v.map(_ * 2).getOrElse(0L)
   private def useOptionJavaLong(v: Option[java.lang.Long]): Long = v.map(_ * 2).getOrElse(0L)
   private def useOptionBigInt(v: Option[BigInt]): Long = v.map(_ * 2).map(_.toLong).getOrElse(0L)
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+  }
 
   "JacksonModuleScala" should "support AnnotatedOptionLong" in {
     val v1 = deserialize("""{"valueLong":151}""", classOf[AnnotatedOptionLong])
@@ -35,7 +41,7 @@ class OptionWithNumberDeserializerTest extends DeserializerTest {
   }
 
   it should "support OptionLong" in {
-    BeanIntrospector.registerReferencedType(classOf[OptionLong], "valueLong", classOf[Long])
+    ScalaAnnotationIntrospector.registerReferencedType(classOf[OptionLong], "valueLong", classOf[Long])
     val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
     v1 shouldBe OptionLong(Some(151L))
     v1.valueLong.get shouldBe 151L
