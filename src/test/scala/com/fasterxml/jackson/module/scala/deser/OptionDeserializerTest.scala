@@ -34,7 +34,7 @@ object OptionDeserializerTest {
   }
 
   case class Foo(bar: String)
-  case class Wrapper[T](t: T)
+  case class TWrapper[T](t: T)
 
   trait Marker
   case class AMarker(a: Int) extends Marker
@@ -89,7 +89,7 @@ class OptionDeserializerTest extends DeserializerTest {
 
   it should "deserialize a type param wrapped option" in {
     val json: String = """{"t": {"bar": "baz"}}"""
-    val result = deserialize(json, new TypeReference[Wrapper[Option[Foo]]] {})
+    val result = deserialize(json, new TypeReference[TWrapper[Option[Foo]]] {})
     result.t.get.isInstanceOf[Foo] should be(true)
   }
 

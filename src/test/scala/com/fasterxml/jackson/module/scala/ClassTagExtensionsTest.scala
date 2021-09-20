@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.{DatabindException, ObjectMapper}
-import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, Wrapper}
+import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, TWrapper}
 
 import java.io.{ByteArrayInputStream, File, InputStreamReader}
 import java.nio.charset.StandardCharsets
@@ -255,7 +255,7 @@ class ClassTagExtensionsTest extends JacksonTest {
 
   it should "deserialize a type param wrapped option" in {
     val json: String = """{"t": {"bar": "baz"}}"""
-    val result = mapper.readValue[Wrapper[Option[Foo]]](json)
+    val result = mapper.readValue[TWrapper[Option[Foo]]](json)
     result.t.get.isInstanceOf[Foo] should be(true)
   }
 
