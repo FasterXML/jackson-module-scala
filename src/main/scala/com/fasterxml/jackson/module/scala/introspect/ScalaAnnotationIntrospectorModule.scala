@@ -281,12 +281,11 @@ private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refC
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
   override def getType: JavaType = {
-    val result = super.getType match {
+    super.getType match {
       case rt: ReferenceType => ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(refClass))
       case ct: CollectionLikeType => CollectionLikeType.upgradeFrom(ct, SimpleType.constructUnsafe(refClass))
       case mt: MapLikeType => MapLikeType.upgradeFrom(mt, mt.getKeyType, SimpleType.constructUnsafe(refClass))
       case other => other
     }
-    result
   }
 }
