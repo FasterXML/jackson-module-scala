@@ -1,14 +1,14 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.`type`.ClassKey
+import com.fasterxml.jackson.databind.`type`.{ClassKey, ReferenceType, SimpleType}
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, Converter, LRUMap, LookupCache}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, JsonDeserializer, KeyDeserializer, MapperFeature}
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, JavaType, JsonDeserializer, KeyDeserializer, MapperFeature}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
@@ -265,7 +265,22 @@ private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refC
     result.orNull.asInstanceOf[A]
   }
 
-  private def getInstanceOfContentAsAnnotation(): JsonDeserialize = {
+  override def getContextAnnotation[A <: Annotation](acls: Class[A]): A = {
+    val result = Option(super.getContextAnnotation(acls)) match {
+      case None if acls.isAssignableFrom(classOf[JsonDeserialize]) => Some(getInstanceOfContentAsAnnotation())
+      case result => result
+    }
+    result.orNull.asInstanceOf[A]
+  }
+
+  override def getType: JavaType = {
+    super.getType match {
+      case rt: ReferenceType => ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(refClass))
+      case other => other
+    }
+  }
+
+  private def getInstanceOfContentAsAnnotation() = {
     new JsonDeserialize() {
       override def contentAs: Class[_] = refClass
       override def annotationType: Class[JsonDeserialize] = classOf[JsonDeserialize]
