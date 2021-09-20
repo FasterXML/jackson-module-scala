@@ -14,10 +14,11 @@ import com.fasterxml.jackson.module.scala.util.Implicits._
 import java.lang.annotation.Annotation
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
-  private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
+  private[this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, Class[_]] = scala.collection.mutable.Map.empty)
+  case class ClassHolder(keyClass: Option[Class[_]] = None, valueClass: Option[Class[_]] = None)
+  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, ClassHolder] = scala.collection.mutable.Map.empty)
 
   private val overrideMap = scala.collection.mutable.Map[Class[_], ClassOverrides]()
 
@@ -39,7 +40,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.0
    */
   def registerReferencedType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
-    overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides.update(fieldName, referencedType)
+    overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides.update(fieldName, ClassHolder(valueClass = Some(referencedType)))
   }
 
   /**
@@ -164,7 +165,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
               descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
                 case Some(pd) => {
                   val mappedCreator = overrides.get(pd.name) match {
-                    case Some(refClass) => WrappedCreatorProperty(creator, refClass)
+                    case Some(refHolder) => WrappedCreatorProperty(creator, refHolder)
                     case _ => creator
                   }
                   if (applyDefaultValues) {
@@ -277,14 +278,20 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
 }
 
-private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refClass: Class[_])
+private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospector.ClassHolder)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
   override def getType: JavaType = {
     super.getType match {
-      case rt: ReferenceType => ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(refClass))
-      case ct: CollectionLikeType => CollectionLikeType.upgradeFrom(ct, SimpleType.constructUnsafe(refClass))
-      case mt: MapLikeType => MapLikeType.upgradeFrom(mt, mt.getKeyType, SimpleType.constructUnsafe(refClass))
+      case rt: ReferenceType if refHolder.valueClass.isDefined =>
+        ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(refHolder.valueClass.get))
+      case ct: CollectionLikeType if refHolder.valueClass.isDefined =>
+        CollectionLikeType.upgradeFrom(ct, SimpleType.constructUnsafe(refHolder.valueClass.get))
+      case mt: MapLikeType => {
+        val keyType = refHolder.keyClass.map(SimpleType.constructUnsafe).getOrElse(mt.getKeyType)
+        val valueType = refHolder.valueClass.map(SimpleType.constructUnsafe).getOrElse(mt.getContentType)
+        MapLikeType.upgradeFrom(mt, keyType, valueType)
+      }
       case other => other
     }
   }
