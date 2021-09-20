@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.databind.`type`.{ClassKey, ReferenceType, SimpleType}
+import com.fasterxml.jackson.databind.`type`.{ClassKey, CollectionLikeType, CollectionType, ReferenceType, SimpleType}
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
@@ -283,6 +283,7 @@ private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refC
   override def getType: JavaType = {
     super.getType match {
       case rt: ReferenceType => ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(refClass))
+      case ct: CollectionLikeType => CollectionLikeType.upgradeFrom(ct, SimpleType.constructUnsafe(refClass))
       case other => other
     }
   }
