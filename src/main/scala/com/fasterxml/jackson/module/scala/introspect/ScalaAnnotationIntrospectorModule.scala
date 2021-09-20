@@ -35,18 +35,50 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @param clazz the (case) class
    * @param fieldName the field name in the (case) class
    * @param referencedType the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
+   * @see [[registerReferencedKeyType]]
    * @see [[clearRegisteredReferencedTypes()]]
    * @see [[clearRegisteredReferencedTypes(Class[_])]]
    * @since 2.13.0
    */
-  def registerReferencedType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
-    overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides.update(fieldName, ClassHolder(valueClass = Some(referencedType)))
+  def registerReferencedValueType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
+    val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
+    overrides.get(fieldName) match {
+      case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
+      case _ => overrides.put(fieldName, ClassHolder(valueClass = Some(referencedType)))
+    }
+  }
+
+  /**
+   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
+   * Scala primitives (eg Int, Long, Boolean). There are general issues with serializing and deserializing
+   * Scala 2 Enumerations. This function will not help with Enumerations.
+   * <p>
+   * This function is experimental and may be removed or significantly reworked in a later release.
+   * <p>
+   * These issues can be worked around by adding Jackson annotations on the affected fields.
+   * This function is designed to be used when it is not possible to apply Jackson annotations.
+   *
+   * @param clazz the (case) class
+   * @param fieldName the field name in the (case) class
+   * @param referencedType the referenced type of the key field - for `Map[Long, String]` - the referenced key type is `Long`
+   * @see [[registerReferencedValueType]]
+   * @see [[clearRegisteredReferencedTypes()]]
+   * @see [[clearRegisteredReferencedTypes(Class[_])]]
+   * @since 2.13.0
+   */
+  def registerReferencedKeyType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
+    val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
+    overrides.get(fieldName) match {
+      case Some(holder) => overrides.put(fieldName, holder.copy(keyClass = Some(referencedType)))
+      case _ => overrides.put(fieldName, ClassHolder(keyClass = Some(referencedType)))
+    }
   }
 
   /**
    * clears the state associated with reference types for the given class
+   *
    * @param clazz the class for which to remove the registered reference types
-   * @see [[registerReferencedType]]
+   * @see [[registerReferencedValueType]]
    * @see [[clearRegisteredReferencedTypes()]]
    * @since 2.13.0
    */
@@ -56,7 +88,8 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
 
   /**
    * clears all the state associated with reference types
-   * @see [[registerReferencedType]]
+   *
+   * @see [[registerReferencedValueType]]
    * @see [[clearRegisteredReferencedTypes(Class[_])]]
    * @since 2.13.0
    */

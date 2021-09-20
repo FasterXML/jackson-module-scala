@@ -41,11 +41,11 @@ class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAf
   }
 
   it should "deserialize OptionLong" in {
-    ScalaAnnotationIntrospector.registerReferencedType(classOf[OptionLong], "valueLong", classOf[Long])
+    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
     val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
     v1 shouldBe OptionLong(Some(151L))
     v1.valueLong.get shouldBe 151L
-    //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedType
+    //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
     //or use one of the equivalent classes in OptionWithNumberDeserializerTest
     useOptionLong(v1.valueLong) shouldBe 302L
   }

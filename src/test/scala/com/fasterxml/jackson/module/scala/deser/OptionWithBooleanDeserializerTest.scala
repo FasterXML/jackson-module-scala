@@ -38,15 +38,15 @@ class OptionWithBooleanDeserializerTest extends DeserializerTest with BeforeAndA
     useOptionBoolean(v1.valueBoolean) shouldBe "false"
   }
 
-  it should "deserialize OptionBoolean (without registerReferencedType)" in {
+  it should "deserialize OptionBoolean (without registerReferencedValueType)" in {
     val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionBoolean])
     v1 shouldBe OptionBoolean(Some(false))
     v1.valueBoolean.get shouldBe false
     useOptionBoolean(v1.valueBoolean) shouldBe "false"
   }
 
-  it should "deserialize OptionBoolean (with registerReferencedType)" in {
-    ScalaAnnotationIntrospector.registerReferencedType(classOf[OptionBoolean], "valueBoolean", classOf[Boolean])
+  it should "deserialize OptionBoolean (with registerReferencedValueType)" in {
+    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionBoolean], "valueBoolean", classOf[Boolean])
     val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionBoolean])
     v1 shouldBe OptionBoolean(Some(false))
     v1.valueBoolean.get shouldBe false
