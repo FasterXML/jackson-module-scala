@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
+import com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest.{AnnotationHolder, AnnotationOptionHolder, WeekdayType}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration, Weekday}
 
 import scala.beans.BeanProperty
@@ -9,9 +9,6 @@ import scala.beans.BeanProperty
 class EnumContainer {
   var day: Weekday.Value = Weekday.Fri
 }
-
-class WeekdayType extends TypeReference[Weekday.type]
-case class AnnotatedEnumHolder(@JsonScalaEnumeration(classOf[WeekdayType]) weekday: Weekday.Weekday)
 
 class EnumMapHolder {
   @JsonScalaEnumeration(classOf[WeekdayType])
@@ -28,9 +25,8 @@ object EnumerationDeserializerTest  {
   class HolderImpl extends BeanPropertyEnumMapHolder
 }
 
-// see EnumerationScala2DeserializerTest for tests that only in Scala2
+// see Json for tests that only in Scala2
 class EnumerationDeserializerTest extends DeserializerTest {
-  import com.fasterxml.jackson.module.scala.deser.EnumerationDeserializerTest._
 
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
 
@@ -46,9 +42,14 @@ class EnumerationDeserializerTest extends DeserializerTest {
     result.day should be (expectedDay)
   }
 
-  it should "deserialize an annotated Enumeration value" in {
-    val result = deserialize(annotatedFridayJson, classOf[AnnotatedEnumHolder])
+  it should "deserialize an annotated Enumeration value (JsonScalaEnumeration)" in {
+    val result = deserialize(annotatedFridayJson, classOf[AnnotationHolder])
     result.weekday should be (Weekday.Fri)
+  }
+
+  it should "deserialize an annotated optional Enumeration value (JsonScalaEnumeration)" in {
+    val result = deserialize(annotatedFridayJson, classOf[AnnotationOptionHolder])
+    result.weekday shouldBe Some(Weekday.Fri)
   }
 
   val fridayEnumJson = """{"day": {"enumClass":"com.fasterxml.jackson.module.scala.Weekday","value":"Fri"}}"""
