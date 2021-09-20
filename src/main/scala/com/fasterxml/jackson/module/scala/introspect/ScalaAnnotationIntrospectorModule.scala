@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.scala.introspect
 
-import java.lang.annotation.Annotation
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.`type`.ClassKey
 import com.fasterxml.jackson.databind.cfg.MapperConfig
@@ -8,17 +7,20 @@ import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LRUMap, LookupCache}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, DeserializationFeature, MapperFeature}
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, MapperFeature}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
+
+import java.lang.annotation.Annotation
+import scala.collection.JavaConverters._
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  private case class FieldKey(clazz: Class[_], fieldName: String)
+  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, Class[_]] = scala.collection.mutable.Map.empty)
 
-  private val overrideMap = scala.collection.mutable.Map[FieldKey, Class[_]]()
+  private val overrideMap = scala.collection.mutable.Map[Class[_], ClassOverrides]()
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
@@ -31,7 +33,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @param referencedType
    */
   def registerReferencedType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
-    overrideMap.update(FieldKey(clazz, fieldName), referencedType)
+    overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides.update(fieldName, referencedType)
   }
 
   def clearRegisteredReferencedTypes(): Unit = {
@@ -128,15 +130,17 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     extends StdValueInstantiator(delegate) {
 
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
+      val overrides = overrideMap.get(descriptor.beanType).map(_.overrides.toMap).getOrElse(Map.empty)
       val applyDefaultValues = config.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
       val args = delegate.getFromObjectArguments(config)
       Option(args) match {
-        case Some(array) if (applyDefaultValues || overrideMap.nonEmpty) => {
+        case Some(array) if (applyDefaultValues || overrides.nonEmpty) => {
           array.map {
             case creator: CreatorProperty => {
               // Locate the constructor param that matches it
               descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
                 case Some(pd) => {
+                  println(s">>>>> override ${pd.name} ${overrides.get(pd.name)}")
                   if (applyDefaultValues) {
                     pd match {
                       case PropertyDescriptor(_, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _) => {
@@ -173,7 +177,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
 
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
-        if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
+        if (overrideMap.contains(beanDesc.getBeanClass) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
           defaultInstantiator match {
             case std: StdValueInstantiator =>
               new ScalaValueInstantiator(std, config, descriptor)
