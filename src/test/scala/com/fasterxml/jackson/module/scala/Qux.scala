@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.scala
 
-object Wrapper {
+object FooBazWrapper {
   object Foo {
     class Baz(val num: Int)
   }
 }
-class Qux(val qux: Wrapper.Foo.Baz)
+class Qux(val qux: FooBazWrapper.Foo.Baz)
