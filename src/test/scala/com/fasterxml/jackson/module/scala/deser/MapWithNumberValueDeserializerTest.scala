@@ -26,19 +26,19 @@ class MapWithNumberValueDeserializerTest extends DeserializerTest with BeforeAnd
     ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
   }
 
-  "JacksonModuleScala" should "support AnnotatedMapLong" in {
+  "JacksonModuleScala" should "deserialize AnnotatedMapLong" in {
     val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[AnnotatedMapLong])
     v1 shouldBe AnnotatedMapLong(Map("151" -> 151L, "152" -> 152L, "153" -> 153L))
     sumMapLong(v1.longs) shouldBe 456L
   }
 
-  it should "support AnnotatedMapPrimitiveLong" in {
+  it should "deserialize AnnotatedMapPrimitiveLong" in {
     val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[AnnotatedMapPrimitiveLong])
     v1 shouldBe AnnotatedMapPrimitiveLong(Map("151" -> 151L, "152" -> 152L, "153" -> 153L))
     sumMapLong(v1.longs) shouldBe 456L
   }
 
-  it should "support MapLong" in {
+  it should "deserialize MapLong" in {
     ScalaAnnotationIntrospector.registerReferencedType(classOf[MapLong], "longs", classOf[Long])
     val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[MapLong])
     v1 shouldBe MapLong(Map("151" -> 151L, "152" -> 152L, "153" -> 153L))
@@ -47,13 +47,13 @@ class MapWithNumberValueDeserializerTest extends DeserializerTest with BeforeAnd
     sumMapLong(v1.longs) shouldBe 456L
   }
 
-  it should "support MapJavaLong" in {
+  it should "deserialize MapJavaLong" in {
     val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[MapJavaLong])
     v1 shouldBe MapJavaLong(Map("151" -> 151L, "152" -> 152L, "153" -> 153L))
     sumMapJavaLong(v1.longs) shouldBe 456L
   }
 
-  it should "support MapBigInt" in {
+  it should "deserialize MapBigInt" in {
     val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[MapBigInt])
     v1 shouldBe MapBigInt(Map("151" -> 151L, "152" -> 152L, "153" -> 153L))
     sumMapBigInt(v1.longs) shouldBe 456L

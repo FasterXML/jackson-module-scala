@@ -24,28 +24,28 @@ class OptionWithBooleanDeserializerTest extends DeserializerTest with BeforeAndA
     ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
   }
 
-  "JacksonModuleScala" should "support AnnotatedOptionBoolean" in {
+  "JacksonModuleScala" should "deserialize AnnotatedOptionBoolean" in {
     val v1 = deserialize("""{"valueBoolean":false}""", classOf[AnnotatedOptionBoolean])
     v1 shouldBe AnnotatedOptionBoolean(Some(false))
     v1.valueBoolean.get shouldBe false
     useOptionBoolean(v1.valueBoolean) shouldBe "false"
   }
 
-  it should "support AnnotatedOptionPrimitiveBoolean" in {
+  it should "deserialize AnnotatedOptionPrimitiveBoolean" in {
     val v1 = deserialize("""{"valueBoolean":false}""", classOf[AnnotatedOptionPrimitiveBoolean])
     v1 shouldBe AnnotatedOptionPrimitiveBoolean(Some(false))
     v1.valueBoolean.get shouldBe false
     useOptionBoolean(v1.valueBoolean) shouldBe "false"
   }
 
-  it should "support OptionBoolean (without registerReferencedType)" in {
+  it should "deserialize OptionBoolean (without registerReferencedType)" in {
     val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionBoolean])
     v1 shouldBe OptionBoolean(Some(false))
     v1.valueBoolean.get shouldBe false
     useOptionBoolean(v1.valueBoolean) shouldBe "false"
   }
 
-  it should "support OptionBoolean (with registerReferencedType)" in {
+  it should "deserialize OptionBoolean (with registerReferencedType)" in {
     ScalaAnnotationIntrospector.registerReferencedType(classOf[OptionBoolean], "valueBoolean", classOf[Boolean])
     val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionBoolean])
     v1 shouldBe OptionBoolean(Some(false))
@@ -53,7 +53,7 @@ class OptionWithBooleanDeserializerTest extends DeserializerTest with BeforeAndA
     useOptionBoolean(v1.valueBoolean) shouldBe "false"
   }
 
-  it should "support OptionJavaBoolean" in {
+  it should "deserialize OptionJavaBoolean" in {
     val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionJavaBoolean])
     v1 shouldBe OptionJavaBoolean(Some(false))
     v1.valueBoolean.get shouldBe false

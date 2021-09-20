@@ -26,19 +26,19 @@ class SeqWithNumberDeserializerTest extends DeserializerTest with BeforeAndAfter
     ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
   }
 
-  "JacksonModuleScala" should "support AnnotatedSeqLong" in {
+  "JacksonModuleScala" should "deserialize AnnotatedSeqLong" in {
     val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[AnnotatedSeqLong])
     v1 shouldBe AnnotatedSeqLong(Seq(151L, 152L, 153L))
     sumSeqLong(v1.longs) shouldBe 456L
   }
 
-  it should "support AnnotatedSeqPrimitiveLong" in {
+  it should "deserialize AnnotatedSeqPrimitiveLong" in {
     val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[AnnotatedSeqPrimitiveLong])
     v1 shouldBe AnnotatedSeqPrimitiveLong(Seq(151L, 152L, 153L))
     sumSeqLong(v1.longs) shouldBe 456L
   }
 
-  it should "support SeqLong" in {
+  it should "deserialize SeqLong" in {
     ScalaAnnotationIntrospector.registerReferencedType(classOf[SeqLong], "longs", classOf[Long])
     val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[SeqLong])
     v1 shouldBe SeqLong(Seq(151L, 152L, 153L))
@@ -47,13 +47,13 @@ class SeqWithNumberDeserializerTest extends DeserializerTest with BeforeAndAfter
     sumSeqLong(v1.longs) shouldBe 456L
   }
 
-  it should "support SeqJavaLong" in {
+  it should "deserialize SeqJavaLong" in {
     val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[SeqJavaLong])
     v1 shouldBe SeqJavaLong(Seq(151L, 152L, 153L))
     sumSeqJavaLong(v1.longs) shouldBe 456L
   }
 
-  it should "support SeqBigInt" in {
+  it should "deserialize SeqBigInt" in {
     val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[SeqBigInt])
     v1 shouldBe SeqBigInt(Seq(151L, 152L, 153L))
     sumSeqBigInt(v1.longs) shouldBe 456L

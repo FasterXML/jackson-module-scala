@@ -26,21 +26,21 @@ class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAf
     ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
   }
 
-  "JacksonModuleScala" should "support AnnotatedOptionLong" in {
+  "JacksonModuleScala" should "deserialize AnnotatedOptionLong" in {
     val v1 = deserialize("""{"valueLong":151}""", classOf[AnnotatedOptionLong])
     v1 shouldBe AnnotatedOptionLong(Some(151L))
     v1.valueLong.get shouldBe 151L
     useOptionLong(v1.valueLong) shouldBe 302L
   }
 
-  it should "support AnnotatedOptionPrimitiveLong" in {
+  it should "deserialize AnnotatedOptionPrimitiveLong" in {
     val v1 = deserialize("""{"valueLong":151}""", classOf[AnnotatedOptionPrimitiveLong])
     v1 shouldBe AnnotatedOptionPrimitiveLong(Some(151L))
     v1.valueLong.get shouldBe 151L
     useOptionLong(v1.valueLong) shouldBe 302L
   }
 
-  it should "support OptionLong" in {
+  it should "deserialize OptionLong" in {
     ScalaAnnotationIntrospector.registerReferencedType(classOf[OptionLong], "valueLong", classOf[Long])
     val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
     v1 shouldBe OptionLong(Some(151L))
@@ -50,14 +50,14 @@ class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAf
     useOptionLong(v1.valueLong) shouldBe 302L
   }
 
-  it should "support OptionJavaLong" in {
+  it should "deserialize OptionJavaLong" in {
     val v1 = deserialize("""{"valueLong":151}""", classOf[OptionJavaLong])
     v1 shouldBe OptionJavaLong(Some(151L))
     v1.valueLong.get shouldBe 151L
     useOptionJavaLong(v1.valueLong) shouldBe 302L
   }
 
-  it should "support OptionBigInt" in {
+  it should "deserialize OptionBigInt" in {
     val v1 = deserialize("""{"value":151}""", classOf[OptionBigInt])
     v1 shouldBe OptionBigInt(Some(BigInt(151L)))
     v1.value.get shouldBe 151L
