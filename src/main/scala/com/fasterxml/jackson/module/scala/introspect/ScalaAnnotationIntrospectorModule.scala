@@ -2,17 +2,17 @@ package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.`type`.ClassKey
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.introspect._
-import com.fasterxml.jackson.databind.util.{AccessPattern, LRUMap, LookupCache}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, MapperFeature}
+import com.fasterxml.jackson.databind.util.{AccessPattern, Converter, LRUMap, LookupCache}
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, JsonDeserializer, KeyDeserializer, MapperFeature}
 import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
 import java.lang.annotation.Annotation
-import scala.collection.JavaConverters._
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
   private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
@@ -140,20 +140,23 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
               // Locate the constructor param that matches it
               descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
                 case Some(pd) => {
-                  println(s">>>>> override ${pd.name} ${overrides.get(pd.name)}")
+                  val mappedCreator = overrides.get(pd.name) match {
+                    case Some(refClass) => WrappedCreatorProperty(creator, refClass)
+                    case _ => creator
+                  }
                   if (applyDefaultValues) {
                     pd match {
                       case PropertyDescriptor(_, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _) => {
-                        creator.withNullProvider(new NullValueProvider {
+                        mappedCreator.withNullProvider(new NullValueProvider {
                           override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
 
                           override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
                         })
                       }
-                      case _ => creator
+                      case _ => mappedCreator
                     }
                   } else {
-                    creator
+                    mappedCreator
                   }
                 }
                 case _ => creator
@@ -249,4 +252,31 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   this += { _.appendAnnotationIntrospector(JavaAnnotationIntrospector) }
   this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
   this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
+}
+
+private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refClass: Class[_])
+  extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
+
+  override def getAnnotation[A <: Annotation](acls: Class[A]): A = {
+    val result = Option(super.getAnnotation(acls)) match {
+      case None if acls.isAssignableFrom(classOf[JsonDeserialize]) => Some(getInstanceOfContentAsAnnotation())
+      case result => result
+    }
+    result.orNull.asInstanceOf[A]
+  }
+
+  private def getInstanceOfContentAsAnnotation(): JsonDeserialize = {
+    new JsonDeserialize() {
+      override def contentAs: Class[_] = refClass
+      override def annotationType: Class[JsonDeserialize] = classOf[JsonDeserialize]
+      override def as(): Class[_] = classOf[Void]
+      override def keyAs(): Class[_] = classOf[Void]
+      override def builder(): Class[_] = classOf[Void]
+      override def contentConverter(): Class[_ <: Converter[_, _]] = classOf[Converter.None]
+      override def converter(): Class[_ <: Converter[_, _]] = classOf[Converter.None]
+      override def using(): Class[_ <: JsonDeserializer[_]] = classOf[JsonDeserializer.None]
+      override def contentUsing(): Class[_ <: JsonDeserializer[_]] = classOf[JsonDeserializer.None]
+      override def keyUsing(): Class[_ <: KeyDeserializer] = classOf[KeyDeserializer.None]
+    }
+  }
 }
