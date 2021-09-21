@@ -9,11 +9,14 @@ import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import scala.collection.{immutable, mutable}
 
-case class JavaListWrapper(s: java.util.ArrayList[String])
-case class SeqWrapper(s: Seq[String])
+object SeqDeserializerTest {
+  case class JavaListWrapper(s: java.util.ArrayList[String])
+  case class SeqWrapper(s: Seq[String])
+}
 
 class SeqDeserializerTest extends DeserializerTest {
 
+  import SeqDeserializerTest._
   lazy val module = new JacksonModule with SeqDeserializerModule
 
   "An ObjectMapper with the SeqDeserializer" should "deserialize a list into an Iterable" in {
