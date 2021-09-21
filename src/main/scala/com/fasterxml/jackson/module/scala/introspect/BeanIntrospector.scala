@@ -37,11 +37,6 @@ import scala.reflect.NameTransformer
 
 object BeanIntrospector {
 
-  private def getCtorParams(ctor: Constructor[_]): Seq[String] = {
-    val names = JavaParameterIntrospector.getCtorParamNames(ctor)
-    names.map(NameTransformer.decode)
-  }
-
   def apply[T <: AnyRef](cls: Class[_]) = {
 
     /**
@@ -245,5 +240,10 @@ object BeanIntrospector {
     }
 
     BeanDescriptor(cls, fields ++ methods ++ lazyValMethods)
+  }
+
+  private def getCtorParams(ctor: Constructor[_]): Seq[String] = {
+    val names = JavaParameterIntrospector.getCtorParamNames(ctor)
+    names.map(NameTransformer.decode)
   }
 }
