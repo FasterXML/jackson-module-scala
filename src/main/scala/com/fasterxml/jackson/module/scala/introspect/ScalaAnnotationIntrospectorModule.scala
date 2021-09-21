@@ -24,8 +24,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
-   * Scala primitives (eg Int, Long, Boolean). There are general issues with serializing and deserializing
-   * Scala 2 Enumerations. This function will not help with Enumerations.
+   * Scala primitives (eg Int, Long, Boolean).
    * <p>
    * This function is experimental and may be removed or significantly reworked in a later release.
    * <p>
