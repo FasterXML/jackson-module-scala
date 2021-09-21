@@ -19,8 +19,8 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
   private[this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
 
-  case class ClassHolder(valueClass: Option[Class[_]] = None)
-  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, ClassHolder] = scala.collection.mutable.Map.empty)
+  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, ScalaAnnotationIntrospectorModule.ClassHolder] =
+                                    scala.collection.mutable.Map.empty)
 
   private val overrideMap = scala.collection.mutable.Map[Class[_], ClassOverrides]()
 
@@ -44,7 +44,7 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
     val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
     overrides.get(fieldName) match {
       case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
-      case _ => overrides.put(fieldName, ClassHolder(valueClass = Some(referencedType)))
+      case _ => overrides.put(fieldName, ScalaAnnotationIntrospectorModule.ClassHolder(valueClass = Some(referencedType)))
     }
   }
 
@@ -253,7 +253,8 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
 
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
       val overrides = overrideMap.get(descriptor.beanType).map(_.overrides.toMap).getOrElse(Map.empty)
-      val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
+      val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES) &&
+        config.shouldApplyDefaultValuesWhenDeserializing()
       val args = delegate.getFromObjectArguments(deserializationConfig)
       Option(args) match {
         case Some(array) if (applyDefaultValues || overrides.nonEmpty) => {
@@ -310,11 +311,13 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
 }
 
-object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
+object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule {
+  case class ClassHolder(valueClass: Option[Class[_]] = None)
+}
 
 object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
 
-private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospector.ClassHolder)
+private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospectorModule.ClassHolder)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
   override def getType(): JavaType = {
