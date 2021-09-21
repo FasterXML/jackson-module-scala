@@ -19,7 +19,7 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
   private[this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
 
-  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, ScalaAnnotationIntrospectorModule.ClassHolder] =
+  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, ScalaAnnotationIntrospector.ClassHolder] =
                                     scala.collection.mutable.Map.empty)
 
   private val overrideMap = scala.collection.mutable.Map[Class[_], ClassOverrides]()
@@ -44,7 +44,7 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
     val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
     overrides.get(fieldName) match {
       case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
-      case _ => overrides.put(fieldName, ScalaAnnotationIntrospectorModule.ClassHolder(valueClass = Some(referencedType)))
+      case _ => overrides.put(fieldName, ScalaAnnotationIntrospector.ClassHolder(valueClass = Some(referencedType)))
     }
   }
 
@@ -311,13 +311,13 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
 }
 
-object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule {
+object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
+
+object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder) {
   case class ClassHolder(valueClass: Option[Class[_]] = None)
 }
 
-object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
-
-private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospectorModule.ClassHolder)
+private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospector.ClassHolder)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
   override def getType(): JavaType = {
