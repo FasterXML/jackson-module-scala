@@ -12,15 +12,16 @@ import com.fasterxml.jackson.module.scala.JacksonModule
 import com.fasterxml.jackson.module.scala.util.Implicits._
 
 import java.lang.annotation.Annotation
+import scala.collection.mutable.{Map => MutableMap}
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
   private[this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  case class ClassHolder(valueClass: Option[Class[_]] = None)
-  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, ClassHolder] = scala.collection.mutable.Map.empty)
+  private[introspect] case class ClassHolder(valueClass: Option[Class[_]] = None)
+  private case class ClassOverrides(overrides: MutableMap[String, ClassHolder] = MutableMap.empty)
 
-  private val overrideMap = scala.collection.mutable.Map[Class[_], ClassOverrides]()
+  private val overrideMap = MutableMap[Class[_], ClassOverrides]()
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
