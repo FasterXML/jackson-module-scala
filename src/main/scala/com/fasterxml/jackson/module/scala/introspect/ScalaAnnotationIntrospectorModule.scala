@@ -17,7 +17,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   private[this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
-  case class ClassHolder(keyClass: Option[Class[_]] = None, valueClass: Option[Class[_]] = None)
+  case class ClassHolder(valueClass: Option[Class[_]] = None)
   private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, ClassHolder] = scala.collection.mutable.Map.empty)
 
   private val overrideMap = scala.collection.mutable.Map[Class[_], ClassOverrides]()
@@ -35,7 +35,6 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @param clazz the (case) class
    * @param fieldName the field name in the (case) class
    * @param referencedType the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
-   * @see [[registerReferencedKeyType]]
    * @see [[clearRegisteredReferencedTypes()]]
    * @see [[clearRegisteredReferencedTypes(Class[_])]]
    * @since 2.13.0
@@ -45,32 +44,6 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     overrides.get(fieldName) match {
       case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
       case _ => overrides.put(fieldName, ClassHolder(valueClass = Some(referencedType)))
-    }
-  }
-
-  /**
-   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
-   * Scala primitives (eg Int, Long, Boolean). There are general issues with serializing and deserializing
-   * Scala 2 Enumerations. This function will not help with Enumerations.
-   * <p>
-   * This function is experimental and may be removed or significantly reworked in a later release.
-   * <p>
-   * These issues can be worked around by adding Jackson annotations on the affected fields.
-   * This function is designed to be used when it is not possible to apply Jackson annotations.
-   *
-   * @param clazz the (case) class
-   * @param fieldName the field name in the (case) class
-   * @param referencedType the referenced type of the key field - for `Map[Long, String]` - the referenced key type is `Long`
-   * @see [[registerReferencedValueType]]
-   * @see [[clearRegisteredReferencedTypes()]]
-   * @see [[clearRegisteredReferencedTypes(Class[_])]]
-   * @since 2.13.0
-   */
-  def registerReferencedKeyType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
-    val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
-    overrides.get(fieldName) match {
-      case Some(holder) => overrides.put(fieldName, holder.copy(keyClass = Some(referencedType)))
-      case _ => overrides.put(fieldName, ClassHolder(keyClass = Some(referencedType)))
     }
   }
 
@@ -314,16 +287,15 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospector.ClassHolder)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
-  override def getType: JavaType = {
+  override def getType(): JavaType = {
     super.getType match {
       case rt: ReferenceType if refHolder.valueClass.isDefined =>
         ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(refHolder.valueClass.get))
       case ct: CollectionLikeType if refHolder.valueClass.isDefined =>
         CollectionLikeType.upgradeFrom(ct, SimpleType.constructUnsafe(refHolder.valueClass.get))
       case mt: MapLikeType => {
-        val keyType = refHolder.keyClass.map(SimpleType.constructUnsafe).getOrElse(mt.getKeyType)
         val valueType = refHolder.valueClass.map(SimpleType.constructUnsafe).getOrElse(mt.getContentType)
-        MapLikeType.upgradeFrom(mt, keyType, valueType)
+        MapLikeType.upgradeFrom(mt, mt.getKeyType, valueType)
       }
       case other => other
     }
