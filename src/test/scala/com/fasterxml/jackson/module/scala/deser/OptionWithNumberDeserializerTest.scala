@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 import org.scalatest.BeforeAndAfterEach
@@ -48,6 +49,12 @@ class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAf
     //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
     //or use one of the equivalent classes in OptionWithNumberDeserializerTest
     useOptionLong(v1.valueLong) shouldBe 302L
+  }
+
+  it should "fail to deserialize OptionLong when value is text" in {
+    intercept[InvalidFormatException] {
+      deserialize("""{"valueLong":"xy"}""", classOf[OptionLong])
+    }.getMessage should include("""Cannot deserialize value of type `long` from String "xy": not a valid `long` value""")
   }
 
   it should "deserialize OptionJavaLong" in {
