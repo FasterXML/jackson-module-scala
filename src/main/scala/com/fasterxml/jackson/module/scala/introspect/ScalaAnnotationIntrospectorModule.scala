@@ -2,13 +2,13 @@ package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.databind.JacksonModule.SetupContext
-import com.fasterxml.jackson.databind.`type`.ClassKey
+import com.fasterxml.jackson.databind.`type`.{ClassKey, CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser._
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.introspect._
 import com.fasterxml.jackson.databind.util.{AccessPattern, LookupCache, SimpleLookupCache}
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, MapperFeature, PropertyName}
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, JavaType, MapperFeature, PropertyName}
 import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule, ScalaModule}
 import com.fasterxml.jackson.module.scala.util.Implicits._
@@ -16,8 +16,61 @@ import com.fasterxml.jackson.module.scala.util.Implicits._
 import java.lang.annotation.Annotation
 
 class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends NopAnnotationIntrospector with ValueInstantiators {
-  private [this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
+  private[this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
+
+  case class ClassHolder(valueClass: Option[Class[_]] = None)
+  private case class ClassOverrides(overrides: scala.collection.mutable.Map[String, ClassHolder] = scala.collection.mutable.Map.empty)
+
+  private val overrideMap = scala.collection.mutable.Map[Class[_], ClassOverrides]()
+
+  /**
+   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
+   * Scala primitives (eg Int, Long, Boolean). There are general issues with serializing and deserializing
+   * Scala 2 Enumerations. This function will not help with Enumerations.
+   * <p>
+   * This function is experimental and may be removed or significantly reworked in a later release.
+   * <p>
+   * These issues can be worked around by adding Jackson annotations on the affected fields.
+   * This function is designed to be used when it is not possible to apply Jackson annotations.
+   *
+   * @param clazz the (case) class
+   * @param fieldName the field name in the (case) class
+   * @param referencedType the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
+   * @see [[clearRegisteredReferencedTypes()]]
+   * @see [[clearRegisteredReferencedTypes(Class[_])]]
+   * @since 2.13.0
+   */
+  def registerReferencedValueType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
+    val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
+    overrides.get(fieldName) match {
+      case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
+      case _ => overrides.put(fieldName, ClassHolder(valueClass = Some(referencedType)))
+    }
+  }
+
+  /**
+   * clears the state associated with reference types for the given class
+   *
+   * @param clazz the class for which to remove the registered reference types
+   * @see [[registerReferencedValueType]]
+   * @see [[clearRegisteredReferencedTypes()]]
+   * @since 2.13.0
+   */
+  def clearRegisteredReferencedTypes(clazz: Class[_]): Unit = {
+    overrideMap.remove(clazz)
+  }
+
+  /**
+   * clears all the state associated with reference types
+   *
+   * @see [[registerReferencedValueType]]
+   * @see [[clearRegisteredReferencedTypes(Class[_])]]
+   * @since 2.13.0
+   */
+  def clearRegisteredReferencedTypes(): Unit = {
+    overrideMap.clear()
+  }
 
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     val existingCache = _descriptorCache
@@ -124,7 +177,7 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
                                        defaultInstantiator: ValueInstantiator): ValueInstantiator = {
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
-        if (descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
+        if (overrideMap.contains(beanDesc.getBeanClass) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
           defaultInstantiator match {
             case std: StdValueInstantiator =>
               new ScalaValueInstantiator(config, std, deserializationConfig, descriptor)
@@ -194,6 +247,55 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
       case am: AnnotatedMember => isMaybeScalaBeanType(am.getDeclaringClass)
     }
   }
+
+  private class ScalaValueInstantiator(config: ScalaModule.Config, delegate: StdValueInstantiator,
+                                       deserializationConfig: DeserializationConfig, descriptor: BeanDescriptor)
+    extends StdValueInstantiator(delegate) {
+
+    private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
+      val overrides = overrideMap.get(descriptor.beanType).map(_.overrides.toMap).getOrElse(Map.empty)
+      val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
+      val args = delegate.getFromObjectArguments(deserializationConfig)
+      Option(args) match {
+        case Some(array) if (applyDefaultValues || overrides.nonEmpty) => {
+          array.map {
+            case creator: CreatorProperty => {
+              // Locate the constructor param that matches it
+              descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
+                case Some(pd) => {
+                  val mappedCreator = overrides.get(pd.name) match {
+                    case Some(refHolder) => WrappedCreatorProperty(creator, refHolder)
+                    case _ => creator
+                  }
+                  if (applyDefaultValues) {
+                    pd match {
+                      case PropertyDescriptor(_, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _) => {
+                        mappedCreator.withNullProvider(new NullValueProvider {
+                          override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
+
+                          override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
+                        })
+                      }
+                      case _ => mappedCreator
+                    }
+                  } else {
+                    mappedCreator
+                  }
+                }
+                case _ => creator
+              }
+            }
+          }
+        }
+        case Some(array) => array
+        case _ => Array.empty
+      }
+    }
+
+    override def getFromObjectArguments(config: DeserializationConfig): Array[SettableBeanProperty] = {
+      overriddenConstructorArguments
+    }
+  }
 }
 
 trait ScalaAnnotationIntrospectorModule extends JacksonModule {
@@ -213,37 +315,20 @@ object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModu
 
 object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
 
-private class ScalaValueInstantiator(config: ScalaModule.Config, delegate: StdValueInstantiator,
-                                     deserializationConfig: DeserializationConfig, descriptor: BeanDescriptor)
-  extends StdValueInstantiator(delegate) {
+private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospector.ClassHolder)
+  extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
-  private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
-    val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES) &&
-      config.shouldApplyDefaultValuesWhenDeserializing()
-    val args = delegate.getFromObjectArguments(deserializationConfig)
-    Option(args) match {
-      case Some(array) if applyDefaultValues => {
-        array.map {
-          case creator: CreatorProperty =>
-            // Locate the constructor param that matches it
-            descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
-              case Some(PropertyDescriptor(name, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _)) =>
-                creator.withNullProvider(new NullValueProvider {
-                  override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
-
-                  override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
-                })
-              case _ => creator
-            }
-          case other => other
-        }
+  override def getType(): JavaType = {
+    super.getType match {
+      case rt: ReferenceType if refHolder.valueClass.isDefined =>
+        ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(refHolder.valueClass.get))
+      case ct: CollectionLikeType if refHolder.valueClass.isDefined =>
+        CollectionLikeType.upgradeFrom(ct, SimpleType.constructUnsafe(refHolder.valueClass.get))
+      case mt: MapLikeType => {
+        val valueType = refHolder.valueClass.map(SimpleType.constructUnsafe).getOrElse(mt.getContentType)
+        MapLikeType.upgradeFrom(mt, mt.getKeyType, valueType)
       }
-      case Some(array) => array
-      case _ => Array.empty
+      case other => other
     }
-  }
-
-  override def getFromObjectArguments(deserializationConfig: DeserializationConfig): Array[SettableBeanProperty] = {
-    overriddenConstructorArguments
   }
 }

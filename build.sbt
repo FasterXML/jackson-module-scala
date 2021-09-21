@@ -91,6 +91,8 @@ Compile / resourceGenerators += Def.task {
     Seq(file)
 }.taskValue
 
+Test / parallelExecution := false
+
 ThisBuild / githubWorkflowJavaVersions := Seq("adopt@1.8", "adopt@1.11", "adopt@1.16")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
