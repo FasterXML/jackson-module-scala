@@ -8,6 +8,8 @@ DefaultRequiredAnnotationIntrospector and RequiredPropertiesSchemaModule have be
 ## Fixes
 
 * [[gh-296]](https://github.com/FasterXML/jackson-module-scala/issues/296) Support JsonSerializer interface for custom Scala collections (JsonSerializer allows a class to define its own serialization)
+* [[gh-211]](https://github.com/FasterXML/jackson-module-scala/issues/211) Deserialization of case object should not create a new instance of the case object (see comments on issue on how to enable this - it is not enabled by default)
+* [[gh-545]](https://github.com/FasterXML/jackson-module-scala/pull/545) (Experimental) support for registering reference types (when they can't be inferred)
 
 # Version: 2.13.0-rc2
 
@@ -62,7 +64,7 @@ of the upstream Jackson projects.
 # Version: 2.12.1
 
 No functionality changes but ScalaObjectMapper has been deprecated because it relies on `Manifest`s and these are not supported in Scala3. A number of other code changes have been made to try to get the code to compile in Scala3 but there is still a lot of test code that doesn't compile.
-  
+
 # Version: 2.12.0
 
 This patch release tracks Jackson 2.12. The 2.12 series has full support for
@@ -198,7 +200,7 @@ This minor release included support for Scala 2.13 milestone releases.
 * [[gh-353]](https://github.com/FasterXML/jackson-module-scala/issues/353)
   path not computed on collection
 * [[gh-314]](https://github.com/FasterXML/jackson-module-scala/issues/314)
-  Serialize Some(null)  
+  Serialize Some(null)
 * [[gh-299]](https://github.com/FasterXML/jackson-module-scala/issues/299)
   unable to handle Option of a case class
 
@@ -213,7 +215,7 @@ Thanks to Kenji Yoshida.
 
 * [[gh-287]](https://github.com/FasterXML/jackson-module-scala/issues/287)
   Null pointer exception when trying to deserialize into Either[]. Thanks to staffanstockholm.
-* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324) 
+* [[gh-pr-324]](https://github.com/FasterXML/jackson-module-scala/pull/324)
   Fix bean accessors being used for field names. Thanks to Nick Telford.
 
 # Version: 2.9.4
@@ -222,7 +224,7 @@ Thanks to Kenji Yoshida.
 
 * [[gh-346]](https://github.com/FasterXML/jackson-module-scala/issues/346)
   `@JsonInclude` content inclusion does not work. Thanks to brharrington.
-  
+
 # Version: 2.9.3
 
 There are no new fixes in this release; it serves to track the 2.9.3 release
@@ -390,7 +392,7 @@ This patch release tracks Jackson 2.3 and fixes a number of issues.
 
 * [[gh-100]](https://github.com/FasterXML/jackson-module-scala/issues/100)
   Deserializing SortedSets
-  
+
 ## Known issues
 
 [|#105| Deserialization fails for Array[T] in case class](https://github.com/FasterXML/jackson-module-scala/issues/105)
