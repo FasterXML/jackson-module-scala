@@ -9,6 +9,7 @@ DefaultRequiredAnnotationIntrospector and RequiredPropertiesSchemaModule have be
 
 * [[gh-296]](https://github.com/FasterXML/jackson-module-scala/issues/296) Support JsonSerializer interface for custom Scala collections (JsonSerializer allows a class to define its own serialization)
 * [[gh-211]](https://github.com/FasterXML/jackson-module-scala/issues/211) Deserialization of case object should not create a new instance of the case object (see comments on issue on how to enable this - it is not enabled by default)
+* [[gh-545]](https://github.com/FasterXML/jackson-module-scala/pull/545) (Experimental) support for registering reference types (when they can't be inferred)
 
 # Version: 2.13.0-rc2
 
