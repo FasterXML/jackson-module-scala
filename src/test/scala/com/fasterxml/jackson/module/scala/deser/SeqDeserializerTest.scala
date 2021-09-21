@@ -10,11 +10,14 @@ import java.util.UUID
 import scala.collection.{immutable, mutable}
 import scala.compat.java8.FunctionConverters
 
-case class JavaListWrapper(s: java.util.ArrayList[String])
-case class SeqWrapper(s: Seq[String])
+object SeqDeserializerTest {
+  case class JavaListWrapper(s: java.util.ArrayList[String])
+  case class SeqWrapper(s: Seq[String])
+}
 
 class SeqDeserializerTest extends DeserializerTest {
 
+  import SeqDeserializerTest._
   lazy val module = new JacksonModule with SeqDeserializerModule
 
   "An ObjectMapper with the SeqDeserializer" should "deserialize a list into an Iterable" in {
