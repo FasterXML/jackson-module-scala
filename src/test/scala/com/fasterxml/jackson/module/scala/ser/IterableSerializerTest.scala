@@ -76,8 +76,12 @@ class IterableSerializerTest extends SerializerTest {
     serialize(mutable.LinkedHashSet(1, 2, 3)) should matchUnorderedSet
   }
 
-  it should "serialize a Map[Int]" in {
+  it should "serialize a Map[Int, Int]" in {
     serialize(Map(1 -> 2, 3 -> 4)) should matchUnorderedMap
+  }
+
+  it should "serialize a Seq[(String, String)]" in {
+    serialize(Seq("1" -> "2", "3" -> "4")) shouldBe """[["1","2"],["3","4"]]"""
   }
 
   it should "honor the JsonInclude(NON_EMPTY) annotation" in {
@@ -105,7 +109,7 @@ class IterableSerializerTest extends SerializerTest {
   }
 
   val matchUnorderedMap: Matcher[Any] = {
-    be("{\"1\":2,\"3\":4}") or
-      be("{\"3\":4,\"1\":2}")
+    be("""{"1":2,"3":4}""") or
+      be("""{"3":4,"1":2}""")
   }
 }
