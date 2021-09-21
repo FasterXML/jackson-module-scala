@@ -100,7 +100,7 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 
 # Download, docs
 
-Check out [Wiki]. API Scaladocs can be found [on the project site][API] but they are not really
+Check out [Wiki], especially the [FAQ](https://github.com/FasterXML/jackson-module-scala/wiki/FAQ). API Scaladocs can be found [on the project site][API] but they are not really
 well suited to end users, as most classes are implementation details of the module.
 
 # Contributing
