@@ -77,7 +77,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
     deserialize("""{"intValue":1,"stringValue":"foo"}""", classOf[ConstructorTestCaseClass]) should be (ConstructorTestCaseClass(1,"foo"))
   }
 
-  it should "deserialize Nested case clase" in {
+  it should "deserialize Nested case class" in {
     deserialize("""{"b":{"id":1}}""", classOf[NestedA]).b.x shouldBe 1
   }
 
