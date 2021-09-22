@@ -37,6 +37,10 @@ pomExtra := {
       <name>Morten Kjetland</name>
       <email>mbk@kjetland.com</email>
     </developer>
+    <developer>
+      <id>pjfanning</id>
+      <name>PJ Fanning</name>
+    </developer>
   </developers>
   <contributors>
     <contributor>
