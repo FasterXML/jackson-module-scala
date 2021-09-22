@@ -8,8 +8,7 @@ import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, Objec
 
 import java.time.LocalDateTime
 
-object CaseClassDeserializerTest
-{
+object CaseClassDeserializerTest {
   class Bean(var prop: String)
 
   case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
@@ -32,8 +31,7 @@ object CaseClassDeserializerTest
                                 @JsonDeserialize(contentAs = classOf[java.lang.Long])
                                 small: Option[Long])
 
-  class LongValueClass
-  {
+  class LongValueClass {
     @JsonDeserialize(contentAs = classOf[java.lang.Long])
     var small: Option[Long] = None
   }
@@ -60,6 +58,13 @@ object CaseClassDeserializerTest
   case class Person(id: Int, name: String = "") {
     def this() = this(1, "")
   }
+
+  case class NestedA(b: NestedB)
+
+  //https://github.com/FasterXML/jackson-module-scala/issues/404
+  class NestedB(id: Int) {
+    def x = id
+  }
 }
 
 class CaseClassDeserializerTest extends DeserializerTest {
@@ -69,6 +74,10 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   "An ObjectMapper with CaseClassDeserializer" should "deserialize a case class with a single constructor" in {
     deserialize("""{"intValue":1,"stringValue":"foo"}""", classOf[ConstructorTestCaseClass]) should be (ConstructorTestCaseClass(1,"foo"))
+  }
+
+  it should "deserialize Nested case clase" in {
+    deserialize("""{"b":{"id":1}}""", classOf[NestedA]).b.x shouldBe 1
   }
 
   it should "deserialize a case class with multiple constructors (Metric)" in {
