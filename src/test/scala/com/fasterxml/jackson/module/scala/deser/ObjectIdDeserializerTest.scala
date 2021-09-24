@@ -7,7 +7,7 @@ class ObjectIdDeserializerTest extends DeserializerTest {
   import ObjectIdSerializerTest._
   lazy val module = DefaultScalaModule
 
-  "An ObjectMapper" should "serialize with ids when @JsonIdentityInfo is used" in {
+  "An ObjectMapper" should "deserialize with ids when @JsonIdentityInfo is used" in {
     val f1 = Foo(1)
     val f2 = Foo(2)
     val data = ManyFooPairs(Seq(FooPair(f1, f1), FooPair(f1, f2)))
