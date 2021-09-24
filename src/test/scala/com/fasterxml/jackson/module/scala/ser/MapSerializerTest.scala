@@ -49,6 +49,8 @@ abstract class MapValueBase {}
 case class MapValueDouble(value: Double) extends MapValueBase
 case class MapValueString(value: String) extends MapValueBase
 
+case class MapValueBaseWrapper(map: Map[String, MapValueBase])
+
 //see also MapScala2SerializerTest for tests that only pass with Scala2
 class MapSerializerTest extends SerializerTest {
 
@@ -94,7 +96,12 @@ class MapSerializerTest extends SerializerTest {
   }
 
   it should "honor KeySerializer annotations" in {
-    serialize(new KeySerializerMap(Map(("a","b")->1))) should be ("""{"keySerializerMap":{"[\"a\",\"b\"]":1}}""")
+    serialize(KeySerializerMap(Map(("a","b")->1))) should be ("""{"keySerializerMap":{"[\"a\",\"b\"]":1}}""")
+  }
+
+  it should "correctly serialize type information" in {
+    val wrapper = MapValueBaseWrapper(Map("Double" -> MapValueDouble(1.0), "String" -> MapValueString("word")))
+    serialize(wrapper) should be ("""{"map":{"Double":{"type":"MapValueDouble","value":1.0},"String":{"type":"MapValueString","value":"word"}}}""")
   }
 
   it should "suppress None when WRITE_NULL_MAP_VALUES is active" in {
