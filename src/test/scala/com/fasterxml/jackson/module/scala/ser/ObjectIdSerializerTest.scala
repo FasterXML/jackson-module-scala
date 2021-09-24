@@ -1,8 +1,7 @@
 package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.{JsonIdentityInfo, ObjectIdGenerators}
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 object ObjectIdSerializerTest {
   @JsonIdentityInfo(generator = classOf[ObjectIdGenerators.IntSequenceGenerator])
