@@ -42,7 +42,7 @@ This support is still deemed to be experimental. Code contributions are welcomed
 * There are still a number of tests that work with Scala 2 that fail with Scala 3
 * It is expected that most use cases should work ok with Scala 3
   * Known issues with using jackson-module-scala with Scala 3 are tracked at https://github.com/FasterXML/jackson-module-scala/labels/scala3
-  * There has been no testing of using Scala 3 classes with Scala 2 jackson-module-scala or Scala 2 classes with Scala 3 jackson-module-scala
+  * There has been limited testing of using Scala 3 classes with Scala 2 jackson-module-scala or Scala 2 classes with Scala 3 jackson-module-scala
 
 # Usage
 
