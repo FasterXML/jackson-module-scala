@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonSubTypes, JsonTypeInfo}
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.{JsonSerializer, SerializerProvider}
+import com.fasterxml.jackson.databind.{JsonSerializer, SerializationFeature, SerializerProvider}
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import scala.annotation.meta.getter
@@ -95,5 +95,15 @@ class MapSerializerTest extends SerializerTest {
 
   it should "honor KeySerializer annotations" in {
     serialize(new KeySerializerMap(Map(("a","b")->1))) should be ("""{"keySerializerMap":{"[\"a\",\"b\"]":1}}""")
+  }
+
+  it should "suppress None when WRITE_NULL_MAP_VALUES is active" in {
+    val wrapper = new {
+      val map = Map("key" -> None)
+    }
+    val m = newMapper.copy()
+    m.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
+    val v = m.writeValueAsString(wrapper)
+    v shouldBe """{"map":{}}"""
   }
 }
