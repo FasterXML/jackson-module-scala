@@ -113,8 +113,8 @@ trait ClassTagExtensions {
    * objectMapper.convertValue(n, valueClass);
    * </pre>
    */
-  def treeToValue[T: ClassTag](n: TreeNode): T = {
-    treeToValue(n, classFor[T])
+  def treeToValue[T: JavaTypeable](n: TreeNode): T = {
+    treeToValue(n, constructType[T])
   }
 
   /*
