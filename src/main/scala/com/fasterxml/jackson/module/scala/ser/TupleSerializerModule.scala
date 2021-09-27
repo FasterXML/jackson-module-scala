@@ -14,7 +14,7 @@ private class TupleSerializer extends ValueSerializer[Product] {
 
   def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     jgen.writeStartArray()
-    value.productIterator.foreach(jgen.writePOJO _)
+    value.productIterator.foreach(provider.writeValue(jgen, _))
     jgen.writeEndArray()
   }
 }
