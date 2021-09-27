@@ -86,11 +86,10 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
   }
 
   def deserializeKey(s: String, ctxt: DeserializationContext): Enumeration#Value = {
-    if (r.isDefined) {
-      return r.get.getEnum(s)
+    r match {
+      case Some(resolved) => resolved.getEnum(s)
+      case _ => throw DatabindException.from(ctxt, "Need @JsonScalaEnumeration to determine key type")
     }
-
-    throw DatabindException.from(ctxt, "Need @JsonScalaEnumeration to determine key type")
   }
 }
 

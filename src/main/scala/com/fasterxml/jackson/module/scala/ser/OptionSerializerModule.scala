@@ -62,8 +62,11 @@ object OptionSerializer {
 
   def hasContentTypeAnnotation(provider: SerializerProvider, property: BeanProperty): Boolean = {
     val intr = provider.getAnnotationIntrospector
-    if (property == null || intr == null) return false
-    intr.refineSerializationType(provider.getConfig, property.getMember, property.getType) != null
+    if (property == null || intr == null) {
+      false
+    } else {
+      intr.refineSerializationType(provider.getConfig, property.getMember, property.getType) != null
+    }
   }
 }
 

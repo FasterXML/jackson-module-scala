@@ -191,8 +191,6 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
                                        deserializationConfig: DeserializationConfig, descriptor: BeanDescriptor)
     extends StdValueInstantiator(delegate) {
 
-    println("created ScalaValueInstantiator " + descriptor)
-
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
       val overrides = ScalaAnnotationIntrospector.overrideMap.get(descriptor.beanType).map(_.overrides.toMap).getOrElse(Map.empty)
       val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES) &&
