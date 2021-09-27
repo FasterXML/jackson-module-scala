@@ -106,12 +106,12 @@ private class EitherSerializer(left: EitherDetails,
     jgen.writeFieldName(field)
     if (content == null) {
       provider.defaultSerializeNull(jgen)
-      return
-    }
-    val ser = details.valueSerializer.getOrElse(findCachedSerializer(provider, content.getClass))
-    vts.orElse(details.valueTypeSerializer) match {
-      case Some(vts) => ser.serializeWithType(content, jgen, provider, vts)
-      case None => ser.serialize(content, jgen, provider)
+    } else {
+      val ser = details.valueSerializer.getOrElse(findCachedSerializer(provider, content.getClass))
+      vts.orElse(details.valueTypeSerializer) match {
+        case Some(vts) => ser.serializeWithType(content, jgen, provider, vts)
+        case None => ser.serialize(content, jgen, provider)
+      }
     }
     jgen.writeEndObject()
   }
@@ -119,13 +119,12 @@ private class EitherSerializer(left: EitherDetails,
   override def serializeWithType(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer): Unit = {
     if (value == null) {
       provider.defaultSerializeNull(jgen)
-      return
+    } else {
+      // Otherwise apply type-prefix/suffix, then std serialize:
+      typeSer.writeTypePrefix(jgen, typeSer.typeId(value, JsonToken.START_OBJECT))
+      serialize(value, jgen, provider, Some(typeSer))
+      typeSer.writeTypeSuffix(jgen, typeSer.typeId(value, JsonToken.END_OBJECT))
     }
-
-    // Otherwise apply type-prefix/suffix, then std serialize:
-    typeSer.writeTypePrefix(jgen, typeSer.typeId(value, JsonToken.START_OBJECT))
-    serialize(value, jgen, provider, Some(typeSer))
-    typeSer.writeTypeSuffix(jgen, typeSer.typeId(value, JsonToken.END_OBJECT))
   }
 
   protected[this] def findCachedSerializer(prov: SerializerProvider, typ: Class[_]): JsonSerializer[AnyRef] = {
