@@ -80,7 +80,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
   "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.0" % Test,
   "io.swagger" % "swagger-core" % "1.6.2" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.9" % Test
+  "org.scalatest" %% "scalatest" % "3.2.10" % Test
 )
 
 // build.properties
