@@ -21,7 +21,6 @@ class TreeDeserializerTest extends DeserializerTest {
     val directBean2 = mapper.readValue[TestBean[DataPeriod]](json)
     directBean2.value shouldEqual DataPeriod.WEEKLY
     val indirectBean = mapper.treeToValue[TestBean[DataPeriod]](mapper.readTree(json))
-    //TODO fix - this does not work yet
     indirectBean.value shouldEqual DataPeriod.WEEKLY
   }
 
