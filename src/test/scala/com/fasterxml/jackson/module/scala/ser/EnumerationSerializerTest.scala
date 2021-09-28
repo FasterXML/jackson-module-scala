@@ -121,10 +121,13 @@ class EnumerationSerializerTest extends SerializerTest {
     serialize(GeneralErrorCodes.GEN001) shouldEqual expected
     val provider = new JacksonJsonProvider()
     provider.setMapper(newMapper)
-    Using.resource(new ByteArrayOutputStream()) { bos =>
+    val bos = new ByteArrayOutputStream()
+    try {
       provider.writeTo(GeneralErrorCodes.GEN001, classOf[ErrorCode], None.orNull, Array(), MediaType.APPLICATION_JSON_TYPE,
         None.orNull, bos)
       bos.toString(StandardCharsets.UTF_8.name()) shouldEqual expected
+    } finally {
+      bos.close()
     }
   }
 
