@@ -11,7 +11,6 @@ import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import javax.ws.rs.core.MediaType
 import scala.beans.BeanProperty
-import scala.util.Using
 
 object EnumerationSerializerTest {
 
@@ -138,10 +137,13 @@ class EnumerationSerializerTest extends SerializerTest {
     serialize(errorCode) shouldEqual expected
     val provider = new JacksonJsonProvider()
     provider.setMapper(newMapper)
-    Using.resource(new ByteArrayOutputStream()) { bos =>
+    val bos = new ByteArrayOutputStream()
+    try {
       provider.writeTo(errorCode, classOf[ErrorCode], None.orNull, Array(), MediaType.APPLICATION_JSON_TYPE,
         None.orNull, bos)
       bos.toString(StandardCharsets.UTF_8.name()) shouldEqual expected
+    } finally {
+      bos.close()
     }
   }
 
