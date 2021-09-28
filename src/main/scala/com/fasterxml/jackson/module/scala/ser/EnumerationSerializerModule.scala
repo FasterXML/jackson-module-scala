@@ -9,8 +9,7 @@ import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.util.Implicits._
 import com.fasterxml.jackson.module.scala.{JacksonModule, JsonScalaEnumeration, ScalaModule}
 
-trait ContextualEnumerationSerializer
-{
+trait ContextualEnumerationSerializer {
   self: ValueSerializer[_] =>
 
   override def createContextual(serializerProvider: SerializerProvider, beanProperty: BeanProperty): ValueSerializer[_] =
@@ -26,7 +25,8 @@ trait ContextualEnumerationSerializer
  */
 private class EnumerationSerializer extends ValueSerializer[scala.Enumeration#Value] with ContextualEnumerationSerializer {
   override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider) = {
-    val parentEnum = value.asInstanceOf[AnyRef].getClass.getSuperclass.getDeclaredFields.find( f => f.getName == "$outer" ).get
+    val parentEnum = value.asInstanceOf[AnyRef].getClass.getSuperclass.getDeclaredFields.find( f => f.getName == "$outer" )
+      .getOrElse(throw new RuntimeException("failed to find $outer field on Enumeration class"))
     val enumClass = parentEnum.get(value).getClass.getName stripSuffix "$"
     jgen.writeStartObject()
     jgen.writeStringProperty("enumClass", enumClass)
