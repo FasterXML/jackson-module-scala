@@ -4,6 +4,7 @@ package ser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
+import com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest.Severity.Severity
 
 import scala.beans.BeanProperty
 
@@ -39,6 +40,23 @@ object EnumerationSerializerTest {
   case class EnumTestCaseClassWithExtraConstructors(@JsonScalaEnumeration(classOf[EnumTestType]) a: EnumTest, label: String) {
     def this(b: String) = this(EnumTest.A, "None")
     def this(a: EnumTest) = this(a, "None")
+  }
+
+  object Severity extends Enumeration {
+    type Severity = Value
+    val FAIL, INFORMATION = Value
+  }
+
+  trait ErrorCode {
+    val errorCode: String
+    val severity: Severity.Severity
+  }
+
+  object GeneralErrorCodes {
+    val GEN001 = new ErrorCode {
+      override val errorCode: String = "GEN001"
+      override val severity: Severity = Severity.FAIL
+    }
   }
 }
 
@@ -92,5 +110,9 @@ class EnumerationSerializerTest extends SerializerTest {
     serialize(case1) shouldBe """{"a":"A","label":"None"}"""
     val case2 = EnumTestCaseClassWithExtraConstructors(EnumTest.A, "None")
     serialize(case2) shouldBe """{"a":"A","label":"None"}"""
+  }
+
+  it should "serialize ErrorCode" in {
+    serialize(GeneralErrorCodes.GEN001) shouldEqual """{"errorCode":"GEN001","severity":{"enumClass":"com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest$Severity","value":"FAIL"}}"""
   }
 }
