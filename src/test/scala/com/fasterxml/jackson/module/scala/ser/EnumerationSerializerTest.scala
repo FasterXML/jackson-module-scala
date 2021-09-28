@@ -91,6 +91,6 @@ class EnumerationSerializerTest extends SerializerTest {
     val case1 = EnumTestCaseClass(EnumTest.A, "None")
     serialize(case1) shouldBe """{"a":"A","label":"None"}"""
     val case2 = EnumTestCaseClassWithExtraConstructors(EnumTest.A, "None")
-    serialize(case1) shouldBe """{"a":"A","label":"None"}"""
+    serialize(case2) shouldBe """{"a":"A","label":"None"}"""
   }
 }
