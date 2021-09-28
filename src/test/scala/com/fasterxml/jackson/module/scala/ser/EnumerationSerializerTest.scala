@@ -3,9 +3,15 @@ package module.scala
 package ser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
 import com.fasterxml.jackson.module.scala.OuterWeekday.InnerWeekday
+import com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest.Severity.Severity
 
+import java.io.ByteArrayOutputStream
+import java.nio.charset.StandardCharsets
+import javax.ws.rs.core.MediaType
 import scala.beans.BeanProperty
+import scala.util.Using
 
 object EnumerationSerializerTest {
 
@@ -39,6 +45,23 @@ object EnumerationSerializerTest {
   case class EnumTestCaseClassWithExtraConstructors(@JsonScalaEnumeration(classOf[EnumTestType]) a: EnumTest, label: String) {
     def this(b: String) = this(EnumTest.A, "None")
     def this(a: EnumTest) = this(a, "None")
+  }
+
+  object Severity extends Enumeration {
+    type Severity = Value
+    val FAIL, INFORMATION = Value
+  }
+
+  trait ErrorCode {
+    val errorCode: String
+    val severity: Severity.Severity
+  }
+
+  object GeneralErrorCodes {
+    val GEN001 = new ErrorCode {
+      override val errorCode: String = "GEN001"
+      override val severity: Severity = Severity.FAIL
+    }
   }
 }
 
@@ -93,4 +116,33 @@ class EnumerationSerializerTest extends SerializerTest {
     val case2 = EnumTestCaseClassWithExtraConstructors(EnumTest.A, "None")
     serialize(case2) shouldBe """{"a":"A","label":"None"}"""
   }
+
+  it should "serialize ErrorCode" in {
+    val expected = """{"errorCode":"GEN001","severity":{"enumClass":"com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest$Severity","value":"FAIL"}}"""
+    serialize(GeneralErrorCodes.GEN001) shouldEqual expected
+    val provider = new JacksonJsonProvider()
+    provider.setMapper(newMapper)
+    Using.resource(new ByteArrayOutputStream()) { bos =>
+      provider.writeTo(GeneralErrorCodes.GEN001, classOf[ErrorCode], None.orNull, Array(), MediaType.APPLICATION_JSON_TYPE,
+        None.orNull, bos)
+      bos.toString(StandardCharsets.UTF_8.name()) shouldEqual expected
+    }
+  }
+
+  it should "serialize inline ErrorCode" in {
+    val expected = """{"errorCode":"inline","severity":{"enumClass":"com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest$Severity","value":"INFORMATION"}}"""
+    val errorCode = new ErrorCode {
+      override val errorCode: String = "inline"
+      override val severity: Severity = Severity.INFORMATION
+    }
+    serialize(errorCode) shouldEqual expected
+    val provider = new JacksonJsonProvider()
+    provider.setMapper(newMapper)
+    Using.resource(new ByteArrayOutputStream()) { bos =>
+      provider.writeTo(errorCode, classOf[ErrorCode], None.orNull, Array(), MediaType.APPLICATION_JSON_TYPE,
+        None.orNull, bos)
+      bos.toString(StandardCharsets.UTF_8.name()) shouldEqual expected
+    }
+  }
+
 }
