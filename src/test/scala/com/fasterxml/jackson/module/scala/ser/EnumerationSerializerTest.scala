@@ -115,4 +115,13 @@ class EnumerationSerializerTest extends SerializerTest {
   it should "serialize ErrorCode" in {
     serialize(GeneralErrorCodes.GEN001) shouldEqual """{"errorCode":"GEN001","severity":{"enumClass":"com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest$Severity","value":"FAIL"}}"""
   }
+
+  it should "serialize inline ErrorCode" in {
+    val errorCode = new ErrorCode {
+      override val errorCode: String = "inline"
+      override val severity: Severity = Severity.INFORMATION
+    }
+    serialize(errorCode) shouldEqual """{"errorCode":"inline","severity":{"enumClass":"com.fasterxml.jackson.module.scala.ser.EnumerationSerializerTest$Severity","value":"INFORMATION"}}"""
+  }
+
 }
