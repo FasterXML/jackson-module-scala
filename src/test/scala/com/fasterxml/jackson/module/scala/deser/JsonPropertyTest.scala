@@ -19,7 +19,7 @@ class JsonPropertyTest extends DeserializerTest {
   def module: DefaultScalaModule.type = DefaultScalaModule
 
   //works in jackson-module-scala 2.13
-  "ObjectMapper deserialization " should "support JsonProperty annotation" ignore {
+  "ObjectMapper deserialization" should "support JsonProperty annotation" ignore {
     val json = """{"v": 1}"""
     val token = deserialize(json, classOf[Sample1])
     token.getValue shouldEqual 1
