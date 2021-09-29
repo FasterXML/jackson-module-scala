@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 //https://github.com/FasterXML/jackson-module-scala/issues/224
-object JsonPropertyTest {
-  //this version causes problems in jackson3 - deserialization fails - Sample2 is safer
+object JsonPropertyDeserializerTest {
+  //try multiple variants because some variants have caused more issues than others
   class Sample1 {
     @JsonProperty("v") private var value: Int = 0
 
@@ -14,7 +14,6 @@ object JsonPropertyTest {
     def setValue(value: Int): Unit  = {this.value = value}
   }
 
-  //this version causes problems in jackson3 - deserialization fails - Sample2 is safer
   class Sample1a {
     @JsonProperty("v") var value: Int = 0
   }
@@ -27,8 +26,8 @@ object JsonPropertyTest {
   }
 }
 
-class JsonPropertyTest extends DeserializerTest {
-  import JsonPropertyTest._
+class JsonPropertyDeserializerTest extends DeserializerTest {
+  import JsonPropertyDeserializerTest._
   def module: DefaultScalaModule.type = DefaultScalaModule
 
   "ObjectMapper deserialization" should "support JsonProperty annotation" in {
