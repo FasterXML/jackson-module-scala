@@ -1,13 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.deser.JsonPropertyTest.Sample1
 
 //https://github.com/FasterXML/jackson-module-scala/issues/224
 object JsonPropertyTest {
-  @JsonIgnoreProperties(ignoreUnknown = true)
   class Sample1 {
     @JsonProperty("v") private var value: Int = 0
 
