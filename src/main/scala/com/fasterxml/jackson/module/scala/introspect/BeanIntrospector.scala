@@ -192,7 +192,7 @@ object BeanIntrospector {
       if (isScalaObject || scalaCaseObject || isAcceptableField(field))
       beanGetter = findBeanGetter(cls, name)
       beanSetter = findBeanSetter(cls, name)
-    } yield PropertyDescriptor(name, findConstructorParam(hierarchy.head, name), Some(field), findGetter(cls, name), findSetter(cls, name), beanGetter, beanSetter)
+    } yield PropertyDescriptor(nameOfField(field, name), findConstructorParam(hierarchy.head, name), Some(field), findGetter(cls, name), findSetter(cls, name), beanGetter, beanSetter)
 
     //this will create properties for all methods with a non-Unit/Void return type and no arguments
     //that also have a setter present that matches the pattern 'propertyName'+'_='.
@@ -240,6 +240,13 @@ object BeanIntrospector {
     }
 
     BeanDescriptor(cls, fields ++ methods ++ lazyValMethods)
+  }
+
+  private def nameOfField(field: Field, originalName: String): String = {
+    Option(field.getAnnotation(classOf[JsonProperty])) match {
+      case Some(ann) if ann.value().nonEmpty => ann.value()
+      case _ => originalName
+    }
   }
 
   private def getCtorParams(ctor: Constructor[_]): Seq[String] = {

@@ -33,11 +33,10 @@ class JsonPropertyTest extends DeserializerTest {
 
   "ObjectMapper deserialization" should "support JsonProperty annotation" in {
     val json = """{"v": 1}"""
-    //TODO fix - these following tests work in jackson-module-scala 2.13
-    //val token1 = deserialize(json, classOf[Sample1])
-    //token1.getValue shouldEqual 1
-    //val token1a = deserialize(json, classOf[Sample1a])
-    //token1a.value shouldEqual 1
+    val token1 = deserialize(json, classOf[Sample1])
+    token1.getValue shouldEqual 1
+    val token1a = deserialize(json, classOf[Sample1a])
+    token1a.value shouldEqual 1
     val token2 = deserialize(json, classOf[Sample2])
     token2.getValue shouldEqual 1
   }
