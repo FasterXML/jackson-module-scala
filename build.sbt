@@ -93,7 +93,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
-  "io.swagger" % "swagger-core" % "1.6.2" % Test,
+  "io.swagger" % "swagger-core" % "1.6.3" % Test,
   "org.scalatest" %% "scalatest" % "3.2.10" % Test
 )
 
