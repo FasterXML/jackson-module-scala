@@ -1,12 +1,9 @@
-import java.io.File
 import com.typesafe.tools.mima.core._
 
 // Basic facts
 name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
-
-//ThisBuild / version := "2.13.0-rc3-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.6"
 
@@ -78,8 +75,8 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.13.0-SNAPSHOT"
-val jacksonJsonSchemaVersion = "2.13.0-rc2"
+val jacksonVersion = "2.13.0"
+val jacksonJsonSchemaVersion = "2.13.0"
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
