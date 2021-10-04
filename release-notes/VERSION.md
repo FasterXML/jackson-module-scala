@@ -1,4 +1,4 @@
-# Version: 2.13.0 (not yet released)
+# Version: 2.13.0
 
 This patch release tracks Jackson 2.13.0. The 2.13 series has full support for Scala 2.11, 2.12, 2.13 and 3.0.
 Java 8 is the minimum supported Java version.
