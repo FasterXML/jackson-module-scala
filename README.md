@@ -1,5 +1,5 @@
 ![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=2.13)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.12)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13)
 
 # Overview
 
@@ -34,11 +34,10 @@ the minimum supported version now.
 
 ## Scala 3
 
-[Scala 3 support](https://github.com/FasterXML/jackson-module-scala/issues?q=is%3Aissue+is%3Aopen+label%3Ascala3) will be added in v2.13.0.
+[Scala 3 support](https://github.com/FasterXML/jackson-module-scala/issues?q=is%3Aissue+is%3Aopen+label%3Ascala3) was added in v2.13.0.
 This support is still deemed to be experimental. Code contributions are welcomed.
 * ScalaObjectMapper is not supported for Scala 3 but ClassTagExtensions is its replacement. (https://github.com/FasterXML/jackson-module-scala/issues/503)
-* v2.13.0-SNAPSHOT is published for Scala 3.0.0
-* There are still a number of tests that work with Scala 2 that fail with Scala 3
+* There are still a few tests that work with Scala 2 that fail with Scala 3
 * It is expected that most use cases should work ok with Scala 3
   * Known issues with using jackson-module-scala with Scala 3 are tracked at https://github.com/FasterXML/jackson-module-scala/labels/scala3
   * There has been no testing of using Scala 3 classes with Scala 2 jackson-module-scala or Scala 2 classes with Scala 3 jackson-module-scala
