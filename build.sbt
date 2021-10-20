@@ -105,11 +105,12 @@ Compile / resourceGenerators += Def.task {
 Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
-ThisBuild / githubWorkflowJavaVersions := Seq("adopt@1.8", "adopt@1.11")
+ThisBuild / githubWorkflowJavaVersions := Seq("zulu@1.8.282", "zulu@1.11.0-10", "zulu@1.17.0-0")
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("master")),
+  RefPredicate.Equals(Ref.Branch("2.14")),
   RefPredicate.Equals(Ref.Branch("2.13")),
   RefPredicate.StartsWith(Ref.Tag("v"))
 )
