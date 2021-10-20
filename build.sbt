@@ -96,7 +96,7 @@ Compile / resourceGenerators += Def.task {
 Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
-ThisBuild / githubWorkflowJavaVersions := Seq("adopt@1.8", "adopt@1.11", "adopt@1.16")
+ThisBuild / githubWorkflowJavaVersions := Seq("temurin@1.8", "temurin@1.11", "temurin@1.17")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("master")),
