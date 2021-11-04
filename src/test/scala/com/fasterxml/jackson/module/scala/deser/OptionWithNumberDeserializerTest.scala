@@ -12,6 +12,7 @@ object OptionWithNumberDeserializerTest {
   case class OptionLong(valueLong: Option[Long])
   case class OptionJavaLong(valueLong: Option[java.lang.Long])
   case class OptionBigInt(value: Option[BigInt])
+  case class WrappedOptionLong(text: String, wrappedLong: OptionLong)
 }
 
 class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAfterEach {
@@ -41,14 +42,24 @@ class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAf
     useOptionLong(v1.valueLong) shouldBe 302L
   }
 
-  it should "deserialize OptionLong" in {
+  it should "deserialize OptionLong when registerReferencedValueType is used" in {
     ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
     val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
     v1 shouldBe OptionLong(Some(151L))
     v1.valueLong.get shouldBe 151L
-    //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
+    //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospector.registerReferencedValueType
     //or use one of the equivalent classes in OptionWithNumberDeserializerTest
     useOptionLong(v1.valueLong) shouldBe 302L
+  }
+
+  it should "deserialize WrappedOptionLong when registerReferencedValueType is used" in {
+    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    val v1 = deserialize("""{"text":"myText","wrappedLong":{"valueLong":151}}""", classOf[WrappedOptionLong])
+    v1 shouldBe WrappedOptionLong("myText", OptionLong(Some(151L)))
+    v1.wrappedLong.valueLong.get shouldBe 151L
+    //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospector.registerReferencedValueType
+    //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+    useOptionLong(v1.wrappedLong.valueLong) shouldBe 302L
   }
 
   it should "fail to deserialize OptionLong when value is text" in {
