@@ -21,7 +21,7 @@ object ClassTagExtensions {
 }
 
 /**
- * Experimental ClassTag equivalent of ScalaObjectMapper.
+ * ClassTag equivalent of {@link ScalaObjectMapper} (which it is meant to replace).
  * This only works with non parameterized types or parameterized types up to 5 type parameters.
  */
 trait ClassTagExtensions {
