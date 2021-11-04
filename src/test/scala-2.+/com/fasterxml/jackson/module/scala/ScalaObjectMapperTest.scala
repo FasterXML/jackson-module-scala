@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, TWrapper}
+import com.fasterxml.jackson.module.scala.deser.OptionWithNumberDeserializerTest.{OptionLong, WrappedOptionLong}
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 
 import java.io.{ByteArrayInputStream, File, InputStreamReader}
 import java.nio.charset.StandardCharsets
@@ -313,6 +315,16 @@ class ScalaObjectMapperTest extends JacksonTest {
     qux.qux.num shouldEqual 3
   }
 
+  it should "deserialize WrappedOptionLong" in {
+    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    val v1 = mapper.readValue[WrappedOptionLong]("""{"text":"myText","wrappedLong":{"valueLong":151}}""")
+    v1 shouldBe WrappedOptionLong("myText", OptionLong(Some(151L)))
+    v1.wrappedLong.valueLong.get shouldBe 151L
+    //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospector.registerReferencedValueType
+    //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+    useOptionLong(v1.wrappedLong.valueLong) shouldBe 302L
+  }
+
   // No tests for the following functions:
   //  def acceptJsonFormatVisitor[T: Manifest](visitor: JsonFormatVisitorWrapper): Unit
 
@@ -342,4 +354,6 @@ class ScalaObjectMapperTest extends JacksonTest {
   private def newMapperWithScalaObjectMapper: JsonMapper with ScalaObjectMapper = {
     newBuilder.build() :: ScalaObjectMapper
   }
+
+  private def useOptionLong(v: Option[Long]): Long = v.map(_ * 2).getOrElse(0L)
 }
