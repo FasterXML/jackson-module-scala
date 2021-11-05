@@ -83,7 +83,7 @@ val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
 val myMap = mapper.readValue(src, new TypeReference[Map[String,Tuple2[Int,Int]]]{})
 ```
 
-Consult the [Scaladoc](http://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
+Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
 
 # Building
 
@@ -130,14 +130,14 @@ In addition other Jackson developers with similar access (but less active) inclu
 
 # Acknowledgements
 
-[![Developed with IntelliJ IDEA](http://www.jetbrains.com/img/logos/logo_intellij_idea.png "Developed with IntelliJ IDEA")](http://www.jetbrains.com/idea/features/scala.html)
+[![Developed with IntelliJ IDEA](https://www.jetbrains.com/img/logos/logo_intellij_idea.png "Developed with IntelliJ IDEA")](https://www.jetbrains.com/idea/features/scala.html)
 
 [Jackson]: https://github.com/FasterXML/jackson
-[SAX]: http://www.saxproject.org/
-[DOM]: http://www.w3.org/TR/DOM-Level-3-Core/
-[JAXB]: http://jaxb.java.net/
-[Jersey]: http://jersey.java.net/
-[Java Bean]: http://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
-[Scala]: http://www.scala-lang.org/
+[SAX]: https://www.saxproject.org/
+[DOM]: https://www.w3.org/TR/DOM-Level-3-Core/
+[JAXB]: https://jaxb.java.net/
+[Jersey]: https://jersey.java.net/
+[Java Bean]: https://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
+[Scala]: httsp://www.scala-lang.org/
 [Wiki]: https://github.com/FasterXML/jackson-module-scala/wiki
-[API]: http://fasterxml.github.io/jackson-module-scala/latest/api/#com.fasterxml.jackson.module.scala.package
+[API]: https://fasterxml.github.io/jackson-module-scala/latest/api/#com.fasterxml.jackson.module.scala.package
