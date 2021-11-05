@@ -138,6 +138,6 @@ In addition other Jackson developers with similar access (but less active) inclu
 [JAXB]: https://jaxb.java.net/
 [Jersey]: https://jersey.java.net/
 [Java Bean]: https://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
-[Scala]: httsp://www.scala-lang.org/
+[Scala]: https://www.scala-lang.org/
 [Wiki]: https://github.com/FasterXML/jackson-module-scala/wiki
 [API]: https://fasterxml.github.io/jackson-module-scala/latest/api/#com.fasterxml.jackson.module.scala.package
