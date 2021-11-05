@@ -107,7 +107,7 @@ Compile / resourceGenerators += Def.task {
 Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
-ThisBuild / githubWorkflowJavaVersions := Seq("zulu@1.8.282", "zulu@1.11.0-10", "zulu@1.17.0-0")
+ThisBuild / githubWorkflowJavaVersions := Seq("zulu@1.8", "zulu@1.11", "zulu@1.17.0-0")
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
