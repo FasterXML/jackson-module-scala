@@ -7,8 +7,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.json.JsonFactory
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.ser.ContextualSerializer
-import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, MapperFeature, ObjectMapper, SerializerProvider}
+import com.fasterxml.jackson.databind.{BeanDescription, MapperFeature, ObjectMapper, SerializerProvider, ValueSerializer}
 import com.fasterxml.jackson.module.scala.deser.PrimitiveContainerTest.OptionLong
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.Outcome
