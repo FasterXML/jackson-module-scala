@@ -35,6 +35,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @param clazz the (case) class
    * @param fieldName the field name in the (case) class
    * @param referencedType the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
+   * @see [[getRegisteredReferencedValueType]]
    * @see [[clearRegisteredReferencedTypes()]]
    * @see [[clearRegisteredReferencedTypes(Class[_])]]
    * @since 2.13.0
