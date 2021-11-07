@@ -48,6 +48,27 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   /**
+   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
+   * Scala primitives (eg Int, Long, Boolean).
+   * <p>
+   * This function is experimental and may be removed or significantly reworked in a later release.
+   * <p>
+   * These issues can be worked around by adding Jackson annotations on the affected fields.
+   * This function is designed to be used when it is not possible to apply Jackson annotations.
+   *
+   * @param clazz the (case) class
+   * @param fieldName the field name in the (case) class
+   * @return the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
+   * @see [[registerReferencedValueType]]
+   * @since 2.13.1
+   */
+  def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
+    overrideMap.get(clazz).flatMap { overrides =>
+      overrides.overrides.get(fieldName).flatMap(_.valueClass)
+    }
+  }
+
+  /**
    * clears the state associated with reference types for the given class
    *
    * @param clazz the class for which to remove the registered reference types
