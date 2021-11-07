@@ -7,7 +7,8 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
-import com.fasterxml.jackson.databind.{BeanDescription, DeserializationFeature, JsonSerializer, MapperFeature, ObjectMapper, SerializerProvider}
+import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, MapperFeature, ObjectMapper, SerializerProvider}
+import com.fasterxml.jackson.module.scala.deser.PrimitiveContainerTest.OptionLong
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
@@ -187,6 +188,19 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     withNulls.a shouldBe null
     withNulls.b shouldBe None
     withNulls.c shouldBe None
+  }
+
+  it should "register and retrieve refernce type override" in { _ =>
+    val caseClass = classOf[OptionLong]
+    val refClass = classOf[Long]
+    ScalaAnnotationIntrospector.getRegisteredReferencedValueType(caseClass, "value") shouldBe empty
+    try {
+      ScalaAnnotationIntrospector.registerReferencedValueType(caseClass, "value", refClass)
+      ScalaAnnotationIntrospector.getRegisteredReferencedValueType(caseClass, "value") shouldEqual Some(refClass)
+    } finally {
+      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes(caseClass)
+      ScalaAnnotationIntrospector.getRegisteredReferencedValueType(caseClass, "value") shouldBe empty
+    }
   }
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
