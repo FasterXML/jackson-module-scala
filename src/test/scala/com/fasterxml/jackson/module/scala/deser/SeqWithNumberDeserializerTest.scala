@@ -40,11 +40,15 @@ class SeqWithNumberDeserializerTest extends DeserializerTest with BeforeAndAfter
 
   it should "deserialize SeqLong" in {
     ScalaAnnotationIntrospector.registerReferencedValueType(classOf[SeqLong], "longs", classOf[Long])
-    val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[SeqLong])
-    v1 shouldBe SeqLong(Seq(151L, 152L, 153L))
-    //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
-    //or use one of the equivalent classes in SeqWithNumberDeserializerTest
-    sumSeqLong(v1.longs) shouldBe 456L
+    try {
+      val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[SeqLong])
+      v1 shouldBe SeqLong(Seq(151L, 152L, 153L))
+      //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
+      //or use one of the equivalent classes in SeqWithNumberDeserializerTest
+      sumSeqLong(v1.longs) shouldBe 456L
+    } finally {
+      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+    }
   }
 
   it should "deserialize SeqJavaLong" in {
