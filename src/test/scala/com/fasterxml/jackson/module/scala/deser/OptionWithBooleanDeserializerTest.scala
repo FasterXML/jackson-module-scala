@@ -47,10 +47,14 @@ class OptionWithBooleanDeserializerTest extends DeserializerTest with BeforeAndA
 
   it should "deserialize OptionBoolean (with registerReferencedValueType)" in {
     ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionBoolean], "valueBoolean", classOf[Boolean])
-    val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionBoolean])
-    v1 shouldBe OptionBoolean(Some(false))
-    v1.valueBoolean.get shouldBe false
-    useOptionBoolean(v1.valueBoolean) shouldBe "false"
+    try {
+      val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionBoolean])
+      v1 shouldBe OptionBoolean(Some(false))
+      v1.valueBoolean.get shouldBe false
+      useOptionBoolean(v1.valueBoolean) shouldBe "false"
+    } finally {
+      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+    }
   }
 
   it should "deserialize OptionJavaBoolean" in {

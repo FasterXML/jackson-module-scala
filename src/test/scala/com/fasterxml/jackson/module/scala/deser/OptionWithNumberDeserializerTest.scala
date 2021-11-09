@@ -44,22 +44,30 @@ class OptionWithNumberDeserializerTest extends DeserializerTest with BeforeAndAf
 
   it should "deserialize OptionLong when registerReferencedValueType is used" in {
     ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
-    val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
-    v1 shouldBe OptionLong(Some(151L))
-    v1.valueLong.get shouldBe 151L
-    //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospector.registerReferencedValueType
-    //or use one of the equivalent classes in OptionWithNumberDeserializerTest
-    useOptionLong(v1.valueLong) shouldBe 302L
+    try {
+      val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
+      v1 shouldBe OptionLong(Some(151L))
+      v1.valueLong.get shouldBe 151L
+      //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospector.registerReferencedValueType
+      //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+      useOptionLong(v1.valueLong) shouldBe 302L
+    } finally {
+      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+    }
   }
 
   it should "deserialize WrappedOptionLong when registerReferencedValueType is used" in {
     ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
-    val v1 = deserialize("""{"text":"myText","wrappedLong":{"valueLong":151}}""", classOf[WrappedOptionLong])
-    v1 shouldBe WrappedOptionLong("myText", OptionLong(Some(151L)))
-    v1.wrappedLong.valueLong.get shouldBe 151L
-    //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospector.registerReferencedValueType
-    //or use one of the equivalent classes in OptionWithNumberDeserializerTest
-    useOptionLong(v1.wrappedLong.valueLong) shouldBe 302L
+    try {
+      val v1 = deserialize("""{"text":"myText","wrappedLong":{"valueLong":151}}""", classOf[WrappedOptionLong])
+      v1 shouldBe WrappedOptionLong("myText", OptionLong(Some(151L)))
+      v1.wrappedLong.valueLong.get shouldBe 151L
+      //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospector.registerReferencedValueType
+      //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+      useOptionLong(v1.wrappedLong.valueLong) shouldBe 302L
+    } finally {
+      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+    }
   }
 
   it should "fail to deserialize OptionLong when value is text" in {
