@@ -40,11 +40,15 @@ class MapWithNumberValueDeserializerTest extends DeserializerTest with BeforeAnd
 
   it should "deserialize MapLong" in {
     ScalaAnnotationIntrospector.registerReferencedValueType(classOf[MapLong], "longs", classOf[Long])
-    val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[MapLong])
-    v1 shouldBe MapLong(Map("151" -> 151L, "152" -> 152L, "153" -> 153L))
-    //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
-    //or use one of the equivalent classes in MapWithNumberDeserializerTest
-    sumMapLong(v1.longs) shouldBe 456L
+    try {
+      val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[MapLong])
+      v1 shouldBe MapLong(Map("151" -> 151L, "152" -> 152L, "153" -> 153L))
+      //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
+      //or use one of the equivalent classes in MapWithNumberDeserializerTest
+      sumMapLong(v1.longs) shouldBe 456L
+    } finally {
+      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+    }
   }
 
   it should "deserialize MapJavaLong" in {

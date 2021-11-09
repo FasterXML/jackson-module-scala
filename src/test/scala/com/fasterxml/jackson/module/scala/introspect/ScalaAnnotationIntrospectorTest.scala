@@ -192,7 +192,7 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     withNulls.c shouldBe None
   }
 
-  it should "register and retrieve refernce type override" in { _ =>
+  it should "register and retrieve reference type override" in { _ =>
     val caseClass = classOf[OptionLong]
     val refClass = classOf[Long]
     ScalaAnnotationIntrospector.getRegisteredReferencedValueType(caseClass, "value") shouldBe empty
