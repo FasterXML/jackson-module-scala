@@ -13,6 +13,9 @@ import scala.compat.java8.FunctionConverters
 object SeqDeserializerTest {
   case class JavaListWrapper(s: java.util.ArrayList[String])
   case class SeqWrapper(s: Seq[String])
+
+  case class SeqOptionString(values: Seq[Option[String]])
+  case class WrappedSeqOptionString(text: String, wrappedStrings: SeqOptionString)
 }
 
 class SeqDeserializerTest extends DeserializerTest {
@@ -190,11 +193,41 @@ class SeqDeserializerTest extends DeserializerTest {
     result shouldEqual Seq(Seq(1,2,3),Seq(4,5,6))
   }
 
+  it should "deserialize a seq of options" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val s1 = Seq(Some("string1"), Some("string2"), None)
+    val t1 = mapper.writeValueAsString(s1)
+    val v1 = mapper.readValue(t1, new TypeReference[Seq[Option[String]]]{})
+    v1 shouldEqual s1
+  }
+
+  it should "deserialize case class with a seq of options" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val s1 = SeqOptionString(Seq(Some("string1"), Some("string2"), None))
+    val t1 = mapper.writeValueAsString(s1)
+    val v1 = mapper.readValue(t1, classOf[SeqOptionString])
+    v1 shouldEqual s1
+  }
+
+  it should "deserialize case class nested with a seq of options" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val w1 = WrappedSeqOptionString("myText", SeqOptionString(Seq(Some("string1"), Some("string2"), None)))
+    val t1 = mapper.writeValueAsString(w1)
+    val v1 = mapper.readValue(t1, classOf[WrappedSeqOptionString])
+    v1 shouldEqual w1
+  }
+
   it should "handle conversion of null to empty collection" in {
     val mapper = JsonMapper.builder()
       .addModule(DefaultScalaModule)
       .changeDefaultNullHandling(FunctionConverters.asJavaUnaryOperator(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY)))
       .build()
+  }
+
+  it should "handle AS_NULL" in {
+    val mapper = new ObjectMapper
+    mapper.registerModule(new DefaultScalaModule)
+    mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
     val json = """{"s": null}"""
     val result1 = mapper.readValue(json, classOf[JavaListWrapper])
     result1 shouldEqual JavaListWrapper(new java.util.ArrayList[String]())
