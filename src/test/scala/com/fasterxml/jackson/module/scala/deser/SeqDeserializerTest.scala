@@ -194,13 +194,21 @@ class SeqDeserializerTest extends DeserializerTest {
 
   it should "deserialize a seq of options" in {
     val mapper = newMapper
+    val s1 = Seq(Some("string1"), Some("string2"), None)
+    val t1 = mapper.writeValueAsString(s1)
+    val v1 = mapper.readValue(t1, classOf[Seq[Option[String]]])
+    v1 shouldEqual s1
+  }
+
+  it should "deserialize case class with a seq of options" in {
+    val mapper = newMapper
     val s1 = SeqOptionString(Seq(Some("string1"), Some("string2"), None))
     val t1 = mapper.writeValueAsString(s1)
     val v1 = mapper.readValue(t1, classOf[SeqOptionString])
     v1 shouldEqual s1
   }
 
-  it should "deserialize case class with a seq of options" in {
+  it should "deserialize case class nested with a seq of options" in {
     val mapper = newMapper
     val w1 = WrappedSeqOptionString("myText", SeqOptionString(Seq(Some("string1"), Some("string2"), None)))
     val t1 = mapper.writeValueAsString(w1)
