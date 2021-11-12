@@ -12,6 +12,9 @@ import scala.collection.{immutable, mutable}
 object SeqDeserializerTest {
   case class JavaListWrapper(s: java.util.ArrayList[String])
   case class SeqWrapper(s: Seq[String])
+
+  case class SeqOptionString(values: Seq[Option[String]])
+  case class WrappedSeqOptionString(text: String, wrappedStrings: SeqOptionString)
 }
 
 class SeqDeserializerTest extends DeserializerTest {
@@ -187,6 +190,22 @@ class SeqDeserializerTest extends DeserializerTest {
   it should "deserialize a nested seq into an immutable Seq" in {
     val result = deserialize(nestedJson, classOf[immutable.Seq[Seq[Int]]], classOf[Seq[Int]])
     result shouldEqual Seq(Seq(1,2,3),Seq(4,5,6))
+  }
+
+  it should "deserialize a seq of options" in {
+    val mapper = newMapper
+    val s1 = SeqOptionString(Seq(Some("string1"), Some("string2"), None))
+    val t1 = mapper.writeValueAsString(s1)
+    val v1 = mapper.readValue(t1, classOf[SeqOptionString])
+    v1 shouldEqual s1
+  }
+
+  it should "deserialize case class with a seq of options" in {
+    val mapper = newMapper
+    val w1 = WrappedSeqOptionString("myText", SeqOptionString(Seq(Some("string1"), Some("string2"), None)))
+    val t1 = mapper.writeValueAsString(w1)
+    val v1 = mapper.readValue(t1, classOf[WrappedSeqOptionString])
+    v1 shouldEqual w1
   }
 
   it should "handle AS_NULL" in {
