@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.{JsonMappingException, Module, ObjectMapper}
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, TWrapper}
 import com.fasterxml.jackson.module.scala.deser.OptionWithNumberDeserializerTest.{OptionLong, WrappedOptionLong}
+import com.fasterxml.jackson.module.scala.deser.SeqDeserializerTest.{SeqOptionString, WrappedSeqOptionString}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 
 import scala.collection.JavaConverters._
@@ -301,6 +302,27 @@ class ClassTagExtensionsTest extends JacksonTest {
     } finally {
       ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
     }
+  }
+
+  it should "deserialize a seq of options" in {
+    val s1 = Seq(Some("string1"), Some("string2"), None)
+    val t1 = mapper.writeValueAsString(s1)
+    val v1 = mapper.readValue[Seq[Option[String]]](t1)
+    v1 shouldEqual s1
+  }
+
+  it should "deserialize case class with a seq of options" in {
+    val s1 = SeqOptionString(Seq(Some("string1"), Some("string2"), None))
+    val t1 = mapper.writeValueAsString(s1)
+    val v1 = mapper.readValue[SeqOptionString](t1)
+    v1 shouldEqual s1
+  }
+
+  it should "deserialize case class nested with a seq of options" in {
+    val w1 = WrappedSeqOptionString("myText", SeqOptionString(Seq(Some("string1"), Some("string2"), None)))
+    val t1 = mapper.writeValueAsString(w1)
+    val v1 = mapper.readValue[WrappedSeqOptionString](t1)
+    v1 shouldEqual w1
   }
 
   "JavaTypeable" should "handle Option[Int]" in {
