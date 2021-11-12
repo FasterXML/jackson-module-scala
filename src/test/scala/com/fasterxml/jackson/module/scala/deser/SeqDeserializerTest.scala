@@ -222,12 +222,6 @@ class SeqDeserializerTest extends DeserializerTest {
       .addModule(DefaultScalaModule)
       .changeDefaultNullHandling(FunctionConverters.asJavaUnaryOperator(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY)))
       .build()
-  }
-
-  it should "handle AS_NULL" in {
-    val mapper = new ObjectMapper
-    mapper.registerModule(new DefaultScalaModule)
-    mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
     val json = """{"s": null}"""
     val result1 = mapper.readValue(json, classOf[JavaListWrapper])
     result1 shouldEqual JavaListWrapper(new java.util.ArrayList[String]())
