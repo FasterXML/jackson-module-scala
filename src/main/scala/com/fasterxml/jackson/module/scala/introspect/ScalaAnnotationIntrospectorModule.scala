@@ -315,7 +315,7 @@ private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refH
         updateReferenceType(rt, refHolder.valueClass.get)
       case ct: CollectionLikeType if refHolder.valueClass.isDefined =>
         updateCollectionType(ct, refHolder.valueClass.get)
-      case mt: MapLikeType =>
+      case mt: MapLikeType if refHolder.valueClass.isDefined =>
         updateMapType(mt, refHolder.valueClass.get)
       case other => other
     }
