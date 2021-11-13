@@ -342,16 +342,54 @@ private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refH
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
   override def getType(): JavaType = {
-    super.getType match {
+    super.getType() match {
       case rt: ReferenceType if refHolder.valueClass.isDefined =>
-        ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(refHolder.valueClass.get))
+        updateReferenceType(rt, refHolder.valueClass.get)
       case ct: CollectionLikeType if refHolder.valueClass.isDefined =>
-        CollectionLikeType.upgradeFrom(ct, SimpleType.constructUnsafe(refHolder.valueClass.get))
-      case mt: MapLikeType => {
-        val valueType = refHolder.valueClass.map(SimpleType.constructUnsafe).getOrElse(mt.getContentType)
-        MapLikeType.upgradeFrom(mt, mt.getKeyType, valueType)
-      }
+        updateCollectionType(ct, refHolder.valueClass.get)
+      case mt: MapLikeType if refHolder.valueClass.isDefined =>
+        updateMapType(mt, refHolder.valueClass.get)
       case other => other
     }
   }
+
+  private def updateReferenceType(rt: ReferenceType, newRefClass: Class[_]): ReferenceType = {
+    rt.getContentType match {
+      case innerRt: ReferenceType =>
+        ReferenceType.upgradeFrom(rt, updateReferenceType(innerRt, newRefClass))
+      case innerCt: CollectionLikeType =>
+        ReferenceType.upgradeFrom(rt, updateCollectionType(innerCt, newRefClass))
+      case innerMt: MapLikeType =>
+        ReferenceType.upgradeFrom(rt, updateMapType(innerMt, newRefClass))
+      case _ =>
+        ReferenceType.upgradeFrom(rt, SimpleType.constructUnsafe(newRefClass))
+    }
+  }
+
+  private def updateCollectionType(ct: CollectionLikeType, newRefClass: Class[_]): CollectionLikeType = {
+    ct.getContentType match {
+      case innerRt: ReferenceType =>
+        CollectionLikeType.upgradeFrom(ct, updateReferenceType(innerRt, newRefClass))
+      case innerCt: CollectionLikeType =>
+        CollectionLikeType.upgradeFrom(ct, updateCollectionType(innerCt, newRefClass))
+      case innerMt: MapLikeType =>
+        CollectionLikeType.upgradeFrom(ct, updateMapType(innerMt, newRefClass))
+      case _ =>
+        CollectionLikeType.upgradeFrom(ct, SimpleType.constructUnsafe(newRefClass))
+    }
+  }
+
+  private def updateMapType(mt: MapLikeType, newRefClass: Class[_]): MapLikeType = {
+    mt.getContentType match {
+      case innerRt: ReferenceType =>
+        MapLikeType.upgradeFrom(mt, mt.getKeyType, updateReferenceType(innerRt, newRefClass))
+      case innerCt: CollectionLikeType =>
+        MapLikeType.upgradeFrom(mt, mt.getKeyType, updateCollectionType(innerCt, newRefClass))
+      case innerMt: MapLikeType =>
+        MapLikeType.upgradeFrom(mt, mt.getKeyType, updateMapType(innerMt, newRefClass))
+      case _ =>
+        MapLikeType.upgradeFrom(mt, mt.getKeyType, SimpleType.constructUnsafe(newRefClass))
+    }
+  }
+
 }
