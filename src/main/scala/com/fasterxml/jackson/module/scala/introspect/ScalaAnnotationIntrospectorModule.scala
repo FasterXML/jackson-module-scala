@@ -322,7 +322,7 @@ private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refH
   }
 
   private def updateReferenceType(rt: ReferenceType, newRefClass: Class[_]): ReferenceType = {
-    rt.getReferencedType match {
+    rt.getContentType match {
       case innerRt: ReferenceType =>
         ReferenceType.upgradeFrom(rt, updateReferenceType(innerRt, newRefClass))
       case innerCt: CollectionLikeType =>
@@ -335,7 +335,7 @@ private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refH
   }
 
   private def updateCollectionType(ct: CollectionLikeType, newRefClass: Class[_]): CollectionLikeType = {
-    ct.getReferencedType match {
+    ct.getContentType match {
       case innerRt: ReferenceType =>
         CollectionLikeType.upgradeFrom(ct, updateReferenceType(innerRt, newRefClass))
       case innerCt: CollectionLikeType =>
