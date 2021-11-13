@@ -221,7 +221,7 @@ class SeqDeserializerTest extends DeserializerTest {
     v1 shouldEqual w1
   }
 
-  it should "deserialize case class with a seq of longs (when ScalaAnnotationIntropector register is used)" in {
+  it should "deserialize case class with a seq of longs (when ScalaAnnotationIntrospector register is used)" in {
     ScalaAnnotationIntrospector.registerReferencedValueType(classOf[SeqOptionLong], "values", classOf[Long])
     try {
       val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
