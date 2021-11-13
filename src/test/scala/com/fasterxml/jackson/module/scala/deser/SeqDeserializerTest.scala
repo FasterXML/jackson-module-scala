@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import scala.collection.{immutable, mutable}
@@ -16,6 +17,9 @@ object SeqDeserializerTest {
 
   case class SeqOptionString(values: Seq[Option[String]])
   case class WrappedSeqOptionString(text: String, wrappedStrings: SeqOptionString)
+
+  case class SeqOptionLong(values: Seq[Option[Long]])
+  case class WrappedSeqOptionLong(text: String, wrappedLongs: SeqOptionLong)
 }
 
 class SeqDeserializerTest extends DeserializerTest {
@@ -217,6 +221,20 @@ class SeqDeserializerTest extends DeserializerTest {
     v1 shouldEqual w1
   }
 
+  it should "deserialize case class with a seq of longs (when ScalaAnnotationIntropector register is used)" in {
+    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[SeqOptionLong], "values", classOf[Long])
+    try {
+      val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+      val w1 = WrappedSeqOptionLong("myText", SeqOptionLong(Seq(Some(100L), Some(100000000000000L), None)))
+      val t1 = mapper.writeValueAsString(w1)
+      val v1 = mapper.readValue(t1, classOf[WrappedSeqOptionLong])
+      v1 shouldEqual w1
+      v1.wrappedLongs.values.map(useOptionLong).sum shouldEqual w1.wrappedLongs.values.map(useOptionLong).sum
+    } finally {
+      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+    }
+  }
+
   it should "handle AS_NULL" in {
     val mapper = new ObjectMapper
     mapper.registerModule(new DefaultScalaModule)
@@ -231,4 +249,6 @@ class SeqDeserializerTest extends DeserializerTest {
   val listJson =  "[1,2,3,4,5,6]"
   val listScala: Range.Inclusive = 1 to 6
   val nestedJson =  "[[1,2,3],[4,5,6]]"
+
+  private def useOptionLong(v: Option[Long]): Long = v.map(_ * 2).getOrElse(0L)
 }
