@@ -4,17 +4,18 @@ import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.DefaultTyping
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 
 import scala.annotation.meta.field
 import scala.compat.java8.FunctionConverters
 
-case class UnavailableField(foo: Option[String])
-
-case class JavaOptionalWrapper(o: java.util.Optional[String])
-case class OptionWrapper(o: Option[String])
-
 object OptionDeserializerTest {
+  case class UnavailableField(foo: Option[String])
+  case class JavaOptionalWrapper(o: java.util.Optional[String])
+  case class OptionWrapper(o: Option[String])
+
   @JsonSubTypes(Array(new JsonSubTypes.Type(classOf[Impl])))
   trait Base
 
@@ -39,6 +40,9 @@ object OptionDeserializerTest {
   trait Marker
   case class AMarker(a: Int) extends Marker
   case class XMarker(x: Option[Marker])
+
+  case class OptionSeqLong(values: Option[Seq[Long]])
+  case class WrappedOptionSeqLong(text: String, wrappedLongs: OptionSeqLong)
 }
 
 class OptionDeserializerTest extends DeserializerTest {
@@ -116,5 +120,19 @@ class OptionDeserializerTest extends DeserializerTest {
     val str = mapper.writeValueAsString(v)
     val v2 = mapper.readValue(str, classOf[XMarker])
     v2 shouldEqual v
+  }
+
+  it should "deserialize case class with an option of seq of longs (when ScalaAnnotationIntrospector register is used)" in {
+    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionSeqLong], "values", classOf[Long])
+    try {
+      val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+      val w1 = WrappedOptionSeqLong("myText", OptionSeqLong(Option(Seq(100L, 100000000000000L))))
+      val t1 = mapper.writeValueAsString(w1)
+      val v1 = mapper.readValue(t1, classOf[WrappedOptionSeqLong])
+      v1 shouldEqual w1
+      v1.wrappedLongs.values.getOrElse(Seq.empty).sum shouldEqual w1.wrappedLongs.values.getOrElse(Seq.empty).sum
+    } finally {
+      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+    }
   }
 }
