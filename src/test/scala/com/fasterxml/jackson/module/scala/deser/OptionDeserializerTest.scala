@@ -41,6 +41,9 @@ object OptionDeserializerTest {
   case class AMarker(a: Int) extends Marker
   case class XMarker(x: Option[Marker])
 
+  case class OptionSeqString(values: Option[Seq[String]])
+  case class WrappedOptionSeqString(text: String, values: OptionSeqString)
+
   case class OptionSeqLong(values: Option[Seq[Long]])
   case class WrappedOptionSeqLong(text: String, wrappedLongs: OptionSeqLong)
 }
@@ -120,6 +123,14 @@ class OptionDeserializerTest extends DeserializerTest {
     val str = mapper.writeValueAsString(v)
     val v2 = mapper.readValue(str, classOf[XMarker])
     v2 shouldEqual v
+  }
+
+  it should "deserialize case class with an option of seq of strings" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val w1 = WrappedOptionSeqString("myText", OptionSeqString(Option(Seq("s1", "s2"))))
+    val t1 = mapper.writeValueAsString(w1)
+    val v1 = mapper.readValue(t1, classOf[WrappedOptionSeqString])
+    v1 shouldEqual w1
   }
 
   it should "deserialize case class with an option of seq of longs (when ScalaAnnotationIntrospector register is used)" in {
