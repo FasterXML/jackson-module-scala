@@ -148,5 +148,7 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule.overrideMap"),
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule.com$fasterxml$jackson$module$scala$introspect$ScalaAnnotationIntrospectorModule$_setter_$overrideMap_="),
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes"),
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule.registerReferencedValueType"),
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule.getRegisteredReferencedValueType"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector#ScalaValueInstantiator.this")
 )
