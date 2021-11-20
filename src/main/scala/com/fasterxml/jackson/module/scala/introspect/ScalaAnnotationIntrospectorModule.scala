@@ -28,41 +28,21 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @param clazz the (case) class
    * @param fieldName the field name in the (case) class
    * @param referencedType the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
-   * @see [[getRegisteredReferencedValueType]]
-   * @see [[clearRegisteredReferencedTypes()]]
-   * @see [[clearRegisteredReferencedTypes(Class[_])]]
+   * @see [[ScalaAnnotationIntrospectorModule.registerReferencedValueType()]]
    * @since 2.13.0
+   * @deprecated will be removed 2.14.0 in favour of the ScalaAnnotationIntrospectorModule version
    */
   def registerReferencedValueType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
     ScalaAnnotationIntrospectorModule.registerReferencedValueType(clazz, fieldName, referencedType)
   }
 
   /**
-   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
-   * Scala primitives (eg Int, Long, Boolean).
-   * <p>
-   * This function is experimental and may be removed or significantly reworked in a later release.
-   * <p>
-   * These issues can be worked around by adding Jackson annotations on the affected fields.
-   * This function is designed to be used when it is not possible to apply Jackson annotations.
-   *
-   * @param clazz the (case) class
-   * @param fieldName the field name in the (case) class
-   * @return the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
-   * @see [[registerReferencedValueType]]
-   * @since 2.13.1
-   */
-  def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
-    ScalaAnnotationIntrospectorModule.getRegisteredReferencedValueType(clazz, fieldName)
-  }
-
-  /**
    * clears the state associated with reference types for the given class
    *
    * @param clazz the class for which to remove the registered reference types
-   * @see [[registerReferencedValueType]]
-   * @see [[clearRegisteredReferencedTypes()]]
+   * @see [[ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes(Class[_])]]
    * @since 2.13.0
+   * @deprecated will be removed 2.14.0 in favour of the ScalaAnnotationIntrospectorModule version
    */
   def clearRegisteredReferencedTypes(clazz: Class[_]): Unit = {
     ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes(clazz)
@@ -71,14 +51,21 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   /**
    * clears all the state associated with reference types
    *
-   * @see [[registerReferencedValueType]]
-   * @see [[clearRegisteredReferencedTypes(Class[_])]]
+   * @see [[ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()]]
    * @since 2.13.0
+   * @deprecated will be removed 2.14.0 in favour of the ScalaAnnotationIntrospectorModule version
    */
   def clearRegisteredReferencedTypes(): Unit = {
     ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
   }
 
+  /**
+   * overrides the built-in descriptor cache (which has size 100)
+   *
+   * @see [[ScalaAnnotationIntrospectorModule.setDescriptorCache(LookupCache[ClassKey, BeanDescriptor])]]
+   * @since 2.13.0
+   * @deprecated will be removed 2.14.0 in favour of the ScalaAnnotationIntrospectorModule version
+   */
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
   }
@@ -314,7 +301,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @see [[getRegisteredReferencedValueType]]
    * @see [[clearRegisteredReferencedTypes()]]
    * @see [[clearRegisteredReferencedTypes(Class[_])]]
-   * @since 2.14.0
+   * @since 2.13.1
    */
   def registerReferencedValueType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
     val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
@@ -337,7 +324,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @param fieldName the field name in the (case) class
    * @return the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
    * @see [[registerReferencedValueType]]
-   * @since 2.14.0
+   * @since 2.13.1
    */
   def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
     overrideMap.get(clazz).flatMap { overrides =>
@@ -351,7 +338,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @param clazz the class for which to remove the registered reference types
    * @see [[registerReferencedValueType]]
    * @see [[clearRegisteredReferencedTypes()]]
-   * @since 2.14.0
+   * @since 2.13.1
    */
   def clearRegisteredReferencedTypes(clazz: Class[_]): Unit = {
     overrideMap.remove(clazz)
@@ -362,7 +349,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    *
    * @see [[registerReferencedValueType]]
    * @see [[clearRegisteredReferencedTypes(Class[_])]]
-   * @since 2.14.0
+   * @since 2.13.1
    */
   def clearRegisteredReferencedTypes(): Unit = {
     overrideMap.clear()
