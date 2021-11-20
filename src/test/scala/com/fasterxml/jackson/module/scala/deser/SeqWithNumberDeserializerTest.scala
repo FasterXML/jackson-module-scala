@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 import org.scalatest.BeforeAndAfterEach
 
 object SeqWithNumberDeserializerTest {
@@ -21,11 +21,6 @@ class SeqWithNumberDeserializerTest extends DeserializerTest with BeforeAndAfter
   private def sumSeqJavaLong(v: Seq[java.lang.Long]): Long = v.map(_.toLong).sum
   private def sumSeqBigInt(v: Seq[BigInt]): Long = v.sum.toLong
 
-  override def afterEach(): Unit = {
-    super.afterEach()
-    ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
-  }
-
   "JacksonModuleScala" should "deserialize AnnotatedSeqLong" in {
     val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[AnnotatedSeqLong])
     v1 shouldBe AnnotatedSeqLong(Seq(151L, 152L, 153L))
@@ -39,15 +34,15 @@ class SeqWithNumberDeserializerTest extends DeserializerTest with BeforeAndAfter
   }
 
   it should "deserialize SeqLong" in {
-    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[SeqLong], "longs", classOf[Long])
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[SeqLong], "longs", classOf[Long])
     try {
       val v1 = deserialize("""{"longs":[151,152,153]}""", classOf[SeqLong])
       v1 shouldBe SeqLong(Seq(151L, 152L, 153L))
-      //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
+      //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospectorModule.registerReferencedValueType
       //or use one of the equivalent classes in SeqWithNumberDeserializerTest
       sumSeqLong(v1.longs) shouldBe 456L
     } finally {
-      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
   }
 

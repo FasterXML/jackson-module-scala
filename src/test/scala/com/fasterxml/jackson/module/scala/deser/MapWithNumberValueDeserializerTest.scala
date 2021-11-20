@@ -2,8 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
-import org.scalatest.BeforeAndAfterEach
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 object MapWithNumberValueDeserializerTest {
   case class AnnotatedMapLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) longs: Map[String, Long])
@@ -13,18 +12,13 @@ object MapWithNumberValueDeserializerTest {
   case class MapBigInt(longs: Map[String, BigInt])
 }
 
-class MapWithNumberValueDeserializerTest extends DeserializerTest with BeforeAndAfterEach {
+class MapWithNumberValueDeserializerTest extends DeserializerTest {
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
   import MapWithNumberValueDeserializerTest._
 
   private def sumMapLong(m: Map[String, Long]): Long = m.values.sum
   private def sumMapJavaLong(m: Map[String, java.lang.Long]): Long = m.values.map(_.toLong).sum
   private def sumMapBigInt(m: Map[String, BigInt]): Long = m.values.sum.toLong
-
-  override def afterEach(): Unit = {
-    super.afterEach()
-    ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
-  }
 
   "JacksonModuleScala" should "deserialize AnnotatedMapLong" in {
     val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[AnnotatedMapLong])
@@ -39,15 +33,15 @@ class MapWithNumberValueDeserializerTest extends DeserializerTest with BeforeAnd
   }
 
   it should "deserialize MapLong" in {
-    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[MapLong], "longs", classOf[Long])
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[MapLong], "longs", classOf[Long])
     try {
       val v1 = deserialize("""{"longs":{"151":151,"152":152,"153":153}}""", classOf[MapLong])
       v1 shouldBe MapLong(Map("151" -> 151L, "152" -> 152L, "153" -> 153L))
-      //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospector.registerReferencedValueType
+      //this will next call will fail with a Scala unboxing exception unless you ScalaAnnotationIntrospectorModule.registerReferencedValueType
       //or use one of the equivalent classes in MapWithNumberDeserializerTest
       sumMapLong(v1.longs) shouldBe 456L
     } finally {
-      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
   }
 

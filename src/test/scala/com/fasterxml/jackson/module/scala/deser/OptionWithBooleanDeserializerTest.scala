@@ -2,8 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
-import org.scalatest.BeforeAndAfterEach
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 object OptionWithBooleanDeserializerTest {
   case class AnnotatedOptionBoolean(@JsonDeserialize(contentAs = classOf[java.lang.Boolean]) valueBoolean: Option[Boolean])
@@ -12,17 +11,12 @@ object OptionWithBooleanDeserializerTest {
   case class OptionJavaBoolean(valueBoolean: Option[java.lang.Boolean])
 }
 
-class OptionWithBooleanDeserializerTest extends DeserializerTest with BeforeAndAfterEach {
+class OptionWithBooleanDeserializerTest extends DeserializerTest {
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
   import OptionWithBooleanDeserializerTest._
 
   private def useOptionBoolean(v: Option[Boolean]): String = v.map(_.toString).getOrElse("null")
   private def useOptionJavaBoolean(v: Option[java.lang.Boolean]): String = v.map(_.toString).getOrElse("null")
-
-  override def afterEach(): Unit = {
-    super.afterEach()
-    ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
-  }
 
   "JacksonModuleScala" should "deserialize AnnotatedOptionBoolean" in {
     val v1 = deserialize("""{"valueBoolean":false}""", classOf[AnnotatedOptionBoolean])
@@ -46,14 +40,14 @@ class OptionWithBooleanDeserializerTest extends DeserializerTest with BeforeAndA
   }
 
   it should "deserialize OptionBoolean (with registerReferencedValueType)" in {
-    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionBoolean], "valueBoolean", classOf[Boolean])
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionBoolean], "valueBoolean", classOf[Boolean])
     try {
       val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionBoolean])
       v1 shouldBe OptionBoolean(Some(false))
       v1.valueBoolean.get shouldBe false
       useOptionBoolean(v1.valueBoolean) shouldBe "false"
     } finally {
-      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
   }
 
