@@ -16,7 +16,8 @@ import com.fasterxml.jackson.module.scala.util.Implicits._
 import java.lang.annotation.Annotation
 import scala.collection.mutable.{Map => MutableMap}
 
-class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends NopAnnotationIntrospector with ValueInstantiators {
+class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: ScalaAnnotationIntrospectorModule,
+                                          config: ScalaModule.Config) extends NopAnnotationIntrospector with ValueInstantiators {
   def propertyFor(a: Annotated): Option[PropertyDescriptor] = {
     a match {
       case ap: AnnotatedParameter =>
@@ -116,7 +117,7 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
                                        defaultInstantiator: ValueInstantiator): ValueInstantiator = {
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
-        if (ScalaAnnotationIntrospector.overrideMap.contains(beanDesc.getBeanClass) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
+        if (scalaAnnotationIntrospectorModule.overrideMap.contains(beanDesc.getBeanClass) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
           defaultInstantiator match {
             case std: StdValueInstantiator =>
               new ScalaValueInstantiator(config, std, deserializationConfig, descriptor)
@@ -136,11 +137,11 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
     if (clz.extendsScalaClass || clz.hasSignature) {
       val key = new ClassKey(clz)
-      Option(ScalaAnnotationIntrospector._descriptorCache.get(key)) match {
+      Option(scalaAnnotationIntrospectorModule._descriptorCache.get(key)) match {
         case Some(result) => Some(result)
         case _ => {
           val introspector = BeanIntrospector(clz)
-          ScalaAnnotationIntrospector._descriptorCache.put(key, introspector)
+          scalaAnnotationIntrospectorModule._descriptorCache.put(key, introspector)
           Some(introspector)
         }
       }
@@ -192,7 +193,7 @@ class ScalaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends No
     extends StdValueInstantiator(delegate) {
 
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
-      val overrides = ScalaAnnotationIntrospector.overrideMap.get(descriptor.beanType).map(_.overrides.toMap).getOrElse(Map.empty)
+      val overrides = scalaAnnotationIntrospectorModule.overrideMap.get(descriptor.beanType).map(_.overrides.toMap).getOrElse(Map.empty)
       val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES) &&
         config.shouldApplyDefaultValuesWhenDeserializing()
       val args = delegate.getFromObjectArguments(deserializationConfig)
@@ -242,22 +243,14 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
-    val sai = new ScalaAnnotationIntrospectorInstance(config)
+    val sai = new ScalaAnnotationIntrospectorInstance(this, config)
     builder += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(config)) }
     builder += { _.appendAnnotationIntrospector(sai) }
     builder += { _.addValueInstantiators(sai) }
     builder.build()
   }
 
-}
-
-object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
-
-object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder) {
-  private[introspect] case class ClassHolder(valueClass: Option[Class[_]] = None)
-  private[introspect] case class ClassOverrides(overrides: MutableMap[String, ScalaAnnotationIntrospector.ClassHolder] = MutableMap.empty)
-
-  private[introspect] val overrideMap = scala.collection.mutable.Map[Class[_], ClassOverrides]()
+  private[introspect] val overrideMap = MutableMap[Class[_], ClassOverrides]()
 
   private[introspect] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
@@ -283,7 +276,7 @@ object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(S
     val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
     overrides.get(fieldName) match {
       case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
-      case _ => overrides.put(fieldName, ScalaAnnotationIntrospector.ClassHolder(valueClass = Some(referencedType)))
+      case _ => overrides.put(fieldName, ClassHolder(valueClass = Some(referencedType)))
     }
   }
 
@@ -336,9 +329,12 @@ object ScalaAnnotationIntrospector extends ScalaAnnotationIntrospectorInstance(S
     _descriptorCache = cache
     existingCache
   }
+
 }
 
-private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospector.ClassHolder)
+object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
+
+private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ClassHolder)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
   override def getType(): JavaType = {

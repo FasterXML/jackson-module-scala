@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import java.util.UUID
@@ -222,7 +222,7 @@ class SeqDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize case class with a seq of longs (when ScalaAnnotationIntrospector register is used)" in {
-    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[SeqOptionLong], "values", classOf[Long])
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[SeqOptionLong], "values", classOf[Long])
     try {
       val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
       val w1 = WrappedSeqOptionLong("myText", SeqOptionLong(Seq(Some(100L), Some(100000000000000L), None)))
@@ -231,7 +231,7 @@ class SeqDeserializerTest extends DeserializerTest {
       v1 shouldEqual w1
       v1.wrappedLongs.values.map(useOptionLong).sum shouldEqual w1.wrappedLongs.values.map(useOptionLong).sum
     } finally {
-      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
   }
 
