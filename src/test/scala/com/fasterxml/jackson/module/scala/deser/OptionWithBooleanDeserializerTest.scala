@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 import org.scalatest.BeforeAndAfterEach
 
 object OptionWithBooleanDeserializerTest {
@@ -21,7 +21,7 @@ class OptionWithBooleanDeserializerTest extends DeserializerTest with BeforeAndA
 
   override def afterEach(): Unit = {
     super.afterEach()
-    ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+    ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
   }
 
   "JacksonModuleScala" should "deserialize AnnotatedOptionBoolean" in {
@@ -46,14 +46,14 @@ class OptionWithBooleanDeserializerTest extends DeserializerTest with BeforeAndA
   }
 
   it should "deserialize OptionBoolean (with registerReferencedValueType)" in {
-    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionBoolean], "valueBoolean", classOf[Boolean])
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionBoolean], "valueBoolean", classOf[Boolean])
     try {
       val v1 = deserialize("""{"valueBoolean":false}""", classOf[OptionBoolean])
       v1 shouldBe OptionBoolean(Some(false))
       v1.valueBoolean.get shouldBe false
       useOptionBoolean(v1.valueBoolean) shouldBe "false"
     } finally {
-      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
   }
 

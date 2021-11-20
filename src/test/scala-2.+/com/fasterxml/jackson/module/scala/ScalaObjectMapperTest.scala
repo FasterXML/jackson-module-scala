@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, TWrapper}
 import com.fasterxml.jackson.module.scala.deser.OptionWithNumberDeserializerTest.{OptionLong, WrappedOptionLong}
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 import java.io.{ByteArrayInputStream, File, InputStreamReader}
 import java.nio.charset.StandardCharsets
@@ -316,16 +316,16 @@ class ScalaObjectMapperTest extends JacksonTest {
   }
 
   it should "deserialize WrappedOptionLong" in {
-    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
     try {
       val v1 = mapper.readValue[WrappedOptionLong]("""{"text":"myText","wrappedLong":{"valueLong":151}}""")
       v1 shouldBe WrappedOptionLong("myText", OptionLong(Some(151L)))
       v1.wrappedLong.valueLong.get shouldBe 151L
-      //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospector.registerReferencedValueType
+      //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospectorModule.registerReferencedValueType
       //or use one of the equivalent classes in OptionWithNumberDeserializerTest
       useOptionLong(v1.wrappedLong.valueLong) shouldBe 302L
     } finally {
-      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
   }
 

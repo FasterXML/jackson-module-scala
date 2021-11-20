@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.DefaultTyping
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 import scala.annotation.meta.field
 import scala.compat.java8.FunctionConverters
@@ -134,7 +134,7 @@ class OptionDeserializerTest extends DeserializerTest {
   }
 
   it should "deserialize case class with an option of seq of longs (when ScalaAnnotationIntrospector register is used)" in {
-    ScalaAnnotationIntrospector.registerReferencedValueType(classOf[OptionSeqLong], "values", classOf[Long])
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionSeqLong], "values", classOf[Long])
     try {
       val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
       val w1 = WrappedOptionSeqLong("myText", OptionSeqLong(Option(Seq(100L, 100000000000000L))))
@@ -143,7 +143,7 @@ class OptionDeserializerTest extends DeserializerTest {
       v1 shouldEqual w1
       v1.wrappedLongs.values.getOrElse(Seq.empty).sum shouldEqual w1.wrappedLongs.values.getOrElse(Seq.empty).sum
     } finally {
-      ScalaAnnotationIntrospector.clearRegisteredReferencedTypes()
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
   }
 }
