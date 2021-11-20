@@ -15,13 +15,6 @@ import java.lang.annotation.Annotation
 import scala.collection.mutable.{Map => MutableMap}
 
 object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueInstantiators {
-  private[this] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
-    new LRUMap[ClassKey, BeanDescriptor](16, 100)
-
-  private[introspect] case class ClassHolder(valueClass: Option[Class[_]] = None)
-  private case class ClassOverrides(overrides: MutableMap[String, ClassHolder] = MutableMap.empty)
-
-  private val overrideMap = MutableMap[Class[_], ClassOverrides]()
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
@@ -41,11 +34,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.0
    */
   def registerReferencedValueType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
-    val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
-    overrides.get(fieldName) match {
-      case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
-      case _ => overrides.put(fieldName, ClassHolder(valueClass = Some(referencedType)))
-    }
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(clazz, fieldName, referencedType)
   }
 
   /**
@@ -64,9 +53,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.1
    */
   def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
-    overrideMap.get(clazz).flatMap { overrides =>
-      overrides.overrides.get(fieldName).flatMap(_.valueClass)
-    }
+    ScalaAnnotationIntrospectorModule.getRegisteredReferencedValueType(clazz, fieldName)
   }
 
   /**
@@ -78,7 +65,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.0
    */
   def clearRegisteredReferencedTypes(clazz: Class[_]): Unit = {
-    overrideMap.remove(clazz)
+    ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes(clazz)
   }
 
   /**
@@ -89,13 +76,11 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.0
    */
   def clearRegisteredReferencedTypes(): Unit = {
-    overrideMap.clear()
+    ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
   }
 
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
-    val existingCache = _descriptorCache
-    _descriptorCache = cache
-    existingCache
+    ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
   }
 
   def propertyFor(a: Annotated): Option[PropertyDescriptor] = {
@@ -178,11 +163,13 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
-  private class ScalaValueInstantiator(delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor)
+  private class ScalaValueInstantiator(scalaAnnotationIntrospectorModule: ScalaAnnotationIntrospectorModule,
+                                       delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor)
     extends StdValueInstantiator(delegate) {
 
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
-      val overrides = overrideMap.get(descriptor.beanType).map(_.overrides.toMap).getOrElse(Map.empty)
+      val overrides = scalaAnnotationIntrospectorModule.overrideMap.get(descriptor.beanType)
+        .map(_.overrides.toMap).getOrElse(Map.empty)
       val applyDefaultValues = config.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
       val args = delegate.getFromObjectArguments(config)
       Option(args) match {
@@ -232,10 +219,12 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
 
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
-        if (overrideMap.contains(beanDesc.getBeanClass) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
+        if (ScalaAnnotationIntrospectorModule.overrideMap.contains(beanDesc.getBeanClass)
+          || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
+
           defaultInstantiator match {
             case std: StdValueInstantiator =>
-              new ScalaValueInstantiator(std, config, descriptor)
+              new ScalaValueInstantiator(ScalaAnnotationIntrospectorModule, std, config, descriptor)
             case other =>
               throw new IllegalArgumentException("Cannot customise a non StdValueInstantiator: " + other.getClass)
           }
@@ -248,11 +237,11 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
     if (clz.extendsScalaClass || clz.hasSignature) {
       val key = new ClassKey(clz)
-      Option(_descriptorCache.get(key)) match {
+      Option(ScalaAnnotationIntrospectorModule._descriptorCache.get(key)) match {
         case Some(result) => Some(result)
         case _ => {
           val introspector = BeanIntrospector(clz)
-          _descriptorCache.put(key, introspector)
+          ScalaAnnotationIntrospectorModule._descriptorCache.put(key, introspector)
           Some(introspector)
         }
       }
@@ -304,9 +293,91 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   this += { _.appendAnnotationIntrospector(JavaAnnotationIntrospector) }
   this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
   this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
+
+  private[introspect] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
+    new LRUMap[ClassKey, BeanDescriptor](16, 100)
+
+  private[introspect] val overrideMap = MutableMap[Class[_], ClassOverrides]()
+
+  /**
+   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
+   * Scala primitives (eg Int, Long, Boolean).
+   * <p>
+   * This function is experimental and may be removed or significantly reworked in a later release.
+   * <p>
+   * These issues can be worked around by adding Jackson annotations on the affected fields.
+   * This function is designed to be used when it is not possible to apply Jackson annotations.
+   *
+   * @param clazz the (case) class
+   * @param fieldName the field name in the (case) class
+   * @param referencedType the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
+   * @see [[getRegisteredReferencedValueType]]
+   * @see [[clearRegisteredReferencedTypes()]]
+   * @see [[clearRegisteredReferencedTypes(Class[_])]]
+   * @since 2.14.0
+   */
+  def registerReferencedValueType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
+    val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
+    overrides.get(fieldName) match {
+      case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
+      case _ => overrides.put(fieldName, ClassHolder(valueClass = Some(referencedType)))
+    }
+  }
+
+  /**
+   * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
+   * Scala primitives (eg Int, Long, Boolean).
+   * <p>
+   * This function is experimental and may be removed or significantly reworked in a later release.
+   * <p>
+   * These issues can be worked around by adding Jackson annotations on the affected fields.
+   * This function is designed to be used when it is not possible to apply Jackson annotations.
+   *
+   * @param clazz the (case) class
+   * @param fieldName the field name in the (case) class
+   * @return the referenced type of the field - for `Option[Long]` - the referenced type is `Long`
+   * @see [[registerReferencedValueType]]
+   * @since 2.14.0
+   */
+  def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
+    overrideMap.get(clazz).flatMap { overrides =>
+      overrides.overrides.get(fieldName).flatMap(_.valueClass)
+    }
+  }
+
+  /**
+   * clears the state associated with reference types for the given class
+   *
+   * @param clazz the class for which to remove the registered reference types
+   * @see [[registerReferencedValueType]]
+   * @see [[clearRegisteredReferencedTypes()]]
+   * @since 2.14.0
+   */
+  def clearRegisteredReferencedTypes(clazz: Class[_]): Unit = {
+    overrideMap.remove(clazz)
+  }
+
+  /**
+   * clears all the state associated with reference types
+   *
+   * @see [[registerReferencedValueType]]
+   * @see [[clearRegisteredReferencedTypes(Class[_])]]
+   * @since 2.14.0
+   */
+  def clearRegisteredReferencedTypes(): Unit = {
+    overrideMap.clear()
+  }
+
+  def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
+    val existingCache = _descriptorCache
+    _descriptorCache = cache
+    existingCache
+  }
 }
 
-private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ScalaAnnotationIntrospector.ClassHolder)
+object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
+
+private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ClassHolder)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
   override def getType(): JavaType = {
