@@ -32,6 +32,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.0
    * @deprecated will be removed 2.14.0 in favour of the ScalaAnnotationIntrospectorModule version
    */
+  @deprecated("use ScalaAnnotationIntrospectorModule.registerReferencedValueType instead", "2.13.1")
   def registerReferencedValueType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
     ScalaAnnotationIntrospectorModule.registerReferencedValueType(clazz, fieldName, referencedType)
   }
@@ -44,6 +45,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.0
    * @deprecated will be removed 2.14.0 in favour of the ScalaAnnotationIntrospectorModule version
    */
+  @deprecated("use ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes instead", "2.13.1")
   def clearRegisteredReferencedTypes(clazz: Class[_]): Unit = {
     ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes(clazz)
   }
@@ -55,6 +57,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.0
    * @deprecated will be removed 2.14.0 in favour of the ScalaAnnotationIntrospectorModule version
    */
+  @deprecated("use ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes instead", "2.13.1")
   def clearRegisteredReferencedTypes(): Unit = {
     ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
   }
@@ -66,6 +69,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
    * @since 2.13.0
    * @deprecated will be removed 2.14.0 in favour of the ScalaAnnotationIntrospectorModule version
    */
+  @deprecated("use ScalaAnnotationIntrospectorModule.setDescriptorCache instead", "2.13.1")
   def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
   }
