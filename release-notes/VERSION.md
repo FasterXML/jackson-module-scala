@@ -1,3 +1,9 @@
+# Version: 2.13.1 (not yet released)
+
+## Fixes
+
+* [[gh-561]](https://github.com/FasterXML/jackson-module-scala/issues/561) Move ScalaAnnotationIntrospector state to ScalaAnnotationIntrospectorModule
+
 # Version: 2.13.0
 
 This patch release tracks Jackson 2.13.0. The 2.13 series has full support for Scala 2.11, 2.12, 2.13 and 3.0.
