@@ -4,9 +4,11 @@ package introspect
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.`type`.ClassKey
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
+import com.fasterxml.jackson.databind.util.LookupCache
 import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, MapperFeature, ObjectMapper, SerializerProvider}
 import com.fasterxml.jackson.module.scala.deser.PrimitiveContainerTest.OptionLong
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
@@ -16,6 +18,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
+import scala.collection.concurrent.TrieMap
 
 object ScalaAnnotationIntrospectorTest {
   class Token
@@ -30,6 +33,27 @@ object ScalaAnnotationIntrospectorTest {
   }
 
   case class CaseClassWithDefault(a: String = "defaultParam", b: Option[String] = Some("optionDefault"), c: Option[String])
+
+  class ConcurrentLookupCache() extends LookupCache[ClassKey, BeanDescriptor] {
+    final private val cache = TrieMap.empty[ClassKey, BeanDescriptor]
+
+    override def put(key: ClassKey, value: BeanDescriptor): BeanDescriptor =
+      cache.put(key, value).getOrElse(None.orNull)
+
+    override def putIfAbsent(key: ClassKey, value: BeanDescriptor): BeanDescriptor =
+      cache.putIfAbsent(key, value).getOrElse(None.orNull)
+
+    override def get(key: Any): BeanDescriptor = key match {
+      case classKey: ClassKey => cache.get(classKey).getOrElse(None.orNull)
+      case _ => None.orNull
+    }
+
+    override def clear(): Unit = {
+      cache.clear()
+    }
+
+    override def size: Int = cache.size
+  }
 }
 
 class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
@@ -201,6 +225,20 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
       ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes(caseClass)
       ScalaAnnotationIntrospectorModule.getRegisteredReferencedValueType(caseClass, "value") shouldBe empty
     }
+  }
+
+  it should "allow descriptor cache to be replaced" in { _ =>
+    val cache = new ConcurrentLookupCache()
+    ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
+    val builder = JsonMapper.builder().addModule(DefaultScalaModule)
+    val mapper = builder.build()
+    val jsonWithKey = """{"a": "notDefault"}"""
+
+    val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+    withoutDefault.a shouldEqual "notDefault"
+
+    cache.size shouldBe >=(1)
+    cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be(null)
   }
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
