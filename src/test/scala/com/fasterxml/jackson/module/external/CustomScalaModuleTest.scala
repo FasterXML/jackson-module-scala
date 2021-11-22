@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.external
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala._
+import com.fasterxml.jackson.module.scala.deser.OptionWithNumberDeserializerTest.OptionLong
 import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
@@ -56,4 +57,50 @@ class CustomScalaModuleTest extends BaseSpec {
     val text = mapper.writeValueAsString(testInstance)
     mapper.readValue(text, classOf[CustomScalaModuleTest.TestClass]) shouldEqual testInstance
   }
+
+  it should "deserialize OptionLong when registerReferencedValueType is used (custom scala module using ScalaAnnotationIntrospectorModule object)" in {
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    try {
+      val module = ScalaModule.builder().addModule(OptionModule).addModule(ScalaAnnotationIntrospectorModule)
+      val builder = JsonMapper.builder().addModule(module.build())
+      val mapper = builder.build()
+      val v1 = mapper.readValue("""{"valueLong":151}""", classOf[OptionLong])
+      v1 shouldBe OptionLong(Some(151L))
+      v1.valueLong.get shouldBe 151L
+      //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospectorModule.registerReferencedValueType
+      //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+      useOptionLong(v1.valueLong) shouldBe 302L
+    } finally {
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
+    }
+  }
+
+  it should "deserialize OptionLong when registerReferencedValueType is used (custom scala module using custom ScalaAnnotationIntrospectorModule)" in {
+    val introspectorModule = ScalaAnnotationIntrospectorModule.newStandaloneInstance()
+    introspectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    introspectorModule.getRegisteredReferencedValueType(classOf[OptionLong], "valueLong") shouldEqual Some(classOf[Long])
+    val module = ScalaModule.builder().addModule(OptionModule).addModule(introspectorModule)
+    val builder = JsonMapper.builder().addModule(module.build())
+    val mapper = builder.build()
+    val v1 = mapper.readValue("""{"valueLong":151}""", classOf[OptionLong])
+    v1 shouldBe OptionLong(Some(151L))
+    v1.valueLong.get shouldBe 151L
+    //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospectorModule.registerReferencedValueType
+    //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+    useOptionLong(v1.valueLong) shouldBe 302L
+
+    //introspectorModule registrations should not affect ScalaAnnotationIntrospectorModule object
+    ScalaAnnotationIntrospectorModule.getRegisteredReferencedValueType(classOf[OptionLong], "valueLong") shouldBe empty
+
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    try {
+      val introspectorModule = ScalaAnnotationIntrospectorModule.newStandaloneInstance()
+      introspectorModule.getRegisteredReferencedValueType(classOf[OptionLong], "valueLong") shouldBe empty
+    } finally {
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
+    }
+  }
+
+  private def useOptionLong(v: Option[Long]): Long = v.map(_ * 2).getOrElse(0L)
+
 }

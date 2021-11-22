@@ -332,7 +332,14 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
 }
 
-object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
+object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule {
+  /**
+   * @return a standalone instance of ScalaAnnotationIntrospectorModule with none of the saved state from the
+   *         ScalaAnnotationIntrospectorModule object instance
+   */
+  def newStandaloneInstance(): ScalaAnnotationIntrospectorModule
+    = new ScalaAnnotationIntrospectorModule {}
+}
 
 private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ClassHolder)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {

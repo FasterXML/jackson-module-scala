@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.util.LookupCache
 import com.fasterxml.jackson.databind.{BeanDescription, MapperFeature, ObjectMapper, SerializerProvider, ValueSerializer}
-import com.fasterxml.jackson.module.scala.deser.PrimitiveContainerTest.OptionLong
+import com.fasterxml.jackson.module.scala.deser.OptionWithNumberDeserializerTest.OptionLong
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
