@@ -230,6 +230,15 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   it should "allow descriptor cache to be replaced" in { _ =>
     val cache = new ConcurrentLookupCache()
     ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
+    val builder = JsonMapper.builder().addModule(DefaultScalaModule)
+    val mapper = builder.build()
+    val jsonWithKey = """{"a": "notDefault"}"""
+
+    val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+    withoutDefault.a shouldEqual "notDefault"
+
+    cache.size shouldEqual 1
+    cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be(null)
   }
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
