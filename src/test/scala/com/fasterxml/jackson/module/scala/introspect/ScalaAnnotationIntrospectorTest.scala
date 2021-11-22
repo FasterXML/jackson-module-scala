@@ -237,23 +237,6 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     }
   }
 
-  it should "deserialize OptionLong when registerReferencedValueType is used (custom scala module using ScalaAnnotationIntrospectorModule object)" in { _ =>
-    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
-    try {
-      val module = ScalaModule.builder().addModule(OptionModule).addModule(ScalaAnnotationIntrospectorModule)
-      val builder = JsonMapper.builder().addModule(module.build())
-      val mapper = builder.build()
-      val v1 = mapper.readValue("""{"valueLong":151}""", classOf[OptionLong])
-      v1 shouldBe OptionLong(Some(151L))
-      v1.valueLong.get shouldBe 151L
-      //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospectorModule.registerReferencedValueType
-      //or use one of the equivalent classes in OptionWithNumberDeserializerTest
-      useOptionLong(v1.valueLong) shouldBe 302L
-    } finally {
-      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
-    }
-  }
-
   it should "allow descriptor cache to be replaced" in { _ =>
     val cache = ConcurrentLookupCache()
     ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
@@ -273,6 +256,4 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     val beanDescription: BeanDescription = classIntrospector.introspectForSerialization(mapper.constructType(bean.getClass))
     beanDescription.findProperties()
   }
-
-  private def useOptionLong(v: Option[Long]): Long = v.map(_ * 2).getOrElse(0L)
 }
