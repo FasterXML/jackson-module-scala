@@ -237,7 +237,7 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
     val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
     withoutDefault.a shouldEqual "notDefault"
 
-    cache.size shouldEqual 1
+    cache.size shouldBe >=(1)
     cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be(null)
   }
 
