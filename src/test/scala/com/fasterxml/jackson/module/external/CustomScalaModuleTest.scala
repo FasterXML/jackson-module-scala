@@ -91,6 +91,14 @@ class CustomScalaModuleTest extends BaseSpec {
 
     //introspectorModule registrations should not affect ScalaAnnotationIntrospectorModule object
     ScalaAnnotationIntrospectorModule.getRegisteredReferencedValueType(classOf[OptionLong], "valueLong") shouldBe empty
+
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    try {
+      val introspectorModule = ScalaAnnotationIntrospectorModule.newStandaloneInstance()
+      introspectorModule.getRegisteredReferencedValueType(classOf[OptionLong], "valueLong") shouldBe empty
+    } finally {
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
+    }
   }
 
   private def useOptionLong(v: Option[Long]): Long = v.map(_ * 2).getOrElse(0L)
