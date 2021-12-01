@@ -24,7 +24,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala: [2.11.12, 2.12.15, 2.13.6, 3.0.2]
-        java: [zulu@1.8.282, zulu@1.11.0-10, zulu@1.17.0-0]
+        java: [zulu@8, zulu@11, zulu@17]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -32,10 +32,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java and Scala
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java (zulu@8)
+        if: matrix.java == 'zulu@8'
+        uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.java }}
+          distribution: zulu
+          java-version: 8
+
+      - name: Setup Java (zulu@11)
+        if: matrix.java == 'zulu@11'
+        uses: actions/setup-java@v2
+        with:
+          distribution: zulu
+          java-version: 11
+
+      - name: Setup Java (zulu@17)
+        if: matrix.java == 'zulu@17'
+        uses: actions/setup-java@v2
+        with:
+          distribution: zulu
+          java-version: 17
 
       - name: Cache sbt
         uses: actions/cache@v2
@@ -71,7 +87,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala: [2.13.6]
-        java: [zulu@1.8.282]
+        java: [zulu@8]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -79,10 +95,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java and Scala
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java (zulu@8)
+        if: matrix.java == 'zulu@8'
+        uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.java }}
+          distribution: zulu
+          java-version: 8
+
+      - name: Setup Java (zulu@11)
+        if: matrix.java == 'zulu@11'
+        uses: actions/setup-java@v2
+        with:
+          distribution: zulu
+          java-version: 11
+
+      - name: Setup Java (zulu@17)
+        if: matrix.java == 'zulu@17'
+        uses: actions/setup-java@v2
+        with:
+          distribution: zulu
+          java-version: 17
 
       - name: Cache sbt
         uses: actions/cache@v2
