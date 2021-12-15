@@ -1,9 +1,31 @@
-# Version: 2.13.0 (not yet released)
+# Version: 2.13.1 (not yet released)
+
+## Fixes
+
+* [[gh-561]](https://github.com/FasterXML/jackson-module-scala/issues/561) Move ScalaAnnotationIntrospector state to ScalaAnnotationIntrospectorModule
+
+# Version: 2.13.0
 
 This patch release tracks Jackson 2.13.0. The 2.13 series has full support for Scala 2.11, 2.12, 2.13 and 3.0.
 Java 8 is the minimum supported Java version.
 
-DefaultRequiredAnnotationIntrospector and RequiredPropertiesSchemaModule have been deprecated in this release due to fact that [jackson-module-jsonSchema ](https://github.com/FasterXML/jackson-module-jsonSchema) is being discontinued in Jackson 3.
+DefaultRequiredAnnotationIntrospector and RequiredPropertiesSchemaModule have been deprecated in this release due to fact that [jackson-module-jsonSchema](https://github.com/FasterXML/jackson-module-jsonSchema) is being discontinued in Jackson 3.
+
+## Fixes
+
+* [[gh-296]](https://github.com/FasterXML/jackson-module-scala/issues/296) Support JsonSerializer interface for custom Scala collections (JsonSerializer allows a class to define its own serialization)
+* [[gh-211]](https://github.com/FasterXML/jackson-module-scala/issues/211) Deserialization of case object should not create a new instance of the case object (see comments on issue on how to enable this - it is not enabled by default)
+* [[gh-443]](https://github.com/FasterXML/jackson-module-scala/issues/443) Tuple serialization doesn't reuse the serialization provider so generated object ids can be incorrect
+* [[gh-545]](https://github.com/FasterXML/jackson-module-scala/pull/545) (Experimental) support for registering reference types (when they can't be inferred)
+
+# Version: 2.13.0-rc2
+
+This patch release tracks Jackson 2.13.0-rc2. The 2.13 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.0. Java 8 is the minimum supported Java version.
+
+## Fixes
+
+* [[gh-382]](https://github.com/FasterXML/jackson-module-scala/issues/382) Fix issue with support of ObjectMapper activateDefaultTypingAsProperty (that allows case classes with members that have traits to be serialized/deserialized)
 
 # Version: 2.13.0-rc1
 
@@ -14,10 +36,17 @@ Java 8 is the minimum supported Java version.
 Some deprecated code relating to the use of Scala Manifests has been removed - ScalaObjectMapper support is unaffected (but this class remains deprecated).
 ScalaObjectMapper does not appear in the Scala3 jar because it does not compile with Scala3. ClassTagExtensions is the replacement for ScalaObjectMapper.
 
+## Fixes
+
 * [[gh-479]](https://github.com/FasterXML/jackson-module-scala/issues/479) Scala3 support
 * [[gh-512]](https://github.com/FasterXML/jackson-module-scala/issues/512) add support for recognising Scala3 classes (TastyUtil)
 * [[gh-503]](https://github.com/FasterXML/jackson-module-scala/issues/503) big improvement to ClassTagExtensions, the Scala3 friendly replacement for ScalaObjectMapper. Big thanks to Gaël Jourdan-Weil.
 * [[gh-514]](https://github.com/FasterXML/jackson-module-scala/issues/514) support MapperFeature.APPLY_DEFAULT_VALUES (defaults to true)
+
+# Version: 2.12.6
+
+There are no new fixes in this release; it serves to track the 2.12.6 release
+of the upstream Jackson projects.
 
 # Version: 2.12.5
 
