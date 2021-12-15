@@ -43,6 +43,11 @@ ScalaObjectMapper does not appear in the Scala3 jar because it does not compile 
 * [[gh-503]](https://github.com/FasterXML/jackson-module-scala/issues/503) big improvement to ClassTagExtensions, the Scala3 friendly replacement for ScalaObjectMapper. Big thanks to Gaël Jourdan-Weil.
 * [[gh-514]](https://github.com/FasterXML/jackson-module-scala/issues/514) support MapperFeature.APPLY_DEFAULT_VALUES (defaults to true)
 
+# Version: 2.12.6
+
+There are no new fixes in this release; it serves to track the 2.12.6 release
+of the upstream Jackson projects.
+
 # Version: 2.12.5
 
 There are no new fixes in this release; it serves to track the 2.12.5 release
