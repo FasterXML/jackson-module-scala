@@ -1,4 +1,4 @@
-# Version: 2.13.1 (not yet released)
+# Version: 2.13.1
 
 ## Fixes
 
