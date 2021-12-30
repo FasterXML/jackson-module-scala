@@ -22,11 +22,16 @@ jobs:
     name: Build and Test
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         scala: [2.11.12, 2.12.15, 2.13.7, 3.0.2]
         java: [zulu@8, zulu@11, zulu@17]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        shell: bash
+        run: git config --global core.autocrlf false
+
       - name: Checkout current branch (full)
         uses: actions/checkout@v2
         with:
@@ -66,11 +71,14 @@ jobs:
           key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
 
       - name: Check that workflows are up to date
+        shell: bash
         run: sbt -J-Xmx2G ++${{ matrix.scala }} githubWorkflowCheck
 
-      - run: sbt -J-Xmx2G ++${{ matrix.scala }} test mimaReportBinaryIssues
+      - shell: bash
+        run: sbt -J-Xmx2G ++${{ matrix.scala }} test mimaReportBinaryIssues
 
       - name: Compress target directories
+        shell: bash
         run: tar cf targets.tar target project/target
 
       - name: Upload target directories
@@ -90,6 +98,10 @@ jobs:
         java: [zulu@8]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        run: git config --global core.autocrlf false
+
       - name: Checkout current branch (full)
         uses: actions/checkout@v2
         with:
