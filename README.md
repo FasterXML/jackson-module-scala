@@ -86,6 +86,16 @@ val myMap = mapper.readValue(src, new TypeReference[Map[String,Tuple2[Int,Int]]]
 
 Consult the [Scaladoc](http://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
 
+## Java/Kotlin users
+
+DefaultScalaModule is a Scala Object and to access it when you are not compiling with Scala compiler, you will need to use `DefaultScalaModule$.MODULE$` instead.
+
+```java
+import com.fasterxml.jackson.module.scala.DefaultScalaModule$;
+
+ObjectMapper mapper = JsonMapper.builder().addModule(DefaultScalaModule$.MODULE$).build();
+```
+
 # Building
 
 The master branch often depends on SNAPSHOT versions of the core Jackson projects,
