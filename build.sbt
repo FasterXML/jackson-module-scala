@@ -94,13 +94,6 @@ Compile / resourceGenerators += Def.task {
     Seq(file)
 }.taskValue
 
-Compile / packageBin / packageOptions +=  {
-  import java.util.jar.{Attributes, Manifest}
-  val manifest = new Manifest
-  manifest.getMainAttributes().put(new Attributes.Name("Automatic-Module-Name"), "com.fasterxml.jackson.module.scala")
-  Package.JarManifest( manifest )
-}
-
 Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
