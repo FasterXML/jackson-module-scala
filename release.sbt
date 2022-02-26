@@ -4,7 +4,7 @@ import com.typesafe.sbt.osgi.OsgiKeys
 lazy val jacksonOsgiSettings = osgiSettings ++ Seq(
   OsgiKeys.exportPackage := Seq("com.fasterxml.jackson.module.scala.*"),
   OsgiKeys.privatePackage := Seq(),
-  OsgiKeys.additionalHeaders(Map("Automatic-Module-Name" -> "com.fasterxml.jackson.module.scala"))
+  OsgiKeys.additionalHeaders := Map("Automatic-Module-Name" -> "com.fasterxml.jackson.module.scala")
 )
 
 lazy val jacksonProject = project.in(file(".")).enablePlugins(SbtOsgi).settings(jacksonOsgiSettings:_*)
