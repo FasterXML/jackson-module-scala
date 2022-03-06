@@ -1,3 +1,9 @@
+# Version: 2.13.2
+
+## Fixes
+
+* [[gh-pr-566]](https://github.com/FasterXML/jackson-module-scala/pull/566) when paranamer fails, fail over to using java reflection
+
 # Version: 2.13.1
 
 ## Fixes
