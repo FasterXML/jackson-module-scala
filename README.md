@@ -71,7 +71,7 @@ val mapper = JsonMapper.builder()
 ```
 
 You can also mixin `ClassTagExtensions` to get rich wrappers that automatically
-convert scala ClassTags directly into TypeReferences for Jackson to use.
+convert Scala ClassTags directly into TypeReferences for Jackson to use:
 ```scala
 val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build() :: ClassTagExtensions
 // or using old style
