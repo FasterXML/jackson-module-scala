@@ -153,5 +153,10 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule.getRegisteredReferencedValueType"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector#ScalaValueInstantiator.this"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.deser.NumberDeserializers.BigIntClass"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.deser.NumberDeserializers.BigDecimalClass")
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.deser.NumberDeserializers.BigDecimalClass"),
+  ProblemFilters.exclude[IncompatibleResultTypeProblem]("com.fasterxml.jackson.module.scala.deser.BigDecimalDeserializer.deserialize"),
+  ProblemFilters.exclude[IncompatibleResultTypeProblem]("com.fasterxml.jackson.module.scala.deser.BigIntDeserializer.deserialize"),
+  ProblemFilters.exclude[MissingTypesProblem]("com.fasterxml.jackson.module.scala.deser.BigDecimalDeserializer$"),
+  ProblemFilters.exclude[MissingTypesProblem]("com.fasterxml.jackson.module.scala.deser.BigIntDeserializer$"),
+  ProblemFilters.exclude[MissingClassProblem]("com.fasterxml.jackson.module.scala.deser.BigNumberDeserializer")
 )
