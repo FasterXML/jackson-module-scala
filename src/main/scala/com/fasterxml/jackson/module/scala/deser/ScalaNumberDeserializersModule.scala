@@ -15,15 +15,23 @@ import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 
 private object BigDecimalDeserializer extends StdScalarDeserializer[BigDecimal](classOf[BigDecimal]) {
+  private val ZERO = BigDecimal(0)
+
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): BigDecimal = {
     JavaBigDecimalDeserializer.instance.deserialize(p, ctxt)
   }
+
+  override def getEmptyValue(ctxt: DeserializationContext): Any = ZERO
 }
 
 private object BigIntDeserializer extends StdScalarDeserializer[BigInt](classOf[BigInt]) {
+  private val ZERO = BigInt(0)
+
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): BigInt = {
     BigIntegerDeserializer.instance.deserialize(p, ctxt)
   }
+
+  override def getEmptyValue(ctxt: DeserializationContext): Any = ZERO
 }
 
 private object NumberDeserializers {
