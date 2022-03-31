@@ -24,13 +24,13 @@ private abstract class BigNumberDeserializer[T >: Null : ClassTag](creator: (Str
           creator(text)
         }
         catch {
-          case e: IllegalArgumentException => throw ctxt.weirdStringException(text, _valueClass, "not a valid representation")
+          case _: IllegalArgumentException => throw ctxt.weirdStringException(text, _valueClass, "not a valid representation")
         }
       case START_ARRAY if ctxt.isEnabled(UNWRAP_SINGLE_VALUE_ARRAYS) =>
         jp.nextToken()
         val value = deserialize(jp, ctxt)
         if (jp.nextToken() != JsonToken.END_ARRAY) {
-          throw ctxt.wrongTokenException(jp, JsonToken.END_ARRAY, "Attempted to unwrap array for single value but there was more than a single value in the array")
+          throw ctxt.wrongTokenException(jp, _valueType, JsonToken.END_ARRAY, "Attempted to unwrap array for single value but there was more than a single value in the array")
         }
         value
       case _ =>
