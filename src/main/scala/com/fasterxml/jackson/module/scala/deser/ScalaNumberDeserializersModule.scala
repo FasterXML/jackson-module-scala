@@ -3,6 +3,7 @@ package module.scala
 package deser
 
 import com.fasterxml.jackson.core.JsonToken.{START_ARRAY, VALUE_NUMBER_FLOAT, VALUE_NUMBER_INT, VALUE_STRING}
+import com.fasterxml.jackson.core.io.BigDecimalParser
 import com.fasterxml.jackson.core.{JsonParser, JsonToken}
 import com.fasterxml.jackson.databind.DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS
 import com.fasterxml.jackson.databind.JacksonModule.SetupContext
@@ -43,14 +44,18 @@ private abstract class BigNumberDeserializer[T >: Null : ClassTag](creator: (Str
   }
 }
 
-private object BigDecimalDeserializer extends BigNumberDeserializer(BigDecimal.apply)
+private object ScalaBigDecimalParser {
+  def fromString(str: String): BigDecimal = BigDecimalParser.parse(str)
+}
+
+private object BigDecimalDeserializer extends BigNumberDeserializer(ScalaBigDecimalParser.fromString)
 
 private object BigIntDeserializer extends BigNumberDeserializer(BigInt.apply)
 
 private class NumberDeserializers(config: ScalaModule.Config) extends Deserializers.Base
 {
-  val BigDecimalClass = BigDecimalDeserializer.handledType()
-  val BigIntClass = BigIntDeserializer.handledType()
+  private val BigDecimalClass = BigDecimalDeserializer.handledType()
+  private val BigIntClass = BigIntDeserializer.handledType()
 
   override def findBeanDeserializer(tpe: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] =
     tpe.getRawClass match {
