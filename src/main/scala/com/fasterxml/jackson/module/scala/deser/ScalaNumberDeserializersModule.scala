@@ -6,11 +6,11 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.JacksonModule.SetupContext
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
-import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.jdk.NumberDeserializers.{
   BigDecimalDeserializer => JavaBigDecimalDeserializer,
   BigIntegerDeserializer
 }
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.JacksonModule.InitializerBuilder
 import com.fasterxml.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 
@@ -21,7 +21,7 @@ private object BigDecimalDeserializer extends StdScalarDeserializer[BigDecimal](
     JavaBigDecimalDeserializer.instance.deserialize(p, ctxt)
   }
 
-  override def getEmptyValue(ctxt: DeserializationContext): Any = ZERO
+  override def getEmptyValue(ctxt: DeserializationContext): AnyRef = ZERO
 }
 
 private object BigIntDeserializer extends StdScalarDeserializer[BigInt](classOf[BigInt]) {
@@ -31,7 +31,7 @@ private object BigIntDeserializer extends StdScalarDeserializer[BigInt](classOf[
     BigIntegerDeserializer.instance.deserialize(p, ctxt)
   }
 
-  override def getEmptyValue(ctxt: DeserializationContext): Any = ZERO
+  override def getEmptyValue(ctxt: DeserializationContext): AnyRef = ZERO
 }
 
 private object NumberDeserializers {
