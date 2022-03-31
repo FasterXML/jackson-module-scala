@@ -54,7 +54,7 @@ private class TupleDeserializer(javaType: JavaType,
 
       val t = jp.nextToken
       if (t != JsonToken.END_ARRAY) {
-        ctxt.wrongTokenException(jp, _valueType, JsonToken.END_ARRAY,
+        ctxt.wrongTokenException(jp, ctxt.getContextualType, JsonToken.END_ARRAY,
           "expected closing END_ARRAY after deserialized value")
         // never gets here
         null

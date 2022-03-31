@@ -30,7 +30,7 @@ private abstract class BigNumberDeserializer[T >: Null : ClassTag](creator: (Str
         jp.nextToken()
         val value = deserialize(jp, ctxt)
         if (jp.nextToken() != JsonToken.END_ARRAY) {
-          throw ctxt.wrongTokenException(jp, _valueType, JsonToken.END_ARRAY, "Attempted to unwrap array for single value but there was more than a single value in the array")
+          throw ctxt.wrongTokenException(jp, ctxt.getContextualType, JsonToken.END_ARRAY, "Attempted to unwrap array for single value but there was more than a single value in the array")
         }
         value
       case _ =>
