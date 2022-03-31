@@ -27,7 +27,7 @@ private abstract class BigNumberDeserializer[T >: Null : ClassTag](creator: (Str
           creator(text)
         }
         catch {
-          case e: IllegalArgumentException => throw ctxt.weirdStringException(text, _valueClass, "not a valid representation")
+          case _: IllegalArgumentException => throw ctxt.weirdStringException(text, _valueClass, "not a valid representation")
         }
       case START_ARRAY if ctxt.isEnabled(UNWRAP_SINGLE_VALUE_ARRAYS) =>
         jp.nextToken()
