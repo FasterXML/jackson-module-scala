@@ -1,3 +1,12 @@
+# Version: 2.14.0 (not yet released)
+
+This patch release tracks Jackson 2.11. The 2.11 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.
+
+## Fixes
+
+* [[gh-pr-574]](https://github.com/FasterXML/jackson-module-scala/pull/574) reuse Java code to parse Scala BigDecimal and BigInt
+
 # Version: 2.13.2
 
 ## Fixes
