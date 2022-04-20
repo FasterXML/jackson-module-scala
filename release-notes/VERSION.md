@@ -1,7 +1,7 @@
 # Version: 2.14.0 (not yet released)
 
-This patch release tracks Jackson 2.11. The 2.11 series has full support for
-Scala 2.11, 2.12, 2.13 and 3.
+This patch release tracks Jackson 2.14. The 2.14 series has full support for
+Scala 2.11, 2.12, 2.13 and 3. Java 8 is the minimum supported Java version.
 
 ## Fixes
 
