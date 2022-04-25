@@ -311,9 +311,9 @@ class ScalaObjectMapperTest extends JacksonTest {
       .append(']')
     val floats = mapper.readValue[Array[Float]](sb.toString)
     floats should  have length 4
-    //floats(0) shouldEqual 7.038531e-26f
+    floats(0).toString shouldEqual "7.038531E-26" //toString needed in scala 2.11, assert fails otherwise
     floats(1) shouldEqual 1.1999999f
-    //floats(2) shouldEqual 3.4028235e38f
+    floats(2).toString shouldEqual "3.4028235E38" //toString needed in scala 2.11, won't compile otherwise
     //floats(3) shouldEqual 7.006492321624086e-46f
   }
 
