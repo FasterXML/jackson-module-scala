@@ -304,7 +304,7 @@ class ScalaObjectMapperTest extends JacksonTest {
     floats(2).toString shouldEqual "3.4028235E38" //toString needed in scala 2.11, won't compile otherwise
     floats(3).toString shouldEqual "1.4E-45" //this assertion fails unless toString is used
   }
-  
+
   //https://github.com/FasterXML/jackson-module-scala/issues/241 -- currently fails
   it should "deserialize MapWrapper" ignore {
     val mw = new MapWrapper
