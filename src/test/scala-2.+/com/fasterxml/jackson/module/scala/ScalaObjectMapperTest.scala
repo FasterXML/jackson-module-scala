@@ -288,6 +288,23 @@ class ScalaObjectMapperTest extends JacksonTest {
     result.t.get.isInstanceOf[Foo] should be(true)
   }
 
+  //https://github.com/FasterXML/jackson-core/issues/755
+  it should "deserialize Array[Float]" in {
+    val sb = new StringBuilder
+    sb.append('[')
+      .append("\"7.038531e-26\",")
+      .append("\"1.199999988079071\",")
+      .append("\"3.4028235677973366e38\",")
+      .append("\"7.006492321624086e-46\"")
+      .append(']')
+    val floats = mapper.readValue[Array[Float]](sb.toString)
+    floats should  have length 4
+    floats(0).toString shouldEqual "7.038531E-26" //toString needed in scala 2.11, assert fails otherwise
+    floats(1) shouldEqual 1.1999999f
+    floats(2).toString shouldEqual "3.4028235E38" //toString needed in scala 2.11, won't compile otherwise
+    floats(3).toString shouldEqual "1.4E-45" //this assertion fails unless toString is used
+  }
+  
   //https://github.com/FasterXML/jackson-module-scala/issues/241 -- currently fails
   it should "deserialize MapWrapper" ignore {
     val mw = new MapWrapper
