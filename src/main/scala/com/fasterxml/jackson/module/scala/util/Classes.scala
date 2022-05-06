@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.util
 
+import scala.annotation.tailrec
 import scala.language.implicitConversions
 import scala.reflect.{ScalaLongSignature, ScalaSignature}
 import scala.util.Try
@@ -13,6 +14,7 @@ trait ClassW extends PimpedType[Class[_]] {
   }
 
   def hasSignature: Boolean = {
+    @tailrec
     def hasSigHelper(clazz: Class[_]): Boolean = {
       if (clazz == null) false
       else if (clazz.isAnnotationPresent(classOf[ScalaSignature])
