@@ -168,7 +168,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    if (clz.extendsScalaClass || clz.hasSignature) {
+    if (clz.extendsScalaClass(true) || clz.hasSignature) {
       val key = new ClassKey(clz)
       Option(ScalaAnnotationIntrospectorModule._descriptorCache.get(key)) match {
         case Some(result) => Some(result)
@@ -211,7 +211,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     pkg.exists(_.getName.startsWith("scala."))
 
   private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
-    (cls.extendsScalaClass || cls.hasSignature) &&
+    (cls.extendsScalaClass(true) || cls.hasSignature) &&
       !isScalaPackage(Option(cls.getPackage))
 
   private def isScala(a: Annotated): Boolean = {
