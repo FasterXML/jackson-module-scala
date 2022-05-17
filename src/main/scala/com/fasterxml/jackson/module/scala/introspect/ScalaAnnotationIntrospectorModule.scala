@@ -343,6 +343,12 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     existingCache
   }
 
+  def setScalaTypeCache(cache: LookupCache[ClassKey, Boolean]): LookupCache[ClassKey, Boolean] = {
+    val existingCache = _scalaTypeCache
+    _scalaTypeCache = cache
+    existingCache
+  }
+
 }
 
 object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule {
