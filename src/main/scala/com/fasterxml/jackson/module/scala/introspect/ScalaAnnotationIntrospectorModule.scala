@@ -168,8 +168,18 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    if (clz.extendsScalaClass(true) || clz.hasSignature) {
-      val key = new ClassKey(clz)
+    val key = new ClassKey(clz)
+    val isScala = {
+      Option(ScalaAnnotationIntrospectorModule._scalaTypeCache.get(key)) match {
+        case Some(result) => result
+        case _ => {
+          val result = clz.extendsScalaClass(true) || clz.hasSignature
+          ScalaAnnotationIntrospectorModule._scalaTypeCache.put(key, result)
+          result
+        }
+      }
+    }
+    if (isScala) {
       Option(ScalaAnnotationIntrospectorModule._descriptorCache.get(key)) match {
         case Some(result) => Some(result)
         case _ => {
@@ -229,6 +239,9 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
   private[introspect] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
+
+  private[introspect] var _scalaTypeCache: LookupCache[ClassKey, Boolean] =
+    new LRUMap[ClassKey, Boolean](16, 100)
 
   private[introspect] val overrideMap = MutableMap[Class[_], ClassOverrides]()
 
