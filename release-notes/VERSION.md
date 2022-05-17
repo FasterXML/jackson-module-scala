@@ -1,3 +1,8 @@
+# Version: 2.13.3
+
+There are no new fixes in this release; it serves to track the 2.13.3 release
+of the upstream Jackson projects.
+
 # Version: 2.13.2
 
 ## Fixes
