@@ -135,8 +135,18 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   }
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    if (clz.extendsScalaClass(config.shouldSupportScala3Classes()) || clz.hasSignature) {
-      val key = new ClassKey(clz)
+    val key = new ClassKey(clz)
+    val isScala = {
+      Option(ScalaAnnotationIntrospectorModule._scalaTypeCache.get(key)) match {
+        case Some(result) => result
+        case _ => {
+          val result = clz.extendsScalaClass(config.shouldSupportScala3Classes()) || clz.hasSignature
+          ScalaAnnotationIntrospectorModule._scalaTypeCache.put(key, result)
+          result
+        }
+      }
+    }
+    if (isScala) {
       Option(scalaAnnotationIntrospectorModule._descriptorCache.get(key)) match {
         case Some(result) => Some(result)
         case _ => {
@@ -254,6 +264,9 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
   private[introspect] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
+
+  private[introspect] var _scalaTypeCache: LookupCache[ClassKey, Boolean] =
+    new SimpleLookupCache[ClassKey, Boolean](16, 100)
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
