@@ -7,6 +7,11 @@ Scala 2.11, 2.12, 2.13 and 3. Java 8 is the minimum supported Java version.
 
 * [[gh-572]](https://github.com/FasterXML/jackson-module-scala/issues/572) reuse Java code to parse Scala BigDecimal and BigInt
 
+# Version: 2.13.3
+
+There are no new fixes in this release; it serves to track the 2.13.3 release
+of the upstream Jackson projects.
+
 # Version: 2.13.2
 
 ## Fixes
