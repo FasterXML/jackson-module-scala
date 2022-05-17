@@ -7,10 +7,13 @@ import scala.util.Try
 
 trait ClassW extends PimpedType[Class[_]] {
 
-  def extendsScalaClass: Boolean = {
+  @deprecated("use extendsScalaClass(Boolean) instead", "2.14.0")
+  def extendsScalaClass: Boolean = extendsScalaClass(true)
+
+  def extendsScalaClass(supportScala3Classes: Boolean): Boolean = {
     ClassW.productClass.isAssignableFrom(value) ||
       isScalaObject ||
-      TastyUtil.hasTastyFile(value)
+      (supportScala3Classes && TastyUtil.hasTastyFile(value))
   }
 
   def hasSignature: Boolean = {
