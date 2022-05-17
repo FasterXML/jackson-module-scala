@@ -8,18 +8,26 @@ object ScalaModule {
 
   trait Config {
     def shouldApplyDefaultValuesWhenDeserializing(): Boolean
+    def shouldSupportScala3Classes(): Boolean
   }
 
   class Builder extends Config {
     private val modules = Seq.newBuilder[JacksonModule]
     private var applyDefaultValuesWhenDeserializing = true
+    private var supportScala3Classes = true
 
     def applyDefaultValuesWhenDeserializing(applyDefaultValues: Boolean): Builder = {
       applyDefaultValuesWhenDeserializing = applyDefaultValues
       this
     }
 
+    def supportScala3Classes(support: Boolean): Builder = {
+      supportScala3Classes = support
+      this
+    }
+
     override def shouldApplyDefaultValuesWhenDeserializing(): Boolean = applyDefaultValuesWhenDeserializing
+    override def shouldSupportScala3Classes(): Boolean = supportScala3Classes
 
     def addModule(module: JacksonModule): Builder = {
       modules.+=(module)

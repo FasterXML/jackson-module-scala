@@ -135,7 +135,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   }
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    if (clz.extendsScalaClass(true) || clz.hasSignature) {
+    if (clz.extendsScalaClass(config.shouldSupportScala3Classes()) || clz.hasSignature) {
       val key = new ClassKey(clz)
       Option(scalaAnnotationIntrospectorModule._descriptorCache.get(key)) match {
         case Some(result) => Some(result)
@@ -178,7 +178,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     pkg.exists(_.getName.startsWith("scala."))
 
   private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
-    (cls.extendsScalaClass(true) || cls.hasSignature) &&
+    (cls.extendsScalaClass(config.shouldSupportScala3Classes()) || cls.hasSignature) &&
       !isScalaPackage(Option(cls.getPackage))
 
   private def isScala(a: Annotated): Boolean = {

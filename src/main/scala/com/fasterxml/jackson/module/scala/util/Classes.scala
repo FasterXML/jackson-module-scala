@@ -7,9 +7,6 @@ import scala.util.Try
 
 trait ClassW extends PimpedType[Class[_]] {
 
-  @deprecated("use extendsScalaClass(Boolean) instead", "2.14.0")
-  def extendsScalaClass: Boolean = extendsScalaClass(true)
-
   def extendsScalaClass(supportScala3Classes: Boolean): Boolean = {
     ClassW.productClass.isAssignableFrom(value) ||
       isScalaObject ||
