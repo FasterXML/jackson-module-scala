@@ -1,5 +1,5 @@
 import com.typesafe.tools.mima.core._
-import sbtghactions.JavaSpec.Distribution.Zulu
+import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
 
 // Basic facts
 name := "jackson-module-scala"
@@ -110,7 +110,6 @@ Test / parallelExecution := false
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"), JavaSpec(Zulu, "11"), JavaSpec(Zulu, "17"))
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
-ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("master")),
   RefPredicate.Equals(Ref.Branch("2.14")),
