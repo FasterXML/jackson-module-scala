@@ -10,6 +10,12 @@ class EnumContainer {
   var day: Weekday.Value = Weekday.Fri
 }
 
+class EnumSetContainer {
+  val days: Set[Weekday.Value] = Set(Weekday.Fri, Weekday.Sat, Weekday.Sun)
+}
+
+case class EnumSetAnnotatedCaseClass(@JsonScalaEnumeration(classOf[WeekdayType]) days: Set[Weekday.Value])
+
 class EnumMapHolder {
   @JsonScalaEnumeration(classOf[WeekdayType])
   var weekdayMap: Map[Weekday.Value, String] = Map.empty
@@ -36,7 +42,22 @@ class EnumerationDeserializerTest extends DeserializerTest {
     result.day should be (expectedDay)
   }
 
-  "An ObjectMapper with EnumDeserializerModule" should "deserialize a value of an inner Enumeration class into a scala Enumeration as a bean property" in {
+  it should "deserialize a set of weekdays" in {
+    val container = new EnumSetContainer
+    val json = newMapper.writeValueAsString(container)
+    val result = deserialize(json, classOf[EnumSetContainer])
+    result.days shouldEqual container.days
+  }
+
+  //ignored because JsonScalaEnumeration causes issues when used on sets (and probably other collections)
+  it should "deserialize a case class with annotated set of weekdays" ignore {
+    val container = EnumSetAnnotatedCaseClass(Set(Weekday.Sat, Weekday.Sun))
+    val json = newMapper.writeValueAsString(container)
+    val result = deserialize(json, classOf[EnumSetContainer])
+    result.days shouldEqual container.days
+  }
+
+  it should "deserialize a value of an inner Enumeration class into a scala Enumeration as a bean property" in {
     val expectedDay = InnerWeekday.Fri
     val result = deserialize(fridayInnerEnumJson, classOf[EnumContainer])
     result.day should be (expectedDay)
