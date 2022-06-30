@@ -13,4 +13,11 @@ class EnumerationScala2DeserializerTest extends DeserializerTest {
     val result = deserialize(weekdayMapJson, classOf[HolderImpl])
     result.weekdayMap should contain key Weekday.Mon
   }
+
+  it should "deserialize a set of weekdays" in {
+    val container = new EnumSetContainer
+    val json = newMapper.writeValueAsString(container)
+    val result = deserialize(json, classOf[EnumSetContainer])
+    result.days shouldEqual container.days
+  }
 }
