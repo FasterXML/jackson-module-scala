@@ -1,3 +1,13 @@
+# Version: 2.14.0 (not yet released)
+
+This patch release tracks Jackson 2.14. The 2.14 series has full support for
+Scala 2.11, 2.12, 2.13 and 3. Java 8 is the minimum supported Java version.
+
+## Fixes
+
+* [[gh-576]](https://github.com/FasterXML/jackson-module-scala/issues/576) add flag in type cache to track which classes are not Scala (to avoid having to check them again)
+* [[gh-572]](https://github.com/FasterXML/jackson-module-scala/issues/572) reuse Java code to parse Scala BigDecimal and BigInt
+
 # Version: 2.13.3
 
 There are no new fixes in this release; it serves to track the 2.13.3 release
