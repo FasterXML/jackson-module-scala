@@ -13,7 +13,7 @@ Test / publishArtifact := false
 pomIncludeRepository := { _ => false }
 
 pomExtra := {
-  <url>http://wiki.fasterxml.com/JacksonModuleScala</url>
+  <url>https://github.com/FasterXML/jackson-module-scala</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
