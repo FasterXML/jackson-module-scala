@@ -1,0 +1,3 @@
+package tools.jackson.module.scala.modifiers
+
+trait IteratorTypeModifierModule extends ScalaTypeModifierModule

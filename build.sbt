@@ -4,7 +4,7 @@ import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
 // Basic facts
 name := "jackson-module-scala"
 
-organization := "com.fasterxml.jackson.module"
+organization := "tools.jackson.module"
 
 ThisBuild / version := "3.0.0-SNAPSHOT"
 
@@ -74,13 +74,13 @@ Test / unmanagedSourceDirectories ++= {
 val jacksonVersion = "3.0.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
-  "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion changing(),
-  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion changing(),
+  "tools.jackson.core" % "jackson-core" % jacksonVersion changing(),
+  "tools.jackson.core" % "jackson-databind" % jacksonVersion changing(),
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
+  "tools.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
+  //"com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
   "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" % Test,
-  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
+  //"com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.3" % Test,
   "org.scalatest" %% "scalatest" % "3.2.11" % Test
@@ -88,7 +88,7 @@ libraryDependencies ++= Seq(
 
 // build.properties
 Compile / resourceGenerators += Def.task {
-    val file = (Compile / resourceManaged).value / "com" / "fasterxml" / "jackson" / "module" / "scala" / "build.properties"
+    val file = (Compile / resourceManaged).value / "tools" / "jackson" / "module" / "scala" / "build.properties"
     val contents = "version=%s\ngroupId=%s\nartifactId=%s\n".format(version.value, organization.value, name.value)
     IO.write(file, contents)
     Seq(file)

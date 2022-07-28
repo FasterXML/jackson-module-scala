@@ -1,1 +1,1 @@
-sonatypeProfileName := "com.fasterxml"
+sonatypeProfileName := "tools"

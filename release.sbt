@@ -2,7 +2,7 @@ import com.typesafe.sbt.osgi.OsgiKeys
 
 // OSGI bundles
 lazy val jacksonOsgiSettings = osgiSettings ++ Seq(
-  OsgiKeys.exportPackage := Seq("com.fasterxml.jackson.module.scala.*"),
+  OsgiKeys.exportPackage := Seq("tools.jackson.module.scala.*"),
   OsgiKeys.privatePackage := Seq()
 )
 

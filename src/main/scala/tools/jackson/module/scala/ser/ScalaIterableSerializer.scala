@@ -1,0 +1,101 @@
+package tools.jackson.module.scala.ser
+
+import tools.jackson.core.JsonGenerator
+import tools.jackson.databind.jsontype.TypeSerializer
+import tools.jackson.databind.ser.std.{AsArraySerializerBase, StdContainerSerializer}
+import tools.jackson.databind._
+
+import java.{lang => jl}
+import scala.util.control.NonFatal
+
+private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
+                                           property: BeanProperty, valueSerializer: ValueSerializer[Object], unwrapSingle: jl.Boolean)
+  extends AsArraySerializerBase[collection.Iterable[Any]](collection.Iterable.getClass, elemType, staticTyping, vts, valueSerializer, unwrapSingle, property) {
+
+  def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer, valueSerializer: ValueSerializer[Object]) = {
+    this(elemType, staticTyping, vts, None.orNull, valueSerializer.asInstanceOf[ValueSerializer[Object]], None.orNull)
+  }
+
+  def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
+           unwrapSingle: jl.Boolean) = {
+    this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]], unwrapSingle)
+  }
+
+  override def isEmpty(prov: SerializerProvider, value: Iterable[Any]): Boolean = value.isEmpty
+
+  override def hasSingleElement(value: Iterable[Any]): Boolean = value.size == 1
+
+  override def serialize(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider): Unit = {
+    if (((_unwrapSingle == null && provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED))
+      || _unwrapSingle) && hasSingleElement(value)) {
+      serializeContents(value, g, provider)
+    } else {
+      g.writeStartArray(value)
+      serializeContents(value, g, provider)
+      g.writeEndArray()
+    }
+  }
+
+  override def serializeContents(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider): Unit = {
+    g.assignCurrentValue(value)
+    if (_elementSerializer != null) {
+      serializeContentsUsing(value, g, provider, _elementSerializer)
+    } else {
+      val it = value.iterator
+      if (it.hasNext) {
+        val typeSer = _valueTypeSerializer
+        var serializers = _dynamicValueSerializers
+        var i = 0
+        try while (it.hasNext) {
+          val elem = it.next()
+          if (elem == null) provider.defaultSerializeNullValue(g)
+          else {
+            val cc = elem.getClass
+            var serializer = serializers.serializerFor(cc)
+            if (serializer == null) {
+              if (_elementType.hasGenericTypes) serializer = _findAndAddDynamic(provider, provider.constructSpecializedType(_elementType, cc))
+              else serializer = _findAndAddDynamic(provider, cc)
+              serializers = _dynamicValueSerializers
+            }
+            if (typeSer == null) serializer.serialize(elem.asInstanceOf[Object], g, provider)
+            else serializer.serializeWithType(elem.asInstanceOf[Object], g, provider, typeSer)
+          }
+          i += 1
+        }
+        catch {
+          case NonFatal(e) =>
+            wrapAndThrow(provider, e, value, i)
+        }
+      }
+    }
+  }
+
+  override def withResolved(property: BeanProperty, vts: TypeSerializer, elementSerializer: ValueSerializer[_],
+                            unwrapSingle: jl.Boolean): AsArraySerializerBase[Iterable[Any]] = {
+    new ScalaIterableSerializer(this, property, vts, elementSerializer, unwrapSingle)
+  }
+
+  override def _withValueTypeSerializer(vts: TypeSerializer): StdContainerSerializer[_] = {
+    new ScalaIterableSerializer(this, _property, vts, _elementSerializer, _unwrapSingle)
+  }
+
+  private def serializeContentsUsing(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider, ser: ValueSerializer[AnyRef]): Unit = {
+    val it = value.iterator
+    if (it.hasNext) {
+      val typeSer = _valueTypeSerializer
+      var i = 0
+      while (it.hasNext) {
+        val elem = it.next()
+        try {
+          if (elem == null) provider.defaultSerializeNullValue(g)
+          else if (typeSer == null) ser.serialize(elem.asInstanceOf[Object], g, provider)
+          else ser.serializeWithType(elem.asInstanceOf[Object], g, provider, typeSer)
+          i += 1
+        } catch {
+          case NonFatal(e) =>
+            wrapAndThrow(provider, e, value, i)
+        }
+      }
+    }
+  }
+}

@@ -95,7 +95,7 @@ Consult the [Scaladoc](http://fasterxml.github.io/jackson-module-scala/latest/ap
 
 To import in sbt:
 ```scala
-libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.2"
+libraryDependencies += "tools.jackson.module" %% "jackson-module-scala" % "3.0.0-SNAPSHOT"
 ```
 
 ## Java/Kotlin users
@@ -103,7 +103,7 @@ libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" 
 DefaultScalaModule is a Scala Object and to access it when you are not compiling with Scala compiler, you will need to use `DefaultScalaModule$.MODULE$` instead.
 
 ```java
-import com.fasterxml.jackson.module.scala.DefaultScalaModule$;
+import tools.jackson.module.scala.DefaultScalaModule$;
 
 ObjectMapper mapper = JsonMapper.builder().addModule(DefaultScalaModule$.MODULE$).build();
 ```
@@ -146,7 +146,7 @@ positions: everyone is doing this because they want to, not because they are pai
 contractually obligated to. This also means that time availability changes over time
 so getting answers may take time.
 
-In addition other Jackson developers with similar access (but less active) include
+In addition, other Jackson developers with similar access (but less active) include
 
 * Christopher Currie (@christophercurrie) -- original author of Scala module
 * Tatu Saloranta (@cowtowncoder) -- main author of core Jackson components
