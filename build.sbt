@@ -12,6 +12,8 @@ ThisBuild / scalaVersion := "2.13.8"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.8", "3.0.2")
 
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 val scalaReleaseVersion = SettingKey[Int]("scalaReleaseVersion")
