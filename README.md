@@ -145,7 +145,7 @@ positions: everyone is doing this because they want to, not because they are pai
 contractually obligated to. This also means that time availability changes over time
 so getting answers may take time.
 
-In addition other Jackson developers with similar access (but less active) include
+In addition, other Jackson developers with similar access (but less active) include
 
 * Christopher Currie (@christophercurrie) -- original author of Scala module
 * Tatu Saloranta (@cowtowncoder) -- main author of core Jackson components
