@@ -85,11 +85,11 @@ class IterableSerializerTest extends SerializerTest {
   }
 
   it should "serialize an immutable BitSet" in {
-    serialize(immutable.BitSet.fromSpecific(Seq(0, 3, 2, 1))) shouldBe """[0,1,2,3]"""
+    serialize(immutable.BitSet(0, 3, 2, 1)) shouldBe """[0,1,2,3]"""
   }
 
   it should "serialize an mutable BitSet" in {
-    serialize(mutable.BitSet.fromSpecific(Seq(0, 3, 2, 1))) shouldBe """[0,1,2,3]"""
+    serialize(mutable.BitSet(0, 3, 2, 1)) shouldBe """[0,1,2,3]"""
   }
 
   it should "honor the JsonInclude(NON_EMPTY) annotation" in {
