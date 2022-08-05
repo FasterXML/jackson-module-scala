@@ -25,4 +25,16 @@ class BitSetDeserializerTest extends DeserializerTest {
     val seq = mapper.readValue(jsonBytes, new TypeReference[mutable.BitSet] {})
     seq should have size arraySize
   }
+
+  it should "handle BitSet when type is specified as HashSet" in {
+    val mapper = newMapper
+    val seq = mapper.readValue(jsonBytes, new TypeReference[immutable.HashSet[Int]] {})
+    seq should have size arraySize
+  }
+
+  it should "handle BitSet when type is specified as mutable HashSet" in {
+    val mapper = newMapper
+    val seq = mapper.readValue(jsonBytes, new TypeReference[mutable.HashSet[Int]] {})
+    seq should have size arraySize
+  }
 }
