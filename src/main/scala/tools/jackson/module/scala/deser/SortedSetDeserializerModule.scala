@@ -1,7 +1,9 @@
 package tools.jackson.module.scala.deser
 
 import tools.jackson.databind.JacksonModule.SetupContext
-import tools.jackson.databind.{DeserializationConfig, JavaType}
+import tools.jackson.databind.`type`.CollectionLikeType
+import tools.jackson.databind.jsontype.TypeDeserializer
+import tools.jackson.databind.{BeanDescription, DeserializationConfig, JavaType, ValueDeserializer}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.ScalaModule
 import tools.jackson.module.scala.introspect.OrderingLocator
@@ -10,6 +12,9 @@ import tools.jackson.module.scala.modifiers.ScalaTypeModifierModule
 import scala.collection._
 
 trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
+
+  private val IMMUTABLE_BITSET_CLASS: Class[_] = classOf[immutable.BitSet]
+  private val MUTABLE_BITSET_CLASS: Class[_] = classOf[mutable.BitSet]
 
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
@@ -32,6 +37,22 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
         override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
           // TODO add implementation
           false
+        }
+
+        override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
+                                                    config: DeserializationConfig,
+                                                    beanDesc: BeanDescription,
+                                                    elementTypeDeserializer: TypeDeserializer,
+                                                    elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
+          val rawClass = collectionType.getRawClass
+          if (IMMUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
+            ImmutableBitSetDeserializer
+          } else if (MUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
+            MutableBitSetDeserializer
+          } else {
+            super.findCollectionLikeDeserializer(collectionType,
+              config, beanDesc, elementTypeDeserializer, elementDeserializer)
+          }
         }
       }
       builder.build()
