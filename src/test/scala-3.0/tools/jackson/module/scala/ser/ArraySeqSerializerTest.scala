@@ -7,7 +7,7 @@ import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 import scala.collection.immutable
 import scala.collection.mutable
 
-class ArraySeqDeserializerTest extends SerializerTest {
+class ArraySeqSerializerTest extends SerializerTest {
 
   lazy val module: JacksonModule = DefaultScalaModule
   val arraySize = 50
