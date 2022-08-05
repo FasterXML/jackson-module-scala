@@ -35,8 +35,8 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
           cf.newBuilder[A](OrderingLocator.locate(valueType).asInstanceOf[Ordering[A]])
 
         override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
-          // TODO add implementation
-          false
+          CLASS_DOMAIN.isAssignableFrom(valueType) && !MUTABLE_BITSET_CLASS.isAssignableFrom(valueType) &&
+            !IMMUTABLE_BITSET_CLASS.isAssignableFrom(valueType)
         }
 
         override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
@@ -46,9 +46,9 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
                                                     elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
           val rawClass = collectionType.getRawClass
           if (IMMUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-            ImmutableBitSetDeserializer
+            None.orNull
           } else if (MUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-            MutableBitSetDeserializer
+            None.orNull
           } else {
             super.findCollectionLikeDeserializer(collectionType,
               config, beanDesc, elementTypeDeserializer, elementDeserializer)
