@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{BitSetDeserializerModule, DefaultScalaModule, JacksonModule}
 
@@ -17,14 +18,14 @@ class BitSetDeserializerTest extends DeserializerTest {
 
   "An ObjectMapper with the DefaultScalaModule" should "not handle immutable BitSet" in {
     val mapper = newMapper
-    intercept[ClassCastException] {
+    intercept[InvalidDefinitionException] {
       mapper.readValue(jsonBytes, new TypeReference[immutable.BitSet] {})
     }
   }
 
   it should "not handle mutable BitSet" in {
     val mapper = newMapper
-    intercept[ClassCastException] {
+    intercept[InvalidDefinitionException] {
       mapper.readValue(jsonBytes, new TypeReference[mutable.BitSet] {})
     }
   }

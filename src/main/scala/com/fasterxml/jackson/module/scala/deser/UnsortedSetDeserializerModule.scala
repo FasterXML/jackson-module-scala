@@ -1,6 +1,8 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, JavaType, JsonDeserializer}
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 
 import scala.collection._
@@ -9,6 +11,7 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
   this += (_ addDeserializers new GenericFactoryDeserializerResolver[Set, IterableFactory] {
 
     override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Set[_]]
+    private val IGNORE_CLASS_DOMAIN: Class[_] = classOf[SortedSet[_]]
 
     override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
       (classOf[Set[_]], Set.asInstanceOf[Factory]),
@@ -21,5 +24,19 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
     ))
 
     override def builderFor[A](cf: Factory, javaType: JavaType): Builder[A] = cf.newBuilder[A]
+
+    override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
+                                                config: DeserializationConfig,
+                                                beanDesc: BeanDescription,
+                                                elementTypeDeserializer: TypeDeserializer,
+                                                elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+      val rawClass = collectionType.getRawClass
+      if (IGNORE_CLASS_DOMAIN.isAssignableFrom(rawClass)) {
+        None.orNull
+      } else {
+        super.findCollectionLikeDeserializer(collectionType,
+          config, beanDesc, elementTypeDeserializer, elementDeserializer)
+      }
+    }
   })
 }

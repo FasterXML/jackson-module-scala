@@ -1,6 +1,8 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.{BeanDescription, DeserializationConfig, JavaType, JsonDeserializer}
+import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 
 import scala.collection._
@@ -9,6 +11,7 @@ import scala.reflect.ClassTag
 trait SeqDeserializerModule extends ScalaTypeModifierModule {
   this += (_ addDeserializers new GenericFactoryDeserializerResolver[Iterable, IterableFactory] {
     override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Iterable[_]]
+    private val IGNORE_CLASS_DOMAIN: Class[_] = classOf[Set[_]]
 
     override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
       (classOf[IndexedSeq[_]], IndexedSeq.asInstanceOf[Factory]),
@@ -43,6 +46,20 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
         mutable.UnrolledBuffer.newBuilder[A](ClassTag(valueType.getRawClass))
       } else {
         super.builderFor[A](cls, valueType)
+      }
+    }
+
+    override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
+                                                config: DeserializationConfig,
+                                                beanDesc: BeanDescription,
+                                                elementTypeDeserializer: TypeDeserializer,
+                                                elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+      val rawClass = collectionType.getRawClass
+      if (IGNORE_CLASS_DOMAIN.isAssignableFrom(rawClass)) {
+        None.orNull
+      } else {
+        super.findCollectionLikeDeserializer(collectionType,
+          config, beanDesc, elementTypeDeserializer, elementDeserializer)
       }
     }
   })
