@@ -9,8 +9,6 @@ import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import java.util.UUID
-import java.nio.charset.StandardCharsets
-import scala.collection.immutable.ArraySeq
 import scala.collection.{immutable, mutable}
 
 object SeqDeserializerTest {
@@ -246,16 +244,6 @@ class SeqDeserializerTest extends DeserializerTest {
     result1 shouldEqual JavaListWrapper(new java.util.ArrayList[String]())
     val result2 = mapper.readValue(json, classOf[SeqWrapper])
     result2 shouldEqual SeqWrapper(Seq.empty)
-  }
-
-  it should "handle ArraySeq of booleans" in {
-    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
-    val size = 1000
-    val obj = (1 to size).map(i => ((i * 1498724053) & 0x1) == 0).toArray
-    val jsonString = obj.mkString("[", ",", "]")
-    val jsonBytes = jsonString.getBytes(StandardCharsets.UTF_8)
-    val seq = mapper.readValue(jsonBytes, new TypeReference[ArraySeq[Boolean]]{})
-    seq should have size size
   }
 
   val listJson =  "[1,2,3,4,5,6]"
