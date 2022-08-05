@@ -1,0 +1,29 @@
+package com.fasterxml.jackson.module.scala.deser
+
+import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+
+import java.nio.charset.StandardCharsets
+import scala.collection.{immutable, mutable}
+
+class BitSetDeserializerTest extends DeserializerTest {
+
+  lazy val module: JacksonModule = DefaultScalaModule
+  val arraySize = 1000
+  val obj = immutable.BitSet(0 until arraySize: _*)
+  val jsonString = obj.mkString("[", ",", "]")
+  val jsonBytes = jsonString.getBytes(StandardCharsets.UTF_8)
+
+  "An ObjectMapper with the SeqDeserializer" should "handle immutable BitSet" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val seq = mapper.readValue(jsonBytes, new TypeReference[immutable.BitSet] {})
+    seq should have size arraySize
+  }
+
+  it should "handle mutable BitSet" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val seq = mapper.readValue(jsonBytes, new TypeReference[mutable.BitSet] {})
+    seq should have size arraySize
+  }
+}
