@@ -84,6 +84,14 @@ class IterableSerializerTest extends SerializerTest {
     serialize(Seq("1" -> "2", "3" -> "4")) shouldBe """[["1","2"],["3","4"]]"""
   }
 
+  it should "serialize an immutable BitSet" in {
+    serialize(immutable.BitSet.fromSpecific(Seq(0, 3, 2, 1))) shouldBe """[0,1,2,3]"""
+  }
+
+  it should "serialize an mutable BitSet" in {
+    serialize(mutable.BitSet.fromSpecific(Seq(0, 3, 2, 1))) shouldBe """[0,1,2,3]"""
+  }
+
   it should "honor the JsonInclude(NON_EMPTY) annotation" in {
     serialize(new NonEmptyCollections) should be("""{"nonEmptyIterable":[1,2,3]}""")
   }
