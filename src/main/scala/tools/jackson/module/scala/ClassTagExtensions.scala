@@ -21,7 +21,7 @@ object ClassTagExtensions {
 }
 
 /**
- * ClassTag equivalent of {@link ScalaObjectMapper} (which it is meant to replace).
+ * ClassTag equivalent of [[ScalaObjectMapper]] (which it is meant to replace).
  * This only works with non parameterized types or parameterized types up to 5 type parameters.
  */
 trait ClassTagExtensions {
@@ -178,7 +178,7 @@ trait ClassTagExtensions {
   }
 
   /**
-   * Factory method for constructing {@link tools.jackson.databind.ObjectWriter} that will
+   * Factory method for constructing [[tools.jackson.databind.ObjectWriter]] that will
    * serialize objects using specified root type, instead of actual
    * runtime type of value. Type must be a super-type of runtime type.
    * <p>

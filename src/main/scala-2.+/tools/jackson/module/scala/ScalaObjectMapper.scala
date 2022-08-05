@@ -203,7 +203,7 @@ trait ScalaObjectMapper {
   }
 
   /**
-   * Factory method for constructing {@link ObjectWriter} that will
+   * Factory method for constructing [[ObjectWriter]] that will
    * serialize objects using specified root type, instead of actual
    * runtime type of value. Type must be a super-type of runtime type.
    * <p>
