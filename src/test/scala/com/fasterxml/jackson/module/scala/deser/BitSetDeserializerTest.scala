@@ -16,7 +16,7 @@ class BitSetDeserializerTest extends DeserializerTest {
   val jsonBytes = jsonString.getBytes(StandardCharsets.UTF_8)
 
   "An ObjectMapper with the SeqDeserializer" should "handle immutable BitSet" in {
-    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val mapper = JsonMapper.builder().addModule(ImmutableBitSetDeserializerModule).build()
     val seq = mapper.readValue(jsonBytes, new TypeReference[immutable.BitSet] {})
     seq should have size arraySize
   }
