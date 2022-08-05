@@ -12,6 +12,25 @@ ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.6", "3.0.2")
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
+autoAPIMappings := true
+
+apiMappings ++= {
+  def mappingsFor(organization: String, names: List[String], location: String, revision: (String) => String = identity): Seq[(File, URL)] =
+    for {
+      entry: Attributed[File] <- (Compile / fullClasspath).value
+      module: ModuleID <- entry.get(moduleID.key)
+      if module.organization == organization
+      if names.exists(module.name.startsWith)
+    } yield entry.data -> url(location.format(revision(module.revision)))
+
+  val mappings: Seq[(File, URL)] =
+    mappingsFor("org.scala-lang", List("scala-library"), "https://scala-lang.org/api/%s/") ++
+      mappingsFor("com.fasterxml.jackson.core", List("jackson-core"), "https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/%s/") ++
+      mappingsFor("com.fasterxml.jackson.core", List("jackson-databind"), "https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/%s/")
+
+  mappings.toMap
+}
+
 val scalaReleaseVersion = SettingKey[Int]("scalaReleaseVersion")
 scalaReleaseVersion := {
   val v = scalaVersion.value
