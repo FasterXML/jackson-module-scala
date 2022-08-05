@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
-class IArraySerializerTest extends DeserializerTest {
+class IArrayDeserializerTest extends DeserializerTest {
 
   lazy val module: JacksonModule = DefaultScalaModule
   val listJson =  "[1,2,3,4,5,6]"

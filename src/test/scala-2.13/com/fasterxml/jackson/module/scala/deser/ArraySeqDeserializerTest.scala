@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets
 import scala.collection.immutable
 import scala.collection.mutable
 
-class ArraySeqSerializerTest extends DeserializerTest {
+class ArraySeqDeserializerTest extends DeserializerTest {
 
   lazy val module: JacksonModule = DefaultScalaModule
   val arraySize = 1000
