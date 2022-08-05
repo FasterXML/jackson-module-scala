@@ -10,8 +10,6 @@ import scala.collection.immutable.ArraySeq
 class ArraySeqSerializerTest extends DeserializerTest {
 
   lazy val module: JacksonModule = DefaultScalaModule
-  val listJson =  "[1,2,3,4,5,6]"
-  val listScala: Range.Inclusive = 1 to 6
 
   "An ObjectMapper with the SeqDeserializer" should "handle ArraySeq of booleans" in {
     val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
