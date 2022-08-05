@@ -33,9 +33,9 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
                                                 elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
       val rawClass = collectionType.getRawClass
       if (IMMUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-        ImmutableBitSetDeserializer
+        None.orNull
       } else if (MUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-        MutableBitSetDeserializer
+        None.orNull
       } else {
         super.findCollectionLikeDeserializer(collectionType,
           config, beanDesc, elementTypeDeserializer, elementDeserializer)

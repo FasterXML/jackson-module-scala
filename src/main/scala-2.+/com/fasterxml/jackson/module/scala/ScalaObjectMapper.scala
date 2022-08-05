@@ -41,7 +41,7 @@ trait ScalaObjectMapper {
   }
 
   /**
-   * @deprecated Since 2.5: replaced by a fluent form of the method; { @link #addMixIn(Class, Class)}.
+   * @deprecated Since 2.5: replaced by a fluent form of the method; [[addMixIn(Class, Class)]].
    */
   @deprecated("use addMixIn", "2.5")
   final def addMixInAnnotations[Target: Manifest, MixinSource: Manifest]() = {
@@ -270,7 +270,7 @@ trait ScalaObjectMapper {
   }
 
   /**
-   * @deprecated Since 2.5, use { @link #writerFor(Class)} instead
+   * @deprecated Since 2.5, use [[writerFor(Class)]] instead
    */
   @deprecated(message = "Replaced with writerFor", since = "2.5")
   def writerWithType[T: Manifest]: ObjectWriter = {
@@ -278,7 +278,7 @@ trait ScalaObjectMapper {
   }
 
   /**
-   * Factory method for constructing {@link com.fasterxml.jackson.databind.ObjectWriter} that will
+   * Factory method for constructing [[com.fasterxml.jackson.databind.ObjectWriter]] that will
    * serialize objects using specified root type, instead of actual
    * runtime type of value. Type must be a super-type of runtime type.
    * <p>

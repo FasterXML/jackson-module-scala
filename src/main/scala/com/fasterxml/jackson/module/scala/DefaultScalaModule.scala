@@ -4,7 +4,7 @@ import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule,
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 /**
- * Complete module with support for all features.
+ * Complete module with support for all features, with the exception of [[BitSetDeserializerModule]].
  *
  * This class aggregates all of the feature modules into a single concrete class.
  * Its use is recommended for new users and users who want things to "just work".
