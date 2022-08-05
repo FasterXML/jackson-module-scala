@@ -6,24 +6,24 @@ import com.fasterxml.jackson.databind.deser.std.{JsonNodeDeserializer, StdDeseri
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.node.ArrayNode
 
-import scala.collection.immutable
+import scala.collection.mutable
 import scala.collection.JavaConverters._
 import scala.languageFeature.postfixOps
 
-private object ImmutableBitSetDeserializer extends StdDeserializer[immutable.BitSet](classOf[immutable.BitSet]) {
-  override def deserialize(p: JsonParser, ctxt: DeserializationContext): immutable.BitSet = {
+private object MutableBitSetDeserializer extends StdDeserializer[mutable.BitSet](classOf[mutable.BitSet]) {
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): mutable.BitSet = {
     val arrayNodeDeserializer = JsonNodeDeserializer.getDeserializer(classOf[ArrayNode])
     val arrayNode = arrayNodeDeserializer.deserialize(p, ctxt).asInstanceOf[ArrayNode]
     val array = arrayNode.elements().asScala.toArray.map(_.asInt())
-    immutable.BitSet(array: _*)
+    mutable.BitSet(array: _*)
   }
 }
 
-private[deser] object ImmutableBitSetDeserializerResolver extends Deserializers.Base {
-  private val CLASS = classOf[immutable.BitSet]
+private[deser] object MutableBitSetDeserializerResolver extends Deserializers.Base {
+  private val CLASS = classOf[mutable.BitSet]
 
-  override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): JsonDeserializer[immutable.BitSet] =
+  override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): JsonDeserializer[mutable.BitSet] =
     if (CLASS isAssignableFrom javaType.getRawClass)
-      ImmutableBitSetDeserializer
+      MutableBitSetDeserializer
     else null
 }
