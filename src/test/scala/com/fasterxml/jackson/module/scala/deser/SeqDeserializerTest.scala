@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import java.util.UUID
 import com.fasterxml.jackson.annotation.{JsonSetter, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -9,6 +8,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
+import java.util.UUID
 import scala.collection.{immutable, mutable}
 
 object SeqDeserializerTest {
