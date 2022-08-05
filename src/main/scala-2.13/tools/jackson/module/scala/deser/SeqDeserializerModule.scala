@@ -48,6 +48,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
 
         val tagFactories: Iterable[(Class[_], TagFactory)] = Seq(
           (classOf[mutable.ArraySeq[_]], mutable.ArraySeq),
+          (classOf[immutable.ArraySeq[_]], immutable.ArraySeq),
           (classOf[mutable.UnrolledBuffer[_]], mutable.UnrolledBuffer)
         )
 
