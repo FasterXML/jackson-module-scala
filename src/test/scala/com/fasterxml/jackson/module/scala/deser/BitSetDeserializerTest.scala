@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import java.nio.charset.StandardCharsets
