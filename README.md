@@ -124,8 +124,8 @@ Check out [Wiki]. API Scaladocs can be found [on the project site][API] but they
 well suited to end users, as most classes are implementation details of the module.
 
 # Related Projects
-* [jackson-scala-reflect-extensions]https://github.com/pjfanning/jackson-scala-reflect-extensions
-* [jackson-scala3-reflect-extensions]https://github.com/pjfanning/jackson-scala3-reflection-extensions
+* [jackson-scala-reflect-extensions](https://github.com/pjfanning/jackson-scala-reflect-extensions)
+* [jackson-scala3-reflect-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions)
 * [jackson-module-enumeratum](https://github.com/pjfanning/jackson-module-enumeratum)
 * [jackson-module-scala3-enum](https://github.com/pjfanning/jackson-module-scala3-enum)
 * [jackson-caffeine-cache](https://github.com/pjfanning/jackson-caffeine-cache)
