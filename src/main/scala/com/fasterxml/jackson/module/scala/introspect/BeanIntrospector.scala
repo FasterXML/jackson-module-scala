@@ -49,7 +49,7 @@ object BeanIntrospector {
         None
       } else {
         //try to use constructor with most parameters to avoid https://github.com/FasterXML/jackson-module-scala/issues/330
-        val primaryConstructor = c.getConstructors.sortBy(c => -c.getParameterCount).headOption
+        val primaryConstructor = c.getConstructors.sortBy(c => (-c.getParameterCount, c.toString)).headOption
         val debugCtorParamNames = primaryConstructor.toIndexedSeq.flatMap(getCtorParams)
         val index = debugCtorParamNames.indexOf(name)
         val companion = findCompanionObject(c)
