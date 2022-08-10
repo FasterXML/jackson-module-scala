@@ -1,7 +1,9 @@
 package tools.jackson.module.scala.deser
 
 import tools.jackson.databind.JacksonModule.SetupContext
-import tools.jackson.databind.{DeserializationConfig, JavaType}
+import tools.jackson.databind.`type`.CollectionLikeType
+import tools.jackson.databind.jsontype.TypeDeserializer
+import tools.jackson.databind.{BeanDescription, DeserializationConfig, JavaType, ValueDeserializer}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.ScalaModule
 import tools.jackson.module.scala.modifiers.ScalaTypeModifierModule
@@ -15,6 +17,7 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
       builder += new GenericFactoryDeserializerResolver[Set, IterableFactory](config) {
 
         override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Set[_]]
+        private val IGNORE_CLASS_DOMAIN: Class[_] = classOf[SortedSet[_]]
 
         override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
           (classOf[Set[_]], Set.asInstanceOf[Factory]),
@@ -29,8 +32,22 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
         override def builderFor[A](cf: Factory, javaType: JavaType): Builder[A] = cf.newBuilder[A]
 
         override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
-          // TODO add implementation
-          false
+          CLASS_DOMAIN.isAssignableFrom(valueType) && !IGNORE_CLASS_DOMAIN.isAssignableFrom(valueType)
+        }
+
+
+        override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
+                                                    config: DeserializationConfig,
+                                                    beanDesc: BeanDescription,
+                                                    elementTypeDeserializer: TypeDeserializer,
+                                                    elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
+          val rawClass = collectionType.getRawClass
+          if (IGNORE_CLASS_DOMAIN.isAssignableFrom(rawClass)) {
+            None.orNull
+          } else {
+            super.findCollectionLikeDeserializer(collectionType,
+              config, beanDesc, elementTypeDeserializer, elementDeserializer)
+          }
         }
       }
       builder.build()
