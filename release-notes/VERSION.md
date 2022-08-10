@@ -8,6 +8,7 @@ Scala 2.11, 2.12, 2.13 and 3. Java 8 is the minimum supported Java version.
 * [[gh-576]](https://github.com/FasterXML/jackson-module-scala/issues/576) add flag in type cache to track which classes are not Scala (to avoid having to check them again)
 * [[gh-572]](https://github.com/FasterXML/jackson-module-scala/issues/572) reuse Java code to parse Scala BigDecimal and BigInt
 * [[gh-588]](https://github.com/FasterXML/jackson-module-scala/issues/588) immutable ArraySeq was not handled
+* [[gh-590]](https://github.com/FasterXML/jackson-module-scala/issues/590) support BitSet deserialzation (disabled by default) - enabling this is strongly discouraged as BitSets can use a lot of memory
 
 # Version: 2.13.3
 
