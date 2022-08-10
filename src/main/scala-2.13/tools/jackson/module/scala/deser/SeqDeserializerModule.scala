@@ -17,6 +17,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
       val builder = new InitializerBuilder()
       builder += new GenericFactoryDeserializerResolver[Iterable, IterableFactory](config) {
         override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Iterable[_]]
+        private val BASE_CLASS_DOMAIN: Class[_] = classOf[Seq[_]]
         private val IGNORE_CLASS_DOMAIN: Class[_] = classOf[Set[_]]
 
         override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
@@ -78,6 +79,10 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
             super.findCollectionLikeDeserializer(collectionType,
               deserializationConfig, beanDesc, elementTypeDeserializer, elementDeserializer)
           }
+        }
+
+        override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
+          BASE_CLASS_DOMAIN.isAssignableFrom(valueType)
         }
       }
       builder.build()

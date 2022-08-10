@@ -1,6 +1,7 @@
 package tools.jackson.module.scala.deser
 
 import tools.jackson.core.`type`.TypeReference
+import tools.jackson.databind.exc.InvalidDefinitionException
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.{BitSetDeserializerModule, DefaultScalaModule, JacksonModule}
 
@@ -17,14 +18,14 @@ class BitSetDeserializerTest extends DeserializerTest {
 
   "An ObjectMapper with the DefaultScalaModule" should "not handle immutable BitSet" in {
     val mapper = newMapper
-    intercept[ClassCastException] {
+    intercept[InvalidDefinitionException] {
       mapper.readValue(jsonBytes, new TypeReference[immutable.BitSet] {})
     }
   }
 
   it should "not handle mutable BitSet" in {
     val mapper = newMapper
-    intercept[ClassCastException] {
+    intercept[InvalidDefinitionException] {
       mapper.readValue(jsonBytes, new TypeReference[mutable.BitSet] {})
     }
   }

@@ -1,7 +1,7 @@
 package tools.jackson.module.scala.deser
 
 import tools.jackson.databind.JacksonModule.SetupContext
-import tools.jackson.databind.JavaType
+import tools.jackson.databind.{DeserializationConfig, JavaType}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.ScalaModule
 import tools.jackson.module.scala.modifiers.ScalaTypeModifierModule
@@ -15,6 +15,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
       val builder = new InitializerBuilder()
       builder += new GenericFactoryDeserializerResolver[Iterable, IterableFactory](config) {
         override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Iterable[_]]
+        private val BASE_CLASS_DOMAIN: Class[_] = classOf[Seq[_]]
         private val IGNORE_CLASS_DOMAIN: Class[_] = classOf[Set[_]]
         private val UNROLLED_BUFFER_CLASS: Class[_] = classOf[mutable.UnrolledBuffer[_]
 
@@ -66,6 +67,10 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
             super.findCollectionLikeDeserializer(collectionType,
               deserializationConfig, beanDesc, elementTypeDeserializer, elementDeserializer)
           }
+        }
+
+        override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
+          BASE_CLASS_DOMAIN.isAssignableFrom(valueType)
         }
       }
       builder.build()
