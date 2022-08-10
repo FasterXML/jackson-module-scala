@@ -1,8 +1,10 @@
 package tools.jackson.module.scala
 
 import tools.jackson.databind.JacksonModule.SetupContext
+import tools.jackson.databind.`type`.CollectionLikeType
 import tools.jackson.databind.{BeanDescription, DeserializationConfig, JavaType, ValueDeserializer}
 import tools.jackson.databind.deser.Deserializers
+import tools.jackson.databind.jsontype.TypeDeserializer
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.deser.{ImmutableBitSetDeserializer, MutableBitSetDeserializer}
 
@@ -26,8 +28,12 @@ object BitSetDeserializerModule extends JacksonModule {
       private val IMMUTABLE_BITSET_CLASS: Class[_] = classOf[immutable.BitSet]
       private val MUTABLE_BITSET_CLASS: Class[_] = classOf[mutable.BitSet]
 
-      override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[BitSet] = {
-        val rawClass = javaType.getRawClass
+      override def findCollectionLikeDeserializer(`type`: CollectionLikeType,
+                                                  config: DeserializationConfig,
+                                                  beanDesc: BeanDescription,
+                                                  elementTypeDeserializer: TypeDeserializer,
+                                                  elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
+        val rawClass = `type`.getRawClass
         if (IMMUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
           ImmutableBitSetDeserializer.asInstanceOf[ValueDeserializer[BitSet]]
         } else if (MUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
