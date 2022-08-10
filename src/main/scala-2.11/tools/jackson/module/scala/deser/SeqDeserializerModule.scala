@@ -16,6 +16,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
       builder += new GenericFactoryDeserializerResolver[Iterable, IterableFactory](config) {
         override val CLASS_DOMAIN: Class[Collection[_]] = classOf[Iterable[_]]
         private val IGNORE_CLASS_DOMAIN: Class[_] = classOf[Set[_]]
+        private val UNROLLED_BUFFER_CLASS: Class[_] = classOf[mutable.UnrolledBuffer[_]
 
         override val factories: Iterable[(Class[_], Factory)] = sortFactories(Vector(
           (classOf[IndexedSeq[_]], IndexedSeq.asInstanceOf[Factory]),
@@ -46,7 +47,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
 
         // UnrolledBuffer is in a class of its own pre 2.13...
         override def builderFor[A](cls: Class[_], valueType: JavaType): Builder[A] = {
-          if (classOf[mutable.UnrolledBuffer[_]].isAssignableFrom(cls)) {
+          if (UNROLLED_BUFFER_CLASS.isAssignableFrom(cls)) {
             mutable.UnrolledBuffer.newBuilder[A](ClassTag(valueType.getRawClass))
           } else {
             super.builderFor[A](cls, valueType)
