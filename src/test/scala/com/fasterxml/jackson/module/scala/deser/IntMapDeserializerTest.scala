@@ -18,5 +18,6 @@ class IntMapDeserializerTest extends DeserializerTest {
     val read = mapper.readValue(json, new TypeReference[IntMap[Long]]{})
 
     read shouldBe map
+    read.values.sum shouldEqual map.values.sum
   }
 }
