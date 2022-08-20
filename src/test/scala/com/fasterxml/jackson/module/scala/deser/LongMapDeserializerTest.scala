@@ -17,7 +17,7 @@ class LongMapDeserializerTest extends DeserializerTest {
     val json = mapper.writeValueAsString(map)
     val read = mapper.readValue(json, new TypeReference[immutable.LongMap[String]] {})
 
-    read shouldBe map
+    read shouldEqual map
   }
 
   it should "deserialize mutable LongMap" in {
@@ -28,6 +28,6 @@ class LongMapDeserializerTest extends DeserializerTest {
     val json = mapper.writeValueAsString(map)
     val read = mapper.readValue(json, new TypeReference[mutable.LongMap[String]] {})
 
-    read shouldBe map
+    read shouldEqual map
   }
 }

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.module.scala.{DefaultScalaModule, IteratorModule, J
 
 import java.util
 import scala.collection.{immutable, mutable}
-import scala.languageFeature.postfixOps
+import scala.collection.JavaConverters._
 
 private object LongMapDeserializerResolver extends Deserializers.Base {
   override def findMapLikeDeserializer(theType: MapLikeType,
@@ -129,7 +129,8 @@ private object LongMapDeserializerResolver extends Deserializers.Base {
     }
 
     // Isn't used by the deserializer
-    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] = throw new UnsupportedOperationException
+    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] =
+      baseMap.asJava.entrySet().asInstanceOf[java.util.Set[java.util.Map.Entry[Object, Object]]]
 
     def asLongMap[V](): immutable.LongMap[V] = baseMap.asInstanceOf[immutable.LongMap[V]]
   }
@@ -160,7 +161,8 @@ private object LongMapDeserializerResolver extends Deserializers.Base {
     }
 
     // Isn't used by the deserializer
-    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] = throw new UnsupportedOperationException
+    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] =
+      baseMap.asJava.entrySet().asInstanceOf[java.util.Set[java.util.Map.Entry[Object, Object]]]
 
     def asLongMap[V](): mutable.LongMap[V] = baseMap.asInstanceOf[mutable.LongMap[V]]
   }

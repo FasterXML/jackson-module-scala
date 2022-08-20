@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, IteratorModule, JacksonModule}
 
 import java.util
+import scala.collection.JavaConverters._
 import scala.collection.immutable.IntMap
-import scala.languageFeature.postfixOps
 
 private object ImmutableIntMapDeserializerResolver extends Deserializers.Base {
   override def findMapLikeDeserializer(theType: MapLikeType,
@@ -88,7 +88,8 @@ private object ImmutableIntMapDeserializerResolver extends Deserializers.Base {
     }
 
     // Isn't used by the deserializer
-    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] = throw new UnsupportedOperationException
+    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] =
+      baseMap.asJava.entrySet().asInstanceOf[java.util.Set[java.util.Map.Entry[Object, Object]]]
 
     def asIntMap[V](): IntMap[V] = baseMap.asInstanceOf[IntMap[V]]
   }
