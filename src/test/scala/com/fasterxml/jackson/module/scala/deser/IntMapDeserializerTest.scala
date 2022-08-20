@@ -10,14 +10,13 @@ class IntMapDeserializerTest extends DeserializerTest {
   def module: DefaultScalaModule.type = DefaultScalaModule
 
   "Scala Module" should "deserialize IntMap" in {
-    val map = IntMap(1 -> 100L, 2 -> 200L)
+    val map = IntMap(1 -> "one", 2 -> "two")
 
     val mapper = newBuilder.addModule(new IntMapDeserializerModule() {}).build()
 
     val json = mapper.writeValueAsString(map)
-    val read = mapper.readValue(json, new TypeReference[IntMap[Long]]{})
+    val read = mapper.readValue(json, new TypeReference[IntMap[String]]{})
 
     read shouldBe map
-    read.values.sum shouldEqual map.values.sum
   }
 }
