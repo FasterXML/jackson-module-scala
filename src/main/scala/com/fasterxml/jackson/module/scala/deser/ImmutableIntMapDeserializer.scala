@@ -69,12 +69,11 @@ private object ImmutableIntMapDeserializerResolver extends Deserializers.Base {
     override def createUsingDefault(ctxt: DeserializationContext) = new BuilderWrapper
   }
 
-  private class BuilderWrapper extends util.AbstractMap[Any, Any] {
-    var intMap = IntMap[Any]()
+  private class BuilderWrapper extends util.AbstractMap[Object, Object] {
+    var intMap = IntMap[Object]()
 
-    override def put(k: Any, v: Any): Any = {
+    override def put(k: Object, v: Object): Object = {
       k match {
-        case i: Int => intMap += (i -> v)
         case n: Number => intMap += (n.intValue() -> v)
         case s: String => intMap += (s.toInt -> v)
         case _ => {
@@ -89,13 +88,14 @@ private object ImmutableIntMapDeserializerResolver extends Deserializers.Base {
     }
 
     // Used by the deserializer when using readerForUpdating
-    override def get(key: Any): Any = key match {
-      case i: Int => intMap.get(i).orNull
+    override def get(key: Object): Object = key match {
+      case n: Number => intMap.get(n.intValue()).orNull
+      case s: String => intMap.get(s.toInt).orNull
       case _ => None.orNull
     }
 
     // Isn't used by the deserializer
-    override def entrySet(): java.util.Set[java.util.Map.Entry[Any, Any]] = throw new UnsupportedOperationException
+    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] = throw new UnsupportedOperationException
 
     def asIntMap[V](): IntMap[V] = intMap.asInstanceOf[IntMap[V]]
   }
