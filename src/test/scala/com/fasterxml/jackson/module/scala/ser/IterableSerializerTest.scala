@@ -80,6 +80,18 @@ class IterableSerializerTest extends SerializerTest {
     serialize(Map(1 -> 2, 3 -> 4)) should matchUnorderedMap
   }
 
+  it should "serialize a immutable.IntMap[Int]" in {
+    serialize(immutable.IntMap(1 -> 2, 3 -> 4)) should matchUnorderedMap
+  }
+
+  it should "serialize a immutable.LongMap[Int]" in {
+    serialize(immutable.LongMap(1L -> 2, 3L -> 4)) should matchUnorderedMap
+  }
+
+  it should "serialize a mutable.LongMap[Int]" in {
+    serialize(mutable.LongMap(1L -> 2, 3L -> 4)) should matchUnorderedMap
+  }
+
   it should "serialize a Seq[(String, String)]" in {
     serialize(Seq("1" -> "2", "3" -> "4")) shouldBe """[["1","2"],["3","4"]]"""
   }
