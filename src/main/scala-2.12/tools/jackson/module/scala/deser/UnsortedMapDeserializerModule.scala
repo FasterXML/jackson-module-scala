@@ -2,6 +2,8 @@ package tools.jackson.module.scala.deser
 
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind._
+import tools.jackson.databind.`type`.MapLikeType
+import tools.jackson.databind.jsontype.TypeDeserializer
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.ScalaModule
 import tools.jackson.module.scala.modifiers.MapTypeModifierModule
@@ -34,9 +36,24 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
 
         override def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V] = factory.newBuilder[K, V]
 
-        override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
-          // TODO add implementation
-          false
+        override def findMapLikeDeserializer(theType: MapLikeType,
+                                             config: DeserializationConfig,
+                                             beanDesc: BeanDescription,
+                                             keyDeserializer: KeyDeserializer,
+                                             elementTypeDeserializer: TypeDeserializer,
+                                             elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
+
+          var deserializer = LongMapDeserializerResolver.findMapLikeDeserializer(
+            theType, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
+          if (deserializer == null) {
+            deserializer = IntMapDeserializerResolver.findMapLikeDeserializer(
+              theType, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
+            if (deserializer == null) {
+              deserializer = super.findMapLikeDeserializer(
+                theType, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
+            }
+          }
+          deserializer
         }
       }
       builder.build()
