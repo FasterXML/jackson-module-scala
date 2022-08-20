@@ -1,6 +1,8 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.`type`.MapLikeType
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.module.scala.modifiers.MapTypeModifierModule
 
 import scala.collection._
@@ -27,5 +29,25 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
     ))
 
     override def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V] = factory.newBuilder[K, V]
+
+    override def findMapLikeDeserializer(theType: MapLikeType,
+                                         config: DeserializationConfig,
+                                         beanDesc: BeanDescription,
+                                         keyDeserializer: KeyDeserializer,
+                                         elementTypeDeserializer: TypeDeserializer,
+                                         elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
+
+      var deserializer = LongMapDeserializerResolver.findMapLikeDeserializer(
+        theType, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
+      if (deserializer == null) {
+        deserializer = IntMapDeserializerResolver.findMapLikeDeserializer(
+          theType, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
+        if (deserializer == null) {
+          deserializer = super.findMapLikeDeserializer(
+            theType, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
+        }
+      }
+      deserializer
+    }
   })
 }
