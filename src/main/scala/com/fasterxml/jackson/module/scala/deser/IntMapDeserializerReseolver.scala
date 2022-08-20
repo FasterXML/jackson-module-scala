@@ -6,20 +6,29 @@ import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserialize
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, IteratorModule, JacksonModule}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, IteratorModule}
 
 import java.util
 import scala.collection.JavaConverters._
 import scala.collection.immutable.IntMap
 
-private object ImmutableIntMapDeserializerResolver extends Deserializers.Base {
+/**
+ * Adds support for deserializing Scala [[scala.collection.immutable.IntMap]]s. Scala IntMaps can already be
+ * serialized using [[IteratorModule]] or [[DefaultScalaModule]].
+ *
+ * @since 2.14.0
+ */
+private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
+
+  private val intMapClass = classOf[IntMap[_]]
+
   override def findMapLikeDeserializer(theType: MapLikeType,
                                        config: DeserializationConfig,
                                        beanDesc: BeanDescription,
                                        keyDeserializer: KeyDeserializer,
                                        elementTypeDeserializer: TypeDeserializer,
                                        elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    if (!classOf[IntMap[_]].isAssignableFrom(theType.getRawClass)) None.orNull
+    if (!intMapClass.isAssignableFrom(theType.getRawClass)) None.orNull
     else {
       val mapDeserializer = new MapDeserializer(theType, new IntMapInstantiator(config, theType), keyDeserializer,
         elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]], elementTypeDeserializer)
@@ -93,14 +102,4 @@ private object ImmutableIntMapDeserializerResolver extends Deserializers.Base {
 
     def asIntMap[V](): IntMap[V] = baseMap.asInstanceOf[IntMap[V]]
   }
-}
-
-/**
- * Adds support for deserializing Scala [[scala.collection.immutable.IntMap]]s. Scala IntMaps can already be
- * serialized using [[IteratorModule]] or [[DefaultScalaModule]].
- *
- * @since 2.14.0
- */
-trait IntMapDeserializerModule extends JacksonModule {
-  this += ImmutableIntMapDeserializerResolver
 }

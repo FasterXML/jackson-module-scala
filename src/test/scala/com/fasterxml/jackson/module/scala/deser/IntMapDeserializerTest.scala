@@ -3,7 +3,6 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.deser.IntMapDeserializerTest.IntMapWrapper
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 import scala.collection.immutable.IntMap
 
@@ -18,7 +17,7 @@ class IntMapDeserializerTest extends DeserializerTest {
   "Scala Module" should "deserialize IntMap" in {
     val map = IntMap(1 -> "one", 2 -> "two")
 
-    val mapper = newBuilder.addModule(new IntMapDeserializerModule() {}).build()
+    val mapper = newMapper
 
     val json = mapper.writeValueAsString(map)
     val read = mapper.readValue(json, new TypeReference[IntMap[String]]{})
@@ -29,7 +28,7 @@ class IntMapDeserializerTest extends DeserializerTest {
   it should "deserialize IntMap (long value)" in {
     val map = IntMap(1 -> 100L, 2 -> 200L)
 
-    val mapper = newBuilder.addModule(new IntMapDeserializerModule() {}).build()
+    val mapper = newMapper
 
     val json = mapper.writeValueAsString(map)
     val read = mapper.readValue(json, new TypeReference[IntMap[Long]] {})
@@ -43,7 +42,7 @@ class IntMapDeserializerTest extends DeserializerTest {
     val map = IntMap(1 -> 100L, 2 -> 200L)
     val instance = IntMapWrapper(map)
 
-    val mapper = newBuilder.addModule(new IntMapDeserializerModule() {}).build()
+    val mapper = newMapper
 
     val json = mapper.writeValueAsString(instance)
     val read = mapper.readValue(json, classOf[IntMapWrapper])
@@ -56,7 +55,7 @@ class IntMapDeserializerTest extends DeserializerTest {
   it should "deserialize IntMap (bigint value)" in {
     val map = IntMap(1 -> 100L, 2 -> 200L)
 
-    val mapper = newBuilder.addModule(new IntMapDeserializerModule() {}).build()
+    val mapper = newMapper
 
     val json = mapper.writeValueAsString(map)
     val read = mapper.readValue(json, new TypeReference[IntMap[BigInt]] {})

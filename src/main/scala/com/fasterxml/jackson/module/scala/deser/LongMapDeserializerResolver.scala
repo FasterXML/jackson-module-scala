@@ -6,24 +6,34 @@ import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserialize
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, IteratorModule, JacksonModule}
+import com.fasterxml.jackson.module.scala.{DefaultScalaModule, IteratorModule}
 
 import java.util
 import scala.collection.{immutable, mutable}
 import scala.collection.JavaConverters._
 
-private object LongMapDeserializerResolver extends Deserializers.Base {
+/**
+ * Adds support for deserializing Scala [[scala.collection.immutable.LongMap]]s and [[scala.collection.mutable.LongMap]]s.
+ * Scala LongMaps can already be serialized using [[IteratorModule]] or [[DefaultScalaModule]].
+ *
+ * @since 2.14.0
+ */
+private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
+
+  private val immutableLongMapClass = classOf[immutable.LongMap[_]]
+  private val mutableLongMapClass = classOf[mutable.LongMap[_]]
+
   override def findMapLikeDeserializer(theType: MapLikeType,
                                        config: DeserializationConfig,
                                        beanDesc: BeanDescription,
                                        keyDeserializer: KeyDeserializer,
                                        elementTypeDeserializer: TypeDeserializer,
                                        elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    if (classOf[immutable.LongMap[_]].isAssignableFrom(theType.getRawClass)) {
+    if (immutableLongMapClass.isAssignableFrom(theType.getRawClass)) {
       val mapDeserializer = new MapDeserializer(theType, new ImmutableLongMapInstantiator(config, theType), keyDeserializer,
         elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]], elementTypeDeserializer)
       new ImmutableLongMapDeserializer(theType, mapDeserializer)
-    } else if (classOf[mutable.LongMap[_]].isAssignableFrom(theType.getRawClass)) {
+    } else if (mutableLongMapClass.isAssignableFrom(theType.getRawClass)) {
       val mapDeserializer = new MapDeserializer(theType, new MutableLongMapInstantiator(config, theType), keyDeserializer,
         elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]], elementTypeDeserializer)
       new MutableLongMapDeserializer(theType, mapDeserializer)
@@ -167,14 +177,4 @@ private object LongMapDeserializerResolver extends Deserializers.Base {
     def asLongMap[V](): mutable.LongMap[V] = baseMap.asInstanceOf[mutable.LongMap[V]]
   }
 
-}
-
-/**
- * Adds support for deserializing Scala [[scala.collection.immutable.LongMap]]s. Scala LongMaps can already be
- * serialized using [[IteratorModule]] or [[DefaultScalaModule]].
- *
- * @since 2.14.0
- */
-trait LongMapDeserializerModule extends JacksonModule {
-  this += LongMapDeserializerResolver
 }
