@@ -1,5 +1,0 @@
--Xms2G
--Xmx4G
--Xss16M
--XX:MaxMetaspaceSize=1024M
--XX:ReservedCodeCacheSize=1024M
