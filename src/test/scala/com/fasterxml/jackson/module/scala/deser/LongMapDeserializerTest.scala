@@ -32,6 +32,19 @@ class LongMapDeserializerTest extends DeserializerTest {
     read.values.sum shouldEqual map.values.sum
   }
 
+  it should "deserialize immutable LongMap (boolean)" in {
+    val map = immutable.LongMap(0L -> false, 402L -> true)
+
+    val mapper = newMapper
+
+    val json = mapper.writeValueAsString(map)
+    val read = mapper.readValue(json, classOf[mutable.LongMap[Boolean]])
+
+    read shouldEqual map
+    read(0) shouldBe false
+    read(402) shouldBe true
+  }
+
   it should "deserialize mutable LongMap" in {
     val map = mutable.LongMap(1L -> "one", 2L -> "two")
 
@@ -53,5 +66,18 @@ class LongMapDeserializerTest extends DeserializerTest {
 
     read shouldEqual map
     read.values.sum shouldEqual map.values.sum
+  }
+
+  it should "deserialize mutable LongMap (boolean)" in {
+    val map = mutable.LongMap(0L -> false, 402L -> true)
+
+    val mapper = newMapper
+
+    val json = mapper.writeValueAsString(map)
+    val read = mapper.readValue(json, classOf[mutable.LongMap[BigInt]])
+
+    read shouldEqual map
+    read(0) shouldBe false
+    read(402) shouldBe true
   }
 }
