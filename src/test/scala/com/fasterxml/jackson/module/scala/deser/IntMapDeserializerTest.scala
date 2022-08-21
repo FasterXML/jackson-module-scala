@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
 import com.fasterxml.jackson.module.scala.deser.IntMapDeserializerTest.IntMapWrapper
 
 import scala.collection.immutable.IntMap
@@ -66,9 +66,10 @@ class IntMapDeserializerTest extends DeserializerTest {
 
   it should "deserialize IntMap (boolean value)" in {
     val map = IntMap(0 -> false, 402 -> true)
-    val mapper = newMapper
+    val mapper = newBuilder.build() :: ClassTagExtensions
     val json = mapper.writeValueAsString(map)
-    val read = mapper.readValue(json, classOf[IntMap[Boolean]])
+    val read2 = mapper.readValue(json, classOf[IntMap[Boolean]])
+    val read = mapper.readValue[IntMap[Boolean]](json)
     read shouldEqual map
     read(0) shouldBe false
     read(402) shouldBe true
