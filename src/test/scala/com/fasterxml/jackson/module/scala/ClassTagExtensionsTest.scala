@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.{JsonMappingException, Module, ObjectMapper}
+import com.fasterxml.jackson.module.scala.deser.IntMapDeserializerTest.IntMapWrapper
 import com.fasterxml.jackson.module.scala.deser.OptionDeserializerTest.{Foo, TWrapper}
 import com.fasterxml.jackson.module.scala.deser.OptionWithNumberDeserializerTest.{OptionLong, WrappedOptionLong}
 import com.fasterxml.jackson.module.scala.deser.SeqDeserializerTest.{SeqOptionString, WrappedSeqOptionString}
@@ -343,6 +344,28 @@ class ClassTagExtensionsTest extends JacksonTest {
     val t1 = mapper.writeValueAsString(w1)
     val v1 = mapper.readValue[WrappedSeqOptionString](t1)
     v1 shouldEqual w1
+  }
+
+  it should "deserialize IntMap[Long]]" in {
+    val map = IntMap(1 -> 100L, 2 -> 200L)
+
+    val json = mapper.writeValueAsString(map)
+    val read = mapper.readValue[IntMap[Long]](json)
+
+    read shouldEqual map
+    read.values.sum shouldEqual map.values.sum
+  }
+
+  it should "deserialize IntMapWrapper" in {
+    val map = IntMap(1 -> 100L, 2 -> 200L)
+    val instance = IntMapWrapper(map)
+
+    val json = mapper.writeValueAsString(instance)
+    val read = mapper.readValue[IntMapWrapper](json)
+
+    read shouldEqual instance
+    //next line fails because ClassTagExtensions does not keep introspecting into the child fields
+    //read.values.values.sum shouldEqual map.values.sum
   }
 
   "JavaTypeable" should "handle Option[Int]" in {
