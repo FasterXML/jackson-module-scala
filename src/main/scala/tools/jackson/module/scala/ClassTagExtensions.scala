@@ -2,11 +2,13 @@ package tools.jackson.module.scala
 
 import tools.jackson.core.{JsonParser, TreeNode}
 import tools.jackson.databind._
-import tools.jackson.databind.`type`.TypeFactory
+import tools.jackson.databind.`type`.{MapLikeType, TypeFactory}
 import tools.jackson.databind.json.JsonMapper
 
 import java.io.{File, InputStream, Reader}
 import java.net.URL
+import scala.collection.immutable.IntMap
+import scala.collection.{immutable, mutable}
 import scala.reflect.ClassTag
 
 object ClassTagExtensions {
@@ -246,6 +248,12 @@ trait JavaTypeable[T] {
 
 object JavaTypeable {
 
+  private val intClass = classOf[Int]
+  private val intMapClass = classOf[IntMap[_]]
+  private val longClass = classOf[Long]
+  private val immutableLongMapClass = classOf[immutable.LongMap[_]]
+  private val mutableLongMapClass = classOf[mutable.LongMap[_]]
+
   // order of implicits matters for performance reasons, place most useful implicits last
 
   implicit def gen5JavaTypeable[T[_, _, _, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable, D: JavaTypeable, E: JavaTypeable](implicit ct: ClassTag[T[A, B, C, D, E]]): JavaTypeable[T[A, B, C, D, E]] = {
@@ -345,7 +353,27 @@ object JavaTypeable {
     new JavaTypeable[I[T]] {
       override def asJavaType(typeFactory: TypeFactory): JavaType = {
         val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
-        typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
+        if (intMapClass.isAssignableFrom(ct.runtimeClass)) {
+          MapLikeType.upgradeFrom(
+            typeFactory.constructType(intMapClass),
+            typeFactory.constructType(intClass),
+            typeArg0
+          )
+        } else if (immutableLongMapClass.isAssignableFrom(ct.runtimeClass)) {
+          MapLikeType.upgradeFrom(
+            typeFactory.constructType(immutableLongMapClass),
+            typeFactory.constructType(longClass),
+            typeArg0
+          )
+        } else if (mutableLongMapClass.isAssignableFrom(ct.runtimeClass)) {
+          MapLikeType.upgradeFrom(
+            typeFactory.constructType(mutableLongMapClass),
+            typeFactory.constructType(longClass),
+            typeArg0
+          )
+        } else {
+          typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
+        }
       }
     }
   }

@@ -2,6 +2,7 @@ package tools.jackson.module.scala
 
 import com.fasterxml.jackson.annotation.JsonView
 import tools.jackson.core.TreeNode
+import tools.jackson.databind.`type`.MapLikeType
 import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.databind.exc.InvalidFormatException
 import tools.jackson.databind.{DatabindException, ObjectMapper}
@@ -14,6 +15,8 @@ import java.io.{ByteArrayInputStream, File, InputStreamReader}
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import scala.collection.JavaConverters._
+import scala.collection.{immutable, mutable}
+import scala.collection.immutable.IntMap
 
 object ClassTagExtensionsTest {
   private class PublicView
@@ -347,6 +350,33 @@ class ClassTagExtensionsTest extends JacksonTest {
     val jt = implicitly[JavaTypeable[Seq[Int]]].asJavaType(mapper.getTypeFactory)
     jt.getRawClass shouldEqual classOf[Seq[_]]
     jt.containedType(0).getRawClass shouldEqual classOf[Int]
+  }
+
+  it should "handle IntMap[Long]" in {
+    val jt = implicitly[JavaTypeable[IntMap[Long]]].asJavaType(mapper.getTypeFactory)
+    jt.getRawClass shouldEqual classOf[IntMap[_]]
+    jt shouldBe a[MapLikeType]
+    val mlt = jt.asInstanceOf[MapLikeType]
+    mlt.getKeyType.getRawClass shouldEqual classOf[Int]
+    mlt.getContentType.getRawClass shouldEqual classOf[Long]
+  }
+
+  it should "handle immutable LongMap[Boolean]" in {
+    val jt = implicitly[JavaTypeable[immutable.LongMap[Boolean]]].asJavaType(mapper.getTypeFactory)
+    jt.getRawClass shouldEqual classOf[immutable.LongMap[_]]
+    jt shouldBe a[MapLikeType]
+    val mlt = jt.asInstanceOf[MapLikeType]
+    mlt.getKeyType.getRawClass shouldEqual classOf[Long]
+    mlt.getContentType.getRawClass shouldEqual classOf[Boolean]
+  }
+
+  it should "handle mutable LongMap[BigInt]" in {
+    val jt = implicitly[JavaTypeable[mutable.LongMap[BigInt]]].asJavaType(mapper.getTypeFactory)
+    jt.getRawClass shouldEqual classOf[mutable.LongMap[_]]
+    jt shouldBe a[MapLikeType]
+    val mlt = jt.asInstanceOf[MapLikeType]
+    mlt.getKeyType.getRawClass shouldEqual classOf[Long]
+    mlt.getContentType.getRawClass shouldEqual classOf[BigInt]
   }
 
   private val genericJson = """{"t":42}"""
