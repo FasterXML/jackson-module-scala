@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.{CollectionLikeType, MapLikeType, TypeFactory}
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.scala.ClassTagExtensions.{immutableLongMapClass, intClass, intMapClass, longClass}
 
 import java.io.{File, InputStream, Reader}
 import java.net.URL
@@ -16,12 +15,6 @@ object ClassTagExtensions {
   def ::(o: JsonMapper) = new Mixin(o)
   final class Mixin private[ClassTagExtensions](mapper: JsonMapper)
     extends JsonMapper(mapper.rebuild().build()) with ClassTagExtensions
-
-  private val intClass = classOf[Int]
-  private val intMapClass = classOf[IntMap[_]]
-  private val longClass = classOf[Long]
-  private val immutableLongMapClass = classOf[immutable.LongMap[_]]
-  private val mutableLongMapClass = classOf[mutable.LongMap[_]]
 }
 
 /**
@@ -69,34 +62,7 @@ trait ClassTagExtensions {
    * context.
    */
   def constructType[T: JavaTypeable]: JavaType = {
-    val jt = implicitly[JavaTypeable[T]].asJavaType(getTypeFactory)
-    jt match {
-      case clt: CollectionLikeType => {
-        import ClassTagExtensions._
-        if (intMapClass.isAssignableFrom(jt.getRawClass)) {
-          MapLikeType.upgradeFrom(
-            getTypeFactory.constructType(intMapClass),
-            getTypeFactory.constructType(intClass),
-            clt.getContentType
-          )
-        } else if (immutableLongMapClass.isAssignableFrom(jt.getRawClass)) {
-          MapLikeType.upgradeFrom(
-            getTypeFactory.constructType(immutableLongMapClass),
-            getTypeFactory.constructType(longClass),
-            clt.getContentType
-          )
-        } else if (mutableLongMapClass.isAssignableFrom(jt.getRawClass)) {
-          MapLikeType.upgradeFrom(
-            getTypeFactory.constructType(mutableLongMapClass),
-            getTypeFactory.constructType(longClass),
-            clt.getContentType
-          )
-        } else {
-          clt
-        }
-      }
-      case javaType => javaType
-    }
+    implicitly[JavaTypeable[T]].asJavaType(getTypeFactory)
   }
 
   /*
@@ -303,6 +269,12 @@ trait JavaTypeable[T] {
 
 object JavaTypeable {
 
+  private val intClass = classOf[Int]
+  private val intMapClass = classOf[IntMap[_]]
+  private val longClass = classOf[Long]
+  private val immutableLongMapClass = classOf[immutable.LongMap[_]]
+  private val mutableLongMapClass = classOf[mutable.LongMap[_]]
+
   // order of implicits matters for performance reasons, place most useful implicits last
 
   implicit def gen5JavaTypeable[T[_, _, _, _, _], A: JavaTypeable, B: JavaTypeable, C: JavaTypeable, D: JavaTypeable, E: JavaTypeable](implicit ct: ClassTag[T[A, B, C, D, E]]): JavaTypeable[T[A, B, C, D, E]] = {
@@ -402,7 +374,27 @@ object JavaTypeable {
     new JavaTypeable[I[T]] {
       override def asJavaType(typeFactory: TypeFactory): JavaType = {
         val typeArg0 = implicitly[JavaTypeable[T]].asJavaType(typeFactory)
-        typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
+        if (intMapClass.isAssignableFrom(ct.runtimeClass)) {
+          MapLikeType.upgradeFrom(
+            typeFactory.constructType(intMapClass),
+            typeFactory.constructType(intClass),
+            typeArg0
+          )
+        } else if (immutableLongMapClass.isAssignableFrom(ct.runtimeClass)) {
+          MapLikeType.upgradeFrom(
+            typeFactory.constructType(immutableLongMapClass),
+            typeFactory.constructType(longClass),
+            typeArg0
+          )
+        } else if (mutableLongMapClass.isAssignableFrom(ct.runtimeClass)) {
+          MapLikeType.upgradeFrom(
+            typeFactory.constructType(mutableLongMapClass),
+            typeFactory.constructType(longClass),
+            typeArg0
+          )
+        } else {
+          typeFactory.constructCollectionLikeType(ct.runtimeClass, typeArg0)
+        }
       }
     }
   }

@@ -66,10 +66,9 @@ class IntMapDeserializerTest extends DeserializerTest {
 
   it should "deserialize IntMap (boolean value)" in {
     val map = IntMap(0 -> false, 402 -> true)
-    val mapper = newBuilder.build() :: ClassTagExtensions
+    val mapper = newMapper
     val json = mapper.writeValueAsString(map)
-    val read2 = mapper.readValue(json, classOf[IntMap[Boolean]])
-    val read = mapper.readValue[IntMap[Boolean]](json)
+    val read = mapper.readValue(json, classOf[IntMap[Boolean]])
     read shouldEqual map
     read(0) shouldBe false
     read(402) shouldBe true
