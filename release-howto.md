@@ -1,12 +1,10 @@
+# CI Build
 
-For Scala 2.10 and 2.11 releases, use JDK7 to do the build and release.
+The release is done by Github Actions CI build. Add a git tag of the form `v2.14.0` (note that the `v` prefix is required).
+Snapshots are published after every successful build.
 
-For Scala 2.12 and 2.13 releases, use JDK7 to do the build and release.
+## Manual publishing
 
-Make sure the following file has the correct oss.sonatype.org-credentials:
+This is discouraged. If you must go this route, read the documentation for [sbt-sonatype](https://github.com/xerial/sbt-sonatype).
 
-	~/.ivy2/.credentials_sonatype
-
-Perform the release (This will do everything, push to git, and promote artifacts in sonatype-system):
-
-	sbt release
+Use Java 8 when doing releases.
