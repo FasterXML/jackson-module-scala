@@ -6,3 +6,5 @@ Snapshots are published after every successful build.
 ## Manual publishing
 
 This is discouraged. If you must go this route, read the documentation for [sbt-sonatype](https://github.com/xerial/sbt-sonatype).
+
+Use Java 8 when doing releases.
