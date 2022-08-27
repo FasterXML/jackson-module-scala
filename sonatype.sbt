@@ -1,1 +1,1 @@
-sonatypeProfileName := "tools"
+sonatypeProfileName := "tools.jackson"

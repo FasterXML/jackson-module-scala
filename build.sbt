@@ -12,12 +12,12 @@ ThisBuild / scalaVersion := "2.13.8"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.8", "3.1.3")
 
-ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
-ThisBuild / sonatypeRepository := "s01.oss.sonatype.org"
+sonatypeCredentialHost := "s01.oss.sonatype.org"
+sonatypeRepository := "s01.oss.sonatype.org"
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
-ThisBuild / publishTo := {
+publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
   if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
