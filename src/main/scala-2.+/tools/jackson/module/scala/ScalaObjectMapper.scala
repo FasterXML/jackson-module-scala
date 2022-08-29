@@ -2,16 +2,17 @@ package tools.jackson.module.scala
 
 import tools.jackson.core.{JsonParser, TreeNode}
 import tools.jackson.databind._
-import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 
 import java.io.{File, InputStream, Reader}
 import java.net.URL
 
 object ScalaObjectMapper {
-  def ::(o: JsonMapper) = new Mixin(o)
-  final class Mixin private[ScalaObjectMapper](mapper: JsonMapper)
-    extends JsonMapper(mapper.rebuild()) with ScalaObjectMapper
+  def ::(o: ObjectMapper) = new Mixin(o)
+  final class Mixin private[ScalaObjectMapper](mapper: ObjectMapper)
+    extends ObjectMapper(mapper.rebuild()) with ScalaObjectMapper {
+    override def readTree[T <: TreeNode](p: JsonParser): T = mapper.readTree(p)
+  }
 }
 
 @deprecated("ScalaObjectMapper is deprecated because Manifests are not supported in Scala3, you might want to use ClassTagExtensions as a replacement", "2.12.1")

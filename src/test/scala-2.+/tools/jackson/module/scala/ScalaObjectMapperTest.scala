@@ -2,10 +2,9 @@ package tools.jackson.module.scala
 
 import com.fasterxml.jackson.annotation.JsonView
 import tools.jackson.core.TreeNode
-import tools.jackson.databind.DatabindException
+import tools.jackson.databind.{DatabindException, ObjectMapper}
 import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.databind.exc.InvalidFormatException
-import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.deser.OptionDeserializerTest.{Foo, TWrapper}
 import tools.jackson.module.scala.deser.OptionWithNumberDeserializerTest.{OptionLong, WrappedOptionLong}
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
@@ -372,7 +371,7 @@ class ScalaObjectMapperTest extends JacksonTest {
     }
   }
 
-  private def newMapperWithScalaObjectMapper: JsonMapper with ScalaObjectMapper = {
+  private def newMapperWithScalaObjectMapper: ObjectMapper with ScalaObjectMapper = {
     newBuilder.build() :: ScalaObjectMapper
   }
 
