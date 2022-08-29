@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.scala
 import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.{MapLikeType, TypeFactory}
+import com.fasterxml.jackson.databind.json.JsonMapper
 
 import java.io.{File, InputStream, Reader}
 import java.net.URL
@@ -11,8 +12,13 @@ import scala.collection.immutable.IntMap
 import scala.reflect.ClassTag
 
 object ClassTagExtensions {
-  def ::(o: ObjectMapper) = new Mixin(o)
-  final class Mixin private[ClassTagExtensions](mapper: ObjectMapper)
+  def ::(o: JsonMapper): JsonMapper with ClassTagExtensions = new Mixin(o)
+  def ::(o: ObjectMapper): ObjectMapper with ClassTagExtensions = new ObjectMapperMixin(o)
+
+  final class Mixin private[ClassTagExtensions](mapper: JsonMapper)
+    extends JsonMapper(mapper) with ClassTagExtensions
+
+  final class ObjectMapperMixin private[ClassTagExtensions](mapper: ObjectMapper)
     extends ObjectMapper(mapper) with ClassTagExtensions
 }
 

@@ -1,16 +1,22 @@
 package com.fasterxml.jackson.module.scala
 
+import com.fasterxml.jackson.core.{JsonParser, TreeNode}
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
+import com.fasterxml.jackson.databind.jsonschema.JsonSchema
+
 import java.io.{File, InputStream, Reader}
 import java.net.URL
 
-import com.fasterxml.jackson.core.{JsonParser, TreeNode}
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
-import com.fasterxml.jackson.databind.jsonschema.JsonSchema
-import com.fasterxml.jackson.databind._
-
 object ScalaObjectMapper {
-  def ::(o: ObjectMapper) = new Mixin(o)
-  final class Mixin private[ScalaObjectMapper](mapper: ObjectMapper)
+  def ::(o: JsonMapper): JsonMapper with ScalaObjectMapper = new Mixin(o)
+  def ::(o: ObjectMapper): ObjectMapper with ScalaObjectMapper = new ObjectMapperMixin(o)
+
+  final class Mixin private[ScalaObjectMapper](mapper: JsonMapper)
+    extends JsonMapper(mapper) with ScalaObjectMapper
+
+  final class ObjectMapperMixin private[ScalaObjectMapper](mapper: ObjectMapper)
     extends ObjectMapper(mapper) with ScalaObjectMapper
 }
 
