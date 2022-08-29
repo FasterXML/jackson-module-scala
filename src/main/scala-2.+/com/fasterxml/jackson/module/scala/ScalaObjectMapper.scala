@@ -7,12 +7,11 @@ import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.json.JsonMapper
 
 object ScalaObjectMapper {
-  def ::(o: JsonMapper) = new Mixin(o)
-  final class Mixin private[ScalaObjectMapper](mapper: JsonMapper)
-    extends JsonMapper(mapper.rebuild().build()) with ScalaObjectMapper
+  def ::(o: ObjectMapper) = new Mixin(o)
+  final class Mixin private[ScalaObjectMapper](mapper: ObjectMapper)
+    extends ObjectMapper(mapper) with ScalaObjectMapper
 }
 
 @deprecated("ScalaObjectMapper is deprecated because Manifests are not supported in Scala3, you might want to use ClassTagExtensions as a replacement", "2.12.1")
