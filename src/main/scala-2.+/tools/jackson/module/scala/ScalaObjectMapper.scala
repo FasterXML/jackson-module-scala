@@ -2,14 +2,22 @@ package tools.jackson.module.scala
 
 import tools.jackson.core.{JsonParser, TreeNode}
 import tools.jackson.databind._
+import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 
 import java.io.{File, InputStream, Reader}
 import java.net.URL
 
 object ScalaObjectMapper {
-  def ::(o: ObjectMapper) = new Mixin(o)
-  final class Mixin private[ScalaObjectMapper](mapper: ObjectMapper)
+  def ::(o: JsonMapper): JsonMapper with ScalaObjectMapper = new Mixin(o)
+  def ::(o: ObjectMapper): ObjectMapper with ScalaObjectMapper = new ObjectMapperMixin(o)
+
+  final class Mixin private[ScalaObjectMapper](mapper: JsonMapper)
+    extends JsonMapper(mapper.rebuild()) with ScalaObjectMapper {
+    override def readTree[T <: TreeNode](p: JsonParser): T = mapper.readTree(p)
+  }
+
+  final class ObjectMapperMixin private[ScalaObjectMapper](mapper: ObjectMapper)
     extends ObjectMapper(mapper.rebuild()) with ScalaObjectMapper {
     override def readTree[T <: TreeNode](p: JsonParser): T = mapper.readTree(p)
   }

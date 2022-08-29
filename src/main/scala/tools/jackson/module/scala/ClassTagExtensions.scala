@@ -3,6 +3,7 @@ package tools.jackson.module.scala
 import tools.jackson.core.{JsonParser, TreeNode}
 import tools.jackson.databind._
 import tools.jackson.databind.`type`.{MapLikeType, TypeFactory}
+import tools.jackson.databind.json.JsonMapper
 
 import java.io.{File, InputStream, Reader}
 import java.net.URL
@@ -11,8 +12,15 @@ import scala.collection.{immutable, mutable}
 import scala.reflect.ClassTag
 
 object ClassTagExtensions {
-  def ::(o: ObjectMapper) = new Mixin(o)
-  final class Mixin private[ClassTagExtensions](mapper: ObjectMapper)
+  def ::(o: JsonMapper): JsonMapper with ClassTagExtensions = new Mixin(o)
+  def ::(o: ObjectMapper): ObjectMapper with ClassTagExtensions = new ObjectMapperMixin(o)
+
+  final class Mixin private[ClassTagExtensions](mapper: JsonMapper)
+    extends JsonMapper(mapper.rebuild()) with ClassTagExtensions {
+    override def readTree[T <: TreeNode](jsonParser: JsonParser): T = mapper.readTree(jsonParser)
+  }
+
+  final class ObjectMapperMixin private[ClassTagExtensions](mapper: ObjectMapper)
     extends ObjectMapper(mapper.rebuild()) with ClassTagExtensions {
     override def readTree[T <: TreeNode](jsonParser: JsonParser): T = mapper.readTree(jsonParser)
   }
