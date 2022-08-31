@@ -10,6 +10,10 @@ case object CaseObjectExample {
 
 class CaseObjectSerializerTest extends SerializerTest {
 
+  case object Foo {
+    val field: String = "bar"
+  }
+
   def module = DefaultScalaModule
 
   "An ObjectMapper with the DefaultScalaModule" should "serialize a case object as a bean" in {
@@ -19,7 +23,7 @@ class CaseObjectSerializerTest extends SerializerTest {
     )
   }
 
-  it should "serialize a case object when visibility settings set" in {
+  it should "serialize a case object when visibility settings set" ignore {
     val mapper = newBuilder
       .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
       .visibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE)
@@ -28,5 +32,13 @@ class CaseObjectSerializerTest extends SerializerTest {
       equal("""{"field1":"test","field2":42}""") or
         equal("""{"field2":42,"field1":"test"}""")
     )
+  }
+
+  it should "serialize an inner case object when visibility settings set" in {
+    val mapper = newBuilder
+      .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+      .visibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE)
+      .build()
+    mapper.writeValueAsString(Foo) shouldEqual """{"field":"bar"}"""
   }
 }
