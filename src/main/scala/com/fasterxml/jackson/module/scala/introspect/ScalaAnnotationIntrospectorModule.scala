@@ -170,23 +170,24 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
               // Locate the constructor param that matches it
               descriptor.properties.find(_.param.exists(_.index == creator.getCreatorIndex)) match {
                 case Some(pd) => {
-                  val mappedCreator = overrides.get(pd.name) match {
-                    case Some(refHolder) => WrappedCreatorProperty(creator, refHolder)
-                    case _ => creator
-                  }
                   if (applyDefaultValues) {
                     pd match {
                       case PropertyDescriptor(_, Some(ConstructorParameter(_, _, Some(defaultValue))), _, _, _, _, _) => {
-                        mappedCreator.withNullProvider(new NullValueProvider {
+                        val updatedCreator = creator.withNullProvider(new NullValueProvider {
                           override def getNullValue(ctxt: DeserializationContext): AnyRef = defaultValue()
-
                           override def getNullAccessPattern: AccessPattern = AccessPattern.DYNAMIC
                         })
+                        updatedCreator match {
+                          case cp: CreatorProperty => applyOverrides(cp, pd.name, overrides)
+                          case cp => cp
+                        }
                       }
-                      case _ => mappedCreator
+                      case _ => {
+                        applyOverrides(creator, pd.name, overrides)
+                      }
                     }
                   } else {
-                    mappedCreator
+                    applyOverrides(creator, pd.name, overrides)
                   }
                 }
                 case _ => creator
@@ -201,6 +202,14 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
 
     override def getFromObjectArguments(config: DeserializationConfig): Array[SettableBeanProperty] = {
       overriddenConstructorArguments
+    }
+  }
+
+  private def applyOverrides(creator: CreatorProperty, propertyName: String,
+                             overrides: Map[String, ClassHolder]): CreatorProperty = {
+    overrides.get(propertyName) match {
+      case Some(refHolder) => WrappedCreatorProperty(creator, refHolder)
+      case _ => creator
     }
   }
 
