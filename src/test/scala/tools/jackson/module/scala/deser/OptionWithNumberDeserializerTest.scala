@@ -6,9 +6,11 @@ import tools.jackson.module.scala.DefaultScalaModule
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 object OptionWithNumberDeserializerTest {
+
+  case class OptionLong(valueLong: Option[Long])
+  case class OptionLongWithDefault(valueLong: Option[Long] = None)
   case class AnnotatedOptionLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) valueLong: Option[Long])
   case class AnnotatedOptionPrimitiveLong(@JsonDeserialize(contentAs = classOf[Long]) valueLong: Option[Long])
-  case class OptionLong(valueLong: Option[Long])
   case class OptionJavaLong(valueLong: Option[java.lang.Long])
   case class OptionBigInt(value: Option[BigInt])
   case class WrappedOptionLong(text: String, wrappedLong: OptionLong)
@@ -38,6 +40,20 @@ class OptionWithNumberDeserializerTest extends DeserializerTest {
 
   it should "deserialize OptionLong when registerReferencedValueType is used" in {
     ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    try {
+      val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
+      v1 shouldBe OptionLong(Some(151L))
+      v1.valueLong.get shouldBe 151L
+      //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospectorModule.registerReferencedValueType
+      //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+      useOptionLong(v1.valueLong) shouldBe 302L
+    } finally {
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
+    }
+  }
+
+  it should "deserialize OptionLongWithDefault when registerReferencedValueType is used" in {
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLongWithDefault], "valueLong", classOf[Long])
     try {
       val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
       v1 shouldBe OptionLong(Some(151L))
