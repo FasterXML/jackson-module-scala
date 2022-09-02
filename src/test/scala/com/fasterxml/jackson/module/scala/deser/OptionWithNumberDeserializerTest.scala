@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.deser.PrimitiveContainerTest.OptionLongWithDefault
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 object OptionWithNumberDeserializerTest {
@@ -38,6 +39,20 @@ class OptionWithNumberDeserializerTest extends DeserializerTest {
 
   it should "deserialize OptionLong when registerReferencedValueType is used" in {
     ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+    try {
+      val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
+      v1 shouldBe OptionLong(Some(151L))
+      v1.valueLong.get shouldBe 151L
+      //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospectorModule.registerReferencedValueType
+      //or use one of the equivalent classes in OptionWithNumberDeserializerTest
+      useOptionLong(v1.valueLong) shouldBe 302L
+    } finally {
+      ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
+    }
+  }
+
+  it should "deserialize OptionLongWithDefault when registerReferencedValueType is used" in {
+    ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLongWithDefault], "valueLong", classOf[Long])
     try {
       val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
       v1 shouldBe OptionLong(Some(151L))
