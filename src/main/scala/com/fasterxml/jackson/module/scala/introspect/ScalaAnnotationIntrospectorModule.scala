@@ -182,9 +182,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
                           case cp => cp
                         }
                       }
-                      case _ => {
-                        applyOverrides(creator, pd.name, overrides)
-                      }
+                      case _ => applyOverrides(creator, pd.name, overrides)
                     }
                   } else {
                     applyOverrides(creator, pd.name, overrides)
