@@ -54,8 +54,8 @@ class OptionWithNumberDeserializerTest extends DeserializerTest {
   it should "deserialize OptionLongWithDefault when registerReferencedValueType is used" in {
     ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLongWithDefault], "valueLong", classOf[Long])
     try {
-      val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLong])
-      v1 shouldBe OptionLong(Some(151L))
+      val v1 = deserialize("""{"valueLong":151}""", classOf[OptionLongWithDefault])
+      v1 shouldBe OptionLongWithDefault(Some(151L))
       v1.valueLong.get shouldBe 151L
       //this next call will fail with a Scala unboxing exception unless you call ScalaAnnotationIntrospectorModule.registerReferencedValueType
       //or use one of the equivalent classes in OptionWithNumberDeserializerTest
