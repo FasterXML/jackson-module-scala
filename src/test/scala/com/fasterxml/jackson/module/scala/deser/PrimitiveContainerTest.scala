@@ -9,6 +9,7 @@ object PrimitiveContainerTest {
   case class OptionInt(value: Option[Int])
   case class AnnotatedOptionInt(@JsonDeserialize(contentAs = classOf[java.lang.Integer]) value: Option[Int])
   case class OptionLong(value: Option[Long])
+  case class OptionLongWithDefault(value: Option[Long] = None)
   case class AnnotatedOptionLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) value: Option[Long])
 
   case class AnnotatedHashKeyLong(@JsonDeserialize(keyAs = classOf[java.lang.Long]) value: Map[Long, String])
@@ -32,6 +33,18 @@ class PrimitiveContainerTest extends DeserializationFixture
     val max = Long.MaxValue
     val value2 = f.readValue(s"""{"value":$max}""", new TypeReference[OptionLong] {})
     value2.value shouldBe Some(max)
+    val value3 = f.readValue("{}", new TypeReference[OptionLong] {})
+    value3.value shouldBe empty
+  }
+
+  it should "support deserializing OptionLongWithDefault" in { f =>
+    val value = f.readValue("""{"value":1}""", new TypeReference[OptionLongWithDefault] {})
+    value.value shouldBe Some(1L)
+    val max = Long.MaxValue
+    val value2 = f.readValue(s"""{"value":$max}""", new TypeReference[OptionLongWithDefault] {})
+    value2.value shouldBe Some(max)
+    val value3 = f.readValue("{}", new TypeReference[OptionLongWithDefault] {})
+    value3.value shouldBe empty
   }
 
   it should "support primitive conversions in" in { f =>
