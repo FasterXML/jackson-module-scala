@@ -3,13 +3,13 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.deser.PrimitiveContainerTest.OptionLongWithDefault
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 object OptionWithNumberDeserializerTest {
   case class AnnotatedOptionLong(@JsonDeserialize(contentAs = classOf[java.lang.Long]) valueLong: Option[Long])
   case class AnnotatedOptionPrimitiveLong(@JsonDeserialize(contentAs = classOf[Long]) valueLong: Option[Long])
   case class OptionLong(valueLong: Option[Long])
+  case class OptionLongWithDefault(valueLong: Option[Long] = None)
   case class OptionJavaLong(valueLong: Option[java.lang.Long])
   case class OptionBigInt(value: Option[BigInt])
   case class WrappedOptionLong(text: String, wrappedLong: OptionLong)
