@@ -1,11 +1,18 @@
 package tools.jackson.module.scala.deser
 
-import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
-import CaseObjectDeserializerTest.TestObject
+import CaseObjectDeserializerTest.{Foo, TestObject}
+import com.fasterxml.jackson.annotation.JsonAutoDetect
+import tools.jackson.databind.introspect.VisibilityChecker
+
+import scala.compat.java8.FunctionConverters.asJavaUnaryOperator
 
 object CaseObjectDeserializerTest {
   case object TestObject
+
+  case object Foo {
+    val field: String = "bar"
+  }
 }
 
 class CaseObjectDeserializerTest extends DeserializerTest {
@@ -19,7 +26,29 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     assert(deserialized == original)
   }
 
-  "An ObjectMapper with ClassTagExtensions and ScalaObjectDeserializerModule" should "deserialize a case object and not create a new instance" in {
+  it should "deserialize Foo and not create a new instance" in {
+    val mapper = newMapper
+    val original = Foo
+    val json = mapper.writeValueAsString(original)
+    val deserialized = mapper.readValue(json, Foo.getClass)
+    assert(deserialized == original)
+  }
+
+  it should "deserialize Foo and not create a new instance (visibility settings)" in {
+    val mapper = newBuilder
+      .changeDefaultVisibility(asJavaUnaryOperator((a: Any) => {
+        VisibilityChecker.defaultInstance()
+          .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+          .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+      }))
+      .build()
+    val original = Foo
+    val json = mapper.writeValueAsString(original)
+    val deserialized = mapper.readValue(json, Foo.getClass)
+    assert(deserialized == original)
+  }
+
+  "An ObjectMapper with ClassTagExtensions" should "deserialize a case object and not create a new instance" in {
     val mapper = newMapper :: ClassTagExtensions
     val original = TestObject
     val json = mapper.writeValueAsString(original)
