@@ -23,6 +23,7 @@ class CaseObjectSerializerTest extends SerializerTest {
     )
   }
 
+  // https://github.com/FasterXML/jackson-module-scala/issues/596
   it should "serialize a case object when visibility settings set" ignore {
     val mapper = newBuilder
       .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
