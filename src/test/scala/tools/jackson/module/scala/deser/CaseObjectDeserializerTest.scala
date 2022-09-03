@@ -18,7 +18,7 @@ object CaseObjectDeserializerTest {
 class CaseObjectDeserializerTest extends DeserializerTest {
   def module = DefaultScalaModule
 
-  "An ObjectMapper with DefaultScalaModule and ScalaObjectDeserializerModule" should "deserialize a case object and not create a new instance" in {
+  "An ObjectMapper with DefaultScalaModule" should "deserialize a case object and not create a new instance" in {
     val mapper = newMapper
     val original = TestObject
     val json = mapper.writeValueAsString(original)
