@@ -89,7 +89,7 @@ Consult the [Scaladoc](http://fasterxml.github.io/jackson-module-scala/latest/ap
 
 To import in sbt:
 ```scala
-libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.3"
+libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.4"
 ```
 
 ## Java/Kotlin users
