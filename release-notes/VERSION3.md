@@ -9,3 +9,4 @@ Users who don't use DefaultScalaModule may need to change to using ScalaModule b
 * [[gh-525]](https://github.com/FasterXML/jackson-module-scala/issues/525) Add ScalaModule builder 
 * [[gh-531]](https://github.com/FasterXML/jackson-module-scala/issues/531) Remove DefaultRequiredAnnotationIntrospector as part of dropping support for jackson-module-jsonSchema
 * [[gh-583]](https://github.com/FasterXML/jackson-module-scala/issues/583) Change groupId and package names to `tools.jackson`
+* [[gh-601]](https://github.com/FasterXML/jackson-module-scala/issues/601) Make ScalaObjectDeserializerModule part of DefaultScalaModule
