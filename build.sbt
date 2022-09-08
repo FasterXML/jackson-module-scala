@@ -10,7 +10,7 @@ ThisBuild / version := "3.0.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.8", "3.2.0")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.16", "2.13.8", "3.2.0")
 
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "s01.oss.sonatype.org"
