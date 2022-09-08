@@ -5,7 +5,7 @@ package deser
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
-import com.fasterxml.jackson.module.scala.ser.ClassWithUnitField
+import com.fasterxml.jackson.module.scala.ser.{ClassWithOnlyUnitField, ClassWithUnitField}
 
 import java.time.LocalDateTime
 
@@ -167,5 +167,12 @@ class CaseClassDeserializerTest extends DeserializerTest {
     val input = """{"intField":2}"""
     val result = deserialize(input, classOf[ClassWithUnitField])
     result shouldEqual ClassWithUnitField((), 2)
+  }
+
+  //this does not currently work
+  it should "support ClassWithOnlyUnitField" ignore {
+    val input = """{}"""
+    val result = deserialize(input, classOf[ClassWithOnlyUnitField])
+    result shouldEqual ClassWithOnlyUnitField(())
   }
 }

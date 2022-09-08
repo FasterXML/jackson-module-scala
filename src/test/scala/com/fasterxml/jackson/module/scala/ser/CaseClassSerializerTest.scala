@@ -60,6 +60,7 @@ case class PrivateDefaultFields(
 )
 
 case class ClassWithUnitField(field: Unit, intField: Int)
+case class ClassWithOnlyUnitField(field: Unit)
 
 class CaseClassSerializerTest extends SerializerTest {
 
@@ -192,5 +193,9 @@ class CaseClassSerializerTest extends SerializerTest {
 
   it should "serialize ClassWithUnitField" in {
     serialize(ClassWithUnitField((), 2)) shouldEqual """{"intField":2}"""
+  }
+
+  it should "serialize ClassWithOnlyUnitField" in {
+    serialize(ClassWithOnlyUnitField(())) shouldEqual """{}"""
   }
 }
