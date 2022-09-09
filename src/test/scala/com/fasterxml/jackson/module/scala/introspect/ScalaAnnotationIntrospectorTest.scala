@@ -31,6 +31,9 @@ object ScalaAnnotationIntrospectorTest {
     @JsonProperty def getValue: Int = value
     @JsonProperty def setValue(value: Int): Unit = { this.value = value }
   }
+  class GeneratedDefaultArgumentClass {
+    def getValue(value: String = "default"): String = value
+  }
 
   case class CaseClassWithDefault(a: String = "defaultParam", b: Option[String] = Some("optionDefault"), c: Option[String])
 
@@ -239,6 +242,12 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
 
     cache.size shouldBe >=(1)
     cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be(null)
+  }
+
+  it should "ignore a generated default argument method" in { mapper =>
+    val bean = new GeneratedDefaultArgumentClass
+    val allProps = getProps(mapper, bean)
+    allProps shouldBe empty
   }
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
