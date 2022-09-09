@@ -204,4 +204,13 @@ class CaseClassSerializerTest extends SerializerTest {
   it should "serialize ClassWithOnlyUnitField" in {
     serialize(ClassWithOnlyUnitField(())) shouldEqual """{}"""
   }
+
+  it should "not find properties for default arguments" in {
+    case class GeneratedDefaultArgumentClass() {
+      def getValue(value: String = "default"): String = value
+    }
+
+    serialize(GeneratedDefaultArgumentClass()) shouldEqual "{}"
+  }
+
 }
