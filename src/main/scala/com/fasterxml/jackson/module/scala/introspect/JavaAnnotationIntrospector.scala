@@ -1,9 +1,11 @@
 package com.fasterxml.jackson.module.scala.introspect
 
-import java.lang.reflect.{Constructor, Field, Method, Parameter}
+import com.fasterxml.jackson.core.Version
 
+import java.lang.reflect.{Constructor, Field, Method, Parameter}
 import com.fasterxml.jackson.databind.PropertyName
 import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedMember, AnnotatedParameter, NopAnnotationIntrospector}
+import com.fasterxml.jackson.module.scala.JacksonModule
 
 import scala.reflect.NameTransformer
 
@@ -34,4 +36,6 @@ object JavaAnnotationIntrospector extends NopAnnotationIntrospector {
     }
     result.map(NameTransformer.decode).getOrElse(None.orNull)
   }
+
+  override def version(): Version = JacksonModule.version
 }

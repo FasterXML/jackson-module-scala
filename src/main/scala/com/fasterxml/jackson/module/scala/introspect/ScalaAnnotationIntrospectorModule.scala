@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.databind.`type`.{ClassKey, CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
@@ -95,6 +96,8 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       }
     }
   }
+
+  override def version(): Version = JacksonModule.version
 
   private class ScalaValueInstantiator(scalaAnnotationIntrospectorModule: ScalaAnnotationIntrospectorModule,
                                        delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor)
