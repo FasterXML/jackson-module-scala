@@ -58,11 +58,11 @@ trait JacksonModule extends tools.jackson.databind.JacksonModule {
 
   def getModuleName = "JacksonModule"
 
-  def version = JacksonModule.version
+  override def version(): Version = JacksonModule.version
 
   def setupModule(context: SetupContext): Unit = {
-    val MajorVersion = version.getMajorVersion
-    val MinorVersion = version.getMinorVersion
+    val MajorVersion = JacksonModule.version.getMajorVersion
+    val MinorVersion = JacksonModule.version.getMinorVersion
 
     val requiredVersion = new Version(MajorVersion, MinorVersion, 0, null, "tools.jackson.core", "jackson-databind")
     val incompatibleVersion = new Version(MajorVersion, MinorVersion + 1, 0, null, "tools.jackson.core", "jackson-databind")
