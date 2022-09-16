@@ -1,9 +1,10 @@
 package tools.jackson.module.scala.introspect
 
+import tools.jackson.core.Version
 import tools.jackson.databind.PropertyName
 import tools.jackson.databind.cfg.MapperConfig
 import tools.jackson.databind.introspect.{Annotated, AnnotatedMember, AnnotatedParameter, NopAnnotationIntrospector}
-import tools.jackson.module.scala.ScalaModule
+import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import java.lang.reflect.{Constructor, Field, Method, Parameter}
 import scala.reflect.NameTransformer
@@ -37,4 +38,6 @@ class JavaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends Nop
     }
     result.map(NameTransformer.decode).getOrElse(None.orNull)
   }
+
+  override def version(): Version = JacksonModule.version
 }

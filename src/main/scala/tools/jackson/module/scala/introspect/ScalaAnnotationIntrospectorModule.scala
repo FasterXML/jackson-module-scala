@@ -1,6 +1,7 @@
 package tools.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import tools.jackson.core.Version
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind.`type`.{ClassKey, CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
 import tools.jackson.databind.cfg.MapperConfig
@@ -133,6 +134,8 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   override def findValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueInstantiator = {
     None.orNull
   }
+
+  override def version(): Version = JacksonModule.version
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
     val key = new ClassKey(clz)
