@@ -5,6 +5,7 @@ package deser
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.{JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
+import com.fasterxml.jackson.module.scala.ser.{ClassWithOnlyUnitField, ClassWithUnitField}
 
 import java.time.LocalDateTime
 
@@ -160,5 +161,18 @@ class CaseClassDeserializerTest extends DeserializerTest {
   it should "support Array[Byte] properties" in {
     val result = deserialize("""{"value":"AQID"}""", classOf[ArrayHolder])
     result.value should equal (Array[Byte](1,2,3))
+  }
+
+  it should "support ClassWithUnitField" in {
+    val input = """{"intField":2}"""
+    val result = deserialize(input, classOf[ClassWithUnitField])
+    result shouldEqual ClassWithUnitField((), 2)
+  }
+
+  //this does not currently work
+  it should "support ClassWithOnlyUnitField" ignore {
+    val input = """{}"""
+    val result = deserialize(input, classOf[ClassWithOnlyUnitField])
+    result shouldEqual ClassWithOnlyUnitField(())
   }
 }

@@ -41,7 +41,7 @@ trait JacksonModule extends Module {
 
   def getModuleName = "JacksonModule"
 
-  def version = JacksonModule.version
+  override def version(): Version = JacksonModule.version
 
   def setupModule(context: SetupContext): Unit = {
     val MajorVersion = version.getMajorVersion

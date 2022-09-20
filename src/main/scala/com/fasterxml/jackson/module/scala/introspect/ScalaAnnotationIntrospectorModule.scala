@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.databind.`type`.{ClassKey, CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
@@ -47,7 +48,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   override def hasIgnoreMarker(m: AnnotatedMember): Boolean = {
     val name = m.getName
     //special cases to prevent shadow fields associated with lazy vals being serialized
-    name == "0bitmap$1" || name.endsWith("$lzy1") || super.hasIgnoreMarker(m)
+    name == "0bitmap$1" || name.endsWith("$lzy1") || name.contains("$default$") || super.hasIgnoreMarker(m)
   }
 
   override def hasCreatorAnnotation(a: Annotated): Boolean = {
@@ -95,6 +96,8 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       }
     }
   }
+
+  override def version(): Version = JacksonModule.version
 
   private class ScalaValueInstantiator(scalaAnnotationIntrospectorModule: ScalaAnnotationIntrospectorModule,
                                        delegate: StdValueInstantiator, config: DeserializationConfig, descriptor: BeanDescriptor)

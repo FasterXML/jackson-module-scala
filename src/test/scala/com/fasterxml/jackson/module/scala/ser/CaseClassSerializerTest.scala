@@ -59,6 +59,9 @@ case class PrivateDefaultFields(
   @JsonProperty lastName: String = "Freeman"
 )
 
+case class ClassWithUnitField(field: Unit, intField: Int)
+case class ClassWithOnlyUnitField(field: Unit)
+
 class CaseClassSerializerTest extends SerializerTest {
 
   case class NestedClass(field: String)
@@ -187,4 +190,21 @@ class CaseClassSerializerTest extends SerializerTest {
     val foo = new Foo(java.util.Arrays.asList("foo", "bar"))
     serialize(foo) should equal ("""{"strings":["foo","bar"]}""")
   }
+
+  it should "serialize ClassWithUnitField" in {
+    serialize(ClassWithUnitField((), 2)) shouldEqual """{"intField":2}"""
+  }
+
+  it should "serialize ClassWithOnlyUnitField" in {
+    serialize(ClassWithOnlyUnitField(())) shouldEqual """{}"""
+  }
+
+  it should "not find properties for default arguments" in {
+    case class GeneratedDefaultArgumentClass() {
+      def getValue(value: String = "default"): String = value
+    }
+
+    serialize(GeneratedDefaultArgumentClass()) shouldEqual "{}"
+  }
+
 }
