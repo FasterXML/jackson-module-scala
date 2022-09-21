@@ -8,9 +8,9 @@ organization := "tools.jackson.module"
 
 ThisBuild / version := "3.0.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.9"
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.8", "3.2.0")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.9", "3.2.0")
 
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "s01.oss.sonatype.org"
