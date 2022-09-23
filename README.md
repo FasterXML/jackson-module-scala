@@ -70,6 +70,11 @@ val mapper = JsonMapper.builder()
   .build()
 ```
 
+One Scala module that isn't part of `DefaultScalaModule` is `ScalaObjectDeserializerModule`. This module is used to
+ensure that deserialization to a Scala object does not create a new instance of the object.
+This latter module is not yet included in `DefaultScalaModule` for backward compatibility reasons.
+It is included in the v3.0.0 which is still under development.
+
 ## ClassTagExtensions
 You can also mixin `ClassTagExtensions` to get rich wrappers that automatically
 convert Scala ClassTags directly into TypeReferences for Jackson to use:
