@@ -69,13 +69,23 @@ val mapper = JsonMapper.builder()
   .build()
 ```
 
-You can also mixin `ScalaObjectMapper` to get rich wrappers that automatically
-convert scala manifests directly into TypeReferences for Jackson to use (now depecated because manifests are not supported in Scala 3):
+One Scala module that isn't part of `DefaultScalaModule` is `ScalaObjectDeserializerModule`. This module is used to
+ensure that deserialization to a Scala object does not create a new instance of the object.
+This latter module is not yet included in `DefaultScalaModule` for backward compatibility reasons.
+It is included in the v3.0.0 which is still under development.
+
+## ClassTagExtensions
+You can also mixin `ClassTagExtensions` to get rich wrappers that automatically
+convert scala ClassTags directly into TypeReferences for Jackson to use:
 ```scala
-val mapper = new ObjectMapper() with ScalaObjectMapper
-mapper.registerModule(DefaultScalaModule)
-val myMap = mapper.readValue[Map[String,Tuple2[Int,Int]]](src)
+val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build() :: ClassTagExtensions
+// or using old style
+//val mapper = new ObjectMapper() with ClassTagExtensions
+//mapper.registerModule(DefaultScalaModule)
+val myMap = mapper.readValue[Map[String, Tuple2[Int,Int]]](src)
 ```
+
+ClassTagExtensions is a replacement for `ScalaObjectMapper`, which was recently deprecated because it relies on `Manifest`s and they are not supported in Scala 3.
 
 This is the equivalent of
 ```scala
@@ -83,7 +93,7 @@ val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
 val myMap = mapper.readValue(src, new TypeReference[Map[String,Tuple2[Int,Int]]]{})
 ```
 
-Consult the [Scaladoc](http://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
+Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
 
 ## Sbt
 
@@ -118,6 +128,13 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 Check out [Wiki]. API Scaladocs can be found [on the project site][API] but they are not really
 well suited to end users, as most classes are implementation details of the module.
 
+# Related Projects
+* [jackson-scala-reflect-extensions](https://github.com/pjfanning/jackson-scala-reflect-extensions)
+* [jackson-scala3-reflect-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions)
+* [jackson-module-enumeratum](https://github.com/pjfanning/jackson-module-enumeratum)
+* [jackson-module-scala3-enum](https://github.com/pjfanning/jackson-module-scala3-enum)
+* [jackson-caffeine-cache](https://github.com/pjfanning/jackson-caffeine-cache)
+
 # Contributing
 
 The main mechanisms for contribution are:
@@ -140,21 +157,21 @@ positions: everyone is doing this because they want to, not because they are pai
 contractually obligated to. This also means that time availability changes over time
 so getting answers may take time.
 
-In addition other Jackson developers with similar access (but less active) include
+In addition, other Jackson developers with similar access (but less active) include
 
 * Christopher Currie (@christophercurrie) -- original author of Scala module
 * Tatu Saloranta (@cowtowncoder) -- main author of core Jackson components
 
 # Acknowledgements
 
-[![Developed with IntelliJ IDEA](http://www.jetbrains.com/img/logos/logo_intellij_idea.png "Developed with IntelliJ IDEA")](http://www.jetbrains.com/idea/features/scala.html)
+[![Developed with IntelliJ IDEA](https://www.jetbrains.com/img/logos/logo_intellij_idea.png "Developed with IntelliJ IDEA")](https://www.jetbrains.com/idea/features/scala.html)
 
 [Jackson]: https://github.com/FasterXML/jackson
-[SAX]: http://www.saxproject.org/
-[DOM]: http://www.w3.org/TR/DOM-Level-3-Core/
-[JAXB]: http://jaxb.java.net/
-[Jersey]: http://jersey.java.net/
-[Java Bean]: http://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
-[Scala]: http://www.scala-lang.org/
+[SAX]: https://www.saxproject.org/
+[DOM]: https://www.w3.org/TR/DOM-Level-3-Core/
+[JAXB]: https://jaxb.java.net/
+[Jersey]: https://jersey.java.net/
+[Java Bean]: https://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
+[Scala]: https://www.scala-lang.org/
 [Wiki]: https://github.com/FasterXML/jackson-module-scala/wiki
-[API]: http://fasterxml.github.io/jackson-module-scala/latest/api/#com.fasterxml.jackson.module.scala.package
+[API]: https://fasterxml.github.io/jackson-module-scala/latest/api/#com.fasterxml.jackson.module.scala.package
