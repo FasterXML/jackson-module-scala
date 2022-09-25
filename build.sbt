@@ -97,8 +97,8 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.14.0-SNAPSHOT"
-val jacksonJsonSchemaVersion = "2.13.3"
+val jacksonVersion = "2.14.0-rc1"
+//val jacksonJsonSchemaVersion = jacksonVersion
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
@@ -106,11 +106,11 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   // test dependencies
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.13.4" % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.13.4" % Test,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
-  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
-  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
+  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % "2.13.4" % Test,
+  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.3" % Test,
   "org.scalatest" %% "scalatest" % "3.2.13" % Test
