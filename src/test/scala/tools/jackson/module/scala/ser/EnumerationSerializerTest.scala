@@ -2,7 +2,7 @@ package tools.jackson.module.scala.ser
 
 import tools.jackson.core.`type`.TypeReference
 import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule, JsonScalaEnumeration}
-//import tools.jackson.jaxrs.json.JacksonJsonProvider
+import tools.jackson.jaxrs.json.JacksonJsonProvider
 import tools.jackson.module.scala.OuterWeekday.InnerWeekday
 import tools.jackson.module.scala.Weekday
 import EnumerationSerializerTest.Severity.Severity
@@ -116,7 +116,6 @@ class EnumerationSerializerTest extends SerializerTest {
     serialize(case2) shouldBe """{"a":"A","label":"None"}"""
   }
 
-  /*
   it should "serialize ErrorCode" in {
     val expected = """{"errorCode":"GEN001","severity":{"enumClass":"tools.jackson.module.scala.ser.EnumerationSerializerTest$Severity","value":"FAIL"}}"""
     serialize(GeneralErrorCodes.GEN001) shouldEqual expected
@@ -150,6 +149,5 @@ class EnumerationSerializerTest extends SerializerTest {
       bos.close()
     }
   }
-  */
 
 }

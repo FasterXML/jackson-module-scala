@@ -107,9 +107,9 @@ libraryDependencies ++= Seq(
   "tools.jackson.core" % "jackson-databind" % jacksonVersion changing(),
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   "tools.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test changing(),
-  //"com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
+  "tools.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test changing(),
   "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" % Test,
-  //"com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
+  "tools.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test changing(),
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.3" % Test,
   "org.scalatest" %% "scalatest" % "3.2.13" % Test
