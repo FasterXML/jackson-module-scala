@@ -109,7 +109,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
-  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % "2.13.4" % Test,
+  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.3" % Test,
