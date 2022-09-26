@@ -12,7 +12,7 @@ ThisBuild / scalaVersion := "2.13.9"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.9", "3.2.0")
 
-resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+//resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 autoAPIMappings := true
 
@@ -106,8 +106,8 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   // test dependencies
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.13.4" % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % "2.13.4" % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
   "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % "2.13.4" % Test,
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % Test,
