@@ -1,5 +1,6 @@
 ![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=2.14)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.14/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.14)
+[![Tidelift](https://tidelift.com/badges/package/maven/com.fasterxml.jackson.core:jackson-databind)](https://tidelift.com/subscription/pkg/maven-com-fasterxml-jackson-core-jackson-databind?utm_source=maven-com-fasterxml-jackson-core-jackson-databind&utm_medium=referral&utm_campaign=readme)
 
 # Overview
 
@@ -142,6 +143,19 @@ The main mechanisms for contribution are:
 * Reporting issues, suggesting improved functionality on Github issue tracker
 * Participating in discussions on mailing lists, Gitter (see [Jackson portal](https://github.com/FasterXML/jackson#participation) for details)
 * Submitting Pull Requests (PRs) to fix issues, improve functionality.
+
+## Support
+
+### Community support
+
+Jackson components are supported by the Jackson community through mailing lists, Gitter forum, Github issues. See [Participation, Contributing](../../../jackson#participation-contributing) for full details.
+
+
+### Enterprise support
+
+Available as part of the Tidelift Subscription.
+
+The maintainers of `jackson-module-scala` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/maven-com-fasterxml-jackson-core-jackson-databind?utm_source=maven-com-fasterxml-jackson-core-jackson-databind&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
 
 ## Core Development Team
 
