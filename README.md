@@ -1,6 +1,6 @@
 ![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13)
-[![Sonatype Snapshots](https://img.shields.io/nexus/s/https/oss.sonatype.org/tools.jackson.module/jackson-module-scala_2.13.svg)](https://oss.sonatype.org/content/repositories/snapshots/tools/jackson/module/jackson-module-scala_2.13/)
+[![Sonatype Snapshots](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/tools.jackson.module/jackson-module-scala_2.13.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/tools/jackson/module/jackson-module-scala_2.13/)
 [![Tidelift](https://tidelift.com/badges/package/maven/com.fasterxml.jackson.core:jackson-databind)](https://tidelift.com/subscription/pkg/maven-com.fasterxml.jackson.module.jackson-module-scala.2.13?utm_source=maven-com.fasterxml.jackson.module.jackson-module-scala.2.13&utm_medium=github_sponsor_button&utm_campaign=readme)
 
 # Overview
