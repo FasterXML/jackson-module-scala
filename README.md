@@ -122,7 +122,7 @@ create a file called `sonatype.sbt` in the same directory as `build.sbt` with th
 content. The project `.gitignore` file intentionally prevents this file from being checked in.
 
 ``` scala
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 ```
 
 # Download, docs
