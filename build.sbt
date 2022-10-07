@@ -6,11 +6,11 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-ThisBuild / scalaVersion := "2.13.6"
+ThisBuild / scalaVersion := "2.13.9"
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.6", "3.0.2")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.9", "3.0.2")
 
-resolvers += Resolver.sonatypeRepo("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 autoAPIMappings := true
 
@@ -95,7 +95,7 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.13.4"
+val jacksonVersion = "2.13.5-SNAPSHOT"
 val jacksonJsonSchemaVersion = "2.13.4"
 
 libraryDependencies ++= Seq(
