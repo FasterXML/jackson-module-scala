@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.`type`.MapLikeType
+import com.fasterxml.jackson.core.{JsonParser, StreamReadCapability}
+import com.fasterxml.jackson.databind.`type`.{CollectionLikeType, MapLikeType}
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
@@ -21,6 +21,7 @@ import scala.collection.immutable.IntMap
 private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
 
   private val intMapClass = classOf[IntMap[_]]
+  private val objClass = classOf[Object]
 
   override def findMapLikeDeserializer(theType: MapLikeType,
                                        config: DeserializationConfig,
@@ -28,8 +29,9 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
                                        keyDeserializer: KeyDeserializer,
                                        elementTypeDeserializer: TypeDeserializer,
                                        elementDeserializer: JsonDeserializer[_]): JsonDeserializer[_] = {
-    if (!intMapClass.isAssignableFrom(theType.getRawClass)) None.orNull
-    else {
+    if (!intMapClass.isAssignableFrom(theType.getRawClass)) {
+      None.orNull
+    } else {
       val mapDeserializer = new MapDeserializer(theType, new IntMapInstantiator(config, theType), keyDeserializer,
         elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]], elementTypeDeserializer)
       new IntMapDeserializer(theType, mapDeserializer)
@@ -49,8 +51,29 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
     }
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): IntMap[V] = {
-      containerDeserializer.deserialize(jp, ctxt) match {
-        case wrapper: BuilderWrapper => wrapper.asIntMap()
+      if (squashDuplicateKeys(ctxt)) {
+        jp.readValueAsTree()
+        val collType = CollectionLikeType.construct(classOf[Seq[Any]], ctxt.constructType(classOf[(Any, Any)]))
+        val innerDeserializer = ctxt.findNonContextualValueDeserializer(collType)
+        val innerResult = innerDeserializer.deserialize(jp, ctxt).asInstanceOf[Seq[(Any, Any)]]
+        val mappedResult = innerResult.map { case (k, v) =>
+          k match {
+            case n: Number => n.intValue() -> v
+            case s: String => s.toInt -> v
+            case _ => {
+              val typeName = Option(k) match {
+                case Some(n) => n.getClass.getName
+                case _ => "null"
+              }
+              throw new IllegalArgumentException(s"IntMap does not support keys of type $typeName")
+            }
+          }
+        }
+        mappedResult.toMap.asInstanceOf[IntMap[V]]
+      } else {
+        containerDeserializer.deserialize(jp, ctxt) match {
+          case wrapper: BuilderWrapper => wrapper.asIntMap()
+        }
       }
     }
 
@@ -64,6 +87,11 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
     }
 
     override def getEmptyValue(ctxt: DeserializationContext): Object = IntMap.empty[V]
+
+    private def squashDuplicateKeys(ctxt: DeserializationContext): Boolean = {
+      ctxt.isEnabled(StreamReadCapability.DUPLICATE_PROPERTIES) &&
+        objClass.isAssignableFrom(mapType.getContentType.getRawClass)
+    }
   }
 
   private class IntMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
