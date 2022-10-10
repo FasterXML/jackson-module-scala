@@ -83,7 +83,7 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
             case Some(n) => n.getClass.getName
             case _ => "null"
           }
-          throw new IllegalArgumentException(s"IntMap does npt support keys of type $typeName")
+          throw new IllegalArgumentException(s"IntMap does not support keys of type $typeName")
         }
       }
       v
