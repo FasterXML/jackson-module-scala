@@ -8,7 +8,7 @@ organization := "com.fasterxml.jackson.module"
 
 ThisBuild / scalaVersion := "2.13.10"
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.0.2")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.10", "3.0.2")
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
