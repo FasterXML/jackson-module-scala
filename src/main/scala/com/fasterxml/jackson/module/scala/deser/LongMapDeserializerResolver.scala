@@ -145,6 +145,40 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
     def asLongMap[V](): immutable.LongMap[V] = baseMap.asInstanceOf[immutable.LongMap[V]]
   }
 
+  private class ImmutableMapWrapperForDuplicateKeySavingMap extends util.AbstractMap[Object, Object] {
+    var baseMap = new DuplicateKeySavingMap[Long]()
+
+    override def put(k: Object, v: Object): Object = {
+      k match {
+        case n: Number => baseMap.put(n.longValue(), v)
+        case s: String => baseMap.put(s.toLong, v)
+        case _ => {
+          val typeName = Option(k) match {
+            case Some(n) => n.getClass.getName
+            case _ => "null"
+          }
+          throw new IllegalArgumentException(s"LongMap does not support keys of type $typeName")
+        }
+      }
+      v
+    }
+
+    // Used by the deserializer when using readerForUpdating
+    override def get(key: Object): Object = key match {
+      case n: Number => baseMap.get(n.longValue()).orNull.asInstanceOf[Object]
+      case s: String => baseMap.get(s.toInt).orNull.asInstanceOf[Object]
+      case _ => None.orNull
+    }
+
+    // Isn't used by the deserializer
+    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] =
+      baseMap.asJava.entrySet().asInstanceOf[java.util.Set[java.util.Map.Entry[Object, Object]]]
+
+    def asLongMap(): immutable.LongMap[Any] = {
+      immutable.LongMap[Any]() ++ baseMap
+    }
+  }
+
   private class MutableMapWrapper extends util.AbstractMap[Object, Object] {
     var baseMap = mutable.LongMap[Object]()
 
