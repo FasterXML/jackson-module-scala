@@ -2,12 +2,15 @@ package tools.jackson.module.scala.deser
 
 import tools.jackson.core.`type`.TypeReference
 import tools.jackson.module.scala.DefaultScalaModule
-import tools.jackson.module.scala.deser.IntMapDeserializerTest.IntMapWrapper
+import tools.jackson.module.scala.deser.IntMapDeserializerTest.{Event, IntMapWrapper}
 
+import java.util.UUID
 import scala.collection.immutable.IntMap
 
 object IntMapDeserializerTest {
   case class IntMapWrapper(values: IntMap[Long])
+
+  case class Event(id: UUID, description: String)
 }
 
 class IntMapDeserializerTest extends DeserializerTest {
@@ -72,5 +75,16 @@ class IntMapDeserializerTest extends DeserializerTest {
     read shouldEqual map
     read(0) shouldBe false
     read(402) shouldBe true
+  }
+
+  it should "deserialize IntMap (Object values)" in {
+    val event = Event(UUID.randomUUID(), "event1")
+    val map = IntMap(0 -> false, 1 -> "true", 2 -> event)
+    val mapper = newMapper
+    val json = mapper.writeValueAsString(map)
+    val read = mapper.readValue(json, classOf[IntMap[Any]])
+    read(0) shouldBe false
+    read(1) shouldEqual "true"
+    read(2) shouldEqual Map("id" -> event.id.toString, "description" -> event.description)
   }
 }
