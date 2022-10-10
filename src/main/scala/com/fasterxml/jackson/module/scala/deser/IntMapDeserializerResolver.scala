@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.{JsonParser, StreamReadCapability}
-import com.fasterxml.jackson.databind.`type`.{CollectionLikeType, MapLikeType}
+import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
@@ -34,11 +34,13 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
     } else {
       val mapDeserializer = new MapDeserializer(theType, new IntMapInstantiator(config, theType), keyDeserializer,
         elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]], elementTypeDeserializer)
-      new IntMapDeserializer(theType, mapDeserializer)
+      new IntMapDeserializer(theType, config, keyDeserializer, mapDeserializer, elementTypeDeserializer)
     }
   }
 
-  private class IntMapDeserializer[V](mapType: MapLikeType, containerDeserializer: MapDeserializer)
+  private class IntMapDeserializer[V](mapType: MapLikeType, config: DeserializationConfig,
+                                      keyDeserializer: KeyDeserializer,
+                                      containerDeserializer: MapDeserializer, typeDeserializer: TypeDeserializer)
     extends ContainerDeserializerBase[IntMap[V]](mapType) with ContextualDeserializer {
 
     override def getContentType: JavaType = containerDeserializer.getContentType
@@ -47,29 +49,21 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
 
     override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
       val newDelegate = containerDeserializer.createContextual(ctxt, property).asInstanceOf[MapDeserializer]
-      new IntMapDeserializer(mapType, newDelegate)
+      new IntMapDeserializer(mapType, config, keyDeserializer, newDelegate, typeDeserializer)
     }
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): IntMap[V] = {
       if (squashDuplicateKeys(ctxt)) {
-        jp.readValueAsTree()
-        val collType = CollectionLikeType.construct(classOf[Seq[Any]], ctxt.constructType(classOf[(Any, Any)]))
-        val innerDeserializer = ctxt.findNonContextualValueDeserializer(collType)
-        val innerResult = innerDeserializer.deserialize(jp, ctxt).asInstanceOf[Seq[(Any, Any)]]
-        val mappedResult = innerResult.map { case (k, v) =>
-          k match {
-            case n: Number => n.intValue() -> v
-            case s: String => s.toInt -> v
-            case _ => {
-              val typeName = Option(k) match {
-                case Some(n) => n.getClass.getName
-                case _ => "null"
-              }
-              throw new IllegalArgumentException(s"IntMap does not support keys of type $typeName")
-            }
-          }
+        val deserializer = new MapDeserializer(
+          mapType,
+          new DuplicateKeySavingMapInstantiator(config, mapType),
+          keyDeserializer,
+          containerDeserializer.getContentDeserializer,
+          typeDeserializer
+        )
+        deserializer.deserialize(jp, ctxt) match {
+          case wrapper: BuilderWrapperForDuplicateKeySavingMap => wrapper.asIntMap().asInstanceOf[IntMap[V]]
         }
-        mappedResult.toMap.asInstanceOf[IntMap[V]]
       } else {
         containerDeserializer.deserialize(jp, ctxt) match {
           case wrapper: BuilderWrapper => wrapper.asIntMap()
@@ -90,13 +84,19 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
 
     private def squashDuplicateKeys(ctxt: DeserializationContext): Boolean = {
       ctxt.isEnabled(StreamReadCapability.DUPLICATE_PROPERTIES) &&
-        objClass.isAssignableFrom(mapType.getContentType.getRawClass)
+        objClass == mapType.getContentType.getRawClass
     }
   }
 
   private class IntMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
     override def canCreateUsingDefault = true
     override def createUsingDefault(ctxt: DeserializationContext) = new BuilderWrapper
+  }
+
+  private class DuplicateKeySavingMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
+    override def canCreateUsingDefault = true
+
+    override def createUsingDefault(ctxt: DeserializationContext) = new BuilderWrapperForDuplicateKeySavingMap
   }
 
   private class BuilderWrapper extends util.AbstractMap[Object, Object] {
@@ -129,5 +129,39 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
       baseMap.asJava.entrySet().asInstanceOf[java.util.Set[java.util.Map.Entry[Object, Object]]]
 
     def asIntMap[V](): IntMap[V] = baseMap.asInstanceOf[IntMap[V]]
+  }
+
+  private class BuilderWrapperForDuplicateKeySavingMap extends util.AbstractMap[Object, Object] {
+    val baseMap = new DuplicateKeySavingMap[Int]()
+
+    override def put(k: Object, v: Object): Object = {
+      k match {
+        case n: Number => baseMap.put(n.intValue(), v)
+        case s: String => baseMap.put(s.toInt, v)
+        case _ => {
+          val typeName = Option(k) match {
+            case Some(n) => n.getClass.getName
+            case _ => "null"
+          }
+          throw new IllegalArgumentException(s"IntMap does not support keys of type $typeName")
+        }
+      }
+      v
+    }
+
+    // Used by the deserializer when using readerForUpdating
+    override def get(key: Object): Object = key match {
+      case n: Number => baseMap.get(n.intValue()).orNull.asInstanceOf[Object]
+      case s: String => baseMap.get(s.toInt).orNull.asInstanceOf[Object]
+      case _ => None.orNull
+    }
+
+    // Isn't used by the deserializer
+    override def entrySet(): java.util.Set[java.util.Map.Entry[Object, Object]] =
+      baseMap.asJava.entrySet().asInstanceOf[java.util.Set[java.util.Map.Entry[Object, Object]]]
+
+    def asIntMap(): IntMap[Any] = {
+      IntMap[Any]() ++ baseMap
+    }
   }
 }
