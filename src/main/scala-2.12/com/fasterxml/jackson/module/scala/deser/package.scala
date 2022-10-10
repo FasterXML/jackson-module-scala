@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala
 
 import scala.collection.generic.{GenericCompanion, SortedSetFactory}
-import scala.collection.{GenTraversable, SortedSet, SortedSetLike, mutable, immutable}
+import scala.collection.{GenTraversable, SortedSet, SortedSetLike, mutable}
 import scala.language.higherKinds
 
 /**
@@ -24,5 +24,9 @@ package object deser {
     // Removed in 2.13
     type MutableList[A] = mutable.MutableList[A]
     type ResizableArray[A] = mutable.ResizableArray[A]
+  }
+
+  def convertToMutableLongMap[V](map: mutable.Map[Long, V]): mutable.LongMap[V] = {
+    mutable.LongMap[V]() ++ map
   }
 }

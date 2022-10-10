@@ -25,4 +25,8 @@ package object deser {
     type MutableList[A] = mutable.MutableList[A]
     type ResizableArray[A] = mutable.ResizableArray[A]
   }
+
+  def convertToMutableLongMap[V](map: mutable.Map[Long, V]): mutable.LongMap[V] = {
+    mutable.LongMap[V]() ++ map
+  }
 }
