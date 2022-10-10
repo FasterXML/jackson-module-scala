@@ -113,15 +113,15 @@ class IntMapDeserializerTest extends DeserializerTest {
 
   it should "deserialize IntMap (Double values, duplicate key mode is ignored)" in {
     val mapper = newMapper
-    val json = """{"1": 123, "2": 123, "2": 123.456}"""
+    val json = """{"1": "123", "2": "123", "2": "123.456"}"""
     val parser = new WithDupsParser(mapper.createParser(json))
     val read = try {
-      mapper.readValue(parser, new TypeReference[IntMap[Double]]{})
+      mapper.readValue(parser, new TypeReference[IntMap[String]]{})
     } finally {
       parser.close()
     }
-    read(1) shouldEqual 123.0
-    read(2) shouldEqual 123.456
+    read(1) shouldEqual "123"
+    read(2) shouldEqual "123.456"
   }
 
   class WithDupsParser(p: JsonParser) extends JsonParserDelegate(p) {
