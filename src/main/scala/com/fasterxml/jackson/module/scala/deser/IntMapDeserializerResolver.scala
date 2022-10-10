@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserialize
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.module.scala.deser.MapDeserializerUtil.squashDuplicateKeys
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, IteratorModule}
 
 import java.util
@@ -21,7 +22,6 @@ import scala.collection.immutable.IntMap
 private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
 
   private val intMapClass = classOf[IntMap[_]]
-  private val objClass = classOf[Object]
 
   override def findMapLikeDeserializer(theType: MapLikeType,
                                        config: DeserializationConfig,
@@ -53,7 +53,7 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
     }
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): IntMap[V] = {
-      if (squashDuplicateKeys(ctxt)) {
+      if (squashDuplicateKeys(ctxt, mapType)) {
         val deserializer = new MapDeserializer(
           mapType,
           new DuplicateKeySavingMapInstantiator(config, mapType),
@@ -81,11 +81,6 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
     }
 
     override def getEmptyValue(ctxt: DeserializationContext): Object = IntMap.empty[V]
-
-    private def squashDuplicateKeys(ctxt: DeserializationContext): Boolean = {
-      ctxt.isEnabled(StreamReadCapability.DUPLICATE_PROPERTIES) &&
-        objClass == mapType.getContentType.getRawClass
-    }
   }
 
   private class IntMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {

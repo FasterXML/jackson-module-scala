@@ -1,11 +1,12 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.{JsonParser, StreamReadCapability}
 import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers}
 import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.module.scala.deser.MapDeserializerUtil.squashDuplicateKeys
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, IteratorModule}
 
 import java.util
@@ -32,17 +33,20 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
     if (immutableLongMapClass.isAssignableFrom(theType.getRawClass)) {
       val mapDeserializer = new MapDeserializer(theType, new ImmutableLongMapInstantiator(config, theType), keyDeserializer,
         elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]], elementTypeDeserializer)
-      new ImmutableLongMapDeserializer(theType, mapDeserializer)
+      new ImmutableLongMapDeserializer(theType, config, keyDeserializer, mapDeserializer, elementTypeDeserializer)
     } else if (mutableLongMapClass.isAssignableFrom(theType.getRawClass)) {
       val mapDeserializer = new MapDeserializer(theType, new MutableLongMapInstantiator(config, theType), keyDeserializer,
         elementDeserializer.asInstanceOf[JsonDeserializer[AnyRef]], elementTypeDeserializer)
-      new MutableLongMapDeserializer(theType, mapDeserializer)
+      new MutableLongMapDeserializer(theType, config, keyDeserializer, mapDeserializer, elementTypeDeserializer)
     } else {
       None.orNull
     }
   }
 
-  private class ImmutableLongMapDeserializer[V](mapType: MapLikeType, containerDeserializer: MapDeserializer)
+  private class ImmutableLongMapDeserializer[V](mapType: MapLikeType, config: DeserializationConfig,
+                                                keyDeserializer: KeyDeserializer,
+                                                containerDeserializer: MapDeserializer,
+                                                elementTypeDeserializer: TypeDeserializer)
     extends ContainerDeserializerBase[immutable.LongMap[V]](mapType) with ContextualDeserializer {
 
     override def getContentType: JavaType = containerDeserializer.getContentType
@@ -51,12 +55,26 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
 
     override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
       val newDelegate = containerDeserializer.createContextual(ctxt, property).asInstanceOf[MapDeserializer]
-      new ImmutableLongMapDeserializer(mapType, newDelegate)
+      new ImmutableLongMapDeserializer(mapType, config, keyDeserializer, newDelegate, elementTypeDeserializer)
     }
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): immutable.LongMap[V] = {
-      containerDeserializer.deserialize(jp, ctxt) match {
-        case wrapper: ImmutableMapWrapper => wrapper.asLongMap()
+      if (squashDuplicateKeys(ctxt, mapType)) {
+        val deserializer = new MapDeserializer(
+          mapType,
+          new ImmutableDuplicateKeySavingMapInstantiator(config, mapType),
+          keyDeserializer,
+          containerDeserializer.getContentDeserializer,
+          elementTypeDeserializer
+        )
+        deserializer.deserialize(jp, ctxt) match {
+          case wrapper: ImmutableMapWrapperForDuplicateKeySavingMap =>
+            wrapper.asLongMap().asInstanceOf[immutable.LongMap[V]]
+        }
+      } else {
+        containerDeserializer.deserialize(jp, ctxt) match {
+          case wrapper: ImmutableMapWrapper => wrapper.asLongMap()
+        }
       }
     }
 
@@ -72,7 +90,10 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
     override def getEmptyValue(ctxt: DeserializationContext): Object = immutable.LongMap.empty[V]
   }
 
-  private class MutableLongMapDeserializer[V](mapType: MapLikeType, containerDeserializer: MapDeserializer)
+  private class MutableLongMapDeserializer[V](mapType: MapLikeType, config: DeserializationConfig,
+                                              keyDeserializer: KeyDeserializer,
+                                              containerDeserializer: MapDeserializer,
+                                              elementTypeDeserializer: TypeDeserializer)
     extends ContainerDeserializerBase[mutable.LongMap[V]](mapType) with ContextualDeserializer {
 
     override def getContentType: JavaType = containerDeserializer.getContentType
@@ -81,12 +102,26 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
 
     override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
       val newDelegate = containerDeserializer.createContextual(ctxt, property).asInstanceOf[MapDeserializer]
-      new MutableLongMapDeserializer(mapType, newDelegate)
+      new MutableLongMapDeserializer(mapType, config, keyDeserializer, newDelegate, elementTypeDeserializer)
     }
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): mutable.LongMap[V] = {
-      containerDeserializer.deserialize(jp, ctxt) match {
-        case wrapper: MutableMapWrapper => wrapper.asLongMap()
+      if (squashDuplicateKeys(ctxt, mapType)) {
+        val deserializer = new MapDeserializer(
+          mapType,
+          new MutableDuplicateKeySavingMapInstantiator(config, mapType),
+          keyDeserializer,
+          containerDeserializer.getContentDeserializer,
+          elementTypeDeserializer
+        )
+        deserializer.deserialize(jp, ctxt) match {
+          case wrapper: MutableMapWrapperForDuplicateKeySavingMap =>
+            wrapper.asLongMap().asInstanceOf[mutable.LongMap[V]]
+        }
+      } else {
+        containerDeserializer.deserialize(jp, ctxt) match {
+          case wrapper: MutableMapWrapper => wrapper.asLongMap()
+        }
       }
     }
 
@@ -107,10 +142,22 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
     override def createUsingDefault(ctxt: DeserializationContext) = new ImmutableMapWrapper
   }
 
+  private class ImmutableDuplicateKeySavingMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
+    override def canCreateUsingDefault = true
+
+    override def createUsingDefault(ctxt: DeserializationContext) = new ImmutableMapWrapperForDuplicateKeySavingMap
+  }
+
   private class MutableLongMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
     override def canCreateUsingDefault = true
 
     override def createUsingDefault(ctxt: DeserializationContext) = new MutableMapWrapper
+  }
+
+  private class MutableDuplicateKeySavingMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
+    override def canCreateUsingDefault = true
+
+    override def createUsingDefault(ctxt: DeserializationContext) = new MutableMapWrapperForDuplicateKeySavingMap
   }
 
   private class ImmutableMapWrapper extends util.AbstractMap[Object, Object] {
