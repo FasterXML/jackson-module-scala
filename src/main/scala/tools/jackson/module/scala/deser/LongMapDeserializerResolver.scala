@@ -123,8 +123,18 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
 
     override def put(k: Object, v: Object): Object = {
       k match {
-        case n: Number => baseMap += (n.longValue() -> v)
-        case s: String => baseMap += (s.toLong -> v)
+        case n: Number => {
+          val l = n.longValue()
+          val oldValue = baseMap.get(l)
+          baseMap += (l -> v)
+          oldValue.orNull
+        }
+        case s: String => {
+          val l = s.toLong
+          val oldValue = baseMap.get(l)
+          baseMap += (l -> v)
+          oldValue.orNull
+        }
         case _ => {
           val typeName = Option(k) match {
             case Some(n) => n.getClass.getName
@@ -133,7 +143,6 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
           throw new IllegalArgumentException(s"LongMap does not support keys of type $typeName")
         }
       }
-      v
     }
 
     // Used by the deserializer when using readerForUpdating
@@ -155,8 +164,18 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
 
     override def put(k: Object, v: Object): Object = {
       k match {
-        case n: Number => baseMap += (n.longValue() -> v)
-        case s: String => baseMap += (s.toLong -> v)
+        case n: Number => {
+          val l = n.longValue()
+          val oldValue = baseMap.get(l)
+          baseMap += (l -> v)
+          oldValue.orNull
+        }
+        case s: String => {
+          val l = s.toLong
+          val oldValue = baseMap.get(l)
+          baseMap += (l -> v)
+          oldValue.orNull
+        }
         case _ => {
           val typeName = Option(k) match {
             case Some(n) => n.getClass.getName
@@ -165,7 +184,6 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
           throw new IllegalArgumentException(s"LongMap does not support keys of type $typeName")
         }
       }
-      v
     }
 
     // Used by the deserializer when using readerForUpdating

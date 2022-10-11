@@ -81,8 +81,18 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
 
     override def put(k: Object, v: Object): Object = {
       k match {
-        case n: Number => baseMap += (n.intValue() -> v)
-        case s: String => baseMap += (s.toInt -> v)
+        case n: Number => {
+          val i = n.intValue()
+          val oldValue = baseMap.get(i)
+          baseMap += (i -> v)
+          oldValue.orNull
+        }
+        case s: String => {
+          val i = s.toInt
+          val oldValue = baseMap.get(i)
+          baseMap += (i -> v)
+          oldValue.orNull
+        }
         case _ => {
           val typeName = Option(k) match {
             case Some(n) => n.getClass.getName
@@ -91,7 +101,6 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
           throw new IllegalArgumentException(s"IntMap does not support keys of type $typeName")
         }
       }
-      v
     }
 
     // Used by the deserializer when using readerForUpdating
