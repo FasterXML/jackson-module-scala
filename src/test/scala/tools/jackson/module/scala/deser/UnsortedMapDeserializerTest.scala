@@ -6,6 +6,7 @@ import tools.jackson.databind.JsonNode
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.node.JsonNodeFactory
 import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import org.scalatest.OptionValues
 
 import java.util.UUID
 import scala.collection._
@@ -15,7 +16,7 @@ case class JavaMapWrapper(m: java.util.HashMap[String, String])
 case class MapWrapper(m: Map[String, String])
 object StringMapTypeReference extends TypeReference[Map[String, String]]
 
-class UnsortedMapDeserializerTest extends DeserializerTest {
+class UnsortedMapDeserializerTest extends DeserializerTest with OptionValues {
 
   lazy val module: JacksonModule = new UnsortedMapDeserializerModule {}
 
@@ -112,6 +113,42 @@ class UnsortedMapDeserializerTest extends DeserializerTest {
     result1 shouldEqual JavaMapWrapper(new java.util.HashMap[String, String]())
     val result2 = mapper.readValue(json, classOf[MapWrapper])
     result2 shouldEqual MapWrapper(Map.empty[String, String])
+  }
+
+  it should "deserialize Map (Object values, duplicate keys - optional mode)" in {
+    val mapper = JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .build()
+    val json = """{"1": 123, "2": 123, "2": 123.456}"""
+    val parser = new WithDupsParser(mapper.createParser(json))
+    val read = try {
+      mapper.readValue(parser, classOf[Map[String, Any]])
+    } finally {
+      parser.close()
+    }
+    read("1") shouldEqual 123
+    val expected = new java.util.ArrayList[Object]()
+    expected.add(java.lang.Integer.valueOf(123))
+    expected.add(java.lang.Double.valueOf(123.456))
+    read("2") shouldEqual expected
+  }
+
+  it should "deserialize mutable Map (Object values, duplicate keys - optional mode)" in {
+    val mapper = JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .build()
+    val json = """{"1": 123, "2": 123, "2": 123.456}"""
+    val parser = new WithDupsParser(mapper.createParser(json))
+    val read = try {
+      mapper.readValue(parser, classOf[mutable.Map[String, Any]])
+    } finally {
+      parser.close()
+    }
+    read("1") shouldEqual 123
+    val expected = new java.util.ArrayList[Object]()
+    expected.add(java.lang.Integer.valueOf(123))
+    expected.add(java.lang.Double.valueOf(123.456))
+    read.remove("2").value shouldEqual expected
   }
 
   private val mapJson =  """{ "one": "1", "two": "2" }"""

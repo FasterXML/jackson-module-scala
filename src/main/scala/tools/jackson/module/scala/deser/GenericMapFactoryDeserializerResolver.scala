@@ -1,6 +1,6 @@
 package tools.jackson.module.scala.deser
 
-import tools.jackson.core.JsonParser
+import tools.jackson.core.{JsonParser, StreamReadCapability}
 import tools.jackson.databind._
 import tools.jackson.databind.`type`.MapLikeType
 import tools.jackson.databind.deser.jdk.MapDeserializer
@@ -17,6 +17,8 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](conf
   type Collection[K, V] = CC[K, V]
   type Factory = CF[CC]
   type Builder[K, V] = mutable.Builder[(K, V), _ <: Collection[K, V]]
+
+  private val objClass = classOf[Object]
 
   // Subclasses need to implement the following:
   val CLASS_DOMAIN: Class[_]
@@ -90,10 +92,20 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](conf
     a.indices.map(i => a(i) * b(i)).sum
   }
 
-  private class BuilderWrapper[K, V >: AnyRef](val builder: Builder[K, V]) extends java.util.AbstractMap[K, V] {
+  private class BuilderWrapper[K, V >: AnyRef](val builder: Builder[K, V],
+                                               trackValues: Boolean) extends java.util.AbstractMap[K, V] {
     private var baseMap: Map[Any, V] = Map.empty
 
-    override def put(k: K, v: V): V = { builder += ((k, v)); v }
+    override def put(k: K, v: V): V = {
+      builder += ((k, v))
+      if (trackValues) {
+        val oldValue = get(k)
+        baseMap += ((k, v))
+        oldValue
+      } else {
+        None.orNull
+      }
+    }
 
     // Used by the deserializer when using readerForUpdating
     override def get(key: Any): V = baseMap.get(key).orNull
@@ -110,15 +122,21 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](conf
   private class Instantiator(deserializationConfig: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(deserializationConfig, mapType) {
     override def canCreateUsingDefault = true
 
-    override def createUsingDefault(ctxt: DeserializationContext) =
-      new BuilderWrapper[AnyRef, AnyRef](builderFor[AnyRef, AnyRef](mapType.getRawClass, mapType.getKeyType, mapType.getContentType))
+    override def createUsingDefault(ctxt: DeserializationContext) = {
+      val trackValues = ctxt.isEnabled(StreamReadCapability.DUPLICATE_PROPERTIES) &&
+        objClass == mapType.getContentType.getRawClass
+      new BuilderWrapper[AnyRef, AnyRef](builderFor[AnyRef, AnyRef]
+        (mapType.getRawClass, mapType.getKeyType, mapType.getContentType), trackValues)
+    }
   }
 
   private class Deserializer[K, V](mapType: MapLikeType, containerDeserializer: MapDeserializer)
     extends ContainerDeserializerBase[CC[K, V]](mapType) {
 
-    def this(mapType: MapLikeType, valueInstantiator: ValueInstantiator, keyDeser: KeyDeserializer, valueDeser: ValueDeserializer[_], valueTypeDeser: TypeDeserializer) = {
-      this(mapType, new MapDeserializer(mapType, valueInstantiator, keyDeser, valueDeser.asInstanceOf[ValueDeserializer[AnyRef]], valueTypeDeser))
+    def this(mapType: MapLikeType, valueInstantiator: ValueInstantiator,
+             keyDeser: KeyDeserializer, valueDeser: ValueDeserializer[_], valueTypeDeser: TypeDeserializer) = {
+      this(mapType, new MapDeserializer(mapType, valueInstantiator, keyDeser, valueDeser.asInstanceOf[ValueDeserializer[AnyRef]],
+        valueTypeDeser))
     }
 
     override def getContentType: JavaType = containerDeserializer.getContentType
