@@ -36,7 +36,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
     if (!CLASS_DOMAIN.isAssignableFrom(theType.getRawClass)) None.orNull
     else {
       val instantiator = new Instantiator(config, theType)
-      new Deserializer(theType, instantiator, keyDeserializer, elementDeserializer, elementTypeDeserializer)
+      new Deserializer(theType, config, instantiator, keyDeserializer, elementDeserializer, elementTypeDeserializer)
     }
   }
 
@@ -86,7 +86,10 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
   private class BuilderWrapper[K, V >: AnyRef](val builder: Builder[K, V]) extends java.util.AbstractMap[K, V] {
     private var baseMap: Map[Any, V] = Map.empty
 
-    override def put(k: K, v: V): V = { builder += ((k, v)); v }
+    override def put(k: K, v: V): V = {
+      builder += ((k, v))
+      v
+    }
 
     // Used by the deserializer when using readerForUpdating
     override def get(key: Any): V = baseMap.get(key).orNull
@@ -100,6 +103,27 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
     }
   }
 
+  private class BuilderWrapperForDuplicateKeySavingMap[K, V >: AnyRef](val builder: Builder[K, V])
+      extends java.util.AbstractMap[K, V] {
+    private val baseMap = new DuplicateKeySavingMap[V]
+
+    override def put(k: K, v: V): V = {
+      baseMap.put(k.asInstanceOf[Object], v)
+    }
+
+    // Used by the deserializer when using readerForUpdating
+    override def get(key: Any): V = baseMap.get(key.asInstanceOf[Object]).orNull.asInstanceOf[V]
+
+    // Isn't used by the deserializer
+    override def entrySet(): java.util.Set[java.util.Map.Entry[K, V]] = throw new UnsupportedOperationException
+
+    def setInitialValue(init: Collection[K, V]): Unit = {
+      init.asInstanceOf[Map[K, V]].foreach(Function.tupled(put))
+    }
+
+    def toMap = builder.result().asInstanceOf[scala.collection.Map[K, V]] ++ baseMap
+  }
+
   private class Instantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
     override def canCreateUsingDefault = true
 
@@ -107,11 +131,26 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
       new BuilderWrapper[AnyRef, AnyRef](builderFor[AnyRef, AnyRef](mapType.getRawClass, mapType.getKeyType, mapType.getContentType))
   }
 
-  private class Deserializer[K, V](mapType: MapLikeType, containerDeserializer: MapDeserializer)
+  private class DuplicateKeySavingMapInstantiator(config: DeserializationConfig, mapType: MapLikeType)
+        extends StdValueInstantiator(config, mapType) {
+    override def canCreateUsingDefault = true
+
+    override def createUsingDefault(ctxt: DeserializationContext) =
+      new BuilderWrapperForDuplicateKeySavingMap[AnyRef, AnyRef](builderFor[AnyRef, AnyRef]
+        (mapType.getRawClass, mapType.getKeyType, mapType.getContentType))
+  }
+
+  private class Deserializer[K, V](mapType: MapLikeType, config: DeserializationConfig,
+                                   keyDeserializer: KeyDeserializer,
+                                   containerDeserializer: MapDeserializer,
+                                   elementTypeDeserializer: TypeDeserializer)
     extends ContainerDeserializerBase[CC[K, V]](mapType) with ContextualDeserializer {
 
-    def this(mapType: MapLikeType, valueInstantiator: ValueInstantiator, keyDeser: KeyDeserializer, valueDeser: JsonDeserializer[_], valueTypeDeser: TypeDeserializer) = {
-      this(mapType, new MapDeserializer(mapType, valueInstantiator, keyDeser, valueDeser.asInstanceOf[JsonDeserializer[AnyRef]], valueTypeDeser))
+    def this(mapType: MapLikeType, config: DeserializationConfig, valueInstantiator: ValueInstantiator,
+             keyDeser: KeyDeserializer, valueDeser: JsonDeserializer[_], valueTypeDeser: TypeDeserializer) = {
+      this(mapType, config, keyDeser,
+        new MapDeserializer(mapType, valueInstantiator, keyDeser, valueDeser.asInstanceOf[JsonDeserializer[AnyRef]], valueTypeDeser),
+        valueTypeDeser)
     }
 
     override def getContentType: JavaType = containerDeserializer.getContentType
@@ -120,20 +159,51 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
 
     override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[_] = {
       val newDelegate = containerDeserializer.createContextual(ctxt, property).asInstanceOf[MapDeserializer]
-      new Deserializer(mapType, newDelegate)
+      new Deserializer(mapType, config, keyDeserializer, newDelegate, elementTypeDeserializer)
     }
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext): CC[K, V] = {
-      containerDeserializer.deserialize(jp, ctxt) match {
-        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result().asInstanceOf[CC[K, V]]
+      if (MapDeserializerUtil.squashDuplicateKeys(ctxt, mapType)) {
+        val deserializer = new MapDeserializer(
+          mapType,
+          new DuplicateKeySavingMapInstantiator(config, mapType),
+          keyDeserializer,
+          containerDeserializer.getContentDeserializer,
+          elementTypeDeserializer
+        )
+        deserializer.deserialize(jp, ctxt) match {
+          case wrapper: BuilderWrapperForDuplicateKeySavingMap[_, _] =>
+            wrapper.toMap.asInstanceOf[CC[K, V]]
+        }
+      } else {
+        containerDeserializer.deserialize(jp, ctxt) match {
+          case wrapper: BuilderWrapper[_, _] => wrapper.builder.result().asInstanceOf[CC[K, V]]
+        }
       }
     }
 
     override def deserialize(jp: JsonParser, ctxt: DeserializationContext, intoValue: CC[K, V]): CC[K, V] = {
-      val bw = newBuilderWrapper(ctxt)
-      bw.setInitialValue(intoValue.asInstanceOf[CC[AnyRef, AnyRef]])
-      containerDeserializer.deserialize(jp, ctxt, bw) match {
-        case wrapper: BuilderWrapper[_, _] => wrapper.builder.result().asInstanceOf[CC[K, V]]
+      if (MapDeserializerUtil.squashDuplicateKeys(ctxt, mapType)) {
+        val instantiator = new DuplicateKeySavingMapInstantiator(config, mapType)
+        val deserializer = new MapDeserializer(
+          mapType,
+          instantiator,
+          keyDeserializer,
+          containerDeserializer.getContentDeserializer,
+          elementTypeDeserializer
+        )
+        val bw = instantiator.createUsingDefault(ctxt)
+        bw.setInitialValue(intoValue.asInstanceOf[CC[AnyRef, AnyRef]])
+        deserializer.deserialize(jp, ctxt, bw) match {
+          case wrapper: BuilderWrapperForDuplicateKeySavingMap[_, _] =>
+            wrapper.toMap.asInstanceOf[CC[K, V]]
+        }
+      } else {
+        val bw = newBuilderWrapper(ctxt)
+        bw.setInitialValue(intoValue.asInstanceOf[CC[AnyRef, AnyRef]])
+        containerDeserializer.deserialize(jp, ctxt, bw) match {
+          case wrapper: BuilderWrapper[_, _] => wrapper.builder.result().asInstanceOf[CC[K, V]]
+        }
       }
     }
 
