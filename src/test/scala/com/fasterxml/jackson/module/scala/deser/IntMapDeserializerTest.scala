@@ -1,8 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.core.{JsonParser, StreamReadCapability}
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.core.util.{JacksonFeatureSet, JsonParserDelegate}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.deser.IntMapDeserializerTest.{Event, IntMapWrapper}
 
@@ -125,11 +123,5 @@ class IntMapDeserializerTest extends DeserializerTest {
     }
     read(1) shouldEqual "123"
     read(2) shouldEqual "123.456"
-  }
-
-  class WithDupsParser(p: JsonParser) extends JsonParserDelegate(p) {
-    override def getReadCapabilities: JacksonFeatureSet[StreamReadCapability] = {
-      super.getReadCapabilities.`with`(StreamReadCapability.DUPLICATE_PROPERTIES)
-    }
   }
 }
