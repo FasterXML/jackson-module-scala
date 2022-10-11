@@ -86,7 +86,12 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
   private class BuilderWrapper[K, V >: AnyRef](val builder: Builder[K, V]) extends java.util.AbstractMap[K, V] {
     private var baseMap: Map[Any, V] = Map.empty
 
-    override def put(k: K, v: V): V = { builder += ((k, v)); v }
+    override def put(k: K, v: V): V = {
+      val oldValue = get(k)
+      builder += ((k, v))
+      baseMap += ((k, v))
+      oldValue
+    }
 
     // Used by the deserializer when using readerForUpdating
     override def get(key: Any): V = baseMap.get(key).orNull
