@@ -1,7 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.deser.IntMapDeserializerTest.{Event, IntMapWrapper}
 
 import java.util.UUID
@@ -86,5 +86,42 @@ class IntMapDeserializerTest extends DeserializerTest {
     read(0) shouldBe false
     read(1) shouldEqual "true"
     read(2) shouldEqual Map("id" -> event.id.toString, "description" -> event.description)
+  }
+
+  it should "deserialize IntMap (Object values, duplicate keys - default mode)" in {
+    val mapper = newMapper
+    val json = """{"1": 123, "2": 123, "2": 123.456}"""
+    val read = mapper.readValue(json, classOf[IntMap[Any]])
+    read(1) shouldEqual 123
+    read(2) shouldEqual 123.456
+  }
+
+  it should "deserialize IntMap (Object values, duplicate keys - optional mode)" in {
+    val mapper = newMapper
+    val json = """{"1": 123, "2": 123, "2": 123.456}"""
+    val parser = new WithDupsParser(mapper.createParser(json))
+    val read = try {
+      mapper.readValue(parser, classOf[IntMap[Any]])
+    } finally {
+      parser.close()
+    }
+    read(1) shouldEqual 123
+    val expected = new java.util.ArrayList[Object]()
+    expected.add(java.lang.Integer.valueOf(123))
+    expected.add(java.lang.Double.valueOf(123.456))
+    read(2) shouldEqual expected
+  }
+
+  it should "deserialize IntMap (Double values, duplicate key mode is ignored)" in {
+    val mapper = newMapper
+    val json = """{"1": "123", "2": "123", "2": "123.456"}"""
+    val parser = new WithDupsParser(mapper.createParser(json))
+    val read = try {
+      mapper.readValue(parser, new TypeReference[IntMap[String]]{})
+    } finally {
+      parser.close()
+    }
+    read(1) shouldEqual "123"
+    read(2) shouldEqual "123.456"
   }
 }
