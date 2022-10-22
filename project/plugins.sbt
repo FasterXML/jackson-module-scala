@@ -8,8 +8,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
 
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.8.1")
 
-addSbtPlugin("org.typelevel" % "sbt-typelevel-sonatype-ci-release" % "0.5.0-M4")
+addSbtPlugin("org.typelevel" % "sbt-typelevel-sonatype-ci-release" % "0.5.0-M6")
 
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.10")
-
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.13")
