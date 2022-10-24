@@ -183,7 +183,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
       Option(ScalaAnnotationIntrospectorModule._scalaTypeCache.get(key)) match {
         case Some(result) => result
         case _ => {
-          val result = clz.extendsScalaClass(true) || clz.hasSignature
+          val result = clz.extendsScalaClass(ScalaAnnotationIntrospectorModule.shouldSupportScala3Classes()) || clz.hasSignature
           ScalaAnnotationIntrospectorModule._scalaTypeCache.put(key, result)
           result
         }
@@ -231,7 +231,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     pkg.exists(_.getName.startsWith("scala."))
 
   private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
-    (cls.extendsScalaClass(true) || cls.hasSignature) &&
+    (cls.extendsScalaClass(ScalaAnnotationIntrospectorModule.shouldSupportScala3Classes()) || cls.hasSignature) &&
       !isScalaPackage(Option(cls.getPackage))
 
   private def isScala(a: Annotated): Boolean = {
@@ -254,6 +254,8 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     new LRUMap[ClassKey, Boolean](16, 100)
 
   private[introspect] val overrideMap = MutableMap[Class[_], ClassOverrides]()
+
+  private var _shouldSupportScala3Classes = true
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
@@ -330,11 +332,36 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     existingCache
   }
 
+  /**
+   * Override the default <code>scalaTypeCache</code>.
+   *
+   * @param cache new cache instance
+   * @return old cache instance
+   * @since 2.14.0
+   */
   def setScalaTypeCache(cache: LookupCache[ClassKey, Boolean]): LookupCache[ClassKey, Boolean] = {
     val existingCache = _scalaTypeCache
     _scalaTypeCache = cache
     existingCache
   }
+
+  /**
+   * Sets whether we check for Scala3 classes (default is true). Setting this to false can improve performance.
+   *
+   * @param support whether we check for Scala3 classes
+   * @since 2.14.0
+   */
+  def supportScala3Classes(support: Boolean): Unit = {
+    _shouldSupportScala3Classes = support
+  }
+
+  /**
+   * Gets whether we check for Scala3 classes (default is true).
+   *
+   * @return whether we check for Scala3 classes
+   * @since 2.14.0
+   */
+  def shouldSupportScala3Classes(): Boolean = _shouldSupportScala3Classes
 }
 
 object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
