@@ -251,7 +251,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     new LRUMap[ClassKey, BeanDescriptor](16, 100)
 
   private[introspect] var _scalaTypeCache: LookupCache[ClassKey, Boolean] =
-    new LRUMap[ClassKey, Boolean](16, 100)
+    new LRUMap[ClassKey, Boolean](16, 1000)
 
   private[introspect] val overrideMap = MutableMap[Class[_], ClassOverrides]()
 

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ser.ContextualSerializer
 import com.fasterxml.jackson.databind.util.LookupCache
 import com.fasterxml.jackson.databind.{BeanDescription, JsonSerializer, MapperFeature, ObjectMapper, SerializerProvider}
 import com.fasterxml.jackson.module.scala.deser.OptionWithNumberDeserializerTest.OptionLong
+import com.fasterxml.jackson.module.scala.deser.ValueHolder
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
@@ -37,18 +38,18 @@ object ScalaAnnotationIntrospectorTest {
 
   case class CaseClassWithDefault(a: String = "defaultParam", b: Option[String] = Some("optionDefault"), c: Option[String])
 
-  class ConcurrentLookupCache() extends LookupCache[ClassKey, BeanDescriptor] {
-    final private val cache = TrieMap.empty[ClassKey, BeanDescriptor]
+  class ConcurrentLookupCache[T]() extends LookupCache[ClassKey, T] {
+    final private val cache = TrieMap.empty[ClassKey, T]
 
-    override def put(key: ClassKey, value: BeanDescriptor): BeanDescriptor =
-      cache.put(key, value).getOrElse(None.orNull)
+    override def put(key: ClassKey, value: T): T =
+      cache.put(key, value).getOrElse(None.orNull).asInstanceOf[T]
 
-    override def putIfAbsent(key: ClassKey, value: BeanDescriptor): BeanDescriptor =
-      cache.putIfAbsent(key, value).getOrElse(None.orNull)
+    override def putIfAbsent(key: ClassKey, value: T): T =
+      cache.putIfAbsent(key, value).getOrElse(None.orNull).asInstanceOf[T]
 
-    override def get(key: Any): BeanDescriptor = key match {
-      case classKey: ClassKey => cache.get(classKey).getOrElse(None.orNull)
-      case _ => None.orNull
+    override def get(key: Any): T = key match {
+      case classKey: ClassKey => cache.get(classKey).getOrElse(None.orNull).asInstanceOf[T]
+      case _ => None.orNull.asInstanceOf[T]
     }
 
     override def clear(): Unit = {
@@ -231,17 +232,55 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   }
 
   it should "allow descriptor cache to be replaced" in { _ =>
-    val cache = new ConcurrentLookupCache()
-    ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
-    val builder = JsonMapper.builder().addModule(DefaultScalaModule)
-    val mapper = builder.build()
-    val jsonWithKey = """{"a": "notDefault"}"""
+    val defaultCache = ScalaAnnotationIntrospectorModule._descriptorCache
+    try {
+      val cache = new ConcurrentLookupCache[BeanDescriptor]()
+      ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
+      val builder = JsonMapper.builder().addModule(DefaultScalaModule)
+      val mapper = builder.build()
+      val jsonWithKey = """{"a": "notDefault"}"""
 
-    val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
-    withoutDefault.a shouldEqual "notDefault"
+      val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+      withoutDefault.a shouldEqual "notDefault"
 
-    cache.size shouldBe >=(1)
-    cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be(null)
+      cache.size shouldBe >=(1)
+      cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be (null)
+    } finally {
+      ScalaAnnotationIntrospectorModule.setDescriptorCache(defaultCache)
+    }
+  }
+
+  it should "allow scala type cache to be replaced" in { _ =>
+    val defaultCache = ScalaAnnotationIntrospectorModule._scalaTypeCache
+    try {
+      val cache = new ConcurrentLookupCache[Boolean]()
+      ScalaAnnotationIntrospectorModule.setScalaTypeCache(cache)
+      val builder = JsonMapper.builder().addModule(DefaultScalaModule)
+      val mapper = builder.build()
+      val jsonWithKey = """{"a": "notDefault"}"""
+
+      val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+      withoutDefault.a shouldEqual "notDefault"
+
+      cache.size shouldBe >=(1)
+      cache.get(new ClassKey(classOf[CaseClassWithDefault])) shouldBe true
+
+      val javaValueHolder = mapper.readValue("\"2\"", classOf[ValueHolder])
+      javaValueHolder should not be(null)
+      cache.get(new ClassKey(classOf[ValueHolder])) shouldBe false
+    } finally {
+      ScalaAnnotationIntrospectorModule.setScalaTypeCache(defaultCache)
+    }
+  }
+
+  it should "allow scala3 check to be disabled" in { _ =>
+    ScalaAnnotationIntrospectorModule.shouldSupportScala3Classes() shouldBe true
+    try {
+      ScalaAnnotationIntrospectorModule.supportScala3Classes(false)
+      ScalaAnnotationIntrospectorModule.shouldSupportScala3Classes() shouldBe false
+    } finally {
+      ScalaAnnotationIntrospectorModule.supportScala3Classes(true)
+    }
   }
 
   it should "ignore a generated default argument method" in { mapper =>
