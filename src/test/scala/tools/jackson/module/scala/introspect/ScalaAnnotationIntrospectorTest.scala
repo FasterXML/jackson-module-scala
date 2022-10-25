@@ -14,6 +14,7 @@ import tools.jackson.databind.module.SimpleModule
 import tools.jackson.databind.util.LookupCache
 import tools.jackson.databind.{BeanDescription, MapperFeature, ObjectMapper, SerializerProvider, ValueSerializer}
 import tools.jackson.module.scala.deser.OptionWithNumberDeserializerTest.OptionLong
+import tools.jackson.module.scala.deser.ValueHolder
 import tools.jackson.module.scala.DefaultScalaModule
 
 import scala.beans.BeanProperty
@@ -256,6 +257,29 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
       cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be (null)
     } finally {
       ScalaAnnotationIntrospectorModule.setDescriptorCache(defaultCache)
+    }
+  }
+
+  it should "allow scala type cache to be replaced" in { _ =>
+    val defaultCache = ScalaAnnotationIntrospectorModule._scalaTypeCache
+    try {
+      val cache = new ConcurrentLookupCache[Boolean]()
+      ScalaAnnotationIntrospectorModule.setScalaTypeCache(cache)
+      val builder = JsonMapper.builder().addModule(DefaultScalaModule)
+      val mapper = builder.build()
+      val jsonWithKey = """{"a": "notDefault"}"""
+
+      val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+      withoutDefault.a shouldEqual "notDefault"
+
+      cache.size shouldBe >=(1)
+      cache.get(new ClassKey(classOf[CaseClassWithDefault])) shouldBe true
+
+      val javaValueHolder = mapper.readValue("\"2\"", classOf[ValueHolder])
+      javaValueHolder should not be (null)
+      cache.get(new ClassKey(classOf[ValueHolder])) shouldBe false
+    } finally {
+      ScalaAnnotationIntrospectorModule.setScalaTypeCache(defaultCache)
     }
   }
 
