@@ -276,7 +276,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
 
   private[introspect] var _scalaTypeCache: LookupCache[ClassKey, Boolean] =
-    new SimpleLookupCache[ClassKey, Boolean](16, 100)
+    new SimpleLookupCache[ClassKey, Boolean](16, 1000)
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping

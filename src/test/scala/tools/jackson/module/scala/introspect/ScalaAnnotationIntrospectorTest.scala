@@ -37,18 +37,18 @@ object ScalaAnnotationIntrospectorTest {
 
   case class CaseClassWithDefault(a: String = "defaultParam", b: Option[String] = Some("optionDefault"), c: Option[String])
 
-  case class ConcurrentLookupCache(cache: TrieMap[ClassKey, BeanDescriptor] = TrieMap.empty[ClassKey, BeanDescriptor])
-    extends LookupCache[ClassKey, BeanDescriptor] {
+  case class ConcurrentLookupCache[T](cache: TrieMap[ClassKey, T] = TrieMap.empty[ClassKey, T])
+    extends LookupCache[ClassKey, T] {
 
-    override def put(key: ClassKey, value: BeanDescriptor): BeanDescriptor =
-      cache.put(key, value).getOrElse(None.orNull)
+    override def put(key: ClassKey, value: T): T =
+      cache.put(key, value).getOrElse(None.orNull).asInstanceOf[T]
 
-    override def putIfAbsent(key: ClassKey, value: BeanDescriptor): BeanDescriptor =
-      cache.putIfAbsent(key, value).getOrElse(None.orNull)
+    override def putIfAbsent(key: ClassKey, value: T): T =
+      cache.putIfAbsent(key, value).getOrElse(None.orNull).asInstanceOf[T]
 
-    override def get(key: Any): BeanDescriptor = key match {
-      case classKey: ClassKey => cache.get(classKey).getOrElse(None.orNull)
-      case _ => None.orNull
+    override def get(key: Any): T = key match {
+      case classKey: ClassKey => cache.get(classKey).getOrElse(None.orNull).asInstanceOf[T]
+      case _ => None.orNull.asInstanceOf[T]
     }
 
     override def clear(): Unit = {
@@ -57,8 +57,8 @@ object ScalaAnnotationIntrospectorTest {
 
     override def size: Int = cache.size
 
-    override def snapshot(): LookupCache[ClassKey, BeanDescriptor] = {
-      val newCache = TrieMap.empty[ClassKey, BeanDescriptor]
+    override def snapshot(): LookupCache[ClassKey, T] = {
+      val newCache = TrieMap.empty[ClassKey, T]
       cache.foreach { case (k, v) =>
         newCache.put(k, v)
       }
@@ -241,17 +241,22 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   }
 
   it should "allow descriptor cache to be replaced" in { _ =>
-    val cache = ConcurrentLookupCache()
-    ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
-    val builder = JsonMapper.builder().addModule(DefaultScalaModule)
-    val mapper = builder.build()
-    val jsonWithKey = """{"a": "notDefault"}"""
+    val defaultCache = ScalaAnnotationIntrospectorModule._descriptorCache
+    try {
+      val cache = ConcurrentLookupCache[BeanDescriptor]()
+      ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
+      val builder = JsonMapper.builder().addModule(DefaultScalaModule)
+      val mapper = builder.build()
+      val jsonWithKey = """{"a": "notDefault"}"""
 
-    val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
-    withoutDefault.a shouldEqual "notDefault"
+      val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
+      withoutDefault.a shouldEqual "notDefault"
 
-    cache.size shouldBe >=(1)
-    cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be(null)
+      cache.size shouldBe >=(1)
+      cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be (null)
+    } finally {
+      ScalaAnnotationIntrospectorModule.setDescriptorCache(defaultCache)
+    }
   }
 
   it should "ignore a generated default argument method" in { mapper =>
