@@ -73,7 +73,21 @@ val mapper = JsonMapper.builder()
 One Scala module that isn't part of `DefaultScalaModule` is `ScalaObjectDeserializerModule`. This module is used to
 ensure that deserialization to a Scala object does not create a new instance of the object.
 This latter module is not yet included in `DefaultScalaModule` for backward compatibility reasons.
-It is included in the v3.0.0 which is still under development.
+It is included in the v3.0.0, which is still under development.
+
+## DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES
+
+It is recommended that Scala users enable `DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES`. This feature means that when you
+deserialize JSON and bind to a Scala/Java class and a required field is missing (or null), then the deserialization call will fail
+with a `com.fasterxml.jackson.databind.exc.MismatchedInputException`. By default, the deserialization call will succeed and a `null` value
+will be set for the field.
+
+```scala
+val mapper = JsonMapper.builder()
+  .addModule(DefaultScalaModule)
+  .enable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)
+  .build()
+```
 
 ## ClassTagExtensions
 You can also mixin `ClassTagExtensions` to get rich wrappers that automatically
