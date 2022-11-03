@@ -2,8 +2,9 @@ package tools.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tools.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.databind.exc.MismatchedInputException
 import tools.jackson.databind.json.JsonMapper
-import tools.jackson.databind.{DatabindException, ObjectMapper, ObjectReader, PropertyNamingStrategies}
+import tools.jackson.databind.{DatabindException, DeserializationFeature, ObjectMapper, ObjectReader, PropertyNamingStrategies}
 import tools.jackson.module.scala.DefaultScalaModule
 import tools.jackson.module.scala.ser.{ClassWithOnlyUnitField, ClassWithUnitField}
 
@@ -11,6 +12,8 @@ import java.time.LocalDateTime
 
 object CaseClassDeserializerTest {
   class Bean(var prop: String)
+
+  case class Time(hour: String, minute: String)
 
   case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
@@ -162,6 +165,22 @@ class CaseClassDeserializerTest extends DeserializerTest {
   it should "support Array[Byte] properties" in {
     val result = deserialize("""{"value":"AQID"}""", classOf[ArrayHolder])
     result.value should equal (Array[Byte](1,2,3))
+  }
+
+  it should "support deserialization with missing field" in {
+    val input = """{"hour": "12345"}"""
+    val result = deserialize(input, classOf[Time])
+    // https://github.com/FasterXML/jackson-module-scala/issues/203
+    // this result is not popular with users it has been the behaviour for quite some time
+    result shouldEqual Time("12345", null)
+  }
+
+  it should "fail deserialization with missing field (DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)" in {
+    val mapper = newBuilder.enable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES).build()
+    val input = """{"hour": "12345"}"""
+    intercept[MismatchedInputException] {
+      mapper.readValue(input, classOf[Time])
+    }
   }
 
   it should "support ClassWithUnitField" in {
