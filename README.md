@@ -80,7 +80,7 @@ It is included in the v3.0.0, which is still under development.
 
 It is recommended that Scala users enable `DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES`. This feature means that when you
 deserialize JSON and bind to a Scala/Java class and a required field is missing (or null), then the deserialization call will fail
-with a `com.fasterxml.jackson.databind.exc.MismatchedInputException`. By default, the deserialization call will succeed and a `null` value
+with a `tools.jackson.databind.exc.MismatchedInputException`. By default, the deserialization call will succeed and a `null` value
 will be set for the field.
 
 ```scala
