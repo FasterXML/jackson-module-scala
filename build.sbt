@@ -6,11 +6,13 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
+ThisBuild / version := "2.15.0-SNAPSHOT"
+
 ThisBuild / scalaVersion := "2.13.10"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.0")
 
-//resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 autoAPIMappings := true
 
@@ -95,8 +97,8 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.14.0"
-val jacksonJsonSchemaVersion = jacksonVersion
+val jacksonVersion = "2.15.0-SNAPSHOT"
+val jacksonJsonSchemaVersion = "2.14.0"
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
@@ -104,10 +106,10 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   // test dependencies
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
-  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonJsonSchemaVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonJsonSchemaVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonJsonSchemaVersion % Test,
+  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonJsonSchemaVersion % Test,
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
