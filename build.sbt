@@ -95,7 +95,7 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.14.0"
+val jacksonVersion = "2.14.1"
 val jacksonJsonSchemaVersion = jacksonVersion
 
 libraryDependencies ++= Seq(
