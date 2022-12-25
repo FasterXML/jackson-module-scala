@@ -17,7 +17,7 @@ public class JsonTypeInfoValue {
     }
 
     public JsonTypeInfo asAnnotation() {
-        new JsonTypeInfo() {
+        return new JsonTypeInfo() {
             @Override
             public Class<? extends Annotation> annotationType() {
                 return JsonTypeInfo.class;
