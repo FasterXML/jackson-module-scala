@@ -9,11 +9,16 @@ public class JsonTypeInfoValue {
     private final JsonTypeInfo.Id _use;
     private final JsonTypeInfo.As _include;
     private final String _property;
+    private final Class<?> _defaultImpl;
+    private final boolean _visible;
 
-    public JsonTypeInfoValue(JsonTypeInfo.Id use, JsonTypeInfo.As include, String property) {
+    public JsonTypeInfoValue(JsonTypeInfo.Id use, JsonTypeInfo.As include, String property,
+                             Class<?> defaultImpl, boolean visible) {
         _use = use;
         _include = include;
         _property = property;
+        _defaultImpl = defaultImpl;
+        _visible = visible;
     }
 
     public JsonTypeInfo asAnnotation() {
@@ -40,12 +45,12 @@ public class JsonTypeInfoValue {
 
             @Override
             public Class<?> defaultImpl() {
-                return null;
+                return _defaultImpl;
             }
 
             @Override
             public boolean visible() {
-                return false;
+                return _visible;
             }
         };
     }

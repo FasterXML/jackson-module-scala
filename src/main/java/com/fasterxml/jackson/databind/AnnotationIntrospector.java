@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.Versioned;
 
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.cfg.JsonTypeInfoValue;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.deser.ValueInstantiator;
 import com.fasterxml.jackson.databind.introspect.*;
@@ -1568,6 +1569,18 @@ public abstract class AnnotationIntrospector
     @Deprecated // since 2.9
     public boolean hasAnySetterAnnotation(AnnotatedMethod am) {
         return false;
+    }
+
+    /**
+     * Defines the default {@link JsonTypeInfoValue} to use for polymorphic types
+     * (e.g. sealed classes). Traditionally, Jackson has required users to specify
+     * a {@link JsonTypeInfo} annotation.
+     *
+     * @return a default {@link JsonTypeInfoValue} to use for polymorphic types (defaults to <code>null</code>)
+     * @since 2.15
+     */
+    public JsonTypeInfoValue getDefaultJsonTypeInfo() {
+        return null;
     }
 
     /*
