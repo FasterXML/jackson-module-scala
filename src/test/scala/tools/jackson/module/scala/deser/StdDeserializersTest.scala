@@ -40,10 +40,7 @@ class StdDeserializersTest extends DeserializationFixture {
   }
 
   it should "deserialize to java.math.BigDecimal a number in exponent form (Fast number parsing)" in { _ =>
-    val mapper = JsonMapper.builder()
-      .enable(StreamReadFeature.USE_FAST_DOUBLE_PARSER)
-      .enable(StreamReadFeature.USE_FAST_BIG_NUMBER_PARSER)
-      .build()
+    val mapper = newMapperWithFastNumberParsing()
     Seq("1.0E+2", "1.0e+2", "1.0e2", "1.234e-234").foreach { numString =>
       mapper.readValue(numString, classOf[java.math.BigDecimal]) shouldBe new java.math.BigDecimal(numString)
     }
