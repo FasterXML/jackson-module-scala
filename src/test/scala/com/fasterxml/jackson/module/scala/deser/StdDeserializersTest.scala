@@ -45,4 +45,15 @@ class StdDeserializersTest extends DeserializationFixture {
       f.readValue(numString, classOf[BigInt]) shouldBe BigDecimal(numString).toBigIntExact.orNull
     }
   }
+
+  // https://github.com/FasterXML/jackson-module-scala/issues/616
+  it should "deserialize to BigInt a number in exponent form (Fast number parsing)" ignore { _ =>
+    val mapper = JsonMapper.builder()
+      .enable(StreamReadFeature.USE_FAST_DOUBLE_PARSER)
+      .enable(StreamReadFeature.USE_FAST_BIG_NUMBER_PARSER)
+      .build()
+    Seq("1.0E2", "1.0e2", "1.0e2", "10000E-2").foreach { numString =>
+      mapper.readValue(numString, classOf[BigInt]) shouldBe BigDecimal(numString).toBigIntExact.orNull
+    }
+  }
 }
