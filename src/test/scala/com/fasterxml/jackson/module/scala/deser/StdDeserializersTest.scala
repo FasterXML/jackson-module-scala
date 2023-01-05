@@ -40,6 +40,13 @@ class StdDeserializersTest extends DeserializationFixture {
     }
   }
 
+  it should "deserialize to java.math.BigDecimal a number in exponent form (Fast number parsing)" in { _ =>
+    val mapper = newMapperWithFastNumberParsing()
+    Seq("1.0E+2", "1.0e+2", "1.0e2", "1.234e-234").foreach { numString =>
+      mapper.readValue(numString, classOf[java.math.BigDecimal]) shouldBe new java.math.BigDecimal(numString)
+    }
+  }
+
   it should "deserialize to BigInt a number in exponent form" in { f =>
     Seq("1.0E2", "1.0e2", "1.0e2", "10000E-2").foreach { numString =>
       f.readValue(numString, classOf[BigInt]) shouldBe BigDecimal(numString).toBigIntExact.orNull
