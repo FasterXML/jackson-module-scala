@@ -1,7 +1,9 @@
 package tools.jackson.module.scala.deser
 
 import tools.jackson.core.StreamReadFeature
+import tools.jackson.databind.ObjectMapper
 import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.scala.DefaultScalaModule
 
 class StdDeserializersTest extends DeserializationFixture {
 
@@ -30,12 +32,8 @@ class StdDeserializersTest extends DeserializationFixture {
     }
   }
 
-  //TODO currently broken
-  it should "deserialize to BigDecimal a number in exponent form (Fast number parsing)" ignore { _ =>
-    val mapper = JsonMapper.builder()
-      .enable(StreamReadFeature.USE_FAST_DOUBLE_PARSER)
-      .enable(StreamReadFeature.USE_FAST_BIG_NUMBER_PARSER)
-      .build()
+  it should "deserialize to BigDecimal a number in exponent form (Fast number parsing)" in { _ =>
+    val mapper = newMapperWithFastNumberParsing()
     Seq("1.0E+2", "1.0e+2", "1.0e2", "1.234e-234").foreach { numString =>
       mapper.readValue(numString, classOf[BigDecimal]) shouldBe BigDecimal(numString)
     }
@@ -57,14 +55,18 @@ class StdDeserializersTest extends DeserializationFixture {
     }
   }
 
-  //TODO currently broken
-  it should "deserialize to BigInt a number in exponent form (Fast number parsing)" ignore { _ =>
-    val mapper = JsonMapper.builder()
-      .enable(StreamReadFeature.USE_FAST_DOUBLE_PARSER)
-      .enable(StreamReadFeature.USE_FAST_BIG_NUMBER_PARSER)
-      .build()
+  it should "deserialize to BigInt a number in exponent form (Fast number parsing)" in { _ =>
+    val mapper = newMapperWithFastNumberParsing()
     Seq("1.0E2", "1.0e2", "1.0e2", "10000E-2").foreach { numString =>
       mapper.readValue(numString, classOf[BigInt]) shouldBe BigDecimal(numString).toBigIntExact.orNull
     }
+  }
+
+  private def newMapperWithFastNumberParsing(): ObjectMapper = {
+    JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .enable(StreamReadFeature.USE_FAST_DOUBLE_PARSER)
+      .enable(StreamReadFeature.USE_FAST_BIG_NUMBER_PARSER)
+      .build()
   }
 }
