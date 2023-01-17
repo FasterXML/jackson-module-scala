@@ -131,8 +131,7 @@ ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"), JavaSpec(Zulu
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("master")),
-  RefPredicate.Equals(Ref.Branch("2.15")),
-  RefPredicate.Equals(Ref.Branch("2.14")),
+  RefPredicate.StartsWith(Ref.Branch("2.")),
   RefPredicate.StartsWith(Ref.Tag("v"))
 )
 
