@@ -12,6 +12,11 @@ Scala 2.11, 2.12, 2.13 and 3.2+. Java 8 is the minimum supported Java version.
 * [[gh-594]](https://github.com/FasterXML/jackson-module-scala/issues/594) make scala 3.2 the minimum supported scala 3 version
 * [[gh-pr-603]](https://github.com/FasterXML/jackson-module-scala/pull/603) ignore generated methods for defaulted parameters
 
+# Version: 2.13.5
+
+There are no new fixes in this release; it serves to track the 2.13.5 release
+of the upstream Jackson projects.
+
 # Version: 2.13.4
 
 ## Fixes
