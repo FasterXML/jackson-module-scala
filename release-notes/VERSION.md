@@ -1,3 +1,13 @@
+# Version: 2.14.2
+
+There are no new fixes in this release; it serves to track the 2.14.2 release
+of the upstream Jackson projects.
+
+# Version: 2.14.1
+
+There are no new fixes in this release; it serves to track the 2.14.1 release
+of the upstream Jackson projects.
+
 # Version: 2.14.0
 
 This patch release tracks Jackson 2.14. The 2.14 series has full support for
@@ -8,7 +18,7 @@ Scala 2.11, 2.12, 2.13 and 3.2+. Java 8 is the minimum supported Java version.
 * [[gh-576]](https://github.com/FasterXML/jackson-module-scala/issues/576) add flag in type cache to track which classes are not Scala (to avoid having to check them again)
 * [[gh-572]](https://github.com/FasterXML/jackson-module-scala/issues/572) reuse Java code to parse Scala BigDecimal and BigInt
 * [[gh-590]](https://github.com/FasterXML/jackson-module-scala/issues/590) support BitSet deserialization (disabled by default) - enabling this is strongly discouraged as BitSets can use a lot of memory
-* [[gh-593]](https://github.com/FasterXML/jackson-module-scala/issues/593) support IntMap/LongMap deserialzation
+* [[gh-593]](https://github.com/FasterXML/jackson-module-scala/issues/593) support IntMap/LongMap deserialization
 * [[gh-594]](https://github.com/FasterXML/jackson-module-scala/issues/594) make scala 3.2 the minimum supported scala 3 version
 * [[gh-pr-603]](https://github.com/FasterXML/jackson-module-scala/pull/603) ignore generated methods for defaulted parameters
 
