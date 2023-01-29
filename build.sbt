@@ -95,7 +95,7 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.14.1"
+val jacksonVersion = "2.14.2"
 val jacksonJsonSchemaVersion = jacksonVersion
 
 libraryDependencies ++= Seq(
@@ -111,7 +111,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.14" % Test
+  "org.scalatest" %% "scalatest" % "3.2.15" % Test
 )
 
 // build.properties
