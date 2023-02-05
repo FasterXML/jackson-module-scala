@@ -118,7 +118,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
                                        defaultInstantiator: ValueInstantiator): ValueInstantiator = {
     if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
-        if (scalaAnnotationIntrospectorModule.overrideMap.contains(beanDesc.getBeanClass) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
+        if (scalaAnnotationIntrospectorModule.overrideMap.contains(beanDesc.getBeanClass.getName) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
           defaultInstantiator match {
             case std: StdValueInstantiator =>
               new ScalaValueInstantiator(config, std, deserializationConfig, descriptor)
@@ -206,7 +206,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     extends StdValueInstantiator(delegate) {
 
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
-      val overrides = scalaAnnotationIntrospectorModule.overrideMap.get(descriptor.beanType).map(_.overrides.toMap).getOrElse(Map.empty)
+      val overrides = scalaAnnotationIntrospectorModule.overrideMap.get(descriptor.beanType.getName).map(_.overrides.toMap).getOrElse(Map.empty)
       val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES) &&
         config.shouldApplyDefaultValuesWhenDeserializing()
       val args = delegate.getFromObjectArguments(deserializationConfig)
@@ -270,7 +270,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     builder.build()
   }
 
-  private[introspect] val overrideMap = MutableMap[Class[_], ClassOverrides]()
+  private[introspect] val overrideMap = MutableMap[String, ClassOverrides]()
 
   private[introspect] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     new SimpleLookupCache[ClassKey, BeanDescriptor](16, 100)
@@ -296,7 +296,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @since 2.13.0
    */
   def registerReferencedValueType(clazz: Class[_], fieldName: String, referencedType: Class[_]): Unit = {
-    val overrides = overrideMap.getOrElseUpdate(clazz, ClassOverrides()).overrides
+    val overrides = overrideMap.getOrElseUpdate(clazz.getName, ClassOverrides()).overrides
     overrides.get(fieldName) match {
       case Some(holder) => overrides.put(fieldName, holder.copy(valueClass = Some(referencedType)))
       case _ => overrides.put(fieldName, ClassHolder(valueClass = Some(referencedType)))
@@ -319,7 +319,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @since 2.13.1
    */
   def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
-    overrideMap.get(clazz).flatMap { overrides =>
+    overrideMap.get(clazz.getName).flatMap { overrides =>
       overrides.overrides.get(fieldName).flatMap(_.valueClass)
     }
   }
@@ -333,7 +333,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @since 2.13.0
    */
   def clearRegisteredReferencedTypes(clazz: Class[_]): Unit = {
-    overrideMap.remove(clazz)
+    overrideMap.remove(clazz.getName)
   }
 
   /**
