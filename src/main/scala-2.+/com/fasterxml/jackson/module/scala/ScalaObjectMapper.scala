@@ -343,9 +343,9 @@ trait ScalaObjectMapper {
    * JSON. Same converters (serializers, deserializers) will be used as for
    * data binding, meaning same object mapper configuration works.
    *
-   * @throws IllegalArgumentException If conversion fails due to incompatible type;
-   *                                  if so, root cause will contain underlying checked exception data binding
-   *                                  functionality threw
+   * @throws java.lang.IllegalArgumentException If conversion fails due to incompatible type;
+   *                                            if so, root cause will contain underlying checked exception data
+   *                                            binding functionality threw
    */
   def convertValue[T: Manifest](fromValue: Any): T = {
     convertValue(fromValue, constructType[T])
