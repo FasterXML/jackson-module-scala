@@ -260,24 +260,65 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
   private[introspect] val overrideMap = MutableMap[String, ClassOverrides]()
 
+  /**
+   * Replaces the [[LookupCacheFactory]]. The default factory uses [[com.fasterxml.jackson.databind.util.LRUMap]].
+   * <p>
+   *   Note that this clears the existing cache entries. It is best to set this up before you start using
+   *   the Jackson Scala Module for serializing/deserializing.
+   * </p>
+   *
+   * @param lookupCacheFactory new factory
+   * @see [[setDescriptorCacheSize]]
+   * @see [[setScalaTypeCacheSize]]
+   * @since 2.14.3
+   */
   def setLookupCacheFactory(lookupCacheFactory: LookupCacheFactory): Unit = {
     _lookupCacheFactory = lookupCacheFactory
+    recreateDescriptorCache()
+    recreateScalaTypeCache()
   }
 
-  private def recreateCaches(): Unit = {
-    _descriptorCache.clear()
-    _scalaTypeCache.clear()
-    _descriptorCache = _lookupCacheFactory.createLookupCache(16, _descriptorCacheSize)
-    _scalaTypeCache = _lookupCacheFactory.createLookupCache(16, _scalaTypeCacheSize)
-  }
-
+  /**
+   * Resize the <code>descriptorCache</code>. The default size is 100.
+   * <p>
+   *   Note that this clears the existing cache entries. It is best to set this up before you start using
+   *   the Jackson Scala Module for serializing/deserializing.
+   * </p>
+   *
+   * @param size new size for the cache
+   * @see [[setScalaTypeCacheSize]]
+   * @see [[setLookupCacheFactory]]
+   * @since 2.14.3
+   */
   def setDescriptorCacheSize(size: Int): Unit = {
     _descriptorCacheSize = size
+    recreateDescriptorCache()
+  }
+
+  /**
+   * Resize the <code>scalaTypeCache</code>. The default size is 1000.
+   * <p>
+   *   Note that this clears the existing cache entries. It is best to set this up before you start using
+   *   the Jackson Scala Module for serializing/deserializing.
+   * </p>
+   *
+   * @param size new size for the cache
+   * @see [[setDescriptorCacheSize]]
+   * @see [[setLookupCacheFactory]]
+   * @since 2.14.3
+   */
+  def setScalaTypeCacheSize(size: Int): Unit = {
+    _scalaTypeCacheSize = size
+    recreateScalaTypeCache()
+  }
+
+  private def recreateDescriptorCache(): Unit = {
+    _descriptorCache.clear()
     _descriptorCache = _lookupCacheFactory.createLookupCache(16, _descriptorCacheSize)
   }
 
-  def setScalaTypeCacheSize(size: Int): Unit = {
-    _scalaTypeCacheSize = size
+  private def recreateScalaTypeCache(): Unit = {
+    _scalaTypeCache.clear()
     _scalaTypeCache = _lookupCacheFactory.createLookupCache(16, _scalaTypeCacheSize)
   }
 
@@ -351,7 +392,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   }
 
   /**
-   * Replace the Descriptor Cache.
+   * Replace the <code>descriptorCache</code.
    *
    * @param cache new cache instance
    * @return the existing cache instance
