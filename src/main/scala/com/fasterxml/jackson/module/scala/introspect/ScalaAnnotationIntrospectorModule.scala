@@ -178,7 +178,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    val key = new ClassKey(clz)
+    val key = clz.getName
     val isScala = {
       Option(ScalaAnnotationIntrospectorModule._scalaTypeCache.get(key)) match {
         case Some(result) => result
@@ -247,11 +247,11 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   this += { _.appendAnnotationIntrospector(ScalaAnnotationIntrospector) }
   this += { _.addValueInstantiators(ScalaAnnotationIntrospector) }
 
-  private[introspect] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
-    new LRUMap[ClassKey, BeanDescriptor](16, 100)
+  private[introspect] var _descriptorCache: LookupCache[String, BeanDescriptor] =
+    new LRUMap[String, BeanDescriptor](16, 100)
 
-  private[introspect] var _scalaTypeCache: LookupCache[ClassKey, Boolean] =
-    new LRUMap[ClassKey, Boolean](16, 1000)
+  private[introspect] var _scalaTypeCache: LookupCache[String, Boolean] =
+    new LRUMap[String, Boolean](16, 1000)
 
   private[introspect] val overrideMap = MutableMap[String, ClassOverrides]()
 
@@ -326,7 +326,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     overrideMap.clear()
   }
 
-  def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
+  def setDescriptorCache(cache: LookupCache[String, BeanDescriptor]): LookupCache[String, BeanDescriptor] = {
     val existingCache = _descriptorCache
     _descriptorCache = cache
     existingCache
@@ -339,7 +339,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @return old cache instance
    * @since 2.14.0
    */
-  def setScalaTypeCache(cache: LookupCache[ClassKey, Boolean]): LookupCache[ClassKey, Boolean] = {
+  def setScalaTypeCache(cache: LookupCache[String, Boolean]): LookupCache[String, Boolean] = {
     val existingCache = _scalaTypeCache
     _scalaTypeCache = cache
     existingCache
