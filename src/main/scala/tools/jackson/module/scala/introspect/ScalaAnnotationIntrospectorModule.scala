@@ -11,7 +11,7 @@ import tools.jackson.databind.introspect._
 import tools.jackson.databind.util.{AccessPattern, LookupCache, SimpleLookupCache}
 import tools.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, JavaType, MapperFeature, PropertyName}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
-import tools.jackson.module.scala.{JacksonModule, ScalaModule}
+import tools.jackson.module.scala.{DefaultLookupCacheFactory, JacksonModule, LookupCacheFactory, ScalaModule}
 import tools.jackson.module.scala.util.Implicits._
 
 import java.lang.annotation.Annotation
@@ -270,13 +270,17 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     builder.build()
   }
 
+  private var _lookupCacheFactory: LookupCacheFactory = DefaultLookupCacheFactory
+  private var _descriptorCacheSize: Int = 100
+  private var _scalaTypeCacheSize: Int = 1000
+
   private[introspect] val overrideMap = MutableMap[String, ClassOverrides]()
 
   private[introspect] var _descriptorCache: LookupCache[String, BeanDescriptor] =
-    new SimpleLookupCache[String, BeanDescriptor](16, 100)
+    _lookupCacheFactory.createLookupCache(16, _descriptorCacheSize)
 
   private[introspect] var _scalaTypeCache: LookupCache[String, Boolean] =
-    new SimpleLookupCache[String, Boolean](16, 1000)
+    _lookupCacheFactory.createLookupCache(16, _scalaTypeCacheSize)
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
@@ -337,7 +341,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   }
 
   /**
-   * clears all the state associated with reference types
+   * Clears all the state associated with reference types
    *
    * @see [[registerReferencedValueType]]
    * @see [[clearRegisteredReferencedTypes(Class[_])]]
@@ -347,16 +351,66 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     overrideMap.clear()
   }
 
-  def setDescriptorCache(cache: LookupCache[String, BeanDescriptor]): LookupCache[String, BeanDescriptor] = {
-    val existingCache = _descriptorCache
-    _descriptorCache = cache
-    existingCache
+  /**
+   * Replaces the [[LookupCacheFactory]]. The default factory uses [[tools.jackson.databind.util.SimpleLookupCache]].
+   * <p>
+   * Note that this clears the existing cache entries. It is best to set this up before you start using
+   * the Jackson Scala Module for serializing/deserializing.
+   * </p>
+   *
+   * @param lookupCacheFactory new factory
+   * @see [[setDescriptorCacheSize]]
+   * @see [[setScalaTypeCacheSize]]
+   * @since 2.14.3
+   */
+  def setLookupCacheFactory(lookupCacheFactory: LookupCacheFactory): Unit = {
+    _lookupCacheFactory = lookupCacheFactory
+    recreateDescriptorCache()
+    recreateScalaTypeCache()
   }
 
-  def setScalaTypeCache(cache: LookupCache[String, Boolean]): LookupCache[String, Boolean] = {
-    val existingCache = _scalaTypeCache
-    _scalaTypeCache = cache
-    existingCache
+  /**
+   * Resize the <code>descriptorCache</code>. The default size is 100.
+   * <p>
+   * Note that this clears the existing cache entries. It is best to set this up before you start using
+   * the Jackson Scala Module for serializing/deserializing.
+   * </p>
+   *
+   * @param size new size for the cache
+   * @see [[setScalaTypeCacheSize]]
+   * @see [[setLookupCacheFactory]]
+   * @since 2.14.3
+   */
+  def setDescriptorCacheSize(size: Int): Unit = {
+    _descriptorCacheSize = size
+    recreateDescriptorCache()
+  }
+
+  /**
+   * Resize the <code>scalaTypeCache</code>. The default size is 1000.
+   * <p>
+   * Note that this clears the existing cache entries. It is best to set this up before you start using
+   * the Jackson Scala Module for serializing/deserializing.
+   * </p>
+   *
+   * @param size new size for the cache
+   * @see [[setDescriptorCacheSize]]
+   * @see [[setLookupCacheFactory]]
+   * @since 2.14.3
+   */
+  def setScalaTypeCacheSize(size: Int): Unit = {
+    _scalaTypeCacheSize = size
+    recreateScalaTypeCache()
+  }
+
+  private def recreateDescriptorCache(): Unit = {
+    _descriptorCache.clear()
+    _descriptorCache = _lookupCacheFactory.createLookupCache(16, _descriptorCacheSize)
+  }
+
+  private def recreateScalaTypeCache(): Unit = {
+    _scalaTypeCache.clear()
+    _scalaTypeCache = _lookupCacheFactory.createLookupCache(16, _scalaTypeCacheSize)
   }
 
 }
