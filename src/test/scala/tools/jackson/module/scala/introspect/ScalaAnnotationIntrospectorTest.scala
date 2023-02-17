@@ -8,7 +8,6 @@ import org.scalatest.matchers.should.Matchers
 import tools.jackson.core.JsonGenerator
 import tools.jackson.core.json.JsonFactory
 import tools.jackson.databind
-import tools.jackson.databind.`type`.ClassKey
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.module.SimpleModule
 import tools.jackson.databind.util.LookupCache
@@ -38,17 +37,17 @@ object ScalaAnnotationIntrospectorTest {
 
   case class CaseClassWithDefault(a: String = "defaultParam", b: Option[String] = Some("optionDefault"), c: Option[String])
 
-  case class ConcurrentLookupCache[T](cache: TrieMap[ClassKey, T] = TrieMap.empty[ClassKey, T])
-    extends LookupCache[ClassKey, T] {
+  case class ConcurrentLookupCache[T](cache: TrieMap[String, T] = TrieMap.empty[String, T])
+    extends LookupCache[String, T] {
 
-    override def put(key: ClassKey, value: T): T =
+    override def put(key: String, value: T): T =
       cache.put(key, value).getOrElse(None.orNull).asInstanceOf[T]
 
-    override def putIfAbsent(key: ClassKey, value: T): T =
+    override def putIfAbsent(key: String, value: T): T =
       cache.putIfAbsent(key, value).getOrElse(None.orNull).asInstanceOf[T]
 
     override def get(key: Any): T = key match {
-      case classKey: ClassKey => cache.get(classKey).getOrElse(None.orNull).asInstanceOf[T]
+      case classKey: String => cache.get(classKey).getOrElse(None.orNull).asInstanceOf[T]
       case _ => None.orNull.asInstanceOf[T]
     }
 
@@ -58,8 +57,8 @@ object ScalaAnnotationIntrospectorTest {
 
     override def size: Int = cache.size
 
-    override def snapshot(): LookupCache[ClassKey, T] = {
-      val newCache = TrieMap.empty[ClassKey, T]
+    override def snapshot(): LookupCache[String, T] = {
+      val newCache = TrieMap.empty[String, T]
       cache.foreach { case (k, v) =>
         newCache.put(k, v)
       }
@@ -254,7 +253,7 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
       withoutDefault.a shouldEqual "notDefault"
 
       cache.size shouldBe >=(1)
-      cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be (null)
+      cache.get(classOf[CaseClassWithDefault].getName) should not be (null)
     } finally {
       ScalaAnnotationIntrospectorModule.setDescriptorCache(defaultCache)
     }
@@ -273,11 +272,11 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
       withoutDefault.a shouldEqual "notDefault"
 
       cache.size shouldBe >=(1)
-      cache.get(new ClassKey(classOf[CaseClassWithDefault])) shouldBe true
+      cache.get(classOf[CaseClassWithDefault].getName) shouldBe true
 
       val javaValueHolder = mapper.readValue("\"2\"", classOf[ValueHolder])
       javaValueHolder should not be (null)
-      cache.get(new ClassKey(classOf[ValueHolder])) shouldBe false
+      cache.get(classOf[ValueHolder].getName) shouldBe false
     } finally {
       ScalaAnnotationIntrospectorModule.setScalaTypeCache(defaultCache)
     }
