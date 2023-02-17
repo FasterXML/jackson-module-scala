@@ -1,3 +1,22 @@
+# Version: 2.15.0 (Not yet released)
+
+Breaks compatibility on some little used functions of ScalaAnnotationIntrospectorModule that were deprecated
+in 2.14.3. New API functions have been provided. Apologies for any inconvenience. See **gh-pr-622**.
+
+## Fixes
+
+* [[gh-pr-622]](https://github.com/FasterXML/jackson-module-scala/pull/622) Continue changes started in v2.14.3 to completely remove use of the problematic ClassKey class
+
+# Version: 2.14.3 (Not yet released)
+
+Deprecates some little used functions of ScalaAnnotationIntrospectorModule. These methods will be
+modified in an API breaking way in 2.15.0 (but remain deprecated). There is new set of APIs to
+replace the problematic APIs. Apologies for any inconvenience. See **gh-pr-622**.
+
+## Fixes
+
+* [[gh-pr-622]](https://github.com/FasterXML/jackson-module-scala/pull/622) Add new API functions to ScalaAnnotationIntrospectorModule to avoid the problematic ClassKey class 
+
 # Version: 2.14.2
 
 There are no new fixes in this release; it serves to track the 2.14.2 release
