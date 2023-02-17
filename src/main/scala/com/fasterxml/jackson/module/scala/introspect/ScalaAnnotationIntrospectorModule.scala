@@ -340,7 +340,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   }
 
   /**
-   * clears all the state associated with reference types
+   * Clears all the state associated with reference types
    *
    * @see [[registerReferencedValueType]]
    * @see [[clearRegisteredReferencedTypes(Class[_])]]
@@ -350,6 +350,15 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     overrideMap.clear()
   }
 
+  /**
+   * Replace the Descriptor Cache.
+   *
+   * @param cache new cache instance
+   * @return the existing cache instance
+   * @see [[setDescriptorCacheSize]]
+   * @see [[setLookupCacheFactory]]
+   * @deprecated key type will change to String in v2.15.0 and this function will be removed in a later release
+   */
   @deprecated("key type will change to String in v2.15.0 and this function will be removed in a later release", "2.14.3")
   def setDescriptorCache(cache: LookupCache[String, BeanDescriptor]): LookupCache[String, BeanDescriptor] = {
     val existingCache = _descriptorCache
@@ -361,8 +370,10 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * Override the default <code>scalaTypeCache</code>.
    *
    * @param cache new cache instance
-   * @return old cache instance
+   * @return existing cache instance
    * @since 2.14.0
+   * @see [[setScalaTypeCacheSize]]
+   * @see [[setLookupCacheFactory]]
    * @deprecated key type will change to String in v2.15.0 and this function will be removed in a later release
    */
   @deprecated("key type will change to String in v2.15.0 and this function will be removed in a later release", "2.14.3")

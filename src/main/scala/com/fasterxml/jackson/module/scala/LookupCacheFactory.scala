@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala
 import com.fasterxml.jackson.databind.util.{LRUMap, LookupCache}
 
 /**
- * Factory for creating {@link LookupCache} instances
+ * Factory for creating [[com.fasterxml.jackson.databind.util.LookupCache]] instances
  */
 trait LookupCacheFactory {
   def createLookupCache[K, V](initialEntries: Int, maxEntries: Int): LookupCache[K, V]
