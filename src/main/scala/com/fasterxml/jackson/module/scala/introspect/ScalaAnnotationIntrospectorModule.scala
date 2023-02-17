@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.introspect
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.`type`.{CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
+import com.fasterxml.jackson.databind.`type`.{ClassKey, CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
 import com.fasterxml.jackson.databind.cfg.MapperConfig
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator
 import com.fasterxml.jackson.databind.deser._
@@ -178,7 +178,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
-    val key = clz.getName
+    val key = new ClassKey(clz)
     val isScala = {
       Option(ScalaAnnotationIntrospectorModule._scalaTypeCache.get(key)) match {
         case Some(result) => result
@@ -252,10 +252,10 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   private var _descriptorCacheSize: Int = 100
   private var _scalaTypeCacheSize: Int = 1000
 
-  private[introspect] var _descriptorCache: LookupCache[String, BeanDescriptor] =
+  private[introspect] var _descriptorCache: LookupCache[ClassKey, BeanDescriptor] =
     _lookupCacheFactory.createLookupCache(16, _descriptorCacheSize)
 
-  private[introspect] var _scalaTypeCache: LookupCache[String, Boolean] =
+  private[introspect] var _scalaTypeCache: LookupCache[ClassKey, Boolean] =
     _lookupCacheFactory.createLookupCache(16, _scalaTypeCacheSize)
 
   private[introspect] val overrideMap = MutableMap[Class[_], ClassOverrides]()
@@ -401,7 +401,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @deprecated key type will change to String in v2.15.0 and this function will be removed in a later release
    */
   @deprecated("key type will change to String in v2.15.0 and this function will be removed in a later release", "2.14.3")
-  def setDescriptorCache(cache: LookupCache[String, BeanDescriptor]): LookupCache[String, BeanDescriptor] = {
+  def setDescriptorCache(cache: LookupCache[ClassKey, BeanDescriptor]): LookupCache[ClassKey, BeanDescriptor] = {
     val existingCache = _descriptorCache
     _descriptorCache = cache
     existingCache
@@ -418,7 +418,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @deprecated key type will change to String in v2.15.0 and this function will be removed in a later release
    */
   @deprecated("key type will change to String in v2.15.0 and this function will be removed in a later release", "2.14.3")
-  def setScalaTypeCache(cache: LookupCache[String, Boolean]): LookupCache[String, Boolean] = {
+  def setScalaTypeCache(cache: LookupCache[ClassKey, Boolean]): LookupCache[ClassKey, Boolean] = {
     val existingCache = _scalaTypeCache
     _scalaTypeCache = cache
     existingCache

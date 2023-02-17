@@ -4,6 +4,7 @@ package introspect
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.databind.`type`.ClassKey
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.ContextualSerializer
@@ -237,7 +238,7 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   it should "allow descriptor cache to be replaced (old style)" in { _ =>
     val defaultCache = ScalaAnnotationIntrospectorModule._descriptorCache
     try {
-      val cache = new ConcurrentLookupCache[String, BeanDescriptor]()
+      val cache = new ConcurrentLookupCache[ClassKey, BeanDescriptor]()
       ScalaAnnotationIntrospectorModule.setDescriptorCache(cache)
       val builder = JsonMapper.builder().addModule(DefaultScalaModule)
       val mapper = builder.build()
@@ -247,7 +248,7 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
       withoutDefault.a shouldEqual "notDefault"
 
       cache.size shouldBe >=(1)
-      cache.get(classOf[CaseClassWithDefault].getName) should not be (null)
+      cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be (null)
     } finally {
       ScalaAnnotationIntrospectorModule.setDescriptorCache(defaultCache)
     }
@@ -264,11 +265,11 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
       val withoutDefault = mapper.readValue(jsonWithKey, classOf[CaseClassWithDefault])
       withoutDefault.a shouldEqual "notDefault"
 
-      ScalaAnnotationIntrospectorModule._descriptorCache shouldBe a[ConcurrentLookupCache[String, BeanDescriptor]]
+      ScalaAnnotationIntrospectorModule._descriptorCache shouldBe a[ConcurrentLookupCache[ClassKey, BeanDescriptor]]
       val cache = ScalaAnnotationIntrospectorModule._descriptorCache
-        .asInstanceOf[ConcurrentLookupCache[String, BeanDescriptor]]
+        .asInstanceOf[ConcurrentLookupCache[ClassKey, BeanDescriptor]]
       cache.size shouldBe >=(1)
-      cache.get(classOf[CaseClassWithDefault].getName) should not be (null)
+      cache.get(new ClassKey(classOf[CaseClassWithDefault])) should not be (null)
       defaultCache.size() shouldEqual 0
     } finally {
       ScalaAnnotationIntrospectorModule.setLookupCacheFactory(DefaultLookupCacheFactory)
@@ -278,7 +279,7 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
   it should "allow scala type cache to be replaced (old style)" in { _ =>
     val defaultCache = ScalaAnnotationIntrospectorModule._scalaTypeCache
     try {
-      val cache = new ConcurrentLookupCache[String, Boolean]()
+      val cache = new ConcurrentLookupCache[ClassKey, Boolean]()
       ScalaAnnotationIntrospectorModule.setScalaTypeCache(cache)
       val builder = JsonMapper.builder().addModule(DefaultScalaModule)
       val mapper = builder.build()
@@ -288,11 +289,11 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
       withoutDefault.a shouldEqual "notDefault"
 
       cache.size shouldBe >=(1)
-      cache.get(classOf[CaseClassWithDefault].getName) shouldBe true
+      cache.get(new ClassKey(classOf[CaseClassWithDefault])) shouldBe true
 
       val javaValueHolder = mapper.readValue("\"2\"", classOf[ValueHolder])
       javaValueHolder should not be(null)
-      cache.get(classOf[ValueHolder].getName) shouldBe false
+      cache.get(new ClassKey(classOf[ValueHolder])) shouldBe false
     } finally {
       ScalaAnnotationIntrospectorModule.setScalaTypeCache(defaultCache)
     }
@@ -311,13 +312,13 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
 
       ScalaAnnotationIntrospectorModule._scalaTypeCache shouldBe a[ConcurrentLookupCache[String, Boolean]]
       val cache = ScalaAnnotationIntrospectorModule._scalaTypeCache
-        .asInstanceOf[ConcurrentLookupCache[String, Boolean]]
+        .asInstanceOf[ConcurrentLookupCache[ClassKey, Boolean]]
       cache.size shouldBe >=(1)
-      cache.get(classOf[CaseClassWithDefault].getName) shouldBe true
+      cache.get(new ClassKey(classOf[CaseClassWithDefault])) shouldBe true
 
       val javaValueHolder = mapper.readValue("\"2\"", classOf[ValueHolder])
       javaValueHolder should not be (null)
-      cache.get(classOf[ValueHolder].getName) shouldBe false
+      cache.get(new ClassKey(classOf[ValueHolder])) shouldBe false
 
       defaultCache.size() shouldEqual 0
     } finally {
