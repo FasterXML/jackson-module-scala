@@ -20,23 +20,15 @@ import scala.languageFeature.postfixOps
 // longer used for the Option serializer
 object OptionSerializer {
   def useStatic(provider: SerializerProvider, property: Option[BeanProperty], referredType: Option[JavaType]): Boolean = {
-    if (referredType.isEmpty) {
-      false
-    }
+    if (referredType.isEmpty) false
     // First: no serializer for `Object.class`, must be dynamic
-    else if (referredType.get.isJavaLangObject) {
-      false
-    }
+    else if (referredType.get.isJavaLangObject) false
     // but if type is final, might as well fetch
-    else if (referredType.get.isFinal) {
-      true
-    }
+    else if (referredType.get.isFinal) true
     // also: if indicated by typing, should be considered static
-    else if (referredType.get.useStaticType()) {
-      true
-    }
+    else if (referredType.get.useStaticType()) true
+    // if neither, maybe explicit annotation?
     else {
-      // if neither, maybe explicit annotation?
       for (
         ann <- property.flatMap(p => Option(p.getMember));
         intr <- Option(provider.getAnnotationIntrospector)
