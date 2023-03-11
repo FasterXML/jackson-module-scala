@@ -16,6 +16,8 @@ import tools.jackson.module.scala.modifiers.OptionTypeModifierModule
 
 import scala.languageFeature.postfixOps
 
+import scala.util.control.Breaks.{break, breakable}
+
 // This is still here because it is used in other places like EitherSerializer, it is no
 // longer used for the Option serializer
 object OptionSerializer {
@@ -29,16 +31,29 @@ object OptionSerializer {
     else if (referredType.get.useStaticType()) true
     // if neither, maybe explicit annotation?
     else {
-      for (
-        ann <- property.flatMap(p => Option(p.getMember));
-        intr <- Option(provider.getAnnotationIntrospector)
-      ) {
-        val typing = intr.findSerializationTyping(provider.getConfig, ann)
-        if (typing == JsonSerialize.Typing.STATIC) return true
-        if (typing == JsonSerialize.Typing.DYNAMIC) return false
+      var result: Option[Boolean] = None
+      breakable {
+        for (
+          ann <- property.flatMap(p => Option(p.getMember));
+          intr <- Option(provider.getAnnotationIntrospector)
+        ) {
+          val typing = intr.findSerializationTyping(provider.getConfig, ann)
+          if (typing == JsonSerialize.Typing.STATIC) {
+            result = Some(true)
+            break()
+          }
+          if (typing == JsonSerialize.Typing.DYNAMIC) {
+            result = Some(false)
+            break()
+          }
+        }
       }
-      // and finally, may be forced by global static typing (unlikely...)
-      provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
+      result match {
+        case Some(bool) => bool
+        case _ =>
+          // and finally, may be forced by global static typing (unlikely...)
+          provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
+      }
     }
   }
 
