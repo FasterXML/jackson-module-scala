@@ -15,24 +15,26 @@ import com.fasterxml.jackson.module.scala.modifiers.OptionTypeModifierModule
 // longer used for the Option serializer
 object OptionSerializer {
   def useStatic(provider: SerializerProvider, property: Option[BeanProperty], referredType: Option[JavaType]): Boolean = {
-    if (referredType.isEmpty) return false
+    if (referredType.isEmpty) false
     // First: no serializer for `Object.class`, must be dynamic
-    if (referredType.get.isJavaLangObject) return false
+    else if (referredType.get.isJavaLangObject) false
     // but if type is final, might as well fetch
-    if (referredType.get.isFinal) return true
+    else if (referredType.get.isFinal) true
     // also: if indicated by typing, should be considered static
-    if (referredType.get.useStaticType()) return true
+    else if (referredType.get.useStaticType()) true
     // if neither, maybe explicit annotation?
-    for (
-      ann <- property.flatMap(p => Option(p.getMember));
-      intr <- Option(provider.getAnnotationIntrospector)
-    ) {
-      val typing = intr.findSerializationTyping(ann)
-      if (typing == JsonSerialize.Typing.STATIC) return true
-      if (typing == JsonSerialize.Typing.DYNAMIC) return false
+    else {
+      for (
+        ann <- property.flatMap(p => Option(p.getMember));
+        intr <- Option(provider.getAnnotationIntrospector)
+      ) {
+        val typing = intr.findSerializationTyping(ann)
+        if (typing == JsonSerialize.Typing.STATIC) return true
+        if (typing == JsonSerialize.Typing.DYNAMIC) return false
+      }
+      // and finally, may be forced by global static typing (unlikely...)
+      provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
     }
-    // and finally, may be forced by global static typing (unlikely...)
-    provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
   }
 
   def findSerializer(provider: SerializerProvider, typ: Class[_], prop: Option[BeanProperty]): JsonSerializer[AnyRef] = {
