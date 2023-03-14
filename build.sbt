@@ -6,7 +6,7 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-ThisBuild / version := "2.15.0-SNAPSHOT"
+ThisBuild / version := "2.15.0-rc1-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.10"
 
@@ -97,8 +97,8 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.15.0-SNAPSHOT"
-val jacksonJsonSchemaVersion = "2.14.1"
+val jacksonVersion = "2.15.0-rc1-SNAPSHOT"
+val jacksonJsonSchemaVersion = "2.14.2"
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
