@@ -1,4 +1,4 @@
-# Version: 2.15.0 (Not yet released)
+# Version: 2.15.0-rc1
 
 Breaks compatibility on some little used functions of ScalaAnnotationIntrospectorModule that were deprecated
 in 2.14.3. New API functions have been provided. Apologies for any inconvenience. See **gh-pr-622**.
