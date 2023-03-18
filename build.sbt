@@ -98,7 +98,7 @@ Test / unmanagedSourceDirectories ++= {
 }
 
 val jacksonVersion = "2.15.0-rc1"
-val jacksonLegacyVersion = "2.14.2"
+val jacksonLegacyVersion = "2.15.0-rc1"
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
