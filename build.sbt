@@ -14,8 +14,6 @@ resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 val jacksonVersion = "2.15.0-rc2-SNAPSHOT"
 
-val jacksonVersion = "2.14.2"
-
 autoAPIMappings := true
 
 apiMappings ++= {
