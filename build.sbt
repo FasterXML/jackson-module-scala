@@ -24,6 +24,8 @@ publishTo := {
 }
 ThisBuild / publishMavenStyle := true
 
+val jacksonVersion = "2.14.2"
+
 autoAPIMappings := true
 
 apiMappings ++= {
