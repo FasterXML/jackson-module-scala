@@ -74,7 +74,7 @@ Compile / unmanagedSourceDirectories ++= {
   if (scalaReleaseVersion.value > 2) {
     Seq(
       (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-2.13",
-      (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-3.0"
+      (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-3"
     )
   } else {
     Seq(
@@ -87,7 +87,7 @@ Compile / unmanagedSourceDirectories ++= {
 Test / unmanagedSourceDirectories ++= {
   if (scalaReleaseVersion.value > 2) {
     Seq(
-      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3.0"
+      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3"
     )
   } else {
     Seq(
