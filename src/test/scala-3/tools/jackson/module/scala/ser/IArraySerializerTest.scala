@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.scala.ser
+package tools.jackson.module.scala.ser
 
 import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
