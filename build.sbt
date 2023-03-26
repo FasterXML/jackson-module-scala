@@ -12,6 +12,8 @@ ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.0")
 
 //resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
+val jacksonVersion = "2.14.2"
+
 autoAPIMappings := true
 
 apiMappings ++= {
@@ -95,9 +97,6 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.14.2"
-val jacksonJsonSchemaVersion = jacksonVersion
-
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
@@ -108,7 +107,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
   "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
-  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
+  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
   "org.scalatest" %% "scalatest" % "3.2.15" % Test
