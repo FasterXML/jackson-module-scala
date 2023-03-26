@@ -17,6 +17,8 @@ sonatypeRepository := "s01.oss.sonatype.org"
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
+val jacksonVersion = "3.0.0-SNAPSHOT"
+
 publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
   if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
@@ -24,7 +26,6 @@ publishTo := {
 }
 ThisBuild / publishMavenStyle := true
 
-val jacksonVersion = "2.14.2"
 
 autoAPIMappings := true
 
@@ -101,8 +102,6 @@ Test / unmanagedSourceDirectories ++= {
     )
   }
 }
-
-val jacksonVersion = "3.0.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   "tools.jackson.core" % "jackson-core" % jacksonVersion changing(),
