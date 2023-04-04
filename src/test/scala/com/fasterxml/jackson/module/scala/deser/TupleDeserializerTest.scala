@@ -16,6 +16,8 @@ case class TupleValueLong(long: Long) extends TupleValueBase
 case class TupleValueString(string: String) extends TupleValueBase
 case class TupleContainer(tuple: (TupleValueBase,TupleValueBase))
 
+case class OptionalTupleHolder2(tuple: (Option[Int], Option[Boolean]))
+
 class TupleDeserializerTest extends DeserializerTest {
 
   lazy val module: JacksonModule = DefaultScalaModule
@@ -85,8 +87,6 @@ class TupleDeserializerTest extends DeserializerTest {
     val result = deserialize(json, classOf[OptionalTupleHolder])
     result shouldEqual value
   }
-
-  case class OptionalTupleHolder2(tuple: (Option[Int], Option[Boolean]))
 
   it should "deserialize an OptionalTupleHolder2 with nulls" in {
     val value = OptionalTupleHolder2(None, None)
