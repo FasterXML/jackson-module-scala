@@ -88,6 +88,13 @@ class TupleDeserializerTest extends DeserializerTest {
     result shouldEqual value
   }
 
+  it should "deserialize an OptionalTupleHolder with nulls" in {
+    val value = OptionalTupleHolder(None, None)
+    val json = newMapper.writeValueAsString(value)
+    val result = deserialize(json, classOf[OptionalTupleHolder])
+    result shouldEqual value
+  }
+
   it should "deserialize an OptionalTupleHolder2 with nulls" in {
     val value = OptionalTupleHolder2(None, None)
     val json = newMapper.writeValueAsString(value)
