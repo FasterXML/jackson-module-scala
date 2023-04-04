@@ -61,8 +61,8 @@ private class OptionDeserializer(fullType: JavaType,
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): Option[AnyRef] = {
     val deser = valueDeserializer.getOrElse(ctxt.findContextualValueDeserializer(fullType.getContentType, beanProperty.orNull))
     val refd: AnyRef = valueTypeDeserializer match {
-      case None => deser.deserialize(p, ctxt)
       case Some(vtd) => deser.deserializeWithType(p, ctxt, vtd)
+      case None => deser.deserialize(p, ctxt)
     }
     Option(refd)
   }
