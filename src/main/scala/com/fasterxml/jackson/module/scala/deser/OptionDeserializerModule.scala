@@ -119,5 +119,6 @@ private object OptionDeserializerResolver extends Deserializers.Base {
 }
 
 trait OptionDeserializerModule extends OptionTypeModifierModule {
+  override def getModuleName: String = "OptionDeserializerModule"
   this += OptionDeserializerResolver
 }

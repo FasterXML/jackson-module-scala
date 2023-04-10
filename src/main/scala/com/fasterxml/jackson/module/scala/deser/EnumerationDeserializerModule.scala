@@ -99,6 +99,7 @@ private object EnumerationKeyDeserializers extends KeyDeserializers {
 }
 
 trait EnumerationDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "EnumerationDeserializerModule"
   this += { ctxt =>
     ctxt.addDeserializers(EnumerationDeserializerResolver)
     ctxt.addKeyDeserializers(EnumerationKeyDeserializers)

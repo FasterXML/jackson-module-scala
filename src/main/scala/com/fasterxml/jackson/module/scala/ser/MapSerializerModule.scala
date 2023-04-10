@@ -54,5 +54,6 @@ private object MapSerializerResolver extends Serializers.Base {
 }
 
 trait MapSerializerModule extends MapTypeModifierModule {
+  override def getModuleName: String = "MapSerializerModule"
   this += MapSerializerResolver
 }

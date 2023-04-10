@@ -77,5 +77,6 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
 }
 
 trait IteratorSerializerModule extends IteratorTypeModifierModule {
+  override def getModuleName: String = "IteratorSerializerModule"
   this += ScalaIteratorSerializerResolver
 }

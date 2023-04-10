@@ -30,7 +30,7 @@ class DefaultScalaModule
      with EitherModule
      with SymbolModule
 {
-  override def getModuleName = "DefaultScalaModule"
+  override def getModuleName: String = "DefaultScalaModule"
 }
 
 object DefaultScalaModule extends DefaultScalaModule

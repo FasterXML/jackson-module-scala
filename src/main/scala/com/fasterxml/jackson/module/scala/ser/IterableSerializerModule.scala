@@ -95,5 +95,6 @@ private object IterableSerializerResolver extends Serializers.Base {
 }
 
 trait IterableSerializerModule extends IterableTypeModifierModule {
+  override def getModuleName: String = "IterableSerializerModule"
   this += IterableSerializerResolver
 }

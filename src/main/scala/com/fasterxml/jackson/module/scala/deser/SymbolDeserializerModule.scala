@@ -23,5 +23,6 @@ private object SymbolDeserializerResolver extends Deserializers.Base {
 }
 
 trait SymbolDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "SymbolDeserializerModule"
   this += { _ addDeserializers SymbolDeserializerResolver }
 }
