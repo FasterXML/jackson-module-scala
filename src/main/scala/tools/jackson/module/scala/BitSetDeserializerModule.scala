@@ -22,6 +22,8 @@ import scala.collection.{BitSet, immutable, mutable}
  * @since 2.14.0
  */
 object BitSetDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "BitSetDeserializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new Deserializers.Base {

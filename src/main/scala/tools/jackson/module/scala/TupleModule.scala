@@ -8,6 +8,8 @@ import tools.jackson.module.scala.ser.TupleSerializerModule
  * Adds support for serializing and deserializing Scala Tuples.
  */
 trait TupleModule extends TupleSerializerModule with TupleDeserializerModule {
+  override def getModuleName: String = "TupleModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     TupleSerializerModule.getInitializers(config) ++
       TupleDeserializerModule.getInitializers(config)

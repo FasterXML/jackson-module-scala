@@ -16,7 +16,7 @@ import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
  * @since 1.9.0
  */
 class DefaultScalaModule extends JacksonModule {
-  override def getModuleName = "DefaultScalaModule"
+  override def getModuleName: String = "DefaultScalaModule"
 
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     IteratorModule.getInitializers(config) ++

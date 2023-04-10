@@ -8,6 +8,8 @@ trait MapModule
   extends MapSerializerModule
     with UnsortedMapDeserializerModule
     with SortedMapDeserializerModule {
+  override def getModuleName: String = "MapModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     MapSerializerModule.getInitializers(config) ++
       UnsortedMapDeserializerModule.getInitializers(config) ++
