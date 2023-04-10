@@ -100,6 +100,8 @@ private class TupleDeserializerResolver(config: ScalaModule.Config) extends Dese
  * Adds deserialization support for Scala Tuples.
  */
 trait TupleDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "TupleDeserializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new TupleDeserializerResolver(config)

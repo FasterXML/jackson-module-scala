@@ -59,6 +59,8 @@ private class UntypedObjectDeserializerResolver(config: ScalaModule.Config) exte
 }
 
 trait UntypedObjectDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "UntypedObjectDeserializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new UntypedObjectDeserializerResolver(config)

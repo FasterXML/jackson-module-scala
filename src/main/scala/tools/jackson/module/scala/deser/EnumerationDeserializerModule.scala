@@ -104,6 +104,8 @@ private class EnumerationKeyDeserializers(config: ScalaModule.Config) extends Ke
 }
 
 trait EnumerationDeserializerModule extends JacksonScalaModule {
+  override def getModuleName: String = "EnumerationDeserializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += { ctxt =>

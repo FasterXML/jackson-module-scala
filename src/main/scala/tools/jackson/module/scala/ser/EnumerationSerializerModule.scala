@@ -59,6 +59,8 @@ private class EnumerationSerializerResolver(config: ScalaModule.Config) extends 
 }
 
 trait EnumerationSerializerModule extends JacksonModule {
+  override def getModuleName: String = "EnumerationSerializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new EnumerationSerializerResolver(config)

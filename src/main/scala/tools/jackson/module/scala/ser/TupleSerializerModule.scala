@@ -36,6 +36,8 @@ private class TupleSerializerResolver(config: ScalaModule.Config) extends Serial
 }
 
 trait TupleSerializerModule extends JacksonModule {
+  override def getModuleName: String = "TupleSerializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new TupleSerializerResolver(config)

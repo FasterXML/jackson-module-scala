@@ -212,6 +212,8 @@ private class OptionSerializerResolver(config: ScalaModule.Config) extends Seria
 }
 
 trait OptionSerializerModule extends OptionTypeModifierModule {
+  override def getModuleName: String = "OptionSerializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()

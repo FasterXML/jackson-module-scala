@@ -11,6 +11,8 @@ import tools.jackson.module.scala.modifiers.ScalaTypeModifierModule
 import scala.collection._
 
 trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
+  override def getModuleName: String = "UnsortedSetDeserializerModule"
+
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()

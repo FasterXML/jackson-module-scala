@@ -125,6 +125,8 @@ private class OptionDeserializerResolver(config: ScalaModule.Config) extends Des
 }
 
 trait OptionDeserializerModule extends OptionTypeModifierModule {
+  override def getModuleName: String = "OptionDeserializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()

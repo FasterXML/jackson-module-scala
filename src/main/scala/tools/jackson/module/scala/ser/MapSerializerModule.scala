@@ -50,6 +50,8 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
 }
 
 trait MapSerializerModule extends MapTypeModifierModule {
+  override def getModuleName: String = "MapSerializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()

@@ -30,6 +30,8 @@ private class SymbolDeserializerResolver(config: ScalaModule.Config) extends Des
 }
 
 trait SymbolDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "SymbolDeserializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new SymbolDeserializerResolver(config)

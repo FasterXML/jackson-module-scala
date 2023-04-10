@@ -91,6 +91,8 @@ private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extend
 }
 
 trait IteratorSerializerModule extends IteratorTypeModifierModule {
+  override def getModuleName: String = "IteratorSerializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()

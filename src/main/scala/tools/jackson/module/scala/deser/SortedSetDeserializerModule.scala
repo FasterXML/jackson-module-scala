@@ -16,6 +16,8 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
   private val IMMUTABLE_BITSET_CLASS: Class[_] = classOf[immutable.BitSet]
   private val MUTABLE_BITSET_CLASS: Class[_] = classOf[mutable.BitSet]
 
+  override def getModuleName: String = "SortedSetDeserializerModule"
+
   override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()

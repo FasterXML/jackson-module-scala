@@ -58,6 +58,8 @@ private class NumberDeserializers(config: ScalaModule.Config) extends Deserializ
 }
 
 trait ScalaNumberDeserializersModule extends JacksonScalaModule {
+  override def getModuleName: String = "ScalaNumberDeserializersModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new NumberDeserializers(config)

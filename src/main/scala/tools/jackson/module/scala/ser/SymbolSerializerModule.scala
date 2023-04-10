@@ -26,6 +26,8 @@ private class SymbolSerializerResolver(config: ScalaModule.Config) extends Seria
 }
 
 trait SymbolSerializerModule extends JacksonModule {
+  override def getModuleName: String = "SymbolSerializerModule"
+
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new SymbolSerializerResolver(config)
