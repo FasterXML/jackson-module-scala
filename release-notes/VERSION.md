@@ -8,7 +8,7 @@ in 2.14.3. New API functions have been provided. Apologies for any inconvenience
 * [[gh-pr-622]](https://github.com/FasterXML/jackson-module-scala/pull/622) Continue changes started in v2.14.3 to completely remove use of the problematic ClassKey class
 * [[gh-628]](https://github.com/FasterXML/jackson-module-scala/issues/628) Fix issue with deserialization of null values when using Options inside Tuples.
 
-# Version: 2.14.3 (Not yet released)
+# Version: 2.14.3
 
 Deprecates some little used functions of ScalaAnnotationIntrospectorModule. These methods will be
 modified in an API breaking way in 2.15.0 (but remain deprecated). There is new set of APIs to
