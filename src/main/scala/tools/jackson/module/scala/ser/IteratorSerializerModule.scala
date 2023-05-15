@@ -50,9 +50,9 @@ private class ResolvedIteratorSerializer( src: IteratorSerializer,
                                           elementSerializer: ValueSerializer[_],
                                           unwrapSingle: jl.Boolean )
   extends AsArraySerializerBase[collection.Iterator[Any]](src, vts, elementSerializer, unwrapSingle, property)
-  with IteratorSerializer
-{
-  val iteratorSerializer =
+  with IteratorSerializer {
+
+  override val iteratorSerializer =
     new ScalaIteratorSerializer(src.iteratorSerializer, property, vts, elementSerializer, unwrapSingle)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
@@ -65,8 +65,8 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
                                             vts: TypeSerializer,
                                             elementSerializer: ValueSerializer[AnyRef] )
   extends AsArraySerializerBase[collection.Iterator[Any]](cls, et, staticTyping, vts, elementSerializer)
-  with IteratorSerializer
-{
+  with IteratorSerializer {
+
   val iteratorSerializer =
     new ScalaIteratorSerializer(et, staticTyping, vts)
 
@@ -76,6 +76,7 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
 
 private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
   private val JACKSONSERIALIZABLE_CLASS = classOf[JacksonSerializable]
+  private val SCALAITERATOR_CLASS = classOf[collection.Iterator[_]]
 
   override def findCollectionLikeSerializer(serializationConfig: SerializationConfig,
                                             collectionType: CollectionLikeType,
@@ -85,7 +86,7 @@ private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extend
                                             elementSerializer: ValueSerializer[Object]): ValueSerializer[_] = {
 
     val rawClass = collectionType.getRawClass
-    if (!classOf[collection.Iterator[_]].isAssignableFrom(rawClass) || JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
+    if (!SCALAITERATOR_CLASS.isAssignableFrom(rawClass) || JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
     else new UnresolvedIteratorSerializer(rawClass, collectionType.getContentType, false, elementTypeSerializer, elementSerializer)
   }
 }
