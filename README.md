@@ -1,4 +1,4 @@
-![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=2.14)
+![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=2.15)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13)
 [![Tidelift](https://tidelift.com/badges/package/maven/com.fasterxml.jackson.core:jackson-databind)](https://tidelift.com/subscription/pkg/maven-com.fasterxml.jackson.module.jackson-module-scala.2.13?utm_source=maven-com.fasterxml.jackson.module.jackson-module-scala.2.13&utm_medium=github_sponsor_button&utm_campaign=readme)
 
@@ -114,7 +114,7 @@ Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/a
 
 To import in sbt:
 ```scala
-libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.1"
+libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.15.1"
 ```
 
 ## Java/Kotlin users
