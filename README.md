@@ -1,5 +1,5 @@
-![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13)
+![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/tools.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/tools.jackson.module/jackson-module-scala_2.13)
 [![Sonatype Snapshots](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/tools.jackson.module/jackson-module-scala_2.13.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/tools/jackson/module/jackson-module-scala_2.13/)
 [![Tidelift](https://tidelift.com/badges/package/maven/com.fasterxml.jackson.core:jackson-databind)](https://tidelift.com/subscription/pkg/maven-com.fasterxml.jackson.module.jackson-module-scala.2.13?utm_source=maven-com.fasterxml.jackson.module.jackson-module-scala.2.13&utm_medium=github_sponsor_button&utm_campaign=readme)
 
@@ -92,7 +92,7 @@ val mapper = JsonMapper.builder()
 
 ## ClassTagExtensions
 You can also mixin `ClassTagExtensions` to get rich wrappers that automatically
-convert Scala ClassTags directly into TypeReferences for Jackson to use:
+convert scala ClassTags directly into TypeReferences for Jackson to use:
 ```scala
 val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build() :: ClassTagExtensions
 // or using old style
@@ -109,7 +109,7 @@ val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
 val myMap = mapper.readValue(src, new TypeReference[Map[String,Tuple2[Int,Int]]]{})
 ```
 
-Consult the [Scaladoc](http://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
+Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
 
 ## Sbt
 
@@ -141,8 +141,15 @@ resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 # Download, docs
 
-Check out [Wiki], especially the [FAQ](https://github.com/FasterXML/jackson-module-scala/wiki/FAQ). API Scaladocs can be found [on the project site][API] but they are not really
+Check out [Wiki]. API Scaladocs can be found [on the project site][API] but they are not really
 well suited to end users, as most classes are implementation details of the module.
+
+# Related Projects
+* [jackson-scala-reflect-extensions](https://github.com/pjfanning/jackson-scala-reflect-extensions)
+* [jackson-scala3-reflect-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions)
+* [jackson-module-enumeratum](https://github.com/pjfanning/jackson-module-enumeratum)
+* [jackson-module-scala3-enum](https://github.com/pjfanning/jackson-module-scala3-enum)
+* [jackson-caffeine-cache](https://github.com/pjfanning/jackson-caffeine-cache)
 
 # Contributing
 
@@ -152,12 +159,23 @@ The main mechanisms for contribution are:
 * Participating in discussions on mailing lists, Gitter (see [Jackson portal](https://github.com/FasterXML/jackson#participation) for details)
 * Submitting Pull Requests (PRs) to fix issues, improve functionality.
 
+## Support
+
+### Community support
+
+Jackson components are supported by the Jackson community through mailing lists, Gitter forum, Github issues. See [Participation, Contributing](../../../jackson#participation-contributing) for full details.
+
+
+### Enterprise support
+
+Available as part of the Tidelift Subscription.
+
+The maintainers of `jackson-module-scala` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/maven-com.fasterxml.jackson.module.jackson-module-scala.2.13?utm_source=maven-com.fasterxml.jackson.module.jackson-module-scala.2.13&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+
 ## Core Development Team
 
 Currently active core developers (ones who can review, accept and merge Pull Requests) are:
 
-* Morten Kjetland (@mbknor)
-* Nate Bauernfeind (@nbauernfeind)
 * PJ Fanning (@pjfanning)
 
 If you have questions on issues, implementation strategies, you may refer to core developers
@@ -166,21 +184,23 @@ positions: everyone is doing this because they want to, not because they are pai
 contractually obligated to. This also means that time availability changes over time
 so getting answers may take time.
 
-In addition, other Jackson developers with similar access (but less active) include
+In addition, other Jackson developers with similar access (but less active) include:
 
 * Christopher Currie (@christophercurrie) -- original author of Scala module
+* Morten Kjetland (@mbknor)
+* Nate Bauernfeind (@nbauernfeind)
 * Tatu Saloranta (@cowtowncoder) -- main author of core Jackson components
 
 # Acknowledgements
 
-[![Developed with IntelliJ IDEA](http://www.jetbrains.com/img/logos/logo_intellij_idea.png "Developed with IntelliJ IDEA")](http://www.jetbrains.com/idea/features/scala.html)
+[![Developed with IntelliJ IDEA](https://www.jetbrains.com/img/logos/logo_intellij_idea.png "Developed with IntelliJ IDEA")](https://www.jetbrains.com/idea/features/scala.html)
 
 [Jackson]: https://github.com/FasterXML/jackson
-[SAX]: http://www.saxproject.org/
-[DOM]: http://www.w3.org/TR/DOM-Level-3-Core/
-[JAXB]: http://jaxb.java.net/
-[Jersey]: http://jersey.java.net/
-[Java Bean]: http://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
-[Scala]: http://www.scala-lang.org/
+[SAX]: https://www.saxproject.org/
+[DOM]: https://www.w3.org/TR/DOM-Level-3-Core/
+[JAXB]: https://jaxb.java.net/
+[Jersey]: https://jersey.java.net/
+[Java Bean]: https://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html
+[Scala]: https://www.scala-lang.org/
 [Wiki]: https://github.com/FasterXML/jackson-module-scala/wiki
-[API]: http://fasterxml.github.io/jackson-module-scala/latest/api/#com.fasterxml.jackson.module.scala.package
+[API]: https://fasterxml.github.io/jackson-module-scala/latest/api/#tools.jackson.module.scala.package
