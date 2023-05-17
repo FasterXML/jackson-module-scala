@@ -1,3 +1,8 @@
+# Version: 2.15.1
+
+There are no new fixes in this release; it serves to track the 2.15.1 release
+of the upstream Jackson projects.
+
 # Version: 2.15.0
 
 Breaks compatibility on some little used functions of ScalaAnnotationIntrospectorModule that were deprecated
