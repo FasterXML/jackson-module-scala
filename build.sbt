@@ -10,7 +10,7 @@ ThisBuild / version := "2.16.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.10"
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.3.0-RC3")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.3.0")
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
