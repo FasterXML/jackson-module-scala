@@ -57,5 +57,6 @@ private object EnumerationSerializerResolver extends Serializers.Base {
 }
 
 trait EnumerationSerializerModule extends JacksonModule {
+  override def getModuleName: String = "EnumerationSerializerModule"
   this += EnumerationSerializerResolver
 }

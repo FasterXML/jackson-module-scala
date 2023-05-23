@@ -3,6 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.module.scala.ser.TupleSerializerTest.OptionalTupleHolder
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
@@ -14,6 +15,8 @@ trait TupleValueBase
 case class TupleValueLong(long: Long) extends TupleValueBase
 case class TupleValueString(string: String) extends TupleValueBase
 case class TupleContainer(tuple: (TupleValueBase,TupleValueBase))
+
+case class OptionalTupleHolder2(tuple: (Option[Int], Option[Boolean]))
 
 class TupleDeserializerTest extends DeserializerTest {
 
@@ -68,13 +71,34 @@ class TupleDeserializerTest extends DeserializerTest {
     val value = TupleContainer(TupleValueLong(1), TupleValueString("foo"))
     val json = newMapper.writeValueAsString(value)
     val result = deserialize(json, new TypeReference[TupleContainer]{})
-    result should be (value)
+    result shouldEqual value
   }
 
   it should "deserialize using type information outside of field" in {
     val value = (TupleValueLong(1), TupleValueString("foo"))
     val json = newMapper.writeValueAsString(value)
     val result = deserialize(json, new TypeReference[(TupleValueBase, TupleValueBase)]{})
-    result should be (value)
+    result shouldEqual value
+  }
+
+  it should "deserialize an OptionalTupleHolder" in {
+    val value = OptionalTupleHolder(Some(1), Some("one"))
+    val json = newMapper.writeValueAsString(value)
+    val result = deserialize(json, classOf[OptionalTupleHolder])
+    result shouldEqual value
+  }
+
+  it should "deserialize an OptionalTupleHolder with nulls" in {
+    val value = OptionalTupleHolder(None, None)
+    val json = newMapper.writeValueAsString(value)
+    val result = deserialize(json, classOf[OptionalTupleHolder])
+    result shouldEqual value
+  }
+
+  it should "deserialize an OptionalTupleHolder2 with nulls" in {
+    val value = OptionalTupleHolder2(None, None)
+    val json = newMapper.writeValueAsString(value)
+    val result = deserialize(json, classOf[OptionalTupleHolder2])
+    result shouldEqual value
   }
 }

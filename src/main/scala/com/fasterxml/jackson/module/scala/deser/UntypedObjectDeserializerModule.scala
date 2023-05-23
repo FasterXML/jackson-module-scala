@@ -49,5 +49,6 @@ private object UntypedObjectDeserializerResolver extends Deserializers.Base {
 }
 
 trait UntypedObjectDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "UntypedObjectDeserializerModule"
   this += (_ addDeserializers UntypedObjectDeserializerResolver)
 }

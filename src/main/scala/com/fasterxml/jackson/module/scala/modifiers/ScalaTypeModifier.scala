@@ -51,5 +51,6 @@ class ScalaTypeModifier extends TypeModifier {
 }
 
 trait ScalaTypeModifierModule extends JacksonModule {
+  override def getModuleName: String = "ScalaTypeModifierModule"
   this += new ScalaTypeModifier
 }

@@ -22,5 +22,6 @@ private object SymbolSerializerResolver extends Serializers.Base {
 }
 
 trait SymbolSerializerModule extends JacksonModule {
+  override def getModuleName: String = "SymbolSerializerModule"
   this += { _ addSerializers SymbolSerializerResolver }
 }

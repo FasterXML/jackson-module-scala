@@ -9,6 +9,7 @@ import com.fasterxml.jackson.module.scala.modifiers.ScalaTypeModifierModule
 import scala.collection._
 
 trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
+  override def getModuleName: String = "SortedSetDeserializerModule"
   this += (_ addDeserializers new GenericFactoryDeserializerResolver[SortedSet, SortedIterableFactory] {
 
     private val IMMUTABLE_BITSET_CLASS: Class[_] = classOf[immutable.BitSet]

@@ -208,6 +208,7 @@ private object OptionSerializerResolver extends Serializers.Base {
 }
 
 trait OptionSerializerModule extends OptionTypeModifierModule {
+  override def getModuleName: String = "OptionSerializerModule"
   this += { ctx =>
     ctx addSerializers OptionSerializerResolver
   }

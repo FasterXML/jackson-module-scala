@@ -87,5 +87,6 @@ private object TupleDeserializerResolver extends Deserializers.Base {
  * Adds deserialization support for Scala Tuples.
  */
 trait TupleDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "TupleDeserializerModule"
   this += TupleDeserializerResolver
 }

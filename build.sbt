@@ -6,13 +6,15 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-ThisBuild / version := "2.15.0-SNAPSHOT"
+ThisBuild / version := "2.16.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.10"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.3.0-RC3")
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+
+val jacksonVersion = "2.16.0-SNAPSHOT"
 
 autoAPIMappings := true
 
@@ -74,7 +76,7 @@ Compile / unmanagedSourceDirectories ++= {
   if (scalaReleaseVersion.value > 2) {
     Seq(
       (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-2.13",
-      (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-3.0"
+      (LocalRootProject / baseDirectory).value / "src" / "main" / "scala-3"
     )
   } else {
     Seq(
@@ -87,7 +89,7 @@ Compile / unmanagedSourceDirectories ++= {
 Test / unmanagedSourceDirectories ++= {
   if (scalaReleaseVersion.value > 2) {
     Seq(
-      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3.0"
+      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3"
     )
   } else {
     Seq(
@@ -97,20 +99,17 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonVersion = "2.15.0-SNAPSHOT"
-val jacksonJsonSchemaVersion = "2.14.1"
-
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   // test dependencies
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonJsonSchemaVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonJsonSchemaVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonJsonSchemaVersion % Test,
-  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonJsonSchemaVersion % Test,
-  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonJsonSchemaVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
+  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
+  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
   "org.scalatest" %% "scalatest" % "3.2.15" % Test
@@ -193,5 +192,37 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[MissingTypesProblem]("com.fasterxml.jackson.module.scala.deser.BigDecimalDeserializer$"),
   ProblemFilters.exclude[MissingTypesProblem]("com.fasterxml.jackson.module.scala.deser.BigIntDeserializer$"),
   ProblemFilters.exclude[MissingClassProblem]("com.fasterxml.jackson.module.scala.deser.BigNumberDeserializer"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.deser.GenericMapFactoryDeserializerResolver#BuilderWrapper.this")
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.deser.GenericMapFactoryDeserializerResolver#BuilderWrapper.this"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findDeserializationContentType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findDeserializationKeyType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findDeserializationType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findSerializationContentType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findSerializationKeyType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findSerializationType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findSerializationInclusionForContent"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findSerializationInclusion"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findDeserializationContentType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findDeserializationKeyType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findDeserializationType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findSerializationContentType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findSerializationKeyType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findSerializationType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findSerializationInclusionForContent"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findSerializationInclusion"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findDeserializationContentType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findDeserializationKeyType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findDeserializationType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findSerializationContentType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findSerializationKeyType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findSerializationType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findSerializationInclusionForContent"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findSerializationInclusion"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findDeserializationContentType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findDeserializationKeyType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findDeserializationType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationContentType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationKeyType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationType"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationInclusionForContent"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationInclusion")
 )

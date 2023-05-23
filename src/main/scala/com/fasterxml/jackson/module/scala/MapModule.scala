@@ -6,4 +6,6 @@ import com.fasterxml.jackson.module.scala.ser.MapSerializerModule
 trait MapModule
   extends MapSerializerModule
     with UnsortedMapDeserializerModule
-    with SortedMapDeserializerModule
+    with SortedMapDeserializerModule {
+  override def getModuleName: String = "MapModule"
+}

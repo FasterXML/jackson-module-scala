@@ -30,5 +30,6 @@ private object TupleSerializerResolver extends Serializers.Base {
 }
 
 trait TupleSerializerModule extends JacksonModule {
+  override def getModuleName: String = "TupleSerializerModule"
   this += (_ addSerializers TupleSerializerResolver)
 }

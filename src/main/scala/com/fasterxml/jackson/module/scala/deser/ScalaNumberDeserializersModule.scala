@@ -42,5 +42,6 @@ private object NumberDeserializers extends Deserializers.Base {
 }
 
 trait ScalaNumberDeserializersModule extends JacksonModule {
+  override def getModuleName: String = "ScalaNumberDeserializersModule"
   this += NumberDeserializers
 }

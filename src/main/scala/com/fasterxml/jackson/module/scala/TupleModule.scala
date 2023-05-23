@@ -6,4 +6,6 @@ import com.fasterxml.jackson.module.scala.ser.TupleSerializerModule
 /**
  * Adds support for serializing and deserializing Scala Tuples.
  */
-trait TupleModule extends TupleSerializerModule with TupleDeserializerModule
+trait TupleModule extends TupleSerializerModule with TupleDeserializerModule {
+  override def getModuleName: String = "TupleModule"
+}

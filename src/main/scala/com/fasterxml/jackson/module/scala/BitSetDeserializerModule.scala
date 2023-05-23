@@ -18,6 +18,7 @@ import scala.collection.{BitSet, immutable, mutable}
  * @since 2.14.0
  */
 object BitSetDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "BitSetDeserializerModule"
   this += (_ addDeserializers new Deserializers.Base {
 
     private val IMMUTABLE_BITSET_CLASS: Class[_] = classOf[immutable.BitSet]

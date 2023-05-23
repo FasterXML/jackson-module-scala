@@ -37,8 +37,8 @@ private class ResolvedIteratorSerializer( src: IteratorSerializer,
                                           elementSerializer: JsonSerializer[_],
                                           unwrapSingle: jl.Boolean )
   extends AsArraySerializerBase[collection.Iterator[Any]](src, property, vts, elementSerializer, unwrapSingle)
-  with IteratorSerializer
-{
+  with IteratorSerializer {
+
   val iteratorSerializer =
     new ScalaIteratorSerializer(src.iteratorSerializer, property, vts, elementSerializer, unwrapSingle)
 
@@ -52,9 +52,9 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
                                             vts: TypeSerializer,
                                             elementSerializer: JsonSerializer[AnyRef] )
   extends AsArraySerializerBase[collection.Iterator[Any]](cls, et, staticTyping, vts, elementSerializer)
-  with IteratorSerializer
-{
-  val iteratorSerializer =
+  with IteratorSerializer {
+
+  override val iteratorSerializer =
     new ScalaIteratorSerializer(et, staticTyping, vts)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =
@@ -63,6 +63,7 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
 
 private object ScalaIteratorSerializerResolver extends Serializers.Base {
   private val JSONSERIALIZABLE_CLASS = classOf[JsonSerializable]
+  private val SCALAITERATOR_CLASS = classOf[collection.Iterator[_]]
 
   override def findCollectionLikeSerializer(config: SerializationConfig,
                                             collectionType: CollectionLikeType,
@@ -71,11 +72,12 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
                                             elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
 
     val rawClass = collectionType.getRawClass
-    if (!classOf[collection.Iterator[_]].isAssignableFrom(rawClass) || JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
+    if (!SCALAITERATOR_CLASS.isAssignableFrom(rawClass) || JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
     else new UnresolvedIteratorSerializer(rawClass, collectionType.getContentType, false, elementTypeSerializer, elementSerializer)
   }
 }
 
 trait IteratorSerializerModule extends IteratorTypeModifierModule {
+  override def getModuleName: String = "IteratorSerializerModule"
   this += ScalaIteratorSerializerResolver
 }

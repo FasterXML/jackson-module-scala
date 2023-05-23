@@ -19,5 +19,6 @@ object DefaultRequiredAnnotationIntrospector extends NopAnnotationIntrospector {
 
 @deprecated("will be removed in 3.0.0 release as jackson-module-jsonSchema is being discontinued", "2.13.0")
 trait RequiredPropertiesSchemaModule extends JacksonModule {
+  override def getModuleName: String = "RequiredPropertiesSchemaModule"
   this += { _.insertAnnotationIntrospector(DefaultRequiredAnnotationIntrospector) }
 }

@@ -39,7 +39,7 @@ trait JacksonModule extends Module {
 
   private val initializers = Seq.newBuilder[SetupContext => Unit]
 
-  def getModuleName = "JacksonModule"
+  override def getModuleName: String = "JacksonModule"
 
   override def version(): Version = JacksonModule.version
 

@@ -1,4 +1,4 @@
-![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=2.14)
+![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=2.16)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-scala_2.13)
 [![Tidelift](https://tidelift.com/badges/package/maven/com.fasterxml.jackson.core:jackson-databind)](https://tidelift.com/subscription/pkg/maven-com.fasterxml.jackson.module.jackson-module-scala.2.13?utm_source=maven-com.fasterxml.jackson.module.jackson-module-scala.2.13&utm_medium=github_sponsor_button&utm_campaign=readme)
 
@@ -114,7 +114,7 @@ Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/a
 
 To import in sbt:
 ```scala
-libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.1"
+libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.15.1"
 ```
 
 ## Java/Kotlin users
@@ -175,8 +175,6 @@ The maintainers of `jackson-module-scala` and thousands of other packages are wo
 
 Currently active core developers (ones who can review, accept and merge Pull Requests) are:
 
-* Morten Kjetland (@mbknor)
-* Nate Bauernfeind (@nbauernfeind)
 * PJ Fanning (@pjfanning)
 
 If you have questions on issues, implementation strategies, you may refer to core developers
@@ -185,9 +183,11 @@ positions: everyone is doing this because they want to, not because they are pai
 contractually obligated to. This also means that time availability changes over time
 so getting answers may take time.
 
-In addition, other Jackson developers with similar access (but less active) include
+In addition, other Jackson developers with similar access (but less active) include:
 
 * Christopher Currie (@christophercurrie) -- original author of Scala module
+* Morten Kjetland (@mbknor)
+* Nate Bauernfeind (@nbauernfeind)
 * Tatu Saloranta (@cowtowncoder) -- main author of core Jackson components
 
 # Acknowledgements
