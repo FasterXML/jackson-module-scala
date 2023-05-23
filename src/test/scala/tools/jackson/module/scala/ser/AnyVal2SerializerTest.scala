@@ -5,7 +5,7 @@ import tools.jackson.module.scala.BaseFixture
 
 import scala.annotation.meta.getter
 
-object AnyValScala2SerializerTest {
+object AnyVal2SerializerTest {
 
   case class IntAnyVal(@(JsonValue @getter) underlying: Int) extends AnyVal
   case class IntAnyValHolder(value: IntAnyVal)
@@ -18,9 +18,9 @@ object AnyValScala2SerializerTest {
   case class LBD(values: List[BD])
 }
 
-//see AnyValSerializerTest for cases that also work with Scala3
-class AnyValScala2SerializerTest extends BaseFixture {
-  import AnyValScala2SerializerTest._
+//see also AnyValSerializerTest
+class AnyVal2SerializerTest extends BaseFixture {
+  import AnyVal2SerializerTest._
 
   behavior of "AnyVal"
 

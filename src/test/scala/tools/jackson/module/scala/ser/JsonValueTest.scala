@@ -5,12 +5,12 @@ import tools.jackson.module.scala.DefaultScalaModule
 
 import scala.annotation.meta.getter
 
-object JsonValueScala2Test {
+object JsonValueTest {
   case class ValueClass(@(JsonValue @getter) value: String)
 }
 
-class JsonValueScala2Test extends SerializerTest {
-  import JsonValueScala2Test._
+class JsonValueTest extends SerializerTest {
+  import JsonValueTest._
 
   override def module = DefaultScalaModule
 

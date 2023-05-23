@@ -10,7 +10,7 @@ object AnyValSerializerTest {
   case class BigIntAnyValHolder(value: BigIntAnyVal)
 }
 
-//see AnyValScala2SerializerTest for cases that only work with Scala2
+//see AnyVal2SerializerTest for cases that only work with Scala2 and Scala3.3 but not earlier versions of Scala3
 class AnyValSerializerTest extends BaseFixture {
   import AnyValSerializerTest._
 
