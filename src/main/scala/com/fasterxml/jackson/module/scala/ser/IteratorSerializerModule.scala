@@ -78,7 +78,13 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
   override def findSerializer(config: SerializationConfig, `type`: JavaType, beanDesc: BeanDescription): JsonSerializer[_] = {
     `type` match {
       case it: IterationType => {
-        new UnresolvedIteratorSerializer(it.getRawClass, config.constructType(classOf[AnyRef]), false, null, null)
+        val rawClass = it.getRawClass
+        if (JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) {
+          None.orNull
+        } else {
+          new UnresolvedIteratorSerializer(it.getRawClass, config.constructType(classOf[AnyRef]), false,
+            None.orNull, None.orNull)
+        }
       }
       case _ => None.orNull
     }
