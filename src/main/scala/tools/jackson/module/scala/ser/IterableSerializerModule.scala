@@ -81,6 +81,8 @@ private class UnresolvedIterableSerializer( cls: Class[_],
 private class IterableSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
 
   private val JACKSONSERIALIZABLE_CLASS = classOf[JacksonSerializable]
+  private val ITERABLE_CLASS = classOf[collection.Iterable[_]]
+  private val MAP_CLASS = classOf[collection.Map[_, _]]
 
   override def findCollectionLikeSerializer(serializationConfig: SerializationConfig,
                    collectionType: CollectionLikeType,
@@ -89,8 +91,8 @@ private class IterableSerializerResolver(config: ScalaModule.Config) extends Ser
                    elementTypeSerializer: TypeSerializer,
                    elementSerializer: ValueSerializer[Object]): ValueSerializer[_] = {
     val rawClass = collectionType.getRawClass
-    if (!classOf[collection.Iterable[_]].isAssignableFrom(rawClass)) None.orNull
-    else if (classOf[collection.Map[_,_]].isAssignableFrom(rawClass)) None.orNull
+    if (!ITERABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
+    else if (MAP_CLASS.isAssignableFrom(rawClass)) None.orNull
     else if (JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
     else {
       // CollectionSerializer *needs* an elementType, but AsArraySerializerBase *forces*
