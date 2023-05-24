@@ -1,3 +1,23 @@
+# Version: 2.16.0 (not yet released - many months away from release)
+
+This patch release tracks Jackson 2.16. The 2.16 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
+
+## Fixes
+
+* [[gh-635]](https://github.com/FasterXML/jackson-module-scala/issues/635) upgrade to Scala 3.3 (LTS release).
+* [[gh-532]](https://github.com/FasterXML/jackson-module-scala/issues/532) Issue reading `@JsonValue` annotations. This is fixed by using Scala 3.3. Users who need this issue fixed should be able to just upgrade their Scala version without waiting on a jackson-module-scala 2.16.0 release.
+
+# Version: 2.15.2
+
+There are no new fixes in this release; it serves to track the 2.15.2 release
+of the upstream Jackson projects.
+
+# Version: 2.15.1
+
+There are no new fixes in this release; it serves to track the 2.15.1 release
+of the upstream Jackson projects.
+
 # Version: 2.15.0
 
 Breaks compatibility on some little used functions of ScalaAnnotationIntrospectorModule that were deprecated
@@ -17,6 +37,11 @@ replace the problematic APIs. Apologies for any inconvenience. See **gh-pr-622**
 ## Fixes
 
 * [[gh-pr-622]](https://github.com/FasterXML/jackson-module-scala/pull/622) Add new API functions to ScalaAnnotationIntrospectorModule to avoid the problematic ClassKey class 
+
+# Version: 2.14.3
+
+There are no new fixes in this release; it serves to track the 2.14.3 release
+of the upstream Jackson projects.
 
 # Version: 2.14.2
 
