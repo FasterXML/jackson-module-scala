@@ -69,6 +69,8 @@ private class UnresolvedIterableSerializer( cls: Class[_],
 private object IterableSerializerResolver extends Serializers.Base {
 
   private val JSONSERIALIZABLE_CLASS = classOf[JsonSerializable]
+  private val ITERABLE_CLASS = classOf[collection.Iterable[_]]
+  private val MAP_CLASS = classOf[collection.Map[_, _]]
 
   override def findCollectionLikeSerializer(config: SerializationConfig,
                    collectionType: CollectionLikeType,
@@ -76,8 +78,8 @@ private object IterableSerializerResolver extends Serializers.Base {
                    elementTypeSerializer: TypeSerializer,
                    elementSerializer: JsonSerializer[Object]): JsonSerializer[_] = {
     val rawClass = collectionType.getRawClass
-    if (!classOf[collection.Iterable[_]].isAssignableFrom(rawClass)) None.orNull
-    else if (classOf[collection.Map[_,_]].isAssignableFrom(rawClass)) None.orNull
+    if (!ITERABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
+    else if (MAP_CLASS.isAssignableFrom(rawClass)) None.orNull
     else if (JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
     else {
       // CollectionSerializer *needs* an elementType, but AsArraySerializerBase *forces*
