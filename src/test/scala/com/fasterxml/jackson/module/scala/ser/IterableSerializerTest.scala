@@ -104,6 +104,14 @@ class IterableSerializerTest extends SerializerTest {
     serialize(mutable.BitSet(0, 3, 2, 1)) shouldBe """[0,1,2,3]"""
   }
 
+  it should "serialize an Iterator[Int]" in {
+    serialize(Iterator(1, 2, 3)) should be("[1,2,3]")
+  }
+
+  it should "serialize a Stream[Int]" in {
+    serialize(Stream(1, 2, 3)) should be("[1,2,3]")
+  }
+
   it should "honor the JsonInclude(NON_EMPTY) annotation" in {
     serialize(new NonEmptyCollections) should be("""{"nonEmptyIterable":[1,2,3]}""")
   }
