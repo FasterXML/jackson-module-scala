@@ -18,7 +18,7 @@ class ScalaTypeModifier extends TypeModifier {
   private val longClass = classOf[Long]
   private val immutableLongMapClass = classOf[immutable.LongMap[_]]
   private val mutableLongMapClass = classOf[mutable.LongMap[_]]
-  private val iterableClass = classOf[Iterable[_]]
+  private val iteratorClass = classOf[Iterator[_]]
   private val iterableOnceClass = classOf[IterableOnce[_]]
 
   override def modifyType(javaType: JavaType,
@@ -40,10 +40,10 @@ class ScalaTypeModifier extends TypeModifier {
       } else {
         MapLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0), javaType.containedTypeOrUnknown(1))
       }
-    } else if (javaType.isTypeOrSubTypeOf(iterableClass)) {
-      CollectionLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
-    } else if (javaType.isTypeOrSubTypeOf(iterableOnceClass)) {
+    } else if (javaType.isTypeOrSubTypeOf(iteratorClass)) {
       IterationType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
+    } else if (javaType.isTypeOrSubTypeOf(iterableOnceClass)) {
+      CollectionLikeType.upgradeFrom(javaType, javaType.containedTypeOrUnknown(0))
     } else if (javaType.isTypeOrSubTypeOf(eitherClass)) {
       // I'm not sure this is the right choice, but it's what the original module does
       ReferenceType.upgradeFrom(javaType, javaType)
