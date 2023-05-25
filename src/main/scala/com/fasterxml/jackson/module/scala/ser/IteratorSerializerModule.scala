@@ -3,10 +3,9 @@ package module.scala
 package ser
 
 import java.{lang => jl}
-
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind._
-import com.fasterxml.jackson.databind.`type`.CollectionLikeType
+import com.fasterxml.jackson.databind.`type`.{CollectionLikeType, IterationType}
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer
 import com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase
 import com.fasterxml.jackson.databind.ser.Serializers
@@ -74,6 +73,21 @@ private object ScalaIteratorSerializerResolver extends Serializers.Base {
     val rawClass = collectionType.getRawClass
     if (!SCALAITERATOR_CLASS.isAssignableFrom(rawClass) || JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
     else new UnresolvedIteratorSerializer(rawClass, collectionType.getContentType, false, elementTypeSerializer, elementSerializer)
+  }
+
+  override def findSerializer(config: SerializationConfig, `type`: JavaType, beanDesc: BeanDescription): JsonSerializer[_] = {
+    `type` match {
+      case it: IterationType => {
+        val rawClass = it.getRawClass
+        if (JSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) {
+          None.orNull
+        } else {
+          new UnresolvedIteratorSerializer(it.getRawClass, config.constructType(classOf[AnyRef]), false,
+            None.orNull, None.orNull)
+        }
+      }
+      case _ => None.orNull
+    }
   }
 }
 
