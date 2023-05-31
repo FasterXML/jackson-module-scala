@@ -10,7 +10,7 @@ ThisBuild / scalaVersion := "2.13.10"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2")
 
-//resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 val jacksonVersion = "2.15.2-SNAPSHOT"
 
