@@ -126,6 +126,7 @@ Compile / resourceGenerators += Def.task {
 
 Test / parallelExecution := false
 
+ThisBuild / tlSonatypeUseLegacyHost := true
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"), JavaSpec(Zulu, "11"), JavaSpec(Zulu, "17"))
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
@@ -149,5 +150,5 @@ ThisBuild / githubWorkflowPublish := Seq(
 
 // site
 enablePlugins(SiteScaladocPlugin)
-enablePlugins(GhpagesPlugin)
+//enablePlugins(GhpagesPlugin)
 git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"

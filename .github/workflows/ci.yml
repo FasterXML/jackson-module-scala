@@ -105,7 +105,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.10]
         java: [zulu@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -125,7 +124,7 @@ jobs:
 
       - name: sbt update
         if: matrix.java == 'zulu@8' && steps.setup-java-zulu-8.outputs.cache-hit == 'false'
-        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' reload +update
+        run: sbt -J-Xmx2G reload +update
 
       - name: Setup Java (zulu@11)
         id: setup-java-zulu-11
@@ -138,7 +137,7 @@ jobs:
 
       - name: sbt update
         if: matrix.java == 'zulu@11' && steps.setup-java-zulu-11.outputs.cache-hit == 'false'
-        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' reload +update
+        run: sbt -J-Xmx2G reload +update
 
       - name: Setup Java (zulu@17)
         id: setup-java-zulu-17
@@ -151,7 +150,7 @@ jobs:
 
       - name: sbt update
         if: matrix.java == 'zulu@17' && steps.setup-java-zulu-17.outputs.cache-hit == 'false'
-        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' reload +update
+        run: sbt -J-Xmx2G reload +update
 
       - name: Download target directories (2.11)
         uses: actions/download-artifact@v3
@@ -199,4 +198,4 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
-        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' ci-release
+        run: sbt -J-Xmx2G ci-release
