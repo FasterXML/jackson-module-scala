@@ -126,7 +126,7 @@ Compile / resourceGenerators += Def.task {
 
 Test / parallelExecution := false
 
-ThisBuild / tlSonatypeUseLegacyHost := true
+ThisBuild / tlSonatypeUseLegacyHost := false
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"), JavaSpec(Zulu, "11"), JavaSpec(Zulu, "17"))
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
