@@ -140,11 +140,11 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   private def _descriptorFor(clz: Class[_]): Option[BeanDescriptor] = {
     val key = clz.getName
     val isScala = {
-      Option(ScalaAnnotationIntrospectorModule._scalaTypeCache.get(key)) match {
+      Option(scalaAnnotationIntrospectorModule._scalaTypeCache.get(key)) match {
         case Some(result) => result
         case _ => {
           val result = clz.extendsScalaClass(config.shouldSupportScala3Classes()) || clz.hasSignature
-          ScalaAnnotationIntrospectorModule._scalaTypeCache.put(key, result)
+          scalaAnnotationIntrospectorModule._scalaTypeCache.put(key, result)
           result
         }
       }
@@ -399,9 +399,18 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   private def isScalaPackage(pkg: Option[Package]): Boolean =
     pkg.exists(_.getName.startsWith("scala."))
 
-  private[introspect] def isMaybeScalaBeanType(cls: Class[_]): Boolean =
-    (cls.extendsScalaClass(config.shouldSupportScala3Classes()) || cls.hasSignature) &&
-      !isScalaPackage(Option(cls.getPackage))
+  private[introspect] def isMaybeScalaBeanType(cls: Class[_]): Boolean = {
+    val key = cls.getName
+    val flag = Option(_scalaTypeCache.get(key)) match {
+      case Some(result) => result
+      case _ => {
+        val result = cls.extendsScalaClass(config.shouldSupportScala3Classes()) || cls.hasSignature
+        _scalaTypeCache.put(key, result)
+        result
+      }
+    }
+    flag && !isScalaPackage(Option(cls.getPackage))
+  }
 
   private def recreateDescriptorCache(): Unit = {
     _descriptorCache.clear()
