@@ -190,7 +190,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   private def isScalaPackage(pkg: Option[Package]): Boolean =
     pkg.exists(_.getName.startsWith("scala."))
 
-  private def isMaybeScalaBeanType(cls: Class[_]): Boolean =
+  private[introspect] def isMaybeScalaBeanType(cls: Class[_]): Boolean =
     (cls.extendsScalaClass(config.shouldSupportScala3Classes()) || cls.hasSignature) &&
       !isScalaPackage(Option(cls.getPackage))
 

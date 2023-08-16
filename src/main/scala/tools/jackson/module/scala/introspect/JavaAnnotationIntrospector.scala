@@ -17,7 +17,7 @@ class JavaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends Nop
 
   override def findImplicitPropertyName(config: MapperConfig[_], param: AnnotatedMember): String = {
     val result = param match {
-      case param: AnnotatedParameter => {
+      case param: AnnotatedParameter if ScalaAnnotationIntrospector.isMaybeScalaBeanType(param.getDeclaringClass) => {
         val index = param.getIndex
         val owner = param.getOwner
         owner.getAnnotated match {
