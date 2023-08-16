@@ -77,6 +77,8 @@ scalacOptions ++= {
 // and we use it.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
+compileOrder := CompileOrder.JavaThenScala
+
 Compile / unmanagedSourceDirectories ++= {
   if (scalaReleaseVersion.value > 2) {
     Seq(
@@ -105,7 +107,7 @@ Test / unmanagedSourceDirectories ++= {
 }
 
 Test / unmanagedSourceDirectories ++= {
-  if (addJava17Tests && scalaReleaseVersion.value == 2 && scalaMajorVersion.value >= 13) {
+  if (addJava17Tests) {
     Seq(
       (LocalRootProject / baseDirectory).value / "src" / "test" / "java-17",
       (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-jdk-17",
