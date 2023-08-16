@@ -230,9 +230,18 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   private def isScalaPackage(pkg: Option[Package]): Boolean =
     pkg.exists(_.getName.startsWith("scala."))
 
-  private[introspect] def isMaybeScalaBeanType(cls: Class[_]): Boolean =
-    (cls.extendsScalaClass(ScalaAnnotationIntrospectorModule.shouldSupportScala3Classes()) || cls.hasSignature) &&
-      !isScalaPackage(Option(cls.getPackage))
+  private[introspect] def isMaybeScalaBeanType(cls: Class[_]): Boolean = {
+    val key = cls.getName
+    val flag = Option(ScalaAnnotationIntrospectorModule._scalaTypeCache.get(key)) match {
+      case Some(flag) => flag
+      case _ => {
+        val flag = cls.extendsScalaClass(ScalaAnnotationIntrospectorModule.shouldSupportScala3Classes()) || cls.hasSignature
+        ScalaAnnotationIntrospectorModule._scalaTypeCache.put(key, flag)
+        flag
+      }
+    }
+    flag && !isScalaPackage(Option(cls.getPackage))
+  }
 
   private def isScala(a: Annotated): Boolean = {
     a match {
