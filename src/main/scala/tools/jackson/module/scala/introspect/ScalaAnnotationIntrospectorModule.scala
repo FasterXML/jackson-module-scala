@@ -116,7 +116,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
 
   override def modifyValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription,
                                        defaultInstantiator: ValueInstantiator): ValueInstantiator = {
-    if (isMaybeScalaBeanType(beanDesc.getBeanClass)) {
+    if (scalaAnnotationIntrospectorModule.isMaybeScalaBeanType(beanDesc.getBeanClass)) {
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
         if (scalaAnnotationIntrospectorModule.overrideMap.contains(beanDesc.getBeanClass.getName) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
           defaultInstantiator match {
@@ -187,17 +187,10 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     }
   }
 
-  private def isScalaPackage(pkg: Option[Package]): Boolean =
-    pkg.exists(_.getName.startsWith("scala."))
-
-  private[introspect] def isMaybeScalaBeanType(cls: Class[_]): Boolean =
-    (cls.extendsScalaClass(config.shouldSupportScala3Classes()) || cls.hasSignature) &&
-      !isScalaPackage(Option(cls.getPackage))
-
   private def isScala(a: Annotated): Boolean = {
     a match {
-      case ac: AnnotatedClass => isMaybeScalaBeanType(ac.getAnnotated)
-      case am: AnnotatedMember => isMaybeScalaBeanType(am.getDeclaringClass)
+      case ac: AnnotatedClass => scalaAnnotationIntrospectorModule.isMaybeScalaBeanType(ac.getAnnotated)
+      case am: AnnotatedMember => scalaAnnotationIntrospectorModule.isMaybeScalaBeanType(am.getDeclaringClass)
     }
   }
 
@@ -402,6 +395,13 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     _scalaTypeCacheSize = size
     recreateScalaTypeCache()
   }
+
+  private def isScalaPackage(pkg: Option[Package]): Boolean =
+    pkg.exists(_.getName.startsWith("scala."))
+
+  private[introspect] def isMaybeScalaBeanType(cls: Class[_]): Boolean =
+    (cls.extendsScalaClass(config.shouldSupportScala3Classes()) || cls.hasSignature) &&
+      !isScalaPackage(Option(cls.getPackage))
 
   private def recreateDescriptorCache(): Unit = {
     _descriptorCache.clear()
