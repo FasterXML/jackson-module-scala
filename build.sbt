@@ -51,6 +51,8 @@ scalaMajorVersion := {
   }
 }
 
+val addJava17Tests = System.getProperty("java.version")
+
 mimaPreviousArtifacts := {
   if (scalaReleaseVersion.value > 2)
     Set.empty
