@@ -49,6 +49,8 @@ scalaMajorVersion := {
   }
 }
 
+val addJava17Tests: Boolean = compareVersions(System.getProperty("java.version"), "17.0.0") >= 0
+
 mimaPreviousArtifacts := {
   if (scalaReleaseVersion.value > 2)
     Set.empty
@@ -94,6 +96,17 @@ Test / unmanagedSourceDirectories ++= {
       (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-2.+",
       (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-2.${scalaMajorVersion.value}"
     )
+  }
+}
+
+Test / unmanagedSourceDirectories ++= {
+  if (addJava17Tests && scalaReleaseVersion.value == 2 && scalaMajorVersion.value >= 13) {
+    Seq(
+      (LocalRootProject / baseDirectory).value / "src" / "test" / "java-17",
+      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-jdk-17",
+    )
+  } else {
+    Seq.empty
   }
 }
 
@@ -224,3 +237,23 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationInclusionForContent"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationInclusion")
 )
+
+def compareVersions(version1: String, version2: String): Int = {
+  var comparisonResult = 0
+  val version1Splits = version1.split("\\.")
+  val version2Splits = version2.split("\\.")
+  val maxLengthOfVersionSplits = Math.max(version1Splits.length, version2Splits.length)
+  var i = 0
+  while (comparisonResult == 0 && i < maxLengthOfVersionSplits) {
+    val v1 = if (i < version1Splits.length) version1Splits(i).toInt
+    else 0
+    val v2 = if (i < version2Splits.length) version2Splits(i).toInt
+    else 0
+    val compare = v1.compareTo(v2)
+    if (compare != 0) {
+      comparisonResult = compare
+    }
+    i += 1
+  }
+  comparisonResult
+}
