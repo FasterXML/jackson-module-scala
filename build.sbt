@@ -51,7 +51,7 @@ scalaMajorVersion := {
   }
 }
 
-val addJava17Tests = System.getProperty("java.version")
+val addJava17Tests: Boolean = compareVersions(System.getProperty("java.version"), "17.0.0") >= 0
 
 mimaPreviousArtifacts := {
   if (scalaReleaseVersion.value > 2)
@@ -98,6 +98,17 @@ Test / unmanagedSourceDirectories ++= {
       (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-2.+",
       (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-2.${scalaMajorVersion.value}"
     )
+  }
+}
+
+Test / unmanagedSourceDirectories ++= {
+  if (addJava17Tests) {
+    Seq(
+      (LocalRootProject / baseDirectory).value / "src" / "test" / "java-17",
+      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-jdk-17",
+    )
+  } else {
+    Seq.empty
   }
 }
 
@@ -230,7 +241,7 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationInclusion")
 )
 
-def compareVersions(version1: String, version2: String) = {
+def compareVersions(version1: String, version2: String): Int = {
   var comparisonResult = 0
   val version1Splits = version1.split("\\.")
   val version2Splits = version2.split("\\.")
