@@ -102,7 +102,7 @@ Test / unmanagedSourceDirectories ++= {
 }
 
 Test / unmanagedSourceDirectories ++= {
-  if (addJava17Tests) {
+  if (addJava17Tests && scalaReleaseVersion.value == 2 && scalaMajorVersion.value >= 13) {
     Seq(
       (LocalRootProject / baseDirectory).value / "src" / "test" / "java-17",
       (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-jdk-17",
