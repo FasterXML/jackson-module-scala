@@ -1,9 +1,11 @@
 package tools.jackson.module.scala.deser
 
-import tools.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
 import CaseObjectDeserializerTest.{Foo, TestObject}
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import tools.jackson.databind.introspect.VisibilityChecker
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
+import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 import scala.compat.java8.FunctionConverters.asJavaUnaryOperator
 
@@ -54,6 +56,14 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     val json = mapper.writeValueAsString(original)
     val deserialized = mapper.readValue[TestObject.type](json)
     assert(deserialized == original)
+  }
+
+  "An ObjectMapper without ScalaObjectDeserializerModule" should "deserialize a case object but create a new instance" in {
+    val mapper = JsonMapper.builder().addModule(ScalaAnnotationIntrospectorModule).build()
+    val original = TestObject
+    val json = mapper.writeValueAsString(original)
+    val deserialized = mapper.readValue(json, TestObject.getClass)
+    assert(deserialized != original)
   }
 
 }
