@@ -8,6 +8,7 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 * [[gh-635]](https://github.com/FasterXML/jackson-module-scala/issues/635) upgrade to Scala 3.3 (LTS release).
 * [[gh-532]](https://github.com/FasterXML/jackson-module-scala/issues/532) Issue reading `@JsonValue` annotations. This is fixed by using Scala 3.3. Users who need this issue fixed should be able to just upgrade their Scala version without waiting on a jackson-module-scala 2.16.0 release.
 * [[gh-644]](https://github.com/FasterXML/jackson-module-scala/issues/644) Registering Jackson Module Scala in an ObjectMapper can affect the property name resolution of non-Scala classes which can affect the behavior when you serialize/deserialize those classes. 
+* [[gh-pr-647]](https://github.com/FasterXML/jackson-module-scala/pull/647) Make ScalaObjectDeserializerModule part of DefaultScalaModule.
 
 # Version: 2.15.2
 
