@@ -46,8 +46,8 @@ object ScalaAnnotationIntrospectorTest {
     override def putIfAbsent(key: K, value: V): V =
       cache.putIfAbsent(key, value).getOrElse(None.orNull).asInstanceOf[V]
 
-    override def get(key: Any): V = {
-      cache.get(key.asInstanceOf[K]).getOrElse(None.orNull).asInstanceOf[V]
+    override def get(key: K): V = {
+      cache.get(key).getOrElse(None.orNull).asInstanceOf[V]
     }
 
     override def clear(): Unit = {
@@ -57,6 +57,8 @@ object ScalaAnnotationIntrospectorTest {
     override def size: Int = cache.size
 
     override def snapshot(): LookupCache[K, V] = ???
+
+    override def emptyCopy(): LookupCache[K, V] = ???
   }
 
   object ConcurrentLookupCacheFactory extends LookupCacheFactory {
