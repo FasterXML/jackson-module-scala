@@ -8,7 +8,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.0")
 
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.2")
 
-addSbtPlugin("org.typelevel" % "sbt-typelevel-sonatype-ci-release" % "0.5.0-RC12")
+addSbtPlugin("org.typelevel" % "sbt-typelevel-sonatype-ci-release" % "0.5.4")
 
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.12")
 
