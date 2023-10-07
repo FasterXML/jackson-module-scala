@@ -33,9 +33,13 @@ private class EitherDeserializer(javaType: JavaType,
         val rightDeserializerConfig = deserializerConfigFor(1, property)
         new EitherDeserializer(javaType, config, leftDeserializerConfig, rightDeserializerConfig)
       case 1 =>
-        val leftDeserializerConfig = deserializerConfigFor(0, property)
-        val rightDeserializerConfig = deserializerConfigFor(0, property)
-        new EitherDeserializer(javaType, config, leftDeserializerConfig, rightDeserializerConfig)
+        if (javaType.getBindings.getBoundName(0) == "A") {
+          val leftDeserializerConfig = deserializerConfigFor(0, property)
+          new EitherDeserializer(javaType, config, leftDeserializerConfig, ElementDeserializerConfig.empty)
+        } else {
+          val rightDeserializerConfig = deserializerConfigFor(0, property)
+          new EitherDeserializer(javaType, config, ElementDeserializerConfig.empty, rightDeserializerConfig)
+        }
       case _ => this
     }
   }
@@ -58,10 +62,10 @@ private class EitherDeserializer(javaType: JavaType,
         val `type` = jp.nextToken()
 
         val result = key match {
-          case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
-          case ("left") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
-          case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
-          case ("right") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+          case "l" => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+          case "left" => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+          case "r" => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+          case "right" => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
           case _ => ctxt.handleUnexpectedToken(javaType, jp).asInstanceOf[Either[AnyRef, AnyRef]]
         }
 
@@ -74,10 +78,10 @@ private class EitherDeserializer(javaType: JavaType,
         val `type` = jp.nextToken()
 
         val result = key match {
-          case ("l") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
-          case ("left") => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
-          case ("r") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
-          case ("right") => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+          case "l" => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+          case "left" => Left(deserializeValue(`type`, leftDeserializerConfig, jp, ctxt))
+          case "r" => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
+          case "right" => Right(deserializeValue(`type`, rightDeserializerConfig, jp, ctxt))
           case _ => ctxt.handleUnexpectedToken(javaType, jp).asInstanceOf[Either[AnyRef, AnyRef]]
         }
 
