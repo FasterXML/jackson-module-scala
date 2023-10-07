@@ -49,6 +49,18 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
     deserialize(s"""{"left":null}""", typeRef) should be (Left(None))
   }
 
+  it should "be able to deserialize right with Some value" in {
+    val typeRef = new TypeReference[Either[_, Option[String]]] {}
+    deserialize(s"""{"r":"$str"}""", typeRef) should be(Right(Some(str)))
+    deserialize(s"""{"right":"$str"}""", typeRef) should be(Right(Some(str)))
+  }
+
+  it should "be able to deserialize left with Some value" in {
+    val typeRef = new TypeReference[Either[Option[String], _]] {}
+    deserialize(s"""{"l":"$str"}""", typeRef) should be(Left(Some(str)))
+    deserialize(s"""{"left":"$str"}""", typeRef) should be(Left(Some(str)))
+  }
+
   it should "be able to deserialize Right with complex objects" in {
     val typeRef = new TypeReference[Either[String, PlainPojoObject]] {}
     deserialize(s"""{"r":${serialize(obj)}}""", typeRef) should be (Right(obj))
