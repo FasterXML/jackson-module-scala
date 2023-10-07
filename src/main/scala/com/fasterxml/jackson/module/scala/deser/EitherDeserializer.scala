@@ -18,7 +18,7 @@ private class EitherDeserializer(javaType: JavaType,
 
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty): JsonDeserializer[Either[AnyRef, AnyRef]] = {
 
-    def deserializerConfigFor(param: Int, inType: JavaType, property: BeanProperty): ElementDeserializerConfig = {
+    def deserializerConfigFor(param: Int, property: BeanProperty): ElementDeserializerConfig = {
       val containedType = javaType.containedType(param)
 
       val paramDeserializer = Option( ctxt.findContextualValueDeserializer(containedType, property) )
@@ -29,8 +29,12 @@ private class EitherDeserializer(javaType: JavaType,
 
     javaType.containedTypeCount match {
       case 2 =>
-        val leftDeserializerConfig = deserializerConfigFor(0, javaType, property)
-        val rightDeserializerConfig = deserializerConfigFor(1, javaType, property)
+        val leftDeserializerConfig = deserializerConfigFor(0, property)
+        val rightDeserializerConfig = deserializerConfigFor(1, property)
+        new EitherDeserializer(javaType, config, leftDeserializerConfig, rightDeserializerConfig)
+      case 1 =>
+        val leftDeserializerConfig = deserializerConfigFor(0, property)
+        val rightDeserializerConfig = deserializerConfigFor(0, property)
         new EitherDeserializer(javaType, config, leftDeserializerConfig, rightDeserializerConfig)
       case _ => this
     }
