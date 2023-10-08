@@ -101,6 +101,10 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
     deserialize("""{"either":{"r":{"a":"1","b":null,"c":1}}}""", typeRef) shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
     deserialize("""{"either":{"right":{"a":"1","b":null,"c":1}}}""", typeRef) shouldBe EitherField(Right(PlainPojoObject("1", None, 1)))
   }
+
+  override def deserialize[T](value: String, typeReference: TypeReference[T]): T = {
+    newMapper.readValue(value, typeReference)
+  }
 }
 
 
