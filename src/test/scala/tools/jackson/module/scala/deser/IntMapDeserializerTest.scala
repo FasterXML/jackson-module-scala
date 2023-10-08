@@ -88,6 +88,17 @@ class IntMapDeserializerTest extends DeserializerTest {
     read(2) shouldEqual Map("id" -> event.id.toString, "description" -> event.description)
   }
 
+  it should "deserialize IntMap[_]" in {
+    val event = Event(UUID.randomUUID(), "event1")
+    val map = IntMap(0 -> false, 1 -> "true", 2 -> event)
+    val mapper = newMapper
+    val json = mapper.writeValueAsString(map)
+    val read = mapper.readValue(json, new TypeReference[IntMap[_]]{})
+    read(0) shouldBe false
+    read(1) shouldEqual "true"
+    read(2) shouldEqual Map("id" -> event.id.toString, "description" -> event.description)
+  }
+
   it should "deserialize IntMap (Object values, duplicate keys - default mode)" in {
     val mapper = newMapper
     val json = """{"1": 123, "2": 123, "2": 123.456}"""
