@@ -14,4 +14,9 @@ class IterableDeserializerTest extends DeserializationFixture {
     val result = f.readValue(listJson, new TypeReference[Iterable[Int]] {})
     result should equal (listScala)
   }
+
+  it should "deserialize a list to an Iterable[_]" in { f =>
+    val result = f.readValue(listJson, new TypeReference[Iterable[_]] {})
+    result should equal(listScala)
+  }
 }
