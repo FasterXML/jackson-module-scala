@@ -20,7 +20,7 @@ class EitherDeserializerTest extends DeserializerTest with EitherJsonTestSupport
   }
 
   it should "be able to deserialize left with string" in {
-    val typeRef = new TypeReference[Either[_, String]] {}
+    val typeRef = new TypeReference[Either[String, _]] {}
     deserialize(s"""{"l":"$str"}""", typeRef) should be (Left(str))
     deserialize(s"""{"left":"$str"}""", typeRef) should be (Left(str))
   }
