@@ -20,6 +20,8 @@ object SeqDeserializerTest {
 
   case class SeqOptionLong(values: Seq[Option[Long]])
   case class WrappedSeqOptionLong(text: String, wrappedLongs: SeqOptionLong)
+
+  case class B(a: String, b: String)
 }
 
 class SeqDeserializerTest extends DeserializerTest {
@@ -233,6 +235,13 @@ class SeqDeserializerTest extends DeserializerTest {
     } finally {
       ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
+  }
+
+  it should "deserialize a list of case classes" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val data = List(B("a", "b"), B("c", "d"))
+    val s = mapper.writeValueAsString(data)
+    mapper.readValue(s, new TypeReference[List[B]] {}) shouldEqual data
   }
 
   it should "handle AS_NULL" in {
