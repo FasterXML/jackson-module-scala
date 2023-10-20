@@ -10,10 +10,15 @@ import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.util.ClassW
 
 import scala.languageFeature.postfixOps
+import scala.util.control.NonFatal
 
 private class ScalaObjectDeserializer(clazz: Class[_]) extends StdDeserializer[Any](classOf[Any]) {
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): Any = {
-    clazz.getDeclaredFields.find(_.getName == "MODULE$").map(_.get(null)).getOrElse(null)
+    try {
+      clazz.getField("MODULE$").get(null)
+    } catch {
+      case NonFatal(_) => null
+    }
   }
 }
 
