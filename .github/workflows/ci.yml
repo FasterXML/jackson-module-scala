@@ -24,7 +24,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala: [2.11.12, 2.12.18, 2.13.12, 3.3.1]
-        java: [zulu@8, zulu@11, zulu@17]
+        java: [zulu@8, zulu@11, zulu@17, zulu@21]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -54,6 +54,14 @@ jobs:
         with:
           distribution: zulu
           java-version: 17
+          cache: sbt
+
+      - name: Setup Java (zulu@21)
+        if: matrix.java == 'zulu@21'
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 21
           cache: sbt
 
       - name: Check that workflows are up to date
@@ -108,6 +116,14 @@ jobs:
         with:
           distribution: zulu
           java-version: 17
+          cache: sbt
+
+      - name: Setup Java (zulu@21)
+        if: matrix.java == 'zulu@21'
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 21
           cache: sbt
 
       - name: Download target directories (2.11.12)
