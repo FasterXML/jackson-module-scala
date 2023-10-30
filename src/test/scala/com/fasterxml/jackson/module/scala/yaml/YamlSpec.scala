@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.scala.yaml.YamlSpec.Person
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonTest}
 
 object YamlSpec {
-  case class Person(name: String, id: Int, titles: List[String], permanent: Boolean)
+  case class Person(name: String, age: Int, habbit: List[String], isStudent: Boolean)
 }
 
 class YamlSpec extends JacksonTest {
