@@ -1,4 +1,4 @@
-# Version: 2.16.0-rc1
+# Version: 2.16.0
 
 This patch release tracks Jackson 2.16. The 2.16 series has full support for
 Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
