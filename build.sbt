@@ -162,6 +162,7 @@ ThisBuild / githubWorkflowPublish := Seq(
   )
 )
 
+enablePlugins(ReproducibleBuildsPlugin)
 // site
 enablePlugins(SiteScaladocPlugin)
 //enablePlugins(GhpagesPlugin)

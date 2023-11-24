@@ -11,3 +11,5 @@ addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.3")
 addSbtPlugin("com.github.sbt" % "sbt-github-actions" % "0.19.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.12")
+
+addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.31")
