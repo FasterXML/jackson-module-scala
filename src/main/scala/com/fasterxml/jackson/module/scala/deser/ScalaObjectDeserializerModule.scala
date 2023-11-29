@@ -25,7 +25,6 @@ private object ScalaObjectDeserializerResolver extends Deserializers.Base {
 
 trait ScalaObjectDeserializerModule extends JacksonModule {
   override def getModuleName: String = "ScalaObjectDeserializerModule"
-
   this += { _ addDeserializers ScalaObjectDeserializerResolver }
 }
 
