@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.util
 
+import java.lang.reflect.Field
 import scala.annotation.tailrec
 import scala.language.implicitConversions
 import scala.reflect.{ScalaLongSignature, ScalaSignature}
@@ -28,8 +29,10 @@ trait ClassW extends PimpedType[Class[_]] {
     hasSigHelper(value)
   }
 
-  def isScalaObject: Boolean = {
-    Try(value.getField("MODULE$")).isSuccess
+  def isScalaObject: Boolean = getModuleField.nonEmpty
+
+  def getModuleField: Option[Field] = {
+    Try(value.getField("MODULE$")).toOption
   }
 }
 
