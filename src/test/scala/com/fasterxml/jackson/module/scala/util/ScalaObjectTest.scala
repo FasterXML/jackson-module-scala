@@ -19,6 +19,12 @@ class TestClassWithModuleField$ {
   val MODULE$: TestClassWithModuleField$ = this
 }
 
+object BarWrapper {
+  object Bar {
+    final case class Baz()
+  }
+}
+
 class ScalaObjectTest extends AnyWordSpecLike {
 
   "ScalaObject" must {
@@ -48,6 +54,11 @@ class ScalaObjectTest extends AnyWordSpecLike {
     "return None for unapply(testClassWithModuleFieldAndADollarInstance.getClass)" in {
       val testClassWithModuleFieldAndADollarInstance = new TestClassWithModuleField$
       ScalaObject.unapply(testClassWithModuleFieldAndADollarInstance.getClass) shouldBe empty
+    }
+
+    "return None for unapply(bazInstance.getClass)" in {
+      val bazInstance = BarWrapper.Bar.Baz()
+      ScalaObject.unapply(bazInstance.getClass) shouldBe empty
     }
   }
 }
