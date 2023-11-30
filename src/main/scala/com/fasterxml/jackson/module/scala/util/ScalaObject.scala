@@ -9,7 +9,7 @@ object ScalaObject {
   private def getStaticField(field: Field): Option[Any] =
     try Some(field.get(null))
     catch {
-      case _: NullPointerException => None
+      case _: NullPointerException | _: IllegalAccessException => None
     }
 
   private def moduleFieldOption(clazz: Class[_]): Option[Field] =
