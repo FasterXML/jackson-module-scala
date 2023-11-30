@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.util
 
 import java.lang.reflect.Field
 
-object ScalaObject {
+private [scala] object ScalaObject {
 
   private val MODULE_FIELD_NAME = "MODULE$"
 
@@ -24,6 +24,6 @@ object ScalaObject {
   } yield value
 
   def unapply(clazz: Class[_]): Option[Any] =
-    if (clazz.getSimpleName.endsWith("$")) moduleFieldValue(clazz)
+    if (clazz.getName.endsWith("$")) moduleFieldValue(clazz)
     else None
 }
