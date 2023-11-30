@@ -29,11 +29,11 @@ trait ClassW extends PimpedType[Class[_]] {
     hasSigHelper(value)
   }
 
-  def isScalaObject: Boolean = getModuleField.nonEmpty
+  def isScalaObject: Boolean = findModuleField.isSuccess
 
-  def getModuleField: Option[Field] = {
-    Try(value.getField("MODULE$")).toOption
-  }
+  def getModuleField: Option[Field] = findModuleField.toOption
+
+  private def findModuleField: Try[Field] = Try(value.getField("MODULE$"))
 }
 
 object ClassW {
