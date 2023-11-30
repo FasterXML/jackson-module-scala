@@ -16,16 +16,21 @@ private class ScalaObjectDeserializer(scalaObject: Any) extends StdDeserializer[
 private object ScalaObjectDeserializerResolver extends Deserializers.Base {
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): JsonDeserializer[_] = {
     val clazz = javaType.getRawClass
-    clazz match {
-      case ScalaObject(value) => new ScalaObjectDeserializer(value)
-      case _ => null
-    }
+
+    Option(clazz)
+      .collect {
+        case ScalaObject(value) => new ScalaObjectDeserializer(value)
+      }
+      .orNull
   }
 }
 
 trait ScalaObjectDeserializerModule extends JacksonModule {
   override def getModuleName: String = "ScalaObjectDeserializerModule"
-  this += { _ addDeserializers ScalaObjectDeserializerResolver }
+
+  this += {
+    _ addDeserializers ScalaObjectDeserializerResolver
+  }
 }
 
 object ScalaObjectDeserializerModule extends ScalaObjectDeserializerModule
