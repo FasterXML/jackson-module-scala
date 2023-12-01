@@ -12,22 +12,14 @@ import tools.jackson.module.scala.util.ClassW
 import scala.languageFeature.postfixOps
 import scala.util.control.NonFatal
 
-private class ScalaObjectDeserializer(clazz: Class[_]) extends StdDeserializer[Any](classOf[Any]) {
-  override def deserialize(p: JsonParser, ctxt: DeserializationContext): Any = {
-    try {
-      clazz.getField("MODULE$").get(null)
-    } catch {
-      case NonFatal(_) => null
-    }
-  }
+private class ScalaObjectDeserializer(value: Any) extends StdDeserializer[Any](classOf[Any]) {
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): Any = value
 }
 
 private class ScalaObjectDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
-  override def findBeanDeserializer(javaType: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {
-    val clazz = javaType.getRawClass
-    if (hasDeserializerFor(deserializationConfig, clazz))
-      new ScalaObjectDeserializer(clazz)
-    else null
+  override def findBeanDeserializer(javaType: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {    ClassW(javaType.getRawClass).getModuleField.flatMap { field =>
+      Option(field.get(null))
+    }.map(new ScalaObjectDeserializer(_)).orNull
   }
 
   override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {

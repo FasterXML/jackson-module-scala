@@ -1,5 +1,6 @@
 package tools.jackson.module.scala.util
 
+import java.lang.reflect.Field
 import scala.annotation.tailrec
 import scala.language.implicitConversions
 import scala.reflect.{ScalaLongSignature, ScalaSignature}
@@ -25,9 +26,11 @@ trait ClassW extends PimpedType[Class[_]] {
     hasSigHelper(value)
   }
 
-  def isScalaObject: Boolean = {
-    Try(value.getField("MODULE$")).isSuccess
-  }
+  def isScalaObject: Boolean = moduleField.isSuccess
+
+  def getModuleField: Option[Field] = moduleField.toOption
+
+  private lazy val moduleField: Try[Field] = Try(value.getField("MODULE$"))
 }
 
 object ClassW {

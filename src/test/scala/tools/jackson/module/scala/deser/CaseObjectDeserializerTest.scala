@@ -25,7 +25,7 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     val original = TestObject
     val json = mapper.writeValueAsString(original)
     val deserialized = mapper.readValue(json, TestObject.getClass)
-    assert(deserialized == original)
+    assert(deserialized === original)
   }
 
   it should "deserialize Foo and not create a new instance" in {
@@ -33,7 +33,7 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     val original = Foo
     val json = mapper.writeValueAsString(original)
     val deserialized = mapper.readValue(json, Foo.getClass)
-    assert(deserialized == original)
+    assert(deserialized === original)
   }
 
   it should "deserialize Foo and not create a new instance (visibility settings)" in {
@@ -47,7 +47,7 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     val original = Foo
     val json = mapper.writeValueAsString(original)
     val deserialized = mapper.readValue(json, Foo.getClass)
-    assert(deserialized == original)
+    assert(deserialized === original)
   }
 
   "An ObjectMapper with ClassTagExtensions" should "deserialize a case object and not create a new instance" in {
@@ -55,7 +55,7 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     val original = TestObject
     val json = mapper.writeValueAsString(original)
     val deserialized = mapper.readValue[TestObject.type](json)
-    assert(deserialized == original)
+    assert(deserialized === original)
   }
 
   "An ObjectMapper without ScalaObjectDeserializerModule" should "deserialize a case object but create a new instance" in {
