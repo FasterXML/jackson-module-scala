@@ -1,3 +1,10 @@
+# Version: 2.16.1 (not yet released)
+
+## Fixes
+
+* [[gh-pr-655]](https://github.com/FasterXML/jackson-module-scala/pull/655) use sbt-reproducible-builds
+* [[gh-pr-657]](https://github.com/FasterXML/jackson-module-scala/pull/657) improve performance of scala object deserialization
+
 # Version: 2.16.0
 
 This patch release tracks Jackson 2.16. The 2.16 series has full support for
