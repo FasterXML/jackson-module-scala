@@ -14,13 +14,24 @@ import scala.collection.Map
 private class MapConverter(inputType: JavaType, config: SerializationConfig)
   extends StdConverter[Map[_,_],java.util.Map[_,_]]
 {
+  // Making this an inner class avoids deserializaion errors when polymorphic typing
+  // is enabled. In Scala 2.12 `delegate.asJava` happened to be an inner class but
+  // this implementation detail changed in 2.13.
+  //
+  // Tested in DefaultTypingMapDeserializerTest
+  private class MapWrapper[A, B](delegate: Map[A, B]) extends java.util.AbstractMap[A, B] {
+    private val wrapped = delegate.asJava
+
+    override def entrySet(): java.util.Set[java.util.Map.Entry[A, B]] = wrapped.entrySet()
+  }
+
   def convert(value: Map[_,_]): java.util.Map[_,_] = {
     val m = if (config.isEnabled(SerializationFeature.WRITE_NULL_MAP_VALUES)) {
       value
     } else {
       value.filter(_._2 != None)
     }
-    m.asJava
+    new MapWrapper(m)
   }
 
 
