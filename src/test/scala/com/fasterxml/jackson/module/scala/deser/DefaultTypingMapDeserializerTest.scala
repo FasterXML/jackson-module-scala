@@ -25,6 +25,9 @@ class DefaultTypingMapDeserializerTest extends DeserializerTest {
     // > `scala.collection.immutable.Map<java.lang.String,java.lang.String>`: Not a subtype
     //
     // prior the changing MapSerializerModule.scala to use an inner class for MapWrapper
+
+    json shouldEqual """{"m":["scala.collection.immutable.Map",{"one":"one","two":"two"}]}"""
+
     val read = mapper.readValue(json, classOf[HasMap])
 
     read shouldEqual map
