@@ -2,6 +2,7 @@
 
 ## Fixes
 
+* [[gh-643]](https://github.com/FasterXML/jackson-module-scala/issues/643) Handle Scala Map serialization/deserialization issues related to using activateDefaultTyping.
 * [[gh-pr-655]](https://github.com/FasterXML/jackson-module-scala/pull/655) use sbt-reproducible-builds
 * [[gh-pr-657]](https://github.com/FasterXML/jackson-module-scala/pull/657) improve performance of scala object deserialization
 
