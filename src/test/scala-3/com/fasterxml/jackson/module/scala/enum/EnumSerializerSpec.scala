@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class EnumSerializerSpec extends AnyWordSpec with Matchers {
-  val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+  private val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
 
   "EnumModule" should {
     "not serialize None" in {
