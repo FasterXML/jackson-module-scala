@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.deser.KeyDeserializers
 import com.fasterxml.jackson.module.scala.JacksonModule
 

@@ -3,7 +3,7 @@ package com.fasterxml.jackson.module.scala.deser
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.deser.{Deserializers, KeyDeserializers}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
 import java.lang.reflect.InvocationTargetException
