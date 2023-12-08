@@ -1,10 +1,6 @@
 package com.fasterxml.jackson.module.scala
 
-import com.fasterxml.jackson.module.scala.deser.{
-  ScalaNumberDeserializersModule,
-  ScalaObjectDeserializerModule,
-  UntypedObjectDeserializerModule
-}
+import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, ScalaObjectDeserializerModule, UntypedObjectDeserializerModule}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 /**
