@@ -10,14 +10,14 @@ import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.util.ClassW
 
 import scala.languageFeature.postfixOps
-import scala.util.control.NonFatal
 
 private class ScalaObjectDeserializer(value: Any) extends StdDeserializer[Any](classOf[Any]) {
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): Any = value
 }
 
 private class ScalaObjectDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
-  override def findBeanDeserializer(javaType: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {    ClassW(javaType.getRawClass).getModuleField.flatMap { field =>
+  override def findBeanDeserializer(javaType: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {
+    ClassW(javaType.getRawClass).getModuleField.flatMap { field =>
       Option(field.get(null))
     }.map(new ScalaObjectDeserializer(_)).orNull
   }

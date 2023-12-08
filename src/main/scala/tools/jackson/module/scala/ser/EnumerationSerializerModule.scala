@@ -50,7 +50,7 @@ private class EnumerationSerializerResolver(config: ScalaModule.Config) extends 
     val clazz = javaType.getRawClass
 
     if (classOf[scala.Enumeration#Value].isAssignableFrom(clazz)) {
-        new EnumerationSerializer
+      new EnumerationSerializer
     } else {
       null
     }
