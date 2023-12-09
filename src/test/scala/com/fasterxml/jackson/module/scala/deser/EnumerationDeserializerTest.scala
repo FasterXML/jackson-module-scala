@@ -31,7 +31,7 @@ object EnumerationDeserializerTest  {
   class HolderImpl extends BeanPropertyEnumMapHolder
 }
 
-// see Json for tests that only in Scala2
+// see EnumerationScala2DeserializerTest for tests that only work in Scala2
 class EnumerationDeserializerTest extends DeserializerTest {
 
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
