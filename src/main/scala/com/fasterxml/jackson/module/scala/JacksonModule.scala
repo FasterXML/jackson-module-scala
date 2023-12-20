@@ -50,7 +50,7 @@ trait JacksonModule extends Module {
     val requiredVersion = new Version(MajorVersion, MinorVersion, 0, null, "com.fasterxml.jackson.core", "jackson-databind")
     val incompatibleVersion = new Version(MajorVersion, MinorVersion + 1, 0, null, "com.fasterxml.jackson.core", "jackson-databind")
 
-    val databindVersionError = "Scala module %s requires Jackson Databind version >= %s and < %s".format(version, requiredVersion, incompatibleVersion)
+    val databindVersionError = "Scala module %s ideally requires Jackson Databind version >= %s and < %s".format(version, requiredVersion, incompatibleVersion)
 
     // Because of the Scala module's dependency on databind internals,
     // major and minor versions must match exactly.
@@ -58,7 +58,7 @@ trait JacksonModule extends Module {
       case VersionExtractor(MajorVersion, MinorVersion) =>
         // success!
       case _ =>
-        throw new JsonMappingException(null, databindVersionError)
+        System.out.println("WARNING: " + databindVersionError)
     }
 
     initializers.result().foreach(_ apply context)
