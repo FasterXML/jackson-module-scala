@@ -6,13 +6,11 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.10.7"
 
-crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.4")
+crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.13", "2.13.4")
 
-mimaPreviousArtifacts := Set(organization.value %% name.value % "2.12.1")
-
-resolvers += Resolver.sonatypeRepo("snapshots")
+mimaPreviousArtifacts := Set.empty
 
 val scalaMajorVersion = SettingKey[Int]("scalaMajorVersion")
 scalaMajorVersion := {
@@ -33,11 +31,12 @@ unmanagedSourceDirectories in Compile += {
 }
 
 val jacksonVersion = "2.12.7"
+val jacksonDatabindVersion = "2.12.7.1"
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
-  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion,
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   // test dependencies
   "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
