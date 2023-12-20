@@ -34,7 +34,7 @@ jobs:
 
       - name: Setup Java (zulu@8)
         if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 8
@@ -42,7 +42,7 @@ jobs:
 
       - name: Setup Java (zulu@11)
         if: matrix.java == 'zulu@11'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 11
@@ -50,7 +50,7 @@ jobs:
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 17
@@ -58,7 +58,7 @@ jobs:
 
       - name: Setup Java (zulu@21)
         if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 21
@@ -73,7 +73,7 @@ jobs:
         run: tar cf targets.tar target project/target
 
       - name: Upload target directories
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}
           path: targets.tar
@@ -96,7 +96,7 @@ jobs:
 
       - name: Setup Java (zulu@8)
         if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 8
@@ -104,7 +104,7 @@ jobs:
 
       - name: Setup Java (zulu@11)
         if: matrix.java == 'zulu@11'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 11
@@ -112,7 +112,7 @@ jobs:
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 17
@@ -120,14 +120,14 @@ jobs:
 
       - name: Setup Java (zulu@21)
         if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 21
           cache: sbt
 
       - name: Download target directories (2.11.12)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: target-${{ matrix.os }}-2.11.12-${{ matrix.java }}
 
@@ -137,7 +137,7 @@ jobs:
           rm targets.tar
 
       - name: Download target directories (2.12.18)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: target-${{ matrix.os }}-2.12.18-${{ matrix.java }}
 
@@ -147,7 +147,7 @@ jobs:
           rm targets.tar
 
       - name: Download target directories (2.13.12)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: target-${{ matrix.os }}-2.13.12-${{ matrix.java }}
 
@@ -157,7 +157,7 @@ jobs:
           rm targets.tar
 
       - name: Download target directories (3.3.1)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: target-${{ matrix.os }}-3.3.1-${{ matrix.java }}
 
