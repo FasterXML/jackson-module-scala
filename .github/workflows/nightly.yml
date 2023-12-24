@@ -14,10 +14,11 @@ jobs:
         scala: [2.13.12]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout current branch (full)
+      - name: Checkout master branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: master
 
       - name: Setup Java (zulu@8)
         uses: actions/setup-java@v4
