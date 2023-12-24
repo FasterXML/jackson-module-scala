@@ -5,7 +5,7 @@ import tools.jackson.core.TreeNode
 import tools.jackson.databind.`type`.MapLikeType
 import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.databind.exc.InvalidFormatException
-import tools.jackson.databind.{DatabindException, ObjectMapper}
+import tools.jackson.databind.{DatabindException, DeserializationFeature, ObjectMapper}
 import tools.jackson.module.scala.deser.IntMapDeserializerTest.IntMapWrapper
 import tools.jackson.module.scala.deser.OptionDeserializerTest.{Foo, TWrapper}
 import tools.jackson.module.scala.deser.OptionWithNumberDeserializerTest.{OptionLong, WrappedOptionLong}
@@ -152,6 +152,14 @@ class ClassTagExtensionsTest extends JacksonTest {
   it should "produce reader with view" in {
     val reader = mapper.readerWithView[PublicView].forType(classOf[Target])
     val result = reader.readValue("""{"foo":"foo"}""").asInstanceOf[Target]
+    result should equal(Target.apply("foo", 0))
+  }
+
+  it should "produce reader with view (unexpected property allowed)" in {
+    val builder = newBuilder.disable(DeserializationFeature.FAIL_ON_UNEXPECTED_VIEW_PROPERTIES)
+    val myMapper = builder.build() :: ClassTagExtensions
+    val reader = myMapper.readerWithView[PublicView].forType(classOf[Target])
+    val result = reader.readValue("""{"foo":"foo","bar":42}""").asInstanceOf[Target]
     result should equal(Target.apply("foo", 0))
   }
 
