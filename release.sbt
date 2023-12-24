@@ -37,11 +37,6 @@ pomExtra := {
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <scm>
-    <connection>scm:git:git@github.com:FasterXML/jackson-module-scala.git</connection>
-    <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-scala.git</developerConnection>
-    <url>https://github.com/FasterXML/jackson-module-scala</url>
-  </scm>
   <developers>
     <developer>
       <id>tatu</id>
@@ -57,6 +52,11 @@ pomExtra := {
       <id>mbknor</id>
       <name>Morten Kjetland</name>
       <email>mbk@kjetland.com</email>
+    </developer>
+    <developer>
+      <id>pjfanning</id>
+      <name>PJ Fanning</name>
+      <url>https://github.com/pjfanning</url>
     </developer>
   </developers>
   <contributors>
