@@ -30,6 +30,7 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
           (classOf[mutable.LinkedHashMap[_, _]], mutable.LinkedHashMap),
           (classOf[mutable.ListMap[_, _]], mutable.ListMap),
           (classOf[mutable.Map[_, _]], mutable.Map),
+          (classOf[immutable.TreeSeqMap[_, _]], immutable.TreeSeqMap),
           (classOf[concurrent.TrieMap[_, _]], concurrent.TrieMap)
         ))
 
