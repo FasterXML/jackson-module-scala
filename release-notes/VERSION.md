@@ -1,3 +1,12 @@
+# Version: 2.17.0 (unreleased)
+
+This patch release tracks Jackson 2.17. The 2.17 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
+
+## Fixes
+
+* [[gh-pr-666]](https://github.com/FasterXML/jackson-module-scala/pull/666) Support deserialization of TreeSeqMap
+
 # Version: 2.16.1
 
 ## Fixes
