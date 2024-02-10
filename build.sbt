@@ -243,7 +243,15 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationInclusionForContent"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findSerializationInclusion"),
   ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.util.ClassW.getModuleField"),
-  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.util.ClassW.com$fasterxml$jackson$module$scala$util$ClassW$$moduleField")
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.util.ClassW.com$fasterxml$jackson$module$scala$util$ClassW$$moduleField"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findIgnoreUnknownProperties"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.DefaultRequiredAnnotationIntrospector.findPropertiesToIgnore"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findIgnoreUnknownProperties"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.experimental.DefaultRequiredAnnotationIntrospector.findPropertiesToIgnore"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findIgnoreUnknownProperties"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.JavaAnnotationIntrospector.findPropertiesToIgnore"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findIgnoreUnknownProperties"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findPropertiesToIgnore")
 )
 
 def compareVersions(version1: String, version2: String): Int = {
