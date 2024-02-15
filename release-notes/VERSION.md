@@ -27,6 +27,11 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 * [[gh-644]](https://github.com/FasterXML/jackson-module-scala/issues/644) Registering Jackson Module Scala in an ObjectMapper can affect the property name resolution of non-Scala classes which can affect the behavior when you serialize/deserialize those classes.
 * [[gh-pr-647]](https://github.com/FasterXML/jackson-module-scala/pull/647) Make ScalaObjectDeserializerModule part of DefaultScalaModule.
 
+# Version: 2.15.4
+
+There are no new fixes in this release; it serves to track the 2.15.4 release
+of the upstream Jackson projects.
+
 # Version: 2.15.3
 
 There are no new fixes in this release; it serves to track the 2.15.3 release
