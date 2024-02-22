@@ -50,7 +50,7 @@ scalaMajorVersion := {
   }
 }
 
-val addJava17Tests: Boolean = compareVersions(System.getProperty("java.version"), "17.0.0") >= 0
+val addJava17Tests: Boolean = System.getProperty("java.specification.version").toDouble >= 17
 
 mimaPreviousArtifacts := {
   if (scalaReleaseVersion.value > 2)
@@ -254,22 +254,3 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospector.findPropertiesToIgnore")
 )
 
-def compareVersions(version1: String, version2: String): Int = {
-  var comparisonResult = 0
-  val version1Splits = version1.split("\\.")
-  val version2Splits = version2.split("\\.")
-  val maxLengthOfVersionSplits = Math.max(version1Splits.length, version2Splits.length)
-  var i = 0
-  while (comparisonResult == 0 && i < maxLengthOfVersionSplits) {
-    val v1 = if (i < version1Splits.length) version1Splits(i).toInt
-    else 0
-    val v2 = if (i < version2Splits.length) version2Splits(i).toInt
-    else 0
-    val compare = v1.compareTo(v2)
-    if (compare != 0) {
-      comparisonResult = compare
-    }
-    i += 1
-  }
-  comparisonResult
-}
