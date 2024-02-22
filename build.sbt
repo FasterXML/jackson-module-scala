@@ -126,7 +126,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.17" % Test
+  "org.scalatest" %% "scalatest" % "3.2.18" % Test
 )
 
 // build.properties
