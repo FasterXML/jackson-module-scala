@@ -6,7 +6,6 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-ThisBuild / version := "2.17.0-SNAPSHOT"
 ThisBuild / scalaVersion := "2.13.12"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.18", "2.13.12", "3.3.1")
