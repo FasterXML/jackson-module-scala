@@ -7,6 +7,11 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 
 * [[gh-pr-666]](https://github.com/FasterXML/jackson-module-scala/pull/666) Support deserialization of TreeSeqMap
 
+# Version: 2.16.2
+
+There are no new fixes in this release; it serves to track the 2.16.2 release
+of the upstream Jackson projects.
+
 # Version: 2.16.1
 
 ## Fixes
