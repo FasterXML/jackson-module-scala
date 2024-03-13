@@ -147,7 +147,7 @@ well suited to end users, as most classes are implementation details of the modu
 * [jackson-scala-reflect-extensions](https://github.com/pjfanning/jackson-scala-reflect-extensions)
 * [jackson-scala3-reflect-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions)
 * [jackson-module-enumeratum](https://github.com/pjfanning/jackson-module-enumeratum)
-* [jackson-module-scala3-enum](https://github.com/pjfanning/jackson-module-scala3-enum)
+* [jackson-module-scala3-enum](https://github.com/pjfanning/jackson-module-scala3-enum) -- since v2.17.0, this is included in jackson-module-scala
 * [jackson-caffeine-cache](https://github.com/pjfanning/jackson-caffeine-cache)
 
 # Contributing
