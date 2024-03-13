@@ -5,6 +5,7 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 
 ## Fixes
 
+* [[gh-501]](https://github.com/FasterXML/jackson-module-scala/issues/501) make Scala3 enum support part of DefaultScalaModule - and no longer require users to load a separate module
 * [[gh-pr-666]](https://github.com/FasterXML/jackson-module-scala/pull/666) Support deserialization of TreeSeqMap
 
 # Version: 2.16.2
