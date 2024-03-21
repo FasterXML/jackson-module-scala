@@ -8,12 +8,13 @@ organization := "com.fasterxml.jackson.module"
 
 val scala213Version = "2.13.13"
 ThisBuild / scalaVersion := scala213Version
+ThisBuild / version := "2.18.0-SNAPSHOT"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.19", scala213Version, "3.3.3")
 
 //resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
-val jacksonVersion = "2.17.0"
+val jacksonVersion = "2.17.0" // "2.18.0-SNAPSHOT"
 
 autoAPIMappings := true
 
