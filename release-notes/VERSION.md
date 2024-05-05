@@ -1,3 +1,8 @@
+# Version: 2.17.1
+
+There are no new fixes in this release; it serves to track the 2.17.1 release
+of the upstream Jackson projects.
+
 # Version: 2.17.0
 
 This patch release tracks Jackson 2.17. The 2.17 series has full support for
