@@ -36,7 +36,7 @@ the minimum supported version now.
 ## Scala 3
 
 [Scala 3 support](https://github.com/FasterXML/jackson-module-scala/issues?q=is%3Aissue+is%3Aopen+label%3Ascala3) was added in v2.13.0.
-This support is still deemed to be experimental. Code contributions are welcomed.
+There are a few differences from Scala 2 support.
 * ScalaObjectMapper is not supported for Scala 3 but ClassTagExtensions is its replacement. (https://github.com/FasterXML/jackson-module-scala/issues/503)
 * There are still a few tests that work with Scala 2 that fail with Scala 3
 * It is expected that most use cases should work ok with Scala 3
@@ -114,7 +114,7 @@ Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/a
 
 To import in sbt:
 ```scala
-libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.15.3"
+libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.17.1"
 ```
 
 ## Java/Kotlin users
