@@ -4,7 +4,7 @@ name: Upstream Dispatch
 
 on:
   repository_dispatch:
-    types: [jackson-core-pushed]
+    types: [jackson-databind-pushed]
   workflow_dispatch:
 
 env:
