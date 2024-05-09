@@ -114,10 +114,20 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-libraryDependencies ++= Seq(
-  "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-  "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
-  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+val jacksonDependencies = if (jacksonVersion.contains("SNAPSHOT"))
+  Seq(
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion changing(),
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion changing(),
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion changing()
+  )
+else
+  Seq(
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
+  )
+
+libraryDependencies ++= jacksonDependencies ++ Seq(
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   // test dependencies
   "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
