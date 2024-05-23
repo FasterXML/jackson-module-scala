@@ -1,6 +1,5 @@
 package tools.jackson.module.scala.deser
 
-import tools.jackson.module.scala.deser.AnyValDeserializerTest.DoubleAnyValHolder
 import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 object AnyValDeserializerTest {
