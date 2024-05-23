@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.module.scala.deser.AnyValDeserializerTest.DoubleAnyValHolder
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 object AnyValDeserializerTest {
