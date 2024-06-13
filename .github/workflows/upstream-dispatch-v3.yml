@@ -4,7 +4,7 @@ name: Upstream Dispatch v3
 
 on:
   repository_dispatch:
-    types: [jackson-databind-pushed]
+    types: [jackson-databind-pushed-v3]
   workflow_dispatch:
 
 jobs:
