@@ -1,0 +1,27 @@
+name: Upstream Dispatch v2
+
+# test build when upstream jackson modules are published
+
+on:
+  repository_dispatch:
+    types: [jackson-databind-pushed]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Test on databind v2 changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch (full)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java (zulu@11)
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 11
+          cache: sbt
+
+      - run: sbt -J-Xmx2G '++ 2.13' test
