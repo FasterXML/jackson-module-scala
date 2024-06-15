@@ -2,7 +2,7 @@ package tools.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.JsonMerge
 import tools.jackson.core.`type`.TypeReference
-import tools.jackson.databind.{ObjectMapper, ObjectReader}
+import tools.jackson.databind.{MapperFeature, ObjectMapper, ObjectReader}
 import tools.jackson.module.scala.DefaultScalaModule
 
 import scala.collection.{Map, mutable}
@@ -17,9 +17,16 @@ class MergeTest extends DeserializerTest {
 
   val module: DefaultScalaModule.type = DefaultScalaModule
 
-  def newScalaMapper: ObjectMapper = newMapper
+  // This test replies on enabling MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS
+  // which is not enabled by default in the Jackson v2 but not in Jackson v3
+  def newScalaMapper: ObjectMapper = newBuilder
+    .enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
+    .build()
 
-  def newMergeableScalaMapper: ObjectMapper = newBuilder.defaultMergeable(true).build()
+  def newMergeableScalaMapper: ObjectMapper = newBuilder
+    .enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
+    .defaultMergeable(true)
+    .build()
 
   behavior of "The DefaultScalaModule when reading for updating"
 
