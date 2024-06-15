@@ -1,7 +1,7 @@
 package tools.jackson.module.scala.deser
 
 import tools.jackson.core.`type`.TypeReference
-import tools.jackson.databind.DatabindException
+import tools.jackson.core.exc.InputCoercionException
 import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.module.scala.deser.OptionWithNumberDeserializerTest.{OptionLong, OptionLongWithDefault}
 
@@ -57,7 +57,8 @@ class PrimitiveContainerTest extends DeserializationFixture
   }
 
   it should "enforce type constraints"  in { f =>
-    val thrown = intercept[DatabindException] {
+    // InputCoercionException in Jackson 3 - was DatabindException in Jackson 2
+    val thrown = intercept[InputCoercionException] {
       f.readValue("""{"value":9223372036854775807}""", new TypeReference[AnnotatedOptionInt] {}).value.get
     }
     thrown.getMessage should startWith ("Numeric value (9223372036854775807) out of range")
