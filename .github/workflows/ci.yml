@@ -170,7 +170,7 @@ jobs:
       - env:
           CI_SNAPSHOT_RELEASE: +publishSigned
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
-          SONATYPE_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
-          SONATYPE_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD3 }}
+          SONATYPE_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME3 }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
         run: sbt -J-Xmx2G ci-release
