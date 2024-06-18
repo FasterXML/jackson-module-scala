@@ -155,7 +155,9 @@ class CreatorTest extends DeserializationFixture {
       .addAllBuiltinModules()
       .applyDefaultValuesWhenDeserializing(false)
       .build()
-    val mapper = JsonMapper.builder().addModule(scalaModule).build()
+    val mapper = initBuilder()
+      .addModule(scalaModule)
+      .build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual null
     deser.i shouldEqual 0
@@ -170,7 +172,9 @@ class CreatorTest extends DeserializationFixture {
       .addModule(ScalaAnnotationIntrospectorModule)
       .applyDefaultValuesWhenDeserializing(false)
       .build()
-    val mapper = JsonMapper.builder().addModule(scalaModule).build()
+    val mapper = initBuilder()
+      .addModule(scalaModule)
+      .build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual null
     deser.i shouldEqual 0
@@ -181,7 +185,9 @@ class CreatorTest extends DeserializationFixture {
   }
 
   it should "ignore default values (when MapperFeature is overridden)" in { _ =>
-    val builder = JsonMapper.builder().disable(MapperFeature.APPLY_DEFAULT_VALUES).addModule(DefaultScalaModule)
+    val builder = initBuilder()
+      .disable(MapperFeature.APPLY_DEFAULT_VALUES)
+      .addModule(DefaultScalaModule)
     val mapper = builder.build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual null
@@ -236,5 +242,10 @@ class CreatorTest extends DeserializationFixture {
   it should "not have a problem constructors and member name conflicts" in { f =>
     val node: JsonNode = f.valueToTree[IntNode](10)
     f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
+  }
+
+  private def initBuilder(): JsonMapper.Builder = {
+    JsonMapper.builder()
+      .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
   }
 }

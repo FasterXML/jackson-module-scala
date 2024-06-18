@@ -2,7 +2,6 @@ package tools.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonProperty.Access
 import com.fasterxml.jackson.annotation._
-import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.{ObjectMapper, PropertyNamingStrategies}
 import tools.jackson.module.scala.DefaultScalaModule
 
@@ -139,7 +138,7 @@ class CaseClassSerializerTest extends SerializerTest {
   }
 
   def propertyNamingStrategyMapper: ObjectMapper = {
-    val builder = JsonMapper.builder()
+    val builder = newBuilder
     val settings = builder.baseSettings().`with`(PropertyNamingStrategies.SNAKE_CASE)
     builder.baseSettings(settings).addModule(module).build()
   }
