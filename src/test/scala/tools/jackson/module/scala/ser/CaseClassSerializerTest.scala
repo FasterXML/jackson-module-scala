@@ -189,7 +189,7 @@ class CaseClassSerializerTest extends SerializerTest {
     val mapper = newBuilder
       .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
       .build()
-    serialize(foo) should equal ("""{"string":"str","boolean":false}""")
+    mapper.writeValueAsString(foo) should equal ("""{"string":"str","boolean":false}""")
   }
 
   it should "serialize java getters returning java collections" in {
