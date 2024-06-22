@@ -7,7 +7,7 @@ organization := "tools.jackson.module"
 
 ThisBuild / version := "3.0.0-SNAPSHOT"
 
-val scala213Version = "2.13.13"
+val scala213Version = "2.13.14"
 ThisBuild / scalaVersion := scala213Version
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.19", scala213Version, "3.3.3")
