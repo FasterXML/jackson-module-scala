@@ -136,7 +136,8 @@ class ClassTagExtensionsTest extends JacksonTest {
     val result = mapper.writerWithView[PublicView].writeValueAsString(instance)
     result should equal("""{"foo":"foo"}""")
     val resultInView = mapper.writerWithView[PrivateView].writeValueAsString(instance)
-    resultInView should equal("""{"foo":"foo","bar":42}""")
+    // JSON order for non-constructor params changed in Jackson 3 due to https://github.com/FasterXML/jackson-databind/pull/4572
+    resultInView should equal("""{"bar":42,"foo":"foo"}""")
   }
 
   it should "produce writer with type" in {

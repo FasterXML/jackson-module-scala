@@ -160,7 +160,8 @@ class CaseClassSerializerTest extends SerializerTest {
     val bean = new NonCaseWithBeanProperty
     bean.id = 1
     bean.bar = "foo"
-    serialize(bean) should equal( """{"id":1,"bar":"foo"}""")
+    // JSON order for non-constructor params changed in Jackson 3 due to https://github.com/FasterXML/jackson-databind/pull/4572
+    serialize(bean) should equal( """{"bar":"foo","id":1}""")
   }
 
   it should "serialize a nested case class" in {
@@ -185,7 +186,8 @@ class CaseClassSerializerTest extends SerializerTest {
       def isBoolean = boolean
     }
     val foo = new Foo("str", false)
-    serialize(foo) should equal ("""{"string":"str","boolean":false}""")
+    // JSON order for non-constructor params changed in Jackson 3 due to https://github.com/FasterXML/jackson-databind/pull/4572
+    serialize(foo) should equal ("""{"boolean":false,"string":"str"}""")
   }
 
   it should "serialize java getters returning java collections" in {

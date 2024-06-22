@@ -244,8 +244,5 @@ class CreatorTest extends DeserializationFixture {
     f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
   }
 
-  private def initBuilder(): JsonMapper.Builder = {
-    JsonMapper.builder()
-      .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-  }
+  private def initBuilder(): JsonMapper.Builder = JsonMapper.builder()
 }
