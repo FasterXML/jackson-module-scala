@@ -2,7 +2,7 @@ package tools.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonProperty.Access
 import com.fasterxml.jackson.annotation._
-import tools.jackson.databind.{ObjectMapper, PropertyNamingStrategies}
+import tools.jackson.databind.{MapperFeature, ObjectMapper, PropertyNamingStrategies}
 import tools.jackson.module.scala.DefaultScalaModule
 
 import scala.beans.BeanProperty
@@ -186,8 +186,10 @@ class CaseClassSerializerTest extends SerializerTest {
       def isBoolean = boolean
     }
     val foo = new Foo("str", false)
-    // JSON order for non-constructor params changed in Jackson 3 due to https://github.com/FasterXML/jackson-databind/pull/4572
-    serialize(foo) should equal ("""{"boolean":false,"string":"str"}""")
+    val mapper = newBuilder
+      .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+      .build()
+    serialize(foo) should equal ("""{"string":"str","boolean":false}""")
   }
 
   it should "serialize java getters returning java collections" in {
