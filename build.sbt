@@ -13,7 +13,7 @@ ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.19", scala213Version, "3.
 
 //resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
-val jacksonVersion = "2.17.1"
+val jacksonVersion = "2.17.2"
 
 autoAPIMappings := true
 
