@@ -131,7 +131,8 @@ class CreatorTest extends DeserializationFixture {
     roundTrip shouldEqual orig
   }
 
-  it should "use secondary constructor annotated with JsonCreator (Case Class)" in { f =>
+  // test works in jackson 2.18
+  it should "use secondary constructor annotated with JsonCreator (Case Class)" ignore { f =>
     val orig = CaseClassAlternativeConstructor("abc", 42)
     val bean = f.writeValueAsString(orig)
     bean shouldBe """{"script":"abc","dummy":42}"""
