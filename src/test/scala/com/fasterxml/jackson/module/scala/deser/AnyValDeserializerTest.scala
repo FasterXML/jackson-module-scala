@@ -2,6 +2,8 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
+import scala.util.Properties.versionString
+
 object AnyValDeserializerTest {
   case class DoubleAnyVal(underlying: Double) extends AnyVal
   case class DoubleAnyValHolder(value: DoubleAnyVal)
@@ -30,7 +32,9 @@ class AnyValDeserializerTest extends DeserializerTest {
     val expected = BigIntAnyVal(42)
     mapper.readValue("""{"underlying":42}""", classOf[BigIntAnyVal]) shouldEqual expected
     mapper.readValue("""{"value":42}""", classOf[BigIntAnyValHolder]) shouldEqual BigIntAnyValHolder(expected)
-    //mapper.readValue("""{"value":{"underlying":42}}""", classOf[BigIntOptionAnyValHolder]) shouldEqual
-      //BigIntOptionAnyValHolder(Some(expected))
+    if (!versionString.startsWith("2.11")) {
+      mapper.readValue("""{"value":{"underlying":42}}""", classOf[BigIntOptionAnyValHolder]) shouldEqual
+        BigIntOptionAnyValHolder(Some(expected))
+    }
   }
 }
