@@ -1,20 +1,21 @@
-name: Upstream Dispatch
+name: Upstream Dispatch v3
 
 # test build when upstream jackson modules are published
 
 on:
   repository_dispatch:
-    types: [jackson-databind-pushed]
+    types: [jackson-databind-pushed-v3]
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build and Test on databind v3 changes
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
         with:
+          ref: master
           fetch-depth: 0
 
       - name: Setup Java (zulu@11)
