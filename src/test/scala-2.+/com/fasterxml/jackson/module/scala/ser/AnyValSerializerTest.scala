@@ -29,7 +29,7 @@ class AnyValSerializerTest extends BaseFixture {
     val value = BigIntAnyVal(42)
     mapper.writeValueAsString(value) shouldBe """{"underlying":42}"""
     mapper.writeValueAsString(BigIntAnyValHolder(value)) shouldBe """{"value":42}"""
-    if (!versionNumberString.startsWith("2.11") && !versionNumberString.startsWith("3")) {
+    if (!versionNumberString.startsWith("2.11")) {
       // see https://github.com/FasterXML/jackson-module-scala/pull/675
       mapper.writeValueAsString(BigIntOptionAnyValHolder(Some(value))) shouldBe """{"value":{"underlying":42}}"""
     }
