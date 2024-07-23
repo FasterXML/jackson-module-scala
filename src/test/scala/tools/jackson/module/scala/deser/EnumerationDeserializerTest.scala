@@ -36,7 +36,7 @@ object EnumerationDeserializerTest  {
 
 // see EnumerationScala2DeserializerTest for tests that only work in Scala2
 class EnumerationDeserializerTest extends DeserializerTest {
-
+  import EnumerationDeserializerTest._
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
 
   "An ObjectMapper with EnumDeserializerModule" should "deserialize a value into a scala Enumeration as a bean property" in {
@@ -67,6 +67,12 @@ class EnumerationDeserializerTest extends DeserializerTest {
   it should "deserialize an annotated optional Enumeration value (JsonScalaEnumeration)" in {
     val result = deserialize(annotatedFridayJson, classOf[AnnotationOptionHolder])
     result.weekday shouldBe Some(Weekday.Fri)
+  }
+
+  it should "locate the annotation on BeanProperty fields" in {
+    val weekdayMapJson = """{"weekdayMap":{"Mon":"Boo","Fri":"Hooray!"}}"""
+    val result = deserialize(weekdayMapJson, classOf[HolderImpl])
+    result.weekdayMap should contain key Weekday.Mon
   }
 
   val fridayEnumJson = """{"day": {"enumClass":"tools.jackson.module.scala.Weekday","value":"Fri"}}"""
