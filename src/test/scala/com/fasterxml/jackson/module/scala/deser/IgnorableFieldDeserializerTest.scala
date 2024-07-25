@@ -13,14 +13,14 @@ class IgnorableFieldDeserializerTest extends DeserializerTest {
 
   lazy val module: JacksonModule = DefaultScalaModule
 
-  "An ObjectMapper with the DefaultScalaModule" should "fail if field is not expected" in {
+  "An ObjectMapper with the DefaultScalaModule" should "fail if field is not expected (DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES enabled)" in {
     val mapper = newMapper
     intercept[UnrecognizedPropertyException] {
       mapper.readValue(genJson(100), classOf[ExtractFields])
     }
   }
 
-  it should "succeed if field is not expected" in {
+  it should "succeed if field is not expected (DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES disabled)" in {
     val mapper = newBuilder
       .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
       .build()
