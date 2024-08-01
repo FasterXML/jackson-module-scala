@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.deser
 
 import com.fasterxml.jackson.annotation.{JsonSetter, JsonSubTypes, JsonTypeInfo, JsonTypeName, Nulls}
 import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{MapperFeature, ObjectMapper}
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -41,6 +41,8 @@ object OptionDeserializerTest {
 
   case class OptionSeqLong(values: Option[Seq[Long]])
   case class WrappedOptionSeqLong(text: String, wrappedLongs: OptionSeqLong)
+
+  case class OptionWithDefault(id: Int, value: Option[String] = Some("123"))
 }
 
 class OptionDeserializerTest extends DeserializerTest {
@@ -109,6 +111,27 @@ class OptionDeserializerTest extends DeserializerTest {
     val str = mapper.writeValueAsString(v)
     val v2 = mapper.readValue(str, classOf[XMarker])
     v2 shouldEqual v
+  }
+
+  it should "deserialize case class with an option that has non-empty default" in {
+    val json: String = """{"id":123}"""
+    deserialize(json, classOf[OptionWithDefault]) shouldEqual OptionWithDefault(123, Some("123"))
+  }
+
+  it should "deserialize case class with an option that has non-empty default (explicit null value in json)" in {
+    // see https://github.com/FasterXML/jackson-module-scala/issues/687
+    val json: String = """{"id":123, "value": null}"""
+    deserialize(json, classOf[OptionWithDefault]) shouldEqual OptionWithDefault(123, Some("123"))
+  }
+
+  it should "deserialize case class with an option that has non-empty default (disable MapperFeature.APPLY_DEFAULT_VALUES)" in {
+    val json: String = """{"id":123}"""
+    val mapper = JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .disable(MapperFeature.APPLY_DEFAULT_VALUES)
+      .build()
+    val o1 = mapper.readValue(json, classOf[OptionWithDefault])
+    o1 shouldEqual OptionWithDefault(123, None)
   }
 
   it should "deserialize case class with an option of seq of strings" in {
