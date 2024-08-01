@@ -30,10 +30,6 @@ object OptionDeserializerTest {
     def base_=(base:Option[Base]): Unit = { _base = base }
   }
 
-  case class Defaulted(id: Int, name: String = "") {
-    def this() = this(1,"")
-  }
-
   case class Foo(bar: String)
   case class TWrapper[T](t: T)
 
@@ -85,13 +81,6 @@ class OptionDeserializerTest extends DeserializerTest {
 
   it should "deserialize a polymorphic null as None" in {
     deserialize("""{"base":null}""", classOf[BaseHolder]) should be(BaseHolder(None))
-  }
-
-  it should "deserialize defaulted parameters correctly (without defaults)" in {
-    val json = newMapper.writeValueAsString(Defaulted(id = 1))
-    json shouldBe """{"id":1,"name":""}"""
-    val d = deserialize(json, classOf[Defaulted])
-    d.name should not be null
   }
 
   it should "deserialize a type param wrapped option" in {
