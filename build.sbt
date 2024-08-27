@@ -8,13 +8,14 @@ organization := "com.fasterxml.jackson.module"
 
 val scala213Version = "2.13.14"
 ThisBuild / scalaVersion := scala213Version
-ThisBuild / version := "2.18.0-SNAPSHOT"
+ThisBuild / version := "2.18.0-rc1-SNAPSHOT"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.19", scala213Version, "3.3.3")
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
-val jacksonVersion = "2.18.0-SNAPSHOT"
+val jacksonCoreVersion = "2.18.0-rc1-SNAPSHOT"
+val jacksonNonCoreVersion = "2.18.0-SNAPSHOT"
 
 autoAPIMappings := true
 
@@ -114,27 +115,27 @@ Test / unmanagedSourceDirectories ++= {
   }
 }
 
-val jacksonDependencies = if (jacksonVersion.contains("SNAPSHOT"))
+val jacksonDependencies = if (jacksonCoreVersion.contains("SNAPSHOT"))
   Seq(
-    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion changing(),
-    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion changing(),
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion changing()
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonCoreVersion changing(),
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonCoreVersion changing(),
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonCoreVersion changing()
   )
 else
   Seq(
-    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonCoreVersion,
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonCoreVersion,
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonCoreVersion
   )
 
 libraryDependencies ++= jacksonDependencies ++ Seq(
   "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   // test dependencies
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonVersion % Test,
-  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test,
-  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonNonCoreVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonCoreVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonCoreVersion % Test,
+  "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonNonCoreVersion % Test,
+  "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonNonCoreVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
   "org.scalatest" %% "scalatest" % "3.2.19" % Test
