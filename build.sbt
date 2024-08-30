@@ -8,11 +8,10 @@ organization := "com.fasterxml.jackson.module"
 
 val scala213Version = "2.13.14"
 ThisBuild / scalaVersion := scala213Version
-ThisBuild / version := "2.18.0-rc1-SNAPSHOT"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.19", scala213Version, "3.3.3")
 
-resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+// resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 val jacksonCoreVersion = "2.18.0-rc1"
 val jacksonNonCoreVersion = jacksonCoreVersion
