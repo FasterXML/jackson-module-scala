@@ -1,4 +1,4 @@
-# Version: 2.18.0-rc1
+# Version: 2.18.0
 
 This patch release tracks Jackson 2.18. The 2.18 series has full support for Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version. There are no new fixes in this release.
 
