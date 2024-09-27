@@ -6,10 +6,10 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-val scala213Version = "2.13.14"
+val scala213Version = "2.13.15"
 ThisBuild / scalaVersion := scala213Version
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.19", scala213Version, "3.3.3")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.3.4")
 
 // resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
