@@ -71,10 +71,9 @@ val mapper = JsonMapper.builder()
   .build()
 ```
 
-One Scala module that isn't part of `DefaultScalaModule` is `ScalaObjectDeserializerModule`. This module is used to
-ensure that deserialization to a Scala object does not create a new instance of the object.
-This latter module is not yet included in `DefaultScalaModule` but will be included in v2.16.0.
-It is already included in v3.0.0, which is still under development.
+Prior to v2.16.0, `ScalaObjectDeserializerModule` was not part of `DefaultScalaModule`. This module is used to
+ensure that deserialization to a Scala object does not create a new instance of the object. Users of older versions can add this
+module explicitly.
 
 ## DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES
 
