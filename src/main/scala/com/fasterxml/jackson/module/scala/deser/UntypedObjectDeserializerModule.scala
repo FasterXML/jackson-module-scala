@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.deser.{Deserializers, std}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.module.scala.JacksonModule
 
-private class UntypedScalaObjectDeserializer extends std.UntypedObjectDeserializer(null, null) {
+private class UntypedScalaObjectDeserializer
+  extends std.UntypedObjectDeserializer(null, null.asInstanceOf[JavaType]) {
 
   private var _mapDeser: JsonDeserializer[AnyRef] = _
   private var _listDeser: JsonDeserializer[AnyRef] = _
