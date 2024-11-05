@@ -10,7 +10,8 @@ import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 
 import scala.languageFeature.postfixOps
 
-private class UntypedScalaObjectDeserializer extends UntypedObjectDeserializer(null, null) {
+private class UntypedScalaObjectDeserializer
+  extends UntypedObjectDeserializer(null, null.asInstanceOf[JavaType]) {
 
   private var _mapDeser: ValueDeserializer[AnyRef] = _
   private var _listDeser: ValueDeserializer[AnyRef] = _
