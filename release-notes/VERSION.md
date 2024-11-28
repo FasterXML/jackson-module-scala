@@ -1,3 +1,8 @@
+# Version: 2.18.2
+
+There are no new fixes in this release; it serves to track the 2.18.2 release
+of the upstream Jackson projects.
+
 # Version: 2.18.1
 
 There are no new fixes in this release; it serves to track the 2.18.1 release
