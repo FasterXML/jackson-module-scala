@@ -18,6 +18,6 @@ class SerializableMap extends AbstractMap[String, String] with JacksonSerializab
     jgen.writeNumber(10)
   }
   override def serializeWithType(jgen: JsonGenerator, serializationContext: SerializationContext, typeSer: TypeSerializer): Unit = {
-    serialize(jgen, provider)
+    serialize(jgen, serializationContext)
   }
 }
