@@ -28,7 +28,7 @@ class NonEmptyMaps {
 }
 
 class TupleKeySerializer extends ValueSerializer[Product] {
-  override def serialize(value: Product, jgen: JsonGenerator, provider: SerializationContext): Unit = {
+  override def serialize(value: Product, jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
     val objectMapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
     jgen.writeName(objectMapper.writeValueAsString(value))
   }

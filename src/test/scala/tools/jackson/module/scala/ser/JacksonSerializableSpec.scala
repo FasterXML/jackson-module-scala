@@ -8,20 +8,20 @@ import tools.jackson.module.scala.BaseFixture
 object JacksonSerializableSpec {
   class SerializableIterable extends JacksonSerializable.Base with Iterable[String] {
     override def iterator: Iterator[String] = throw new IllegalArgumentException("This shouldn't get called")
-    override def serialize(jgen: JsonGenerator, provider: SerializationContext): Unit = {
+    override def serialize(jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
       jgen.writeNumber(10)
     }
-    override def serializeWithType(jgen: JsonGenerator, provider: SerializationContext, typeSer: TypeSerializer): Unit = {
-      serialize(jgen, provider)
+    override def serializeWithType(jgen: JsonGenerator, serializationContext: SerializationContext, typeSer: TypeSerializer): Unit = {
+      serialize(jgen, serializationContext)
     }
   }
 
   class SerializableIterator extends JacksonSerializable.Base with Iterator[String] {
-    override def serialize(jgen: JsonGenerator, provider: SerializationContext): Unit = {
+    override def serialize(jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
       jgen.writeNumber(10)
     }
-    override def serializeWithType(jgen: JsonGenerator, provider: SerializationContext, typeSer: TypeSerializer): Unit = {
-      serialize(jgen, provider)
+    override def serializeWithType(jgen: JsonGenerator, serializationContext: SerializationContext, typeSer: TypeSerializer): Unit = {
+      serialize(jgen, serializationContext)
     }
 
     override def hasNext: Boolean = ???

@@ -23,18 +23,18 @@ private trait IterableSerializer
   override def hasSingleElement(value: collection.Iterable[Any]): Boolean =
     value.size == 1
 
-  override def serialize(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializationContext): Unit = {
-    if (provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
-      collectionSerializer.serializeContents(value, gen, provider)
+  override def serialize(value: collection.Iterable[Any], gen: JsonGenerator, serializationContext: SerializationContext): Unit = {
+    if (serializationContext.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
+      collectionSerializer.serializeContents(value, gen, serializationContext)
     } else {
       gen.writeStartArray(value)
-      collectionSerializer.serializeContents(value, gen, provider)
+      collectionSerializer.serializeContents(value, gen, serializationContext)
       gen.writeEndArray()
     }
   }
 
-  override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, provider: SerializationContext): Unit = {
-    serialize(value, gen, provider)
+  override def serializeContents(value: collection.Iterable[Any], gen: JsonGenerator, serializationContext: SerializationContext): Unit = {
+    serialize(value, gen, serializationContext)
   }
 
   override def withResolved(property: BeanProperty,
@@ -43,7 +43,7 @@ private trait IterableSerializer
                             unwrapSingle: jl.Boolean): ResolvedIterableSerializer =
     new ResolvedIterableSerializer(this, property, vts, elementSerializer, unwrapSingle)
 
-  override def isEmpty(provider: SerializationContext, value: collection.Iterable[Any]): Boolean = value.isEmpty
+  override def isEmpty(serializationContext: SerializationContext, value: collection.Iterable[Any]): Boolean = value.isEmpty
 }
 
 private class ResolvedIterableSerializer( src: IterableSerializer,

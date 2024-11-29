@@ -25,21 +25,21 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
 
   override def hasSingleElement(value: Iterable[Any]): Boolean = value.size == 1
 
-  override def serialize(value: Iterable[Any], g: JsonGenerator, provider: SerializationContext): Unit = {
-    if (((_unwrapSingle == null && provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED))
+  override def serialize(value: Iterable[Any], g: JsonGenerator, serializationContext: SerializationContext): Unit = {
+    if (((_unwrapSingle == null && serializationContext.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED))
       || _unwrapSingle) && hasSingleElement(value)) {
-      serializeContents(value, g, provider)
+      serializeContents(value, g, serializationContext)
     } else {
       g.writeStartArray(value)
-      serializeContents(value, g, provider)
+      serializeContents(value, g, serializationContext)
       g.writeEndArray()
     }
   }
 
-  override def serializeContents(value: Iterable[Any], g: JsonGenerator, provider: SerializationContext): Unit = {
+  override def serializeContents(value: Iterable[Any], g: JsonGenerator, serializationContext: SerializationContext): Unit = {
     g.assignCurrentValue(value)
     if (_elementSerializer != null) {
-      serializeContentsUsing(value, g, provider, _elementSerializer)
+      serializeContentsUsing(value, g, serializationContext, _elementSerializer)
     } else {
       val it = value.iterator
       if (it.hasNext) {
@@ -48,23 +48,25 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
         var i = 0
         try while (it.hasNext) {
           val elem = it.next()
-          if (elem == null) provider.defaultSerializeNullValue(g)
+          if (elem == null) serializationContext.defaultSerializeNullValue(g)
           else {
             val cc = elem.getClass
             var serializer = serializers.serializerFor(cc)
             if (serializer == null) {
-              if (_elementType.hasGenericTypes) serializer = _findAndAddDynamic(provider, provider.constructSpecializedType(_elementType, cc))
-              else serializer = _findAndAddDynamic(provider, cc)
+              if (_elementType.hasGenericTypes)
+                serializer = _findAndAddDynamic(serializationContext, serializationContext.constructSpecializedType(_elementType, cc))
+              else
+                serializer = _findAndAddDynamic(serializationContext, cc)
               serializers = _dynamicValueSerializers
             }
-            if (typeSer == null) serializer.serialize(elem.asInstanceOf[Object], g, provider)
-            else serializer.serializeWithType(elem.asInstanceOf[Object], g, provider, typeSer)
+            if (typeSer == null) serializer.serialize(elem.asInstanceOf[Object], g, serializationContext)
+            else serializer.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
           }
           i += 1
         }
         catch {
           case NonFatal(e) =>
-            wrapAndThrow(provider, e, value, i)
+            wrapAndThrow(serializationContext, e, value, i)
         }
       }
     }
@@ -79,7 +81,7 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     new ScalaIterableSerializer(this, _property, vts, _elementSerializer, _unwrapSingle)
   }
 
-  private def serializeContentsUsing(value: Iterable[Any], g: JsonGenerator, provider: SerializationContext, ser: ValueSerializer[AnyRef]): Unit = {
+  private def serializeContentsUsing(value: Iterable[Any], g: JsonGenerator, serializationContext: SerializationContext, ser: ValueSerializer[AnyRef]): Unit = {
     val it = value.iterator
     if (it.hasNext) {
       val typeSer = _valueTypeSerializer
@@ -87,13 +89,13 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
       while (it.hasNext) {
         val elem = it.next()
         try {
-          if (elem == null) provider.defaultSerializeNullValue(g)
-          else if (typeSer == null) ser.serialize(elem.asInstanceOf[Object], g, provider)
-          else ser.serializeWithType(elem.asInstanceOf[Object], g, provider, typeSer)
+          if (elem == null) serializationContext.defaultSerializeNullValue(g)
+          else if (typeSer == null) ser.serialize(elem.asInstanceOf[Object], g, serializationContext)
+          else ser.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
           i += 1
         } catch {
           case NonFatal(e) =>
-            wrapAndThrow(provider, e, value, i)
+            wrapAndThrow(serializationContext, e, value, i)
         }
       }
     }

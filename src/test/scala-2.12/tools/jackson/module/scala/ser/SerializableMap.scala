@@ -14,10 +14,10 @@ class SerializableMap extends AbstractMap[String, String] with JacksonSerializab
   def get(key: String): Option[String] = None
   def iterator: Iterator[(String, String)] = throw new IllegalArgumentException("This shouldn't get called")
 
-  override def serialize(jgen: JsonGenerator, provider: SerializationContext): Unit = {
+  override def serialize(jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
     jgen.writeNumber(10)
   }
-  override def serializeWithType(jgen: JsonGenerator, provider: SerializationContext, typeSer: TypeSerializer): Unit = {
+  override def serializeWithType(jgen: JsonGenerator, serializationContext: SerializationContext, typeSer: TypeSerializer): Unit = {
     serialize(jgen, provider)
   }
 }

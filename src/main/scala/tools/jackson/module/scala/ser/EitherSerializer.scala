@@ -95,11 +95,11 @@ private class EitherSerializer(left: EitherDetails,
     withResolved(propOpt, newLeft, newRight, newIncl)
   }
 
-  override def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializationContext): Unit = {
-    serialize(value, jgen, provider, None)
+  override def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
+    serialize(value, jgen, serializationContext, None)
   }
 
-  def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializationContext, vts: Option[TypeSerializer]): Unit = {
+  def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, serializationContext: SerializationContext, vts: Option[TypeSerializer]): Unit = {
     val (field, content, details) = value match {
       case Left(c) => ("l", c, left)
       case Right(c) => ("r", c, right)
@@ -107,25 +107,25 @@ private class EitherSerializer(left: EitherDetails,
     jgen.writeStartObject()
     jgen.writeName(field)
     if (content == null) {
-      provider.defaultSerializeNullValue(jgen)
+      serializationContext.defaultSerializeNullValue(jgen)
     } else {
-      val ser = details.valueSerializer.getOrElse(findCachedSerializer(provider, content.getClass))
+      val ser = details.valueSerializer.getOrElse(findCachedSerializer(serializationContext, content.getClass))
       vts.orElse(details.valueTypeSerializer) match {
-        case Some(vts) => ser.serializeWithType(content, jgen, provider, vts)
-        case None => ser.serialize(content, jgen, provider)
+        case Some(vts) => ser.serializeWithType(content, jgen, serializationContext, vts)
+        case None => ser.serialize(content, jgen, serializationContext)
       }
     }
     jgen.writeEndObject()
   }
 
-  override def serializeWithType(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializationContext, typeSer: TypeSerializer): Unit = {
+  override def serializeWithType(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, serializationContext: SerializationContext, typeSer: TypeSerializer): Unit = {
     if (value == null) {
-      provider.defaultSerializeNullValue(jgen)
+      serializationContext.defaultSerializeNullValue(jgen)
     } else {
       // Otherwise apply type-prefix/suffix, then std serialize:
-      typeSer.writeTypePrefix(jgen, provider, typeSer.typeId(value, JsonToken.START_OBJECT))
-      serialize(value, jgen, provider, Some(typeSer))
-      typeSer.writeTypeSuffix(jgen, provider, typeSer.typeId(value, JsonToken.END_OBJECT))
+      typeSer.writeTypePrefix(jgen, serializationContext, typeSer.typeId(value, JsonToken.START_OBJECT))
+      serialize(value, jgen, serializationContext, Some(typeSer))
+      typeSer.writeTypeSuffix(jgen, serializationContext, typeSer.typeId(value, JsonToken.END_OBJECT))
     }
   }
 

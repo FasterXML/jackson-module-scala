@@ -17,12 +17,12 @@ private object EnumSerializerShared {
 }
 
 private object EnumSerializer extends ValueSerializer[Enum] {
-  def serialize(value: Enum, jgen: JsonGenerator, provider: SerializationContext): Unit =
+  def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
     jgen.writeString(value.toString)
 }
 
 private object EnumKeySerializer extends ValueSerializer[Enum] {
-  def serialize(value: Enum, jgen: JsonGenerator, provider: SerializationContext): Unit =
+  def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
     jgen.writeName(value.toString)
 }
 

@@ -21,7 +21,7 @@ import scala.util.control.Breaks.{break, breakable}
 // This is still here because it is used in other places like EitherSerializer, it is no
 // longer used for the Option serializer
 object OptionSerializer {
-  def useStatic(provider: SerializationContext, property: Option[BeanProperty], referredType: Option[JavaType]): Boolean = {
+  def useStatic(serializationContext: SerializationContext, property: Option[BeanProperty], referredType: Option[JavaType]): Boolean = {
     if (referredType.isEmpty) false
     // First: no serializer for `Object.class`, must be dynamic
     else if (referredType.get.isJavaLangObject) false
@@ -35,9 +35,9 @@ object OptionSerializer {
       breakable {
         for (
           ann <- property.flatMap(p => Option(p.getMember));
-          intr <- Option(provider.getAnnotationIntrospector)
+          intr <- Option(serializationContext.getAnnotationIntrospector)
         ) {
-          val typing = intr.findSerializationTyping(provider.getConfig, ann)
+          val typing = intr.findSerializationTyping(serializationContext.getConfig, ann)
           if (typing == JsonSerialize.Typing.STATIC) {
             result = Some(true)
             break()
@@ -52,27 +52,27 @@ object OptionSerializer {
         case Some(bool) => bool
         case _ =>
           // and finally, may be forced by global static typing (unlikely...)
-          provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
+          serializationContext.isEnabled(MapperFeature.USE_STATIC_TYPING)
       }
     }
   }
 
-  def findSerializer(provider: SerializationContext, typ: Class[_], prop: Option[BeanProperty]): ValueSerializer[AnyRef] = {
+  def findSerializer(serializationContext: SerializationContext, typ: Class[_], prop: Option[BeanProperty]): ValueSerializer[AnyRef] = {
     // Important: ask for TYPED serializer, in case polymorphic handling is needed!
-    provider.findTypedValueSerializer(typ, true).asInstanceOf[ValueSerializer[AnyRef]]
+    serializationContext.findTypedValueSerializer(typ, true).asInstanceOf[ValueSerializer[AnyRef]]
   }
 
-  def findSerializer(provider: SerializationContext, typ: JavaType, prop: Option[BeanProperty]): ValueSerializer[AnyRef] = {
+  def findSerializer(serializationContext: SerializationContext, typ: JavaType, prop: Option[BeanProperty]): ValueSerializer[AnyRef] = {
     // Important: ask for TYPED serializer, in case polymorphic handling is needed!
-    provider.findTypedValueSerializer(typ, true).asInstanceOf[ValueSerializer[AnyRef]]
+    serializationContext.findTypedValueSerializer(typ, true).asInstanceOf[ValueSerializer[AnyRef]]
   }
 
-  def hasContentTypeAnnotation(provider: SerializationContext, property: BeanProperty): Boolean = {
-    val intr = provider.getAnnotationIntrospector
+  def hasContentTypeAnnotation(serializationContext: SerializationContext, property: BeanProperty): Boolean = {
+    val intr = serializationContext.getAnnotationIntrospector
     if (property == null || intr == null) {
       false
     } else {
-      intr.refineSerializationType(provider.getConfig, property.getMember, property.getType) != null
+      intr.refineSerializationType(serializationContext.getConfig, property.getMember, property.getType) != null
     }
   }
 }

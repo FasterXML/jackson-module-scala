@@ -11,7 +11,7 @@ import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 import scala.languageFeature.postfixOps
 
 private object SymbolSerializer extends ValueSerializer[Symbol] {
-  def serialize(value: Symbol, jgen: JsonGenerator, provider: SerializationContext): Unit =
+  def serialize(value: Symbol, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
     jgen.writeString(value.name)
 }
 
