@@ -23,7 +23,7 @@ private trait IteratorSerializer
   override def hasSingleElement(p1: collection.Iterator[Any]): Boolean =
     p1.size == 1
 
-  override def serialize(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serialize(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializationContext): Unit = {
     if (provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
       iteratorSerializer.serializeContents(value, jgen, provider)
     } else {
@@ -33,7 +33,7 @@ private trait IteratorSerializer
     }
   }
 
-  override def serializeContents(value: collection.Iterator[Any], gen: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serializeContents(value: collection.Iterator[Any], gen: JsonGenerator, provider: SerializationContext): Unit = {
     serialize(value, gen, provider)
   }
 
@@ -41,7 +41,7 @@ private trait IteratorSerializer
     new ResolvedIteratorSerializer(this, property, vts, elementSerializer, unwrapSingle)
 
 
-  override def isEmpty(provider: SerializerProvider, value: collection.Iterator[Any]): Boolean = value.hasNext
+  override def isEmpty(provider: SerializationContext, value: collection.Iterator[Any]): Boolean = value.hasNext
 }
 
 private class ResolvedIteratorSerializer( src: IteratorSerializer,

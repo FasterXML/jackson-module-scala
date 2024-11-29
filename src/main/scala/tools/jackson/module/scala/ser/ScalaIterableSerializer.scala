@@ -21,11 +21,11 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]], unwrapSingle)
   }
 
-  override def isEmpty(prov: SerializerProvider, value: Iterable[Any]): Boolean = value.isEmpty
+  override def isEmpty(prov: SerializationContext, value: Iterable[Any]): Boolean = value.isEmpty
 
   override def hasSingleElement(value: Iterable[Any]): Boolean = value.size == 1
 
-  override def serialize(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serialize(value: Iterable[Any], g: JsonGenerator, provider: SerializationContext): Unit = {
     if (((_unwrapSingle == null && provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED))
       || _unwrapSingle) && hasSingleElement(value)) {
       serializeContents(value, g, provider)
@@ -36,7 +36,7 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     }
   }
 
-  override def serializeContents(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serializeContents(value: Iterable[Any], g: JsonGenerator, provider: SerializationContext): Unit = {
     g.assignCurrentValue(value)
     if (_elementSerializer != null) {
       serializeContentsUsing(value, g, provider, _elementSerializer)
@@ -79,7 +79,7 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     new ScalaIterableSerializer(this, _property, vts, _elementSerializer, _unwrapSingle)
   }
 
-  private def serializeContentsUsing(value: Iterable[Any], g: JsonGenerator, provider: SerializerProvider, ser: ValueSerializer[AnyRef]): Unit = {
+  private def serializeContentsUsing(value: Iterable[Any], g: JsonGenerator, provider: SerializationContext, ser: ValueSerializer[AnyRef]): Unit = {
     val it = value.iterator
     if (it.hasNext) {
       val typeSer = _valueTypeSerializer

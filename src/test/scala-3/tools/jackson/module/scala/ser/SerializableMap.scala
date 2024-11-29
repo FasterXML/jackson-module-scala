@@ -2,7 +2,7 @@ package tools.jackson.module.scala.ser
 
 import tools.jackson.core.JsonGenerator
 import tools.jackson.databind.jsontype.TypeSerializer
-import tools.jackson.databind.{JacksonSerializable, SerializerProvider}
+import tools.jackson.databind.{JacksonSerializable, SerializationContext}
 
 import scala.collection.immutable.AbstractMap
 
@@ -12,10 +12,10 @@ class SerializableMap extends AbstractMap[String, String] with JacksonSerializab
   def get(key: String): Option[String] = None
   def iterator: Iterator[(String, String)] = throw new IllegalArgumentException("This shouldn't get called")
 
-  override def serialize(jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serialize(jgen: JsonGenerator, provider: SerializationContext): Unit = {
     jgen.writeNumber(10)
   }
-  override def serializeWithType(jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer): Unit = {
+  override def serializeWithType(jgen: JsonGenerator, provider: SerializationContext, typeSer: TypeSerializer): Unit = {
     serialize(jgen, provider)
   }
 

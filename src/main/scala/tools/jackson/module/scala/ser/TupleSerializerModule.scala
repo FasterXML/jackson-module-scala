@@ -12,7 +12,7 @@ import scala.languageFeature.postfixOps
 
 private class TupleSerializer extends ValueSerializer[Product] {
 
-  def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+  def serialize(value: Product, jgen: JsonGenerator, provider: SerializationContext): Unit = {
     jgen.writeStartArray()
     value.productIterator.foreach(provider.writeValue(jgen, _))
     jgen.writeEndArray()

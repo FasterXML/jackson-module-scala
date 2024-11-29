@@ -1,6 +1,6 @@
 package tools.jackson.module.scala.ser
 
-import tools.jackson.databind.{JacksonSerializable, SerializerProvider}
+import tools.jackson.databind.{JacksonSerializable, SerializationContext}
 import tools.jackson.databind.jsontype.TypeSerializer
 import tools.jackson.core.JsonGenerator
 import tools.jackson.module.scala.BaseFixture
@@ -8,19 +8,19 @@ import tools.jackson.module.scala.BaseFixture
 object JacksonSerializableSpec {
   class SerializableIterable extends JacksonSerializable.Base with Iterable[String] {
     override def iterator: Iterator[String] = throw new IllegalArgumentException("This shouldn't get called")
-    override def serialize(jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+    override def serialize(jgen: JsonGenerator, provider: SerializationContext): Unit = {
       jgen.writeNumber(10)
     }
-    override def serializeWithType(jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer): Unit = {
+    override def serializeWithType(jgen: JsonGenerator, provider: SerializationContext, typeSer: TypeSerializer): Unit = {
       serialize(jgen, provider)
     }
   }
 
   class SerializableIterator extends JacksonSerializable.Base with Iterator[String] {
-    override def serialize(jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+    override def serialize(jgen: JsonGenerator, provider: SerializationContext): Unit = {
       jgen.writeNumber(10)
     }
-    override def serializeWithType(jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer): Unit = {
+    override def serializeWithType(jgen: JsonGenerator, provider: SerializationContext, typeSer: TypeSerializer): Unit = {
       serialize(jgen, provider)
     }
 

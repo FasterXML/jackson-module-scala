@@ -46,7 +46,7 @@ private class EitherSerializer(left: EitherDetails,
     else new EitherSerializer(newLeft, newRight, prop, contentIncl, dynamicSerializers)
   }
 
-  protected[this] def createContextualDetails(prov: SerializerProvider,
+  protected[this] def createContextualDetails(prov: SerializationContext,
                                               prop: BeanProperty,
                                               details: EitherDetails): EitherDetails = {
     val vts = details.valueTypeSerializer.optMap(_.forProperty(prov, prop))
@@ -76,7 +76,7 @@ private class EitherSerializer(left: EitherDetails,
     details.copy(valueTypeSerializer = vts, valueSerializer = serializerOption)
   }
 
-  override def createContextual(prov: SerializerProvider, prop: BeanProperty): ValueSerializer[_] = {
+  override def createContextual(prov: SerializationContext, prop: BeanProperty): ValueSerializer[_] = {
     val propOpt = Option(prop)
 
     val newLeft = createContextualDetails(prov, prop, left)
@@ -95,11 +95,11 @@ private class EitherSerializer(left: EitherDetails,
     withResolved(propOpt, newLeft, newRight, newIncl)
   }
 
-  override def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializationContext): Unit = {
     serialize(value, jgen, provider, None)
   }
 
-  def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializerProvider, vts: Option[TypeSerializer]): Unit = {
+  def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializationContext, vts: Option[TypeSerializer]): Unit = {
     val (field, content, details) = value match {
       case Left(c) => ("l", c, left)
       case Right(c) => ("r", c, right)
@@ -118,7 +118,7 @@ private class EitherSerializer(left: EitherDetails,
     jgen.writeEndObject()
   }
 
-  override def serializeWithType(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializerProvider, typeSer: TypeSerializer): Unit = {
+  override def serializeWithType(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, provider: SerializationContext, typeSer: TypeSerializer): Unit = {
     if (value == null) {
       provider.defaultSerializeNullValue(jgen)
     } else {
@@ -129,7 +129,7 @@ private class EitherSerializer(left: EitherDetails,
     }
   }
 
-  protected[this] def findCachedSerializer(prov: SerializerProvider, typ: Class[_]): ValueSerializer[AnyRef] = {
+  protected[this] def findCachedSerializer(prov: SerializationContext, typ: Class[_]): ValueSerializer[AnyRef] = {
     var ser = dynamicSerializers.serializerFor(typ).asInstanceOf[ValueSerializer[AnyRef]]
     if (ser == null) {
       ser = findSerializer(prov, typ, property)

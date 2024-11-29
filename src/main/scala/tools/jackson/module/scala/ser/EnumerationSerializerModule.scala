@@ -12,7 +12,7 @@ import tools.jackson.module.scala.{JacksonModule, JsonScalaEnumeration, ScalaMod
 trait ContextualEnumerationSerializer {
   self: ValueSerializer[_] =>
 
-  override def createContextual(serializerProvider: SerializerProvider, beanProperty: BeanProperty): ValueSerializer[_] =
+  override def createContextual(SerializationContext: SerializationContext, beanProperty: BeanProperty): ValueSerializer[_] =
     Option(beanProperty)
       .optMap(_.getAnnotation(classOf[JsonScalaEnumeration]))
       .map(_ => new AnnotatedEnumerationSerializer)
@@ -24,7 +24,7 @@ trait ContextualEnumerationSerializer {
  * http://jira.codehaus.org/browse/JACKSON-211
  */
 private class EnumerationSerializer extends ValueSerializer[scala.Enumeration#Value] with ContextualEnumerationSerializer {
-  override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider) = {
+  override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializationContext) = {
     val parentEnum = value.asInstanceOf[AnyRef].getClass.getSuperclass.getDeclaredFields.find( f => f.getName == "$outer" )
       .getOrElse(throw new RuntimeException("failed to find $outer field on Enumeration class"))
     val enumClass = parentEnum.get(value).getClass.getName stripSuffix "$"
@@ -36,7 +36,7 @@ private class EnumerationSerializer extends ValueSerializer[scala.Enumeration#Va
 }
 
 private class AnnotatedEnumerationSerializer extends ValueSerializer[scala.Enumeration#Value] with ContextualEnumerationSerializer {
-  override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+  override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializationContext): Unit = {
     provider.writeValue(jgen, value.toString)
   }
 }
