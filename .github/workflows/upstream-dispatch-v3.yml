@@ -18,11 +18,11 @@ jobs:
           ref: master
           fetch-depth: 0
 
-      - name: Setup Java (zulu@11)
+      - name: Setup Java (zulu@17)
         uses: actions/setup-java@v4
         with:
           distribution: zulu
-          java-version: 11
+          java-version: 17
           cache: sbt
 
       - run: sbt -J-Xmx2G '++ 2.13' test
