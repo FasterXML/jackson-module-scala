@@ -9,10 +9,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: ['2.*']
+    branches: ['master']
   push:
-    branches: ['2.*']
-    tags: [v*]
+    branches: ['master']
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -24,29 +23,13 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala: [2.11.12, 2.12.20, 2.13.15, 3.3.4]
-        java: [zulu@8, zulu@11, zulu@17, zulu@21]
+        java: [zulu@17, zulu@21]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Setup Java (zulu@8)
-        if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 8
-          cache: sbt
-
-      - name: Setup Java (zulu@11)
-        if: matrix.java == 'zulu@11'
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 11
-          cache: sbt
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
@@ -78,12 +61,11 @@ jobs:
   publish:
     name: Publish Artifacts
     needs: [build]
-    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/heads/2.') || startsWith(github.ref, 'refs/tags/v'))
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     strategy:
       matrix:
         os: [ubuntu-latest]
         scala: [2.13.15]
-        java: [zulu@8]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -91,36 +73,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java (zulu@8)
-        if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 8
-          cache: sbt
-
-      - name: Setup Java (zulu@11)
-        if: matrix.java == 'zulu@11'
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 11
-          cache: sbt
-
       - name: Setup Java (zulu@17)
-        if: matrix.java == 'zulu@17'
         uses: actions/setup-java@v4
         with:
           distribution: zulu
           java-version: 17
-          cache: sbt
-
-      - name: Setup Java (zulu@21)
-        if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 21
           cache: sbt
 
       - name: Download target directories (2.11.12)
@@ -166,7 +123,7 @@ jobs:
       - env:
           CI_SNAPSHOT_RELEASE: +publishSigned
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
-          SONATYPE_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
-          SONATYPE_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD3 }}
+          SONATYPE_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME3 }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
         run: sbt -J-Xmx2G ci-release
