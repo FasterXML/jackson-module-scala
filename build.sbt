@@ -141,13 +141,10 @@ Compile / resourceGenerators += Def.task {
 Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"), JavaSpec(Zulu, "11"),
-  JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"))
-ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"))
+ThisBuild / githubWorkflowTargetBranches := Seq("master")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
-  RefPredicate.Equals(Ref.Branch("master")),
-  RefPredicate.StartsWith(Ref.Branch("2.")),
-  RefPredicate.StartsWith(Ref.Tag("v"))
+  RefPredicate.Equals(Ref.Branch("master"))
 )
 
 ThisBuild / githubWorkflowPublish := Seq(
@@ -156,8 +153,8 @@ ThisBuild / githubWorkflowPublish := Seq(
     env = Map(
       "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
       "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
-      "SONATYPE_PASSWORD" -> "${{ secrets.CI_S01_DEPLOY_PASSWORD }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.CI_S01_DEPLOY_USERNAME }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.CI_DEPLOY_PASSWORD3 }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.CI_DEPLOY_USERNAME3 }}",
       "CI_SNAPSHOT_RELEASE" -> "+publishSigned"
     )
   )
