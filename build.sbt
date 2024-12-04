@@ -155,9 +155,9 @@ ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"), JavaSpec(Zulu, "11"),
   JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"))
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
+ThisBuild / githubWorkflowTargetBranches := Seq("2.*")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
-  RefPredicate.Equals(Ref.Branch("master")),
   RefPredicate.StartsWith(Ref.Branch("2.")),
   RefPredicate.StartsWith(Ref.Tag("v"))
 )

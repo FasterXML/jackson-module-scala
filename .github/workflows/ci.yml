@@ -9,9 +9,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: ['2.*']
+    branches: [2.*]
   push:
-    branches: ['2.*']
+    branches: [2.*]
     tags: [v*]
 
 env:
@@ -63,6 +63,9 @@ jobs:
           distribution: zulu
           java-version: 21
           cache: sbt
+
+      - name: Check that workflows are up to date
+        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' githubWorkflowCheck
 
       - run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' test mimaReportBinaryIssues
 
