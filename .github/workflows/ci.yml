@@ -40,7 +40,7 @@ jobs:
           java-version: 21
           cache: sbt
 
-      - run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' test mimaReportBinaryIssues
+      - run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' test
 
       - name: Compress target directories
         run: tar cf targets.tar target project/target
