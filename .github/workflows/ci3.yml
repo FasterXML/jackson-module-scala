@@ -5,7 +5,7 @@
 # change your sbt build configuration to revise the workflow description
 # to meet your needs, then regenerate this file.
 
-name: Continuous Integration
+name: Continuous Integration (v3 - master)
 
 on:
   pull_request:
