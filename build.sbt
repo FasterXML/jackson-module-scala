@@ -61,8 +61,6 @@ scalaMajorVersion := {
   }
 }
 
-val addJava17Tests: Boolean = System.getProperty("java.specification.version").toDouble >= 17
-
 scalacOptions ++= {
   val additionalSettings =
     if (scalaReleaseVersion.value == 2 && scalaMajorVersion.value <= 12) {
@@ -103,17 +101,6 @@ Test / unmanagedSourceDirectories ++= {
       (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-2.+",
       (LocalRootProject / baseDirectory).value / "src" / "test" / s"scala-2.${scalaMajorVersion.value}"
     )
-  }
-}
-
-Test / unmanagedSourceDirectories ++= {
-  if (addJava17Tests) {
-    Seq(
-      (LocalRootProject / baseDirectory).value / "src" / "test" / "java-17",
-      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-jdk-17",
-    )
-  } else {
-    Seq.empty
   }
 }
 
