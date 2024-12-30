@@ -25,7 +25,7 @@ object MutableBitSetDeserializer extends StdDeserializer[mutable.BitSet](classOf
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): mutable.BitSet = {
     val arrayNodeDeserializer = JsonNodeDeserializer.getDeserializer(classOf[ArrayNode])
     val arrayNode = arrayNodeDeserializer.deserialize(p, ctxt).asInstanceOf[ArrayNode]
-    val elements = arrayNode.elements().asScala.toSeq.map(_.asInt())
+    val elements = arrayNode.values().asScala.toSeq.map(_.asInt())
     mutable.BitSet(elements: _*)
   }
 }
