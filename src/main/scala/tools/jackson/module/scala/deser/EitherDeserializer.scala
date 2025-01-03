@@ -75,7 +75,7 @@ private class EitherDeserializer(javaType: JavaType,
 
         result
       case JsonToken.START_ARRAY =>
-        val key = jp.nextTextValue()
+        val key = jp.nextStringValue()
         val `type` = jp.nextToken()
 
         val result = key match {

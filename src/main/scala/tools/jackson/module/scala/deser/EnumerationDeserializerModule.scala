@@ -44,7 +44,7 @@ private class EnumerationDeserializer(theType: JavaType) extends ValueDeserializ
   private def parsePair(jp: JsonParser): (String, String) = (nextToken(jp), nextToken(jp))
   private def nextToken(jp: JsonParser): String = {
     jp.nextToken
-    jp.getText
+    jp.getString
   }
 }
 
