@@ -3,7 +3,7 @@ package tools.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonCreator.Mode
 import tools.jackson.core.`type`.TypeReference
-import tools.jackson.databind.{JsonNode, MapperFeature, ObjectMapper}
+import tools.jackson.databind.{DeserializationFeature, JsonNode, MapperFeature, ObjectMapper}
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.node.IntNode
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
@@ -178,6 +178,7 @@ class CreatorTest extends DeserializationFixture {
       .build()
     val mapper = initBuilder()
       .addModule(scalaModule)
+      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
       .build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual null
@@ -195,6 +196,7 @@ class CreatorTest extends DeserializationFixture {
       .build()
     val mapper = initBuilder()
       .addModule(scalaModule)
+      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
       .build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual null
@@ -208,6 +210,7 @@ class CreatorTest extends DeserializationFixture {
   it should "ignore default values (when MapperFeature is overridden)" in { _ =>
     val builder = initBuilder()
       .disable(MapperFeature.APPLY_DEFAULT_VALUES)
+      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
       .addModule(DefaultScalaModule)
     val mapper = builder.build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
