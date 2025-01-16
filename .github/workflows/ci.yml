@@ -47,6 +47,9 @@ jobs:
           java-version: 21
           cache: sbt
 
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
       - name: Check that workflows are up to date
         run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' githubWorkflowCheck
 
@@ -93,6 +96,9 @@ jobs:
           distribution: zulu
           java-version: 21
           cache: sbt
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Download target directories (2.11.12)
         uses: actions/download-artifact@v4
