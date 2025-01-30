@@ -2,6 +2,7 @@ package tools.jackson.module.scala.deser
 
 import CaseObjectDeserializerTest.{Foo, TestObject}
 import com.fasterxml.jackson.annotation.JsonAutoDetect
+import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.introspect.VisibilityChecker
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
@@ -22,6 +23,17 @@ class CaseObjectDeserializerTest extends DeserializerTest {
 
   "An ObjectMapper with DefaultScalaModule" should "deserialize a case object and not create a new instance" in {
     val mapper = newMapper
+    val original = TestObject
+    val json = mapper.writeValueAsString(original)
+    json shouldEqual "{}"
+    val deserialized = mapper.readValue(json, TestObject.getClass)
+    assert(deserialized === original)
+  }
+
+  it should "deserialize a case object and not create a new instance (FAIL_ON_TRAILING_TOKENS disabled)" in {
+    val mapper = newBuilder
+      .disable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+      .build()
     val original = TestObject
     val json = mapper.writeValueAsString(original)
     json shouldEqual "{}"
