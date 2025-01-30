@@ -24,6 +24,7 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     val mapper = newMapper
     val original = TestObject
     val json = mapper.writeValueAsString(original)
+    json shouldEqual "{}"
     val deserialized = mapper.readValue(json, TestObject.getClass)
     assert(deserialized === original)
   }
