@@ -34,6 +34,10 @@ object ScalaModule {
       this
     }
 
+    def hasModule(module: JacksonModule): Boolean = {
+      modules.result().contains(module)
+    }
+
     def addAllBuiltinModules(): Builder = {
       addModule(IteratorModule)
       addModule(EnumerationModule)
