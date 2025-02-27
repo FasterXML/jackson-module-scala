@@ -1,7 +1,7 @@
 package tools.jackson.module.scala
 
 import tools.jackson.databind.JacksonModule.SetupContext
-import tools.jackson.module.scala.deser.{ScalaNumberDeserializersModule, UntypedObjectDeserializerModule}
+import tools.jackson.module.scala.deser.{ScalaNumberDeserializersModule, ScalaObjectDeserializerModule, UntypedObjectDeserializerModule}
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 object ScalaModule {
@@ -45,6 +45,7 @@ object ScalaModule {
       addModule(SetModule)
       addModule(ScalaNumberDeserializersModule)
       addModule(ScalaAnnotationIntrospectorModule)
+      addModule(ScalaObjectDeserializerModule)
       addModule(UntypedObjectDeserializerModule)
       addModule(EitherModule)
       addModule(SymbolModule)
