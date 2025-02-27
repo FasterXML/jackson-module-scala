@@ -5,7 +5,7 @@ name := "jackson-module-scala"
 
 organization := "tools.jackson.module"
 
-ThisBuild / version := "3.0.0-SNAPSHOT"
+ThisBuild / version := "3.0.0-rc1-SNAPSHOT"
 
 val scala213Version = "2.13.15"
 ThisBuild / scalaVersion := scala213Version
@@ -17,7 +17,7 @@ sonatypeRepository := "s01.oss.sonatype.org"
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
-val jacksonVersion = "3.0.0-SNAPSHOT"
+val jacksonVersion = "3.0.0-rc1-SNAPSHOT"
 
 publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
