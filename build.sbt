@@ -7,10 +7,10 @@ organization := "tools.jackson.module"
 
 ThisBuild / version := "3.0.0-rc1-SNAPSHOT"
 
-val scala213Version = "2.13.15"
+val scala213Version = "2.13.16"
 ThisBuild / scalaVersion := scala213Version
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.3.4")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.3.5")
 
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "s01.oss.sonatype.org"
