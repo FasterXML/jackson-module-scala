@@ -40,7 +40,7 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
   }
 
   override def serializeContents(it: Iterator[Any], g: JsonGenerator, provider: SerializerProvider): Unit = {
-    g.setCurrentValue(it)
+    g.assignCurrentValue(it)
     if (_elementSerializer != null) {
       serializeContentsUsing(it, g, provider, _elementSerializer)
     } else {
