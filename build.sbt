@@ -11,7 +11,7 @@ ThisBuild / version := "3.0.0-rc1-SNAPSHOT"
 val scala213Version = "2.13.16"
 ThisBuild / scalaVersion := scala213Version
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.3.5")
+ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.5")
 
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "s01.oss.sonatype.org"
@@ -110,14 +110,13 @@ Test / unmanagedSourceDirectories ++= {
 libraryDependencies ++= Seq(
   "tools.jackson.core" % "jackson-core" % jacksonVersion changing(),
   "tools.jackson.core" % "jackson-databind" % jacksonVersion changing(),
-  "com.thoughtworks.paranamer" % "paranamer" % "2.8",
   "tools.jackson.datatype" % "jackson-datatype-joda" % jacksonVersion % Test changing(),
   "tools.jackson.datatype" % "jackson-datatype-guava" % jacksonVersion % Test changing(),
   "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" % Test,
   "tools.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion % Test changing(),
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.18" % Test
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test
 )
 
 // build.properties
