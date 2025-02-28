@@ -132,7 +132,7 @@ else
   )
 
 libraryDependencies ++= jacksonDependencies ++ Seq(
-  "com.thoughtworks.paranamer" % "paranamer" % "2.8",
+  "com.thoughtworks.paranamer" % "paranamer" % "2.8.1",
   // test dependencies
   "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonNonCoreVersion % Test,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonCoreVersion % Test,
