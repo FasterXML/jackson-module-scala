@@ -3,7 +3,7 @@ package tools.jackson.module.scala
 import tools.jackson.databind.util.{LookupCache, SimpleLookupCache}
 
 /**
- * Factory for creating [[com.fasterxml.jackson.databind.util.LookupCache]] instances
+ * Factory for creating [[tools.jackson.databind.util.LookupCache]] instances
  *
  * @since 2.14.3
  */
