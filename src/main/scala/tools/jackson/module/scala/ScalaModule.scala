@@ -53,6 +53,7 @@ object ScalaModule {
       addModule(UntypedObjectDeserializerModule)
       addModule(EitherModule)
       addModule(SymbolModule)
+      BuiltinModules.addScalaVersionSpecificModules(this)
       this
     }
 
