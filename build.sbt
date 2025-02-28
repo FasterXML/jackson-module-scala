@@ -1,4 +1,5 @@
 import sbtghactions.JavaSpec.Distribution.Zulu
+import com.github.sbt.sbom._
 
 // Basic facts
 name := "jackson-module-scala"
@@ -16,6 +17,8 @@ sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "s01.oss.sonatype.org"
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+
+bomFormat := "xml"
 
 val jacksonVersion = "3.0.0-rc1-SNAPSHOT"
 

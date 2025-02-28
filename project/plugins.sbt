@@ -13,3 +13,5 @@ addSbtPlugin("com.github.sbt" % "sbt-github-actions" % "0.24.0")
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.9.2")
 
 addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.32")
+
+addSbtPlugin("com.github.sbt" %% "sbt-sbom" % "0.4.0")
