@@ -1,3 +1,17 @@
+# Version: 2.19.0 (not yet scheduled for release)
+
+This patch release tracks Jackson 2.19. The 2.19 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
+
+## Fixes
+
+* [[gh-pr-702]](https://github.com/FasterXML/jackson-module-scala/pull/702) Handle token reading issue in ScalaObjectDeserializer
+
+# Version: 2.18.3
+
+There are no new fixes in this release; it serves to track the 2.18.3 release
+of the upstream Jackson projects.
+
 # Version: 2.18.2
 
 There are no new fixes in this release; it serves to track the 2.18.2 release
