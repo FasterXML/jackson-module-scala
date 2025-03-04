@@ -20,6 +20,8 @@ resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
+Compile / compileOrder := CompileOrder.Mixed
+
 val jacksonVersion = "3.0.0-rc1-SNAPSHOT"
 
 publishTo := {
