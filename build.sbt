@@ -78,7 +78,8 @@ scalacOptions ++= {
 // and we use it.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
-compileOrder := CompileOrder.JavaThenScala
+Compile / compileOrder := CompileOrder.Mixed
+Test / compileOrder := CompileOrder.JavaThenScala
 
 Compile / unmanagedSourceDirectories ++= {
   if (scalaReleaseVersion.value > 2) {
