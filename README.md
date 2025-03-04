@@ -28,9 +28,9 @@ Scala Case Classes, `Sequence`s, `Map`s, `Tuple`s, `Option`s, and Enumerations.
 # Version Support
 
 Jackson-module-scala follows the same release strategy of [jackson-databind](https://github.com/FasterXML/jackson-databind).
-Master branch is used for Jackson 3 development. The latest releases are v2.12.x.
+Master branch is used for Jackson 3 development.
 
-Scala 2.11, 2.12 and 2.13 are supported. Scala 2.10 support was dropped in v2.12.0. Java 8 is
+Scala 2.11, 2.12 and 2.13 are supported. Scala 2.10 support was dropped in v2.12.0 (but there is a special v2.12.7 release). Java 8 is
 the minimum supported version now.
 
 ## Scala 3
