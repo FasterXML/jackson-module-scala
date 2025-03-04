@@ -20,8 +20,6 @@ resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
-Compile / compileOrder := CompileOrder.Mixed
-
 val jacksonVersion = "3.0.0-rc1-SNAPSHOT"
 
 publishTo := {
@@ -80,7 +78,8 @@ scalacOptions ++= {
 // and we use it.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
 
-compileOrder := CompileOrder.JavaThenScala
+Compile / compileOrder := CompileOrder.Mixed
+Test / compileOrder := CompileOrder.JavaThenScala
 
 Compile / unmanagedSourceDirectories ++= {
   if (scalaReleaseVersion.value > 2) {
