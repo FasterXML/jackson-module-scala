@@ -71,6 +71,9 @@ object ScalaModule {
 
   def builder(): Builder = new Builder()
 
-  val defaultBuilder: Config = builder()
+  val defaultBuilder: Config = new Config {
+    override def shouldApplyDefaultValuesWhenDeserializing(): Boolean = true
+    override def shouldSupportScala3Classes(): Boolean = true
+  }
 }
 
