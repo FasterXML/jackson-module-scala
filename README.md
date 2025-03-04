@@ -29,16 +29,14 @@ Scala Case Classes, `Sequence`s, `Map`s, `Tuple`s, `Option`s, and Enumerations.
 # Version Support
 
 Jackson-module-scala follows the same release strategy of [jackson-databind](https://github.com/FasterXML/jackson-databind).
-Master branch is used for Jackson 3 development. The latest releases are v2.12.x.
+Master branch is used for Jackson 3 development.
 
-Scala 2.11, 2.12 and 2.13 are supported. Scala 2.10 support was dropped in v2.12.0. Java 8 is
-the minimum supported version now.
+Scala 2.12, 2.13, 3.3+ are supported. Scala 2.11 support was dropped in v3.0.0. Java 17 is
+the minimum supported version now (Jackson 3 generally has a minimum requirement of Java 17).
 
 ## Scala 3
 
-[Scala 3 support](https://github.com/FasterXML/jackson-module-scala/issues?q=is%3Aissue+is%3Aopen+label%3Ascala3) was added in v2.13.0.
 There are a few differences from Scala 2 support.
-* ScalaObjectMapper is not supported for Scala 3 but ClassTagExtensions is its replacement. (https://github.com/FasterXML/jackson-module-scala/issues/503)
 * There are still a few tests that work with Scala 2 that fail with Scala 3
 * It is expected that most use cases should work ok with Scala 3
   * Known issues with using jackson-module-scala with Scala 3 are tracked at https://github.com/FasterXML/jackson-module-scala/labels/scala3
@@ -50,30 +48,39 @@ To use the Scala Module in Jackson, simply register it with the
 ObjectMapper instance:
 
 ```scala
-// With 2.10 and later
 val mapper = JsonMapper.builder()
   .addModule(DefaultScalaModule)
   .build()
-
-// versions before 2.10 (also support for later 2.x but not 3.0)
-val mapper = new ObjectMapper()
-mapper.registerModule(DefaultScalaModule)
 ```
 
 `DefaultScalaModule` is a Scala object that includes support for all
 currently supported Scala data types. If only partial support is desired,
-the component traits can be included individually:
+the component traits can be included individually (approach differs from Jackson 2):
 
 ```scala
-val module = new OptionModule with TupleModule {}
+val scalaModule = ScalaModule.builder()
+  .addModule(OptionModule)
+  .addModule(TupleModule)
+  .build()
+
 val mapper = JsonMapper.builder()
-  .addModule(module)
+  .addModule(scalaModule)
   .build()
 ```
+If you want to configure the behavior of the ScalaModule but have all the underlying Scala modules, you can do this :
 
-Prior to v2.16.0, `ScalaObjectDeserializerModule` was not part of `DefaultScalaModule`. This module is used to
-ensure that deserialization to a Scala object does not create a new instance of the object. Users of older versions can add this
-module explicitly.
+```scala
+val scalaModule = ScalaModule.builder()
+  .addAllBuiltinModules()
+  .addModule(TupleModule)
+  .build()
+
+val mapper = JsonMapper.builder()
+  .addModule(scalaModule)
+  .applyDefaultValuesWhenDeserializing(false) //default of true
+  .supportScala3Classes(false) //default of true
+  .build()
+```
 
 ## DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES
 
@@ -94,9 +101,6 @@ You can also mixin `ClassTagExtensions` to get rich wrappers that automatically
 convert scala ClassTags directly into TypeReferences for Jackson to use:
 ```scala
 val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build() :: ClassTagExtensions
-// or using old style
-//val mapper = new ObjectMapper() with ClassTagExtensions
-//mapper.registerModule(DefaultScalaModule)
 val myMap = mapper.readValue[Map[String, Tuple2[Int,Int]]](src)
 ```
 
@@ -114,7 +118,7 @@ Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/a
 
 To import in sbt:
 ```scala
-libraryDependencies += "tools.jackson.module" %% "jackson-module-scala" % "3.0.0-SNAPSHOT"
+libraryDependencies += "tools.jackson.module" %% "jackson-module-scala" % "3.0.0-rc1-SNAPSHOT"
 ```
 
 ## Java/Kotlin users
@@ -122,9 +126,10 @@ libraryDependencies += "tools.jackson.module" %% "jackson-module-scala" % "3.0.0
 DefaultScalaModule is a Scala Object and to access it when you are not compiling with Scala compiler, you will need to use `DefaultScalaModule$.MODULE$` instead.
 
 ```java
-import tools.jackson.module.scala.DefaultScalaModule$;
+import tools.jackson.module.scala.*;
 
 ObjectMapper mapper = JsonMapper.builder().addModule(DefaultScalaModule$.MODULE$).build();
+// or ScalaModule.builder().addAllBuiltinModules().build() instead of DefaultScalaModule$.MODULE$
 ```
 
 # Building
@@ -147,7 +152,6 @@ well suited to end users, as most classes are implementation details of the modu
 * [jackson-scala-reflect-extensions](https://github.com/pjfanning/jackson-scala-reflect-extensions)
 * [jackson-scala3-reflect-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions)
 * [jackson-module-enumeratum](https://github.com/pjfanning/jackson-module-enumeratum)
-* [jackson-module-scala3-enum](https://github.com/pjfanning/jackson-module-scala3-enum) -- since v2.17.0, this is included in jackson-module-scala
 * [jackson-caffeine-cache](https://github.com/pjfanning/jackson-caffeine-cache)
 
 # Contributing
