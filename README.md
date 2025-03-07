@@ -123,13 +123,13 @@ libraryDependencies += "tools.jackson.module" %% "jackson-module-scala" % "3.0.0
 
 ## Java/Kotlin users
 
-DefaultScalaModule is a Scala Object and to access it when you are not compiling with Scala compiler, you will need to use `DefaultScalaModule$.MODULE$` instead.
+DefaultScalaModule is a Scala Object and to access it when you are not compiling with Scala compiler, you will need to use `tools.jackson.module.scala.javadsl.DefaultScalaModule.getInstance()` instead. You can access the Scala object using `tools.jackson.module.scala.DefaultScalaModule$.MODULE$`.
 
 ```java
-import tools.jackson.module.scala.*;
+import tools.jackson.module.scala.javadsl.*;
 
-ObjectMapper mapper = JsonMapper.builder().addModule(DefaultScalaModule$.MODULE$).build();
-// or ScalaModule.builder().addAllBuiltinModules().build() instead of DefaultScalaModule$.MODULE$
+ObjectMapper mapper = JsonMapper.builder().addModule(DefaultScalaModule.getInstance()).build();
+// or ScalaModule.builder().addAllBuiltinModules().build() instead of DefaultScalaModule.getInstance()
 ```
 
 # Building
