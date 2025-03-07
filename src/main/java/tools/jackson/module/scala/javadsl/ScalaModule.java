@@ -16,6 +16,9 @@ public final class ScalaModule {
         return EitherModule$.MODULE$;
     }
 
+    /**
+     * EnumModule is not available in Scala 2.x - as it relates to Scala 3 <code>enum</code>s.
+     */
     public static JacksonModule enumModule() {
         try {
             Class<?> objectClass = Class.forName("tools.jackson.module.scala.EnumModule$");
