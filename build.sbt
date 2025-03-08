@@ -20,7 +20,7 @@ resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
-val jacksonVersion = "3.0.0-rc1-SNAPSHOT"
+val jacksonVersion = "3.0.0-rc1"
 
 publishTo := {
   val nexus = "https://s01.oss.sonatype.org/"
