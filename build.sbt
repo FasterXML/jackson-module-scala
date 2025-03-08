@@ -126,6 +126,7 @@ Test / parallelExecution := false
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"))
 ThisBuild / githubWorkflowTargetBranches := Seq("master")
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches :=
   Seq(
     RefPredicate.StartsWith(Ref.Tag("v")),
