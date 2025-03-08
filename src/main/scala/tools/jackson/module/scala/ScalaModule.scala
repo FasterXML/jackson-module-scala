@@ -30,12 +30,12 @@ object ScalaModule {
     override def shouldSupportScala3Classes(): Boolean = supportScala3Classes
 
     def addModule(module: JacksonModule): Builder = {
-      modules.addOne(module)
+      modules.+=(module)
       this
     }
 
     def removeModule(module: JacksonModule): Builder = {
-      modules.subtractOne(module)
+      modules.-=(module)
       this
     }
 
