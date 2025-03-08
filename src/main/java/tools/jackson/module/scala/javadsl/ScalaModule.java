@@ -18,6 +18,7 @@ public final class ScalaModule {
 
     /**
      * EnumModule is not available in Scala 2.x - as it relates to Scala 3 <code>enum</code>s.
+     * @return the EnumModule if available, otherwise null
      */
     public static JacksonModule enumModule() {
         try {

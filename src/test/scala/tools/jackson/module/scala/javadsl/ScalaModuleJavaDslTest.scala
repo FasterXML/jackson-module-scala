@@ -1,6 +1,7 @@
 package tools.jackson.module.scala.javadsl
 
 import tools.jackson.module.scala._
+import tools.jackson.module.scala.deser.UntypedObjectDeserializerModule
 
 class ScalaModuleJavaDslTest extends BaseSpec {
   "Java DSL ScalaModule" should "support EnumerationModule" in {
@@ -14,5 +15,20 @@ class ScalaModuleJavaDslTest extends BaseSpec {
   }
   it should "support IteratorModule" in {
     javadsl.ScalaModule.iteratorModule() shouldBe an[IteratorModule]
+  }
+  it should "support OptionModule" in {
+    javadsl.ScalaModule.optionModule() shouldBe an[OptionModule]
+  }
+  it should "support SetModule" in {
+    javadsl.ScalaModule.setModule() shouldBe a[SetModule]
+  }
+  it should "support MapModule" in {
+    javadsl.ScalaModule.mapModule() shouldBe a[MapModule]
+  }
+  it should "support TupleModule" in {
+    javadsl.ScalaModule.tupleModule() shouldBe a[TupleModule]
+  }
+  it should "support UntypedObjectDeserializerModule" in {
+    javadsl.ScalaModule.untypedObjectDeserializerModule() shouldBe an[UntypedObjectDeserializerModule]
   }
 }
