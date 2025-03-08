@@ -12,7 +12,7 @@ object ScalaModule {
   }
 
   class Builder extends Config {
-    private val modules = Seq.newBuilder[JacksonModule]
+    private val modules = scala.collection.mutable.Buffer[JacksonModule]()
     private var applyDefaultValuesWhenDeserializing = true
     private var supportScala3Classes = true
 
@@ -34,8 +34,13 @@ object ScalaModule {
       this
     }
 
+    def removeModule(module: JacksonModule): Builder = {
+      modules.-=(module)
+      this
+    }
+
     def hasModule(module: JacksonModule): Boolean = {
-      modules.result().contains(module)
+      modules.contains(module)
     }
 
     def addAllBuiltinModules(): Builder = {
@@ -62,7 +67,7 @@ object ScalaModule {
       val module = new JacksonModule {
         override val config = configInstance
         override def getInitializers(config: Config): Seq[SetupContext => Unit] = {
-          modules.result().flatMap(_.getInitializers(config))
+          modules.toSeq.flatMap(_.getInitializers(config))
         }
       }
       module

@@ -37,4 +37,14 @@ class ScalaModuleTest extends BaseSpec {
     cfg.hasModule(SymbolModule) shouldBe true
     cfg.hasModule(UntypedObjectDeserializerModule) shouldBe true
   }
+  it should "support removeModule" in {
+    val builder = ScalaModule.builder()
+      .addAllBuiltinModules()
+      .removeModule(SymbolModule)
+
+    builder.hasModule(UntypedObjectDeserializerModule) shouldBe true
+    builder.hasModule(SymbolModule) shouldBe false
+
+    builder.build() shouldBe a[JacksonModule]
+  }
 }
