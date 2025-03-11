@@ -6,6 +6,7 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 ## Fixes
 
 * [[gh-pr-702]](https://github.com/FasterXML/jackson-module-scala/pull/702) Handle token reading issue in ScalaObjectDeserializer
+* [[gh-pr-706]](https://github.com/FasterXML/jackson-module-scala/pull/706) Upgrade paranamer dependency to 2.8.3
 
 # Version: 2.18.3
 
