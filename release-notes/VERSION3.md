@@ -7,7 +7,7 @@ There are many changes in related jackson libraries that affect all jackson user
 are less significant. The most notable change is the addition of ScalaModule builder.
 Users who don't use DefaultScalaModule may need to change to using ScalaModule builder.
 
-* [[gh-525]](https://github.com/FasterXML/jackson-module-scala/issues/525) Add ScalaModule builder 
+* [[gh-525]](https://github.com/FasterXML/jackson-module-scala/issues/525) Add ScalaModule builder to support configuration and selectively building up the required Scala modules
 * [[gh-531]](https://github.com/FasterXML/jackson-module-scala/issues/531) Remove DefaultRequiredAnnotationIntrospector as part of dropping support for jackson-module-jsonSchema
 * [[gh-583]](https://github.com/FasterXML/jackson-module-scala/issues/583) Change groupId and package names to `tools.jackson`
 * [[gh-pr-665]](https://github.com/FasterXML/jackson-module-scala/pull/665) Remove ScalaObjectMapper in favour of ClassTagExtensions
