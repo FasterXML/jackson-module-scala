@@ -256,7 +256,6 @@ class CreatorTest extends DeserializationFixture {
     f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
   }
 
-  //works in jackson 2.13
   it should "support multiple creator annotations with the same parameter names" in { f =>
     val node: JsonNode = f.valueToTree[IntNode](10)
     // Ensure that the parameters are actually named `value`
