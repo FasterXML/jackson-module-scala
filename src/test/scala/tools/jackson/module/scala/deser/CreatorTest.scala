@@ -256,6 +256,8 @@ class CreatorTest extends DeserializationFixture {
     f.convertValue(node, new TypeReference[PositiveLong] {}).value shouldEqual node.asLong()
   }
 
+  // this test was broken before but changing the JsonCreator annotation to DELEGATING fixed it
+  // @JsonCreator(mode = Mode.DELEGATING)
   it should "support multiple creator annotations with the same parameter names" in { f =>
     val node: JsonNode = f.valueToTree[IntNode](10)
     // Ensure that the parameters are actually named `value`
