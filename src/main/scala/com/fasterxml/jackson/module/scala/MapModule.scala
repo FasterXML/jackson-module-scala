@@ -9,3 +9,5 @@ trait MapModule
     with SortedMapDeserializerModule {
   override def getModuleName: String = "MapModule"
 }
+
+object MapModule extends MapModule

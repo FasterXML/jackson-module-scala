@@ -9,3 +9,5 @@ import com.fasterxml.jackson.module.scala.ser.TupleSerializerModule
 trait TupleModule extends TupleSerializerModule with TupleDeserializerModule {
   override def getModuleName: String = "TupleModule"
 }
+
+object TupleModule extends TupleModule

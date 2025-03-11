@@ -53,3 +53,5 @@ trait UntypedObjectDeserializerModule extends JacksonModule {
   override def getModuleName: String = "UntypedObjectDeserializerModule"
   this += (_ addDeserializers UntypedObjectDeserializerResolver)
 }
+
+object UntypedObjectDeserializerModule extends UntypedObjectDeserializerModule

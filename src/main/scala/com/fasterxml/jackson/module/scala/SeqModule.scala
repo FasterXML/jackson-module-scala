@@ -9,3 +9,5 @@ import com.fasterxml.jackson.module.scala.ser.IterableSerializerModule
 trait SeqModule extends IterableSerializerModule with SeqDeserializerModule {
   override def getModuleName: String = "SeqModule"
 }
+
+object SeqModule extends SeqModule

@@ -6,3 +6,5 @@ import com.fasterxml.jackson.module.scala.ser.EitherSerializerModule
 trait EitherModule extends EitherDeserializerModule with EitherSerializerModule {
   override def getModuleName: String = "EitherModule"
 }
+
+object EitherModule extends EitherModule

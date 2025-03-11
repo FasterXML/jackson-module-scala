@@ -5,3 +5,5 @@ import com.fasterxml.jackson.module.scala.deser.{SortedSetDeserializerModule, Un
 trait SetModule extends UnsortedSetDeserializerModule with SortedSetDeserializerModule {
   override def getModuleName: String = "SetModule"
 }
+
+object SetModule extends SetModule
