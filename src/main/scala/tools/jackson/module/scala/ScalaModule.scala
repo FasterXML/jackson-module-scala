@@ -64,13 +64,12 @@ object ScalaModule {
 
     def build(): JacksonModule = {
       val configInstance = this
-      val module = new JacksonModule {
+      new JacksonModule {
         override val config = configInstance
         override def getInitializers(config: Config): Seq[SetupContext => Unit] = {
           modules.toSeq.flatMap(_.getInitializers(config))
         }
       }
-      module
     }
   }
 

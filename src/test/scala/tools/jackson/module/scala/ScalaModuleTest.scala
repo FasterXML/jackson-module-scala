@@ -1,5 +1,6 @@
 package tools.jackson.module.scala
 
+import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.deser.{ScalaNumberDeserializersModule, ScalaObjectDeserializerModule, UntypedObjectDeserializerModule}
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
@@ -46,5 +47,14 @@ class ScalaModuleTest extends BaseSpec {
     builder.hasModule(SymbolModule) shouldBe false
 
     builder.build() shouldBe a[JacksonModule]
+  }
+  it should "support registering custom module in JsonMapper" in {
+    val builder = ScalaModule.builder()
+      .addAllBuiltinModules()
+    val mapper = JsonMapper.builder()
+      .addModule(builder.build())
+      .build()
+    val result = mapper.writeValueAsString(Symbol("symbol"))
+    result should be (""""symbol"""")
   }
 }
