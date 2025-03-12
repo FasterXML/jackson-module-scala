@@ -9,3 +9,5 @@ import com.fasterxml.jackson.module.scala.ser.SymbolSerializerModule
 trait SymbolModule extends SymbolSerializerModule with SymbolDeserializerModule {
   override def getModuleName: String = "SymbolModule"
 }
+
+object SymbolModule extends SymbolModule

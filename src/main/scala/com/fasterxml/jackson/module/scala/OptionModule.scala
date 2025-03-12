@@ -9,3 +9,5 @@ import com.fasterxml.jackson.module.scala.ser.OptionSerializerModule
 trait OptionModule extends OptionSerializerModule with OptionDeserializerModule {
   override def getModuleName: String = "OptionModule"
 }
+
+object OptionModule extends OptionModule
