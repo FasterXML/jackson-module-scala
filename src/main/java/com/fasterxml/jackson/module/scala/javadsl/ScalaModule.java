@@ -5,9 +5,6 @@ import com.fasterxml.jackson.module.scala.deser.*;
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule;
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule$;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-
 public final class ScalaModule {
     public static com.fasterxml.jackson.module.scala.ScalaModule.Builder builder() {
         return ScalaModule$.MODULE$.builder();
@@ -23,9 +20,7 @@ public final class ScalaModule {
     public static JacksonModule enumModule() {
         try {
             Class<?> objectClass = Class.forName("tools.jackson.module.scala.EnumModule$");
-            VarHandle varHandle = MethodHandles.publicLookup().findStaticVarHandle(
-                    objectClass, "MODULE$", objectClass);
-            return (JacksonModule) varHandle.get();
+            return (JacksonModule) objectClass.getDeclaredField("MODULE$").get(null);
         } catch (Throwable t) {
             return null;
         }
