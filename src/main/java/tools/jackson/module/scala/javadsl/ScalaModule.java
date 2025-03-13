@@ -78,4 +78,6 @@ public final class ScalaModule {
     public static UntypedObjectDeserializerModule untypedObjectDeserializerModule() {
         return UntypedObjectDeserializerModule$.MODULE$;
     }
+
+    private ScalaModule() {}
 }
