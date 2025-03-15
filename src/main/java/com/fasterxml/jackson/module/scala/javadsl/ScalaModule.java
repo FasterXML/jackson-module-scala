@@ -19,7 +19,7 @@ public final class ScalaModule {
      */
     public static JacksonModule enumModule() {
         try {
-            Class<?> objectClass = Class.forName("tools.jackson.module.scala.EnumModule$");
+            Class<?> objectClass = Class.forName("com.fasterxml.jackson.module.scala.EnumModule$");
             return (JacksonModule) objectClass.getDeclaredField("MODULE$").get(null);
         } catch (Throwable t) {
             return null;
