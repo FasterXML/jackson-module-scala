@@ -2,7 +2,7 @@ package com.fasterxml.jackson
 package module.scala
 package deser
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.{JsonProperty, JsonSetter, Nulls}
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.{DeserializationFeature, JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
 import com.fasterxml.jackson.module.scala.ser.{ClassWithOnlyUnitField, ClassWithUnitField}
@@ -68,6 +68,9 @@ object CaseClassDeserializerTest {
   class NestedB(id: Int) {
     def x = id
   }
+
+  case class ListHolder[T](list: List[T])
+  case class AnnotatedListHolder[T](@JsonSetter(nulls = Nulls.AS_EMPTY)list: List[T])
 }
 
 class CaseClassDeserializerTest extends DeserializerTest {
@@ -192,5 +195,17 @@ class CaseClassDeserializerTest extends DeserializerTest {
     val input = """{}"""
     val result = deserialize(input, classOf[ClassWithOnlyUnitField])
     result shouldEqual ClassWithOnlyUnitField(())
+  }
+
+  it should "support deserializing null input for list as empty list" ignore {
+    val input = """{}"""
+    val result = deserialize(input, classOf[ListHolder[String]])
+    result.list shouldBe null // ideally should be empty list, Scala users expect no nulls
+  }
+
+  it should "support deserializing null input for list as empty list (JsonSetter annotation)" in {
+    val input = """{}"""
+    val result = deserialize(input, classOf[AnnotatedListHolder[String]])
+    result.list shouldBe List.empty
   }
 }
