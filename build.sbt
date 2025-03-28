@@ -57,15 +57,7 @@ scalaMajorVersion := {
   }
 }
 
-scalacOptions ++= {
-  val additionalSettings =
-    if (scalaReleaseVersion.value == 2 && scalaMajorVersion.value <= 12) {
-      Seq("-language:higherKinds", "-language:existentials")
-    } else {
-      Seq.empty[String]
-    }
-  Seq("-deprecation", "-unchecked", "-feature") ++ additionalSettings
-}
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
 // Temporarily disable warnings as error since SerializationFeature.WRITE_NULL_MAP_VALUES has been deprecated
 // and we use it.
