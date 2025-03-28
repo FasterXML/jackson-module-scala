@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import scala.language.higherKinds
 
 abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deserializers.Base {
   type Collection[A] = CC[A]
@@ -139,9 +138,6 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       val bw = newBuilderWrapper(ctxt)
       bw.builder.result().asInstanceOf[Object]
     }
-
-    override def getNullValue(ctxt: DeserializationContext): CC[A] =
-      getEmptyValue(ctxt).asInstanceOf[CC[A]]
 
     private def newBuilderWrapper(ctxt: DeserializationContext): BuilderWrapper[AnyRef] = {
       containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef]]
