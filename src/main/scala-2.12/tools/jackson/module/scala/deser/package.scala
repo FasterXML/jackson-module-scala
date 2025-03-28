@@ -2,7 +2,6 @@ package tools.jackson.module.scala
 
 import scala.collection.generic.{GenericCompanion, SortedSetFactory}
 import scala.collection.{GenTraversable, SortedSet, SortedSetLike, mutable, immutable}
-import scala.language.higherKinds
 
 /**
   * Here we add some type aliases for things that were moved or reworked in scala 2.13.

@@ -11,7 +11,6 @@ import tools.jackson.module.scala.ScalaModule
 
 import scala.collection.mutable.ListBuffer
 import scala.collection.{Map, mutable}
-import scala.language.higherKinds
 
 abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](config: ScalaModule.Config) extends Deserializers.Base {
   type Collection[K, V] = CC[K, V]
