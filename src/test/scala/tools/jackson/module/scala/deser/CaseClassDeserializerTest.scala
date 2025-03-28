@@ -199,10 +199,11 @@ class CaseClassDeserializerTest extends DeserializerTest {
     result shouldEqual ClassWithOnlyUnitField(())
   }
 
-  it should "support deserializing null input for list as empty list" ignore {
+  it should "support deserializing null input for list as empty list" in {
     val input = """{}"""
     val result = deserialize(input, classOf[ListHolder[String]])
-    result.list shouldBe null // ideally should be empty list, Scala users expect no nulls
+    // this result has only happened since 3.0.0 - befpre result.list was null
+    result.list shouldBe List.empty
   }
 
   it should "support deserializing null input for list as empty list (JsonSetter annotation)" in {

@@ -166,6 +166,8 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](conf
       bw.builder.result().asInstanceOf[Object]
     }
 
+    override def getNullValue(ctxt: DeserializationContext): Object = getEmptyValue(ctxt)
+
     private def newBuilderWrapper(ctxt: DeserializationContext): BuilderWrapper[AnyRef, AnyRef] = {
       containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef, AnyRef]]
     }
