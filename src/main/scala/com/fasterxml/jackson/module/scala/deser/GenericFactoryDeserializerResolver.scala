@@ -5,8 +5,9 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializerBase, StdValueInstantiator}
-import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
+import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, NullValueProvider, ValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
+import com.fasterxml.jackson.databind.util.AccessPattern
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -104,8 +105,13 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       new BuilderWrapper[AnyRef](builderFor[AnyRef](collectionType.getRawClass, valueType))
   }
 
+  private class ContainerNullValueProvider(containerDeserializer: CollectionDeserializer) extends NullValueProvider {
+    override def getNullValue(ctxt: DeserializationContext): AnyRef = containerDeserializer.getEmptyValue(ctxt)
+    override def getNullAccessPattern: AccessPattern = containerDeserializer.getNullAccessPattern
+  }
+
   private class Deserializer[A](collectionType: JavaType, containerDeserializer: CollectionDeserializer)
-    extends ContainerDeserializerBase[CC[A]](collectionType)
+    extends ContainerDeserializerBase[CC[A]](collectionType, new ContainerNullValueProvider(containerDeserializer), None.orNull)
       with ContextualDeserializer {
 
     def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) = {
@@ -139,6 +145,9 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       val bw = newBuilderWrapper(ctxt)
       bw.builder.result().asInstanceOf[Object]
     }
+
+    override def getNullValue(ctxt: DeserializationContext): CC[A] =
+      getEmptyValue(ctxt).asInstanceOf[CC[A]]
 
     private def newBuilderWrapper(ctxt: DeserializationContext): BuilderWrapper[AnyRef] = {
       containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef]]
