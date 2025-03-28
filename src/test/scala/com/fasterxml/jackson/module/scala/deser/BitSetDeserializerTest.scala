@@ -8,7 +8,12 @@ import com.fasterxml.jackson.module.scala.{BitSetDeserializerModule, DefaultScal
 import java.nio.charset.StandardCharsets
 import scala.collection.{immutable, mutable}
 
+object BitSetDeserializerTest {
+  case class BitSetHolder(set: immutable.BitSet)
+}
+
 class BitSetDeserializerTest extends DeserializerTest {
+  import BitSetDeserializerTest._
 
   lazy val module: JacksonModule = DefaultScalaModule
   val arraySize = 100
@@ -58,5 +63,15 @@ class BitSetDeserializerTest extends DeserializerTest {
       .build()
     val seq = mapper.readValue(jsonBytes, new TypeReference[mutable.BitSet] {})
     seq should have size arraySize
+  }
+
+  it should "support deserializing null input for bitset as empty bitset" in {
+    val mapper = JsonMapper.builder()
+      .addModule(BitSetDeserializerModule)
+      .addModule(DefaultScalaModule)
+      .build()
+    val input = """{}"""
+    val result = mapper.readValue(input, classOf[BitSetHolder])
+    result.set shouldBe immutable.BitSet.empty
   }
 }
