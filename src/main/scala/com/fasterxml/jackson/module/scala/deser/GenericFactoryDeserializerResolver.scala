@@ -105,13 +105,8 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]] extends Deser
       new BuilderWrapper[AnyRef](builderFor[AnyRef](collectionType.getRawClass, valueType))
   }
 
-  private class ContainerNullValueProvider(containerDeserializer: CollectionDeserializer) extends NullValueProvider {
-    override def getNullValue(ctxt: DeserializationContext): AnyRef = containerDeserializer.getEmptyValue(ctxt)
-    override def getNullAccessPattern: AccessPattern = containerDeserializer.getNullAccessPattern
-  }
-
   private class Deserializer[A](collectionType: JavaType, containerDeserializer: CollectionDeserializer)
-    extends ContainerDeserializerBase[CC[A]](collectionType, new ContainerNullValueProvider(containerDeserializer), None.orNull)
+    extends ContainerDeserializerBase[CC[A]](collectionType)
       with ContextualDeserializer {
 
     def this(collectionType: JavaType, valueDeser: JsonDeserializer[Object], valueTypeDeser: TypeDeserializer, valueInstantiator: ValueInstantiator) = {
