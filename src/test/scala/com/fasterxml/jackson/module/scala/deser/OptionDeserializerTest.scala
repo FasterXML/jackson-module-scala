@@ -75,6 +75,10 @@ class OptionDeserializerTest extends DeserializerTest {
     deserialize("{}", classOf[UnavailableField]) should be(UnavailableField(None))
   }
 
+  it should "synthesize None for optional fields that are null" in {
+    deserialize("""{"foo":null}""", classOf[UnavailableField]) should be(UnavailableField(None))
+  }
+
   it should "propagate type information" in {
     val json: String = """{"base":{"$type":"impl"}}"""
     deserialize(json, classOf[BaseHolder]) should be(BaseHolder(Some(Impl())))
