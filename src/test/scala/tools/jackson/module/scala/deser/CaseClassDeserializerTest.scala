@@ -72,6 +72,9 @@ object CaseClassDeserializerTest {
 
   case class ListHolder[T](list: List[T])
   case class AnnotatedListHolder[T](@JsonSetter(nulls = Nulls.AS_EMPTY)list: List[T])
+
+  case class MapHolder[K, V](map: Map[K, V])
+  case class AnnotatedMapHolder[K, V](@JsonSetter(nulls = Nulls.AS_EMPTY)map: Map[K, V])
 }
 
 class CaseClassDeserializerTest extends DeserializerTest {
@@ -210,5 +213,18 @@ class CaseClassDeserializerTest extends DeserializerTest {
     val input = """{}"""
     val result = deserialize(input, classOf[AnnotatedListHolder[String]])
     result.list shouldBe List.empty
+  }
+
+  it should "support deserializing null input for map as empty map" in {
+    val input = """{}"""
+    val result = deserialize(input, classOf[MapHolder[Int, String]])
+    // this result has only happened since 3.0.0 - befpre result.map was null
+    result.map shouldBe Map.empty
+  }
+
+  it should "support deserializing null input for map as empty list (JsonSetter annotation)" in {
+    val input = """{}"""
+    val result = deserialize(input, classOf[AnnotatedMapHolder[Int, String]])
+    result.map shouldBe Map.empty
   }
 }

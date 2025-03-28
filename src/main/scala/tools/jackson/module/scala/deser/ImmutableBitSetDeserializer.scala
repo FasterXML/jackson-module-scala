@@ -28,4 +28,11 @@ object ImmutableBitSetDeserializer extends StdDeserializer[immutable.BitSet](cla
     val elements = arrayNode.values().asScala.toSeq.map(_.asInt())
     immutable.BitSet(elements: _*)
   }
+
+  override def getEmptyValue(ctxt: DeserializationContext): immutable.BitSet =
+    immutable.BitSet.empty
+
+  override def getNullValue(ctxt: DeserializationContext): immutable.BitSet = {
+    getEmptyValue(ctxt)
+  }
 }

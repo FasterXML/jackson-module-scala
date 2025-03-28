@@ -69,6 +69,8 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
     }
 
     override def getEmptyValue(ctxt: DeserializationContext): Object = IntMap.empty[V]
+
+    override def getNullValue(ctxt: DeserializationContext): Object = getEmptyValue(ctxt)
   }
 
   private class IntMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {
