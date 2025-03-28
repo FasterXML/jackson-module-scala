@@ -12,3 +12,4 @@ Users who don't use DefaultScalaModule may need to change to using ScalaModule b
 * [[gh-583]](https://github.com/FasterXML/jackson-module-scala/issues/583) Change groupId and package names to `tools.jackson`
 * [[gh-pr-665]](https://github.com/FasterXML/jackson-module-scala/pull/665) Remove ScalaObjectMapper in favour of ClassTagExtensions
 * [[gh-pr-707]](https://github.com/FasterXML/jackson-module-scala/pull/707) Drop Scala 2.11 support and remove dependency on paranamer
+* [[gh-pr-720]](https://github.com/FasterXML/jackson-module-scala/pull/720) When deserializing Scala collections and the input is missing or null, create an empty collection.
