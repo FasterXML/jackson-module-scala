@@ -5,9 +5,8 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.CollectionLikeType
 import com.fasterxml.jackson.databind.deser.std.{CollectionDeserializer, ContainerDeserializerBase, StdValueInstantiator}
-import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, NullValueProvider, ValueInstantiator}
+import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
-import com.fasterxml.jackson.databind.util.AccessPattern
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
