@@ -38,6 +38,8 @@ import scala.reflect.NameTransformer
 
 object BeanIntrospector {
 
+  private val publicLookup = MethodHandles.publicLookup
+
   def apply[T <: AnyRef](cls: Class[_]) = {
 
     /**
@@ -73,7 +75,7 @@ object BeanIntrospector {
     def findCompanionObject(c: Class[_]): Option[AnyRef] = {
       try {
         val companionObjectClass = c.getClassLoader.loadClass(c.getName + "$")
-        val varHandle = MethodHandles.publicLookup.findStaticVarHandle(
+        val varHandle = publicLookup.findStaticVarHandle(
           companionObjectClass, "MODULE$", companionObjectClass)
         Some(varHandle.get())
       } catch {
