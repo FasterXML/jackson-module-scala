@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.{JsonParser, StreamReadCapability}
 import com.fasterxml.jackson.databind._
 import com.fasterxml.jackson.databind.`type`.MapLikeType
 import com.fasterxml.jackson.databind.deser.{ContextualDeserializer, Deserializers, ValueInstantiator}
-import com.fasterxml.jackson.databind.deser.std.{ContainerDeserializerBase, MapDeserializer, StdValueInstantiator}
+import com.fasterxml.jackson.databind.deser.std.{MapDeserializer, StdValueInstantiator}
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer
 
 import scala.collection.mutable.ListBuffer
@@ -124,7 +124,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]] exte
   }
 
   private class Deserializer[K, V](mapType: MapLikeType, containerDeserializer: MapDeserializer)
-    extends ContainerDeserializerBase[CC[K, V]](mapType) with ContextualDeserializer {
+    extends ContainerDeserializerWithNullValueAsEmpty[CC[K, V]](mapType) with ContextualDeserializer {
 
     def this(mapType: MapLikeType, valueInstantiator: ValueInstantiator,
              keyDeser: KeyDeserializer, valueDeser: JsonDeserializer[_], valueTypeDeser: TypeDeserializer) = {
