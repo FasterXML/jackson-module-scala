@@ -205,7 +205,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
   it should "support deserializing null input for list as empty list" in {
     val input = """{}"""
     val result = deserialize(input, classOf[ListHolder[String]])
-    // this result has only happened since 3.0.0 - befpre result.list was null
+    // result.list used to be null until v2.19.0
     result.list shouldBe List.empty
   }
 
@@ -218,7 +218,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
   it should "support deserializing null input for map as empty map" in {
     val input = """{}"""
     val result = deserialize(input, classOf[MapHolder[Int, String]])
-    // this result has only happened since 3.0.0 - befpre result.map was null
+    // result.map used to be null until v2.19.0
     result.map shouldBe Map.empty
   }
 
