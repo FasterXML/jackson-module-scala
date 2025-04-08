@@ -16,8 +16,8 @@ resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
-version := "2.19.0-SNAPSHOT"
-val jacksonCoreVersion = "2.19.0-SNAPSHOT"
+version := "2.19.0-rc2"
+val jacksonCoreVersion = "2.19.0-rc2"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
