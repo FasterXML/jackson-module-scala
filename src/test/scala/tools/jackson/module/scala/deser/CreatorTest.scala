@@ -139,7 +139,7 @@ class CreatorTest extends DeserializationFixture {
     // the next check behaves differently in jackson 2.18 (dummy value ends up as 42)
     // jackson 3 seems more correct because the constructor annotated with JsonCreator should be used
     // and that ignores the dummy value in the json
-    roundTrip shouldEqual orig.copy(dummy = 0)
+    roundTrip shouldEqual orig.copy(dummy = -1)
 
     // this part of test relies on the 2nd constructor being used (with the JsonCreator annotation)
     val bean2 = """{"script":"abc"}"""
