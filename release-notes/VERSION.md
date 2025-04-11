@@ -1,4 +1,4 @@
-# Version: 2.19.0 (not yet scheduled for release)
+# Version: 2.19.0-rc2
 
 This patch release tracks Jackson 2.19. The 2.19 series has full support for
 Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
