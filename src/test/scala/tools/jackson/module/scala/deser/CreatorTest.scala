@@ -58,7 +58,7 @@ object CreatorTest
   case class CaseClassAlternativeConstructor(script: String, dummy: Int) {
     @JsonCreator
     def this(script: String) = {
-      this(script, 0)
+      this(script, -1)
     }
   }
 
@@ -144,7 +144,7 @@ class CreatorTest extends DeserializationFixture {
     // this part of test relies on the 2nd constructor being used (with the JsonCreator annotation)
     val bean2 = """{"script":"abc"}"""
     val cc2 = f.readValue(bean2, classOf[CaseClassAlternativeConstructor])
-    cc2 shouldEqual CaseClassAlternativeConstructor("abc", 0)
+    cc2 shouldEqual CaseClassAlternativeConstructor("abc", -1)
   }
 
   it should "use primary constructor if no JsonCreator annotation" in { f =>
