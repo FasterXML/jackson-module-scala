@@ -15,7 +15,7 @@ jobs:
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: 3.x
           fetch-depth: 0
 
       - name: Setup sbt
