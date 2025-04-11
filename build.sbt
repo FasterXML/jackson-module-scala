@@ -6,7 +6,7 @@ name := "jackson-module-scala"
 
 organization := "tools.jackson.module"
 
-ThisBuild / version := "3.0.0-SNAPSHOT"
+ThisBuild / version := "3.0.0-rc3-SNAPSHOT"
 
 val scala213Version = "2.13.16"
 ThisBuild / scalaVersion := scala213Version
@@ -20,7 +20,7 @@ sonatypeRepository := "s01.oss.sonatype.org"
 
 bomFormat := "xml"
 
-val jacksonVersion = "3.0.0-rc2"
+val jacksonVersion = "3.0.0-rc3-SNAPSHOT"
 
 autoAPIMappings := true
 
