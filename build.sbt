@@ -16,7 +16,7 @@ ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.5")
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "s01.oss.sonatype.org"
 
-// resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
@@ -117,12 +117,12 @@ Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"))
-ThisBuild / githubWorkflowTargetBranches := Seq("master")
+ThisBuild / githubWorkflowTargetBranches := Seq("3.x")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches :=
   Seq(
     RefPredicate.StartsWith(Ref.Tag("v")),
-    RefPredicate.Equals(Ref.Branch("master"))
+    RefPredicate.Equals(Ref.Branch("3.x"))
   )
 
 ThisBuild / githubWorkflowPublish := Seq(
