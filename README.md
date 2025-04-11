@@ -1,4 +1,4 @@
-![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=master)
+![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=3.x)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/tools.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/tools.jackson.module/jackson-module-scala_2.13)
 [![Sonatype Snapshots](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/tools.jackson.module/jackson-module-scala_2.13.svg)](https://s01.oss.sonatype.org/content/repositories/snapshots/tools/jackson/module/jackson-module-scala_2.13/)
 [![Tidelift](https://tidelift.com/badges/package/maven/com.fasterxml.jackson.module:jackson-module-scala_2.13)](https://tidelift.com/subscription/pkg/maven-com.fasterxml.jackson.module.jackson-module-scala.2.13?utm_source=maven-com.fasterxml.jackson.module.jackson-module-scala.2.13&utm_medium=github_sponsor_button&utm_campaign=readme)
@@ -29,7 +29,7 @@ Scala Case Classes, `Sequence`s, `Map`s, `Tuple`s, `Option`s, and Enumerations.
 # Version Support
 
 Jackson-module-scala follows the same release strategy of [jackson-databind](https://github.com/FasterXML/jackson-databind).
-Master branch is used for Jackson 3 development.
+3.x branch is used for Jackson 3 development.
 
 Scala 2.12, 2.13, 3.3+ are supported. Scala 2.11 support was dropped in v3.0.0. Java 17 is
 the minimum supported version now (Jackson 3 generally has a minimum requirement of Java 17).
@@ -134,7 +134,7 @@ ObjectMapper mapper = JsonMapper.builder().addModule(DefaultScalaModule.getInsta
 
 # Building
 
-The master branch often depends on SNAPSHOT versions of the core Jackson projects,
+The branches often depends on SNAPSHOT versions of the core Jackson projects,
 which are published to the Sonatype OSS Repository. To make these dependencies available,
 create a file called `sonatype.sbt` in the same directory as `build.sbt` with the following
 content. The project `.gitignore` file intentionally prevents this file from being checked in.
