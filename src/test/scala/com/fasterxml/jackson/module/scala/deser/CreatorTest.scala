@@ -46,7 +46,7 @@ object CreatorTest
   class AlternativeConstructor(val script: String, dummy: Int) {
     @JsonCreator
     def this(script: String) = {
-      this(script, 0)
+      this(script, -1)
     }
     override def equals(o: Any): Boolean = o match {
       case ac: AlternativeConstructor => script == ac.script
@@ -63,13 +63,13 @@ object CreatorTest
 
   case class MultipleConstructors(script: String, dummy: Int) {
     def this(script: String) = {
-      this(script, 0)
+      this(script, -1)
     }
   }
 
   case class MultipleConstructorsAnn @JsonCreator()(script: String, dummy: Int) {
     def this(script: String) = {
-      this(script, 0)
+      this(script, -1)
     }
   }
 
