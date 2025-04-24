@@ -16,7 +16,7 @@ ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.5")
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "s01.oss.sonatype.org"
 
-//resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
