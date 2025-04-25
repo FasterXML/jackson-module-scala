@@ -12,13 +12,13 @@ ThisBuild / scalaVersion := scala213Version
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.3.5")
 
-// resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
-// version := "2.19.0-SNAPSHOT"
-val jacksonCoreVersion = "2.19.0"
-val jacksonNonCoreVersion = jacksonCoreVersion
+version := "2.19.1-SNAPSHOT"
+val jacksonCoreVersion = "2.19.1-SNAPSHOT"
+val jacksonNonCoreVersion = "2.19.0"
 
 autoAPIMappings := true
 
@@ -136,8 +136,8 @@ libraryDependencies ++= jacksonDependencies ++ Seq(
   "com.thoughtworks.paranamer" % "paranamer" % "2.8.3",
   // test dependencies
   "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonNonCoreVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonCoreVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonCoreVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonNonCoreVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonNonCoreVersion % Test,
   "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonNonCoreVersion % Test,
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonNonCoreVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
