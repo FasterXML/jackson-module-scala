@@ -147,7 +147,7 @@ private class EitherSerializerResolver(config: ScalaModule.Config) extends Seria
 
   override def findReferenceSerializer(serializationConfig: SerializationConfig,
                                        refType: ReferenceType,
-                                       beanDesc: BeanDescription,
+                                       beanDesc: BeanDescription.Supplier,
                                        formatOverrides: JsonFormat.Value,
                                        contentTypeSerializer: TypeSerializer,
                                        contentValueSerializer: ValueSerializer[AnyRef]): ValueSerializer[_] = {

@@ -59,7 +59,7 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
 
         override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                                                     deserializationConfig: DeserializationConfig,
-                                                    beanDesc: BeanDescription,
+                                                    beanDesc: BeanDescription.Supplier,
                                                     elementTypeDeserializer: TypeDeserializer,
                                                     elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
           val rawClass = collectionType.getRawClass

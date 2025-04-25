@@ -113,7 +113,7 @@ private class EitherDeserializerResolver(config: ScalaModule.Config) extends Des
 
   private val EITHER = classOf[Either[_, _]]
 
-  override def findBeanDeserializer(`type`: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {
+  override def findBeanDeserializer(`type`: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[_] = {
     val rawClass = `type`.getRawClass
 
     if (!EITHER.isAssignableFrom(rawClass)) {
@@ -124,7 +124,7 @@ private class EitherDeserializerResolver(config: ScalaModule.Config) extends Des
   }
 
   override def findReferenceDeserializer(refType: ReferenceType, deserializationConfig: DeserializationConfig,
-                                         beanDesc: BeanDescription, contentTypeDeserializer: TypeDeserializer,
+                                         beanDesc: BeanDescription.Supplier, contentTypeDeserializer: TypeDeserializer,
                                          contentDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     val rawClass = refType.getRawClass
 

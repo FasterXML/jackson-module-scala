@@ -35,7 +35,7 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
 
   override def findMapLikeSerializer(serializationConfig: SerializationConfig,
                                      mapLikeType : MapLikeType,
-                                     beanDesc: BeanDescription,
+                                     beanDesc: BeanDescription.Supplier,
                                      formatOverrides: JsonFormat.Value,
                                      keySerializer: ValueSerializer[AnyRef],
                                      elementTypeSerializer: TypeSerializer,

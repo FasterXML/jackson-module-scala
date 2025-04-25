@@ -50,7 +50,7 @@ private class UntypedObjectDeserializerResolver(config: ScalaModule.Config) exte
 
   override def findBeanDeserializer(javaType: JavaType,
                                     deserializationConfig: DeserializationConfig,
-                                    beanDesc: BeanDescription) =
+                                    beanDesc: BeanDescription.Supplier) =
     if (!objectClass.equals(javaType.getRawClass)) null
     else new UntypedScalaObjectDeserializer
 

@@ -74,7 +74,7 @@ private class TupleDeserializerResolver(config: ScalaModule.Config) extends Dese
 
   override def findBeanDeserializer(javaType: JavaType,
                                     deserializationConfig: DeserializationConfig,
-                                    beanDesc: BeanDescription): ValueDeserializer[_] = {
+                                    beanDesc: BeanDescription.Supplier): ValueDeserializer[_] = {
     val cls = javaType.getRawClass
     if (!PRODUCT.isAssignableFrom(cls)) null else
     // If it's not *actually* a tuple, it's either a case class or a custom Product

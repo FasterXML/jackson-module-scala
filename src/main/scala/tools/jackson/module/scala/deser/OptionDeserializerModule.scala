@@ -108,7 +108,7 @@ private class OptionDeserializerResolver(config: ScalaModule.Config) extends Des
 
   override def findReferenceDeserializer(refType: ReferenceType,
                                          deserializationConfig: DeserializationConfig,
-                                         beanDesc: BeanDescription,
+                                         beanDesc: BeanDescription.Supplier,
                                          contentTypeDeserializer: TypeDeserializer,
                                          contentDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     if (!OPTION.isAssignableFrom(refType.getRawClass)) None.orNull

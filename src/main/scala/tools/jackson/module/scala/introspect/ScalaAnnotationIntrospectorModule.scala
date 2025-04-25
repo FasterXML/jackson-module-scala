@@ -114,7 +114,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     }
   }
 
-  override def modifyValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription,
+  override def modifyValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription.Supplier,
                                        defaultInstantiator: ValueInstantiator): ValueInstantiator = {
     if (scalaAnnotationIntrospectorModule.isMaybeScalaBeanType(beanDesc.getBeanClass)) {
       _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
@@ -131,7 +131,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     } else defaultInstantiator
   }
 
-  override def findValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueInstantiator = {
+  override def findValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueInstantiator = {
     None.orNull
   }
 

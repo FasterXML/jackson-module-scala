@@ -23,7 +23,7 @@ private class ScalaObjectDeserializer(value: Any) extends StdDeserializer[Any](c
 }
 
 private class ScalaObjectDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
-  override def findBeanDeserializer(javaType: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] = {
+  override def findBeanDeserializer(javaType: JavaType, deserializationConfig: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[_] = {
     ClassW(javaType.getRawClass).getModuleField.flatMap { field =>
       Option(field.get(null))
     }.map(new ScalaObjectDeserializer(_)).orNull

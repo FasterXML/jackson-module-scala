@@ -38,7 +38,7 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
 
         override def findMapLikeDeserializer(theType: MapLikeType,
                                              config: DeserializationConfig,
-                                             beanDesc: BeanDescription,
+                                             beanDesc: BeanDescription.Supplier,
                                              keyDeserializer: KeyDeserializer,
                                              elementTypeDeserializer: TypeDeserializer,
                                              elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {

@@ -86,7 +86,7 @@ private class IterableSerializerResolver(config: ScalaModule.Config) extends Ser
 
   override def findCollectionLikeSerializer(serializationConfig: SerializationConfig,
                    collectionType: CollectionLikeType,
-                   beanDescription: BeanDescription,
+                   beanDescription: BeanDescription.Supplier,
                    formatOverrides: JsonFormat.Value,
                    elementTypeSerializer: TypeSerializer,
                    elementSerializer: ValueSerializer[Object]): ValueSerializer[_] = {

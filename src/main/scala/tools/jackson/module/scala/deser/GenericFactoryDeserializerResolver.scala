@@ -31,7 +31,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: Scala
 
   override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                                               deserializationConfig: DeserializationConfig,
-                                              beanDesc: BeanDescription,
+                                              beanDesc: BeanDescription.Supplier,
                                               elementTypeDeserializer: TypeDeserializer,
                                               elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     if (!CLASS_DOMAIN.isAssignableFrom(collectionType.getRawClass)) null

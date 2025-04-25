@@ -27,7 +27,7 @@ private object EnumKeySerializer extends ValueSerializer[Enum] {
 }
 
 private class EnumSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
-  override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
+  override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription.Supplier,
                               formatOverrides: JsonFormat.Value): ValueSerializer[Enum] =
     if (EnumSerializerShared.EnumClass.isAssignableFrom(javaType.getRawClass))
       EnumSerializer
@@ -35,7 +35,7 @@ private class EnumSerializerResolver(config: ScalaModule.Config) extends Seriali
 }
 
 private class EnumKeySerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
-  override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription,
+  override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription.Supplier,
                               formatOverrides: JsonFormat.Value): ValueSerializer[Enum] =
     if (EnumSerializerShared.EnumClass isAssignableFrom javaType.getRawClass)
       EnumKeySerializer

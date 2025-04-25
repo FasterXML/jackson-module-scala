@@ -32,7 +32,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](conf
 
   override def findMapLikeDeserializer(theType: MapLikeType,
                                        deserializationConfig: DeserializationConfig,
-                                       beanDesc: BeanDescription,
+                                       beanDesc: BeanDescription.Supplier,
                                        keyDeserializer: KeyDeserializer,
                                        elementTypeDeserializer: TypeDeserializer,
                                        elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {

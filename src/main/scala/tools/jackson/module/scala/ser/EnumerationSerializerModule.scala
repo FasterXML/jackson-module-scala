@@ -45,7 +45,7 @@ private class EnumerationSerializerResolver(config: ScalaModule.Config) extends 
 
   override def findSerializer(serializationConfig: SerializationConfig,
                               javaType: JavaType,
-                              beanDescription: BeanDescription,
+                              beanDescription: BeanDescription.Supplier,
                               formatOverrides: JsonFormat.Value): ValueSerializer[_] = {
     val clazz = javaType.getRawClass
 

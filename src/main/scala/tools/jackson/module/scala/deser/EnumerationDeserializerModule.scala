@@ -63,7 +63,7 @@ private class EnumerationDeserializerResolver(config: ScalaModule.Config) extend
 
   override def findBeanDeserializer(javaType: JavaType,
                                     deserializationConfig: DeserializationConfig,
-                                    beanDesc: BeanDescription) = {
+                                    beanDesc: BeanDescription.Supplier) = {
 
     val clazz = javaType.getRawClass
     if (ENUMERATION.isAssignableFrom(clazz)) {

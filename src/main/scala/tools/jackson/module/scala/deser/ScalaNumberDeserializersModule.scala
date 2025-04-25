@@ -41,7 +41,7 @@ private object NumberDeserializers {
 
 private class NumberDeserializers(config: ScalaModule.Config) extends Deserializers.Base {
 
-  override def findBeanDeserializer(tpe: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): ValueDeserializer[_] =
+  override def findBeanDeserializer(tpe: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[_] =
     tpe.getRawClass match {
       case NumberDeserializers.BigDecimalClass => BigDecimalDeserializer
       case NumberDeserializers.BigIntClass => BigIntDeserializer

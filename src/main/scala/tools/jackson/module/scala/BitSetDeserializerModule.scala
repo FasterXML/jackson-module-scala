@@ -32,7 +32,7 @@ object BitSetDeserializerModule extends JacksonModule {
 
       override def findCollectionLikeDeserializer(`type`: CollectionLikeType,
                                                   config: DeserializationConfig,
-                                                  beanDesc: BeanDescription,
+                                                  beanDesc: BeanDescription.Supplier,
                                                   elementTypeDeserializer: TypeDeserializer,
                                                   elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
         val rawClass = `type`.getRawClass
