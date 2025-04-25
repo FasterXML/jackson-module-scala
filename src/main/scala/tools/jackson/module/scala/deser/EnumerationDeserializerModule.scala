@@ -95,7 +95,7 @@ private class EnumerationKeyDeserializer(r: Option[EnumResolver]) extends KeyDes
 
 private class EnumerationKeyDeserializers(config: ScalaModule.Config) extends KeyDeserializers {
   private val valueClass = classOf[scala.Enumeration#Value]
-  def findKeyDeserializer(tp: JavaType, deserializationConfig: DeserializationConfig, desc: BeanDescription): KeyDeserializer = {
+  def findKeyDeserializer(tp: JavaType, deserializationConfig: DeserializationConfig, desc: BeanDescription.Supplier): KeyDeserializer = {
     if (valueClass.isAssignableFrom(tp.getRawClass)) {
       new EnumerationKeyDeserializer(None)
     }

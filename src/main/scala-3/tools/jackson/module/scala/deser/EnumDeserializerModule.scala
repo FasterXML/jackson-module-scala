@@ -122,7 +122,7 @@ private class EnumDeserializerResolver(config: ScalaModule.Config) extends Deser
 }
 
 private class EnumKeyDeserializerResolver(config: ScalaModule.Config) extends KeyDeserializers {
-  override def findKeyDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): KeyDeserializer =
+  override def findKeyDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): KeyDeserializer =
     if (EnumDeserializerShared.EnumClass isAssignableFrom javaType.getRawClass)
       EnumKeyDeserializer(javaType.getRawClass.asInstanceOf[Class[Enum]])
     else None.orNull
