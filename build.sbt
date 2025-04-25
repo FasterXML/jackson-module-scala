@@ -12,12 +12,12 @@ ThisBuild / scalaVersion := scala213Version
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.3.5")
 
-// resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
-// version := "2.19.0-SNAPSHOT"
-val jacksonCoreVersion = "2.19.0"
+version := "2.20.0-SNAPSHOT"
+val jacksonCoreVersion = "2.20.0-SNAPSHOT"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
