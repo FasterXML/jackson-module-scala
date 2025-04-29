@@ -2,7 +2,7 @@ package com.fasterxml.jackson
 package module.scala
 package ser
 
-import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
+import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategies}
 import org.scalatest.Outcome
 import org.scalatest.flatspec.FixtureAnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -21,7 +21,7 @@ class NamingStrategyTest extends FixtureAnyFlatSpec with Matchers {
   protected def withFixture(test: OneArgTest): Outcome = {
     val mapper = new ObjectMapper()
     mapper.registerModule(DefaultScalaModule)
-    mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
     test(mapper)
   }
 
