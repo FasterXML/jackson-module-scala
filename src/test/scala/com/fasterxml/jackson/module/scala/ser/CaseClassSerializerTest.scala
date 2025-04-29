@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonProperty.Access
 import com.fasterxml.jackson.annotation._
-import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategy}
+import com.fasterxml.jackson.databind.{ObjectMapper, PropertyNamingStrategies}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.beans.BeanProperty
@@ -136,7 +136,7 @@ class CaseClassSerializerTest extends SerializerTest {
 
   def propertyNamingStrategyMapper = new ObjectMapper() {
     registerModule(module)
-    setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
   }
 
   it should "honor the property naming strategy" in {

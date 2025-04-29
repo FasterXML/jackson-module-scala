@@ -4,7 +4,7 @@ package deser
 
 import com.fasterxml.jackson.annotation.{JsonProperty, JsonSetter, Nulls}
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.{DeserializationFeature, JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategy}
+import com.fasterxml.jackson.databind.{DeserializationFeature, JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategies}
 import com.fasterxml.jackson.module.scala.ser.{ClassWithOnlyUnitField, ClassWithUnitField}
 
 import java.time.LocalDateTime
@@ -150,7 +150,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   def propertyNamingStrategyMapper: ObjectMapper = new ObjectMapper() {
     registerModule(module)
-    setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
   }
 
   it should "honor the property naming strategy" in {
