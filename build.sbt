@@ -136,8 +136,8 @@ libraryDependencies ++= jacksonDependencies ++ Seq(
   "com.thoughtworks.paranamer" % "paranamer" % "2.8.3",
   // test dependencies
   "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonNonCoreVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonCoreVersion % Test,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonCoreVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-guava" % jacksonNonCoreVersion % Test,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % jacksonNonCoreVersion % Test,
   "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonNonCoreVersion % Test,
   "com.fasterxml.jackson.module" % "jackson-module-jsonSchema" % jacksonNonCoreVersion % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
