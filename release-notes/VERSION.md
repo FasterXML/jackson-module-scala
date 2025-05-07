@@ -9,6 +9,11 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 * [[gh-pr-706]](https://github.com/FasterXML/jackson-module-scala/pull/706) Upgrade paranamer dependency to 2.8.3
 * [[gh-722]](https://github.com/FasterXML/jackson-module-scala/issues/722) Collection deserializer should create empty collection instead of null (when input is null)
 
+# Version: 2.18.4
+
+There are no new fixes in this release; it serves to track the 2.18.4 release
+of the upstream Jackson projects.
+
 # Version: 2.18.3
 
 There are no new fixes in this release; it serves to track the 2.18.3 release
