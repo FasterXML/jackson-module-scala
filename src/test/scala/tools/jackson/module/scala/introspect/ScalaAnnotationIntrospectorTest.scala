@@ -297,7 +297,9 @@ class ScalaAnnotationIntrospectorTest extends FixtureAnyFlatSpec with Matchers {
 
   private def getProps(mapper: ObjectMapper, bean: AnyRef) = {
     val classIntrospector = mapper.serializationConfig().classIntrospectorInstance()
-    val beanDescription: BeanDescription = classIntrospector.introspectForSerialization(mapper.constructType(bean.getClass))
+    val beanType = mapper.constructType(bean.getClass)
+    val beanDescription: BeanDescription = classIntrospector.introspectForSerialization(beanType,
+      classIntrospector.introspectClassAnnotations(beanType))
     beanDescription.findProperties()
   }
 }
