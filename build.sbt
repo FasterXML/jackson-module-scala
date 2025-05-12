@@ -6,7 +6,7 @@ name := "jackson-module-scala"
 
 organization := "tools.jackson.module"
 
-ThisBuild / version := "3.0.0-rc4"
+ThisBuild / version := "3.0.0-rc5-SNAPSHOT"
 
 val scala213Version = "2.13.16"
 ThisBuild / scalaVersion := scala213Version
@@ -16,11 +16,11 @@ ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.6")
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "s01.oss.sonatype.org"
 
-// resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
 
-val jacksonVersion = "3.0.0-rc4"
+val jacksonVersion = "3.0.0-rc5-SNAPSHOT"
 
 autoAPIMappings := true
 
