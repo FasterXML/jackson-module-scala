@@ -15,7 +15,7 @@ ThisBuild / scalaVersion := scala213Version
 ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.6")
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
-ThisBuild / sonatypeRepository := sonatypeCentralHost // "s01.oss.sonatype.org"
+ThisBuild / sonatypeRepository := "s01.oss.sonatype.org"
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
