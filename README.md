@@ -82,20 +82,6 @@ val mapper = JsonMapper.builder()
   .build()
 ```
 
-## DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES
-
-It is recommended that Scala users enable `DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES`. This feature means that when you
-deserialize JSON and bind to a Scala/Java class and a required field is missing (or null), then the deserialization call will fail
-with a `tools.jackson.databind.exc.MismatchedInputException`. By default, the deserialization call will succeed and a `null` value
-will be set for the field.
-
-```scala
-val mapper = JsonMapper.builder()
-  .addModule(DefaultScalaModule)
-  .enable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)
-  .build()
-```
-
 ## ClassTagExtensions
 You can also mixin `ClassTagExtensions` to get rich wrappers that automatically
 convert scala ClassTags directly into TypeReferences for Jackson to use:
