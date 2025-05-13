@@ -36,6 +36,15 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
+  // For Scala, we want to use the declared order of the fields in the class
+  override def findSerializationSortAlphabetically(ann: Annotated): java.lang.Boolean = {
+    ann match {
+      case ac: AnnotatedClass if isMaybeScalaBeanType(ac.getAnnotated) =>
+        java.lang.Boolean.FALSE
+      case _ => None.orNull
+    }
+  }
+
   override def findImplicitPropertyName(member: AnnotatedMember): String = {
     member match {
       case af: AnnotatedField => fieldName(af).orNull
