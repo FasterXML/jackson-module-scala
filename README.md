@@ -76,10 +76,13 @@ module explicitly.
 
 ## DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES
 
-It is recommended that Scala users enable `DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES`. This feature means that when you
-deserialize JSON and bind to a Scala/Java class and a required field is missing (or null), then the deserialization call will fail
-with a `com.fasterxml.jackson.databind.exc.MismatchedInputException`. By default, the deserialization call will succeed and a `null` value
-will be set for the field.
+Since jackson-module-scala 2.19.0, if you deserializing a collection and the input is null, this will deserialize as an empty collection.
+
+Up to jackson-module-scala 2.19.0, it was recommended that Scala users enable `DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES` because
+otherwise, an input of null would lead to the deserialized instance having a null value for the collection field.
+
+This feature means that when you deserialize JSON and bind to a Scala/Java class and a required field is missing (or null), then the deserialization call will fail
+with a `com.fasterxml.jackson.databind.exc.MismatchedInputException`.
 
 ```scala
 val mapper = JsonMapper.builder()
