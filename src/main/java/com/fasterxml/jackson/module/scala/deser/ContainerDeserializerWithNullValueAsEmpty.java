@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.scala.deser;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
@@ -16,6 +17,10 @@ abstract class ContainerDeserializerWithNullValueAsEmpty<T> extends ContainerDes
 
     @Override
     public T getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-        return (T) getEmptyValue(ctxt);
+        if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)) {
+            return super.getNullValue(ctxt);
+        } else {
+            return (T) getEmptyValue(ctxt);
+        }
     }
 }
