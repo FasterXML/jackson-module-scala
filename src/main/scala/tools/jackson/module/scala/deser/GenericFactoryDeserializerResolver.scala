@@ -145,7 +145,12 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: Scala
       bw.builder.result().asInstanceOf[Object]
     }
 
-    override def getNullValue(ctxt: DeserializationContext): Object = getEmptyValue(ctxt)
+    override def getNullValue(ctxt: DeserializationContext): Object = {
+      if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+        super.getNullValue(ctxt)
+      else
+        getEmptyValue(ctxt)
+    }
 
     private def newBuilderWrapper(ctxt: DeserializationContext): BuilderWrapper[AnyRef] = {
       containerDeserializer.getValueInstantiator.createUsingDefault(ctxt).asInstanceOf[BuilderWrapper[AnyRef]]

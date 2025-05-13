@@ -210,6 +210,14 @@ class CaseClassDeserializerTest extends DeserializerTest {
     result.list shouldBe List.empty
   }
 
+  it should "fail when deserializing null input for list if FAIL_ON_NULL_CREATOR_PROPERTIES enabled" in {
+    val input = """{}"""
+    val mapper = newBuilder.enable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES).build()
+    intercept[com.fasterxml.jackson.databind.exc.MismatchedInputException] {
+      mapper.readValue(input, classOf[ListHolder[String]])
+    }
+  }
+
   it should "support deserializing null input for list as empty list (JsonSetter annotation)" in {
     val input = """{}"""
     val result = deserialize(input, classOf[AnnotatedListHolder[String]])
@@ -239,5 +247,13 @@ class CaseClassDeserializerTest extends DeserializerTest {
     val input = """{}"""
     val result = deserialize(input, classOf[AnnotatedMapHolder[Int, String]])
     result.map shouldBe Map.empty
+  }
+
+  it should "fail when deserializing null input for map if FAIL_ON_NULL_CREATOR_PROPERTIES enabled" in {
+    val input = """{}"""
+    val mapper = newBuilder.enable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES).build()
+    intercept[com.fasterxml.jackson.databind.exc.MismatchedInputException] {
+      mapper.readValue(input, classOf[MapHolder[Int, String]])
+    }
   }
 }
