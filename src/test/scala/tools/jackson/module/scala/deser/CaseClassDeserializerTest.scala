@@ -222,6 +222,12 @@ class CaseClassDeserializerTest extends DeserializerTest {
     result.list shouldBe None
   }
 
+  it should "support deserializing empty input for Option[List] as Some(List.empty)" in {
+    val input = """{"list":[]}"""
+    val result = deserialize(input, classOf[OptionListHolder[String]])
+    result.list shouldBe Some(List.empty)
+  }
+
   it should "support deserializing null input for map as empty map" in {
     val input = """{}"""
     val result = deserialize(input, classOf[MapHolder[Int, String]])
