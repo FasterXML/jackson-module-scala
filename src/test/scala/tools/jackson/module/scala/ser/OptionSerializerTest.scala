@@ -130,11 +130,10 @@ class OptionSerializerTest extends SerializerTest {
 
   it should "support default typing" in {
     case class User(name: String, email: Option[String] = None)
-    val mapper = newBuilder.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build()
     val user = User("John Smith", Some("john.smith@unit.uk"))
     val expected = """{"name":"John Smith","email":"john.smith@unit.uk"}"""
-    mapper.writeValueAsString(user) shouldEqual expected
-    val mapper2 = newBuilder.disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+    newMapper.writeValueAsString(user) shouldEqual expected
+    val mapper2 = newBuilder
       .activateDefaultTyping(new DefaultBaseTypeLimitingValidator)
       .build()
     mapper2.writeValueAsString(user) shouldEqual expected

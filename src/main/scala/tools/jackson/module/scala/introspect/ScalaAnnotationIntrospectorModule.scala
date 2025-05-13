@@ -38,6 +38,15 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     }
   }
 
+  // For Scala, we want to use the declared order of the fields in the class
+  override def findSerializationSortAlphabetically(config: MapperConfig[_], ann: Annotated): java.lang.Boolean = {
+    ann match {
+      case ac: AnnotatedClass if scalaAnnotationIntrospectorModule.isMaybeScalaBeanType(ac.getAnnotated) =>
+        java.lang.Boolean.FALSE
+      case _ => None.orNull
+    }
+  }
+
   override def findImplicitPropertyName(mapperConfig: MapperConfig[_], member: AnnotatedMember): String = {
     member match {
       case af: AnnotatedField => fieldName(af).orNull
