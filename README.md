@@ -76,7 +76,7 @@ module explicitly.
 
 ## DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES
 
-Since jackson-module-scala 2.19.0, if you deserializing a collection and the input is null, this will deserialize as an empty collection.
+Since jackson-module-scala 2.19.0, if you are deserializing a collection and the input is null, this will deserialize as an empty collection.
 
 Up to jackson-module-scala 2.19.0, it was recommended that Scala users enable `DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES` because
 otherwise, an input of null would lead to the deserialized instance having a null value for the collection field.
