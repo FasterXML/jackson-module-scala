@@ -1,3 +1,9 @@
+# Version: 2.19.1
+
+## Fixes
+
+* [[gh-732]](https://github.com/FasterXML/jackson-module-scala/issues/732) if config has DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES then try to fail on null again (collections)
+
 # Version: 2.19.0
 
 This patch release tracks Jackson 2.19. The 2.19 series has full support for
