@@ -1,5 +1,6 @@
 import sbtghactions.JavaSpec.Distribution.Zulu
 import com.github.sbt.sbom._
+import xerial.sbt.Sonatype.sonatypeCentralHost
 
 // Basic facts
 name := "jackson-module-scala"
@@ -13,8 +14,8 @@ ThisBuild / scalaVersion := scala213Version
 
 ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.6")
 
-sonatypeCredentialHost := "s01.oss.sonatype.org"
-sonatypeRepository := "s01.oss.sonatype.org"
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
+ThisBuild / sonatypeRepository := sonatypeCentralHost // "s01.oss.sonatype.org"
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
@@ -131,8 +132,8 @@ ThisBuild / githubWorkflowPublish := Seq(
     env = Map(
       "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
       "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
-      "SONATYPE_PASSWORD" -> "${{ secrets.CI_DEPLOY_PASSWORD3 }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.CI_DEPLOY_USERNAME3 }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.CENTRAL_DEPLOY_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.CENTRAL_DEPLOY_USERNAME }}",
       "CI_SNAPSHOT_RELEASE" -> "+publishSigned"
     )
   )
