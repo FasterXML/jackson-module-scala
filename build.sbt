@@ -14,9 +14,10 @@ ThisBuild / scalaVersion := scala213Version
 
 ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.6")
 
-ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
-ThisBuild / sonatypeRepository := "s01.oss.sonatype.org"
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
+// ThisBuild / sonatypeRepository := "s01.oss.sonatype.org"
 
+resolvers += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 bomFormat := "xml"
