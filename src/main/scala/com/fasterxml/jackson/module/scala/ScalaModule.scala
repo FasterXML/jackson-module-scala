@@ -43,6 +43,7 @@ object ScalaModule {
     }
 
     def build(): JacksonModule = new JacksonModule {
+      override def getModuleName: String = "ScalaModule"
       override def setupModule(context: SetupContext): Unit = {
         modules.foreach(_.setupModule(context))
       }

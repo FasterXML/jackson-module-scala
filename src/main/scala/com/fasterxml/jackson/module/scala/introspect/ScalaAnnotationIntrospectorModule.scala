@@ -278,6 +278,8 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 
   private[introspect] val overrideMap = MutableMap[String, ClassOverrides]()
 
+  override def getModuleName: String = "ScalaAnnotationIntrospectorModule"
+
   /**
    * Replaces the [[LookupCacheFactory]]. The default factory uses [[com.fasterxml.jackson.databind.util.LRUMap]].
    * <p>

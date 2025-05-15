@@ -38,6 +38,8 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
 
     object AtrModule extends JacksonModule {
       this += (_ addAbstractTypeResolver ATR)
+
+      override def getModuleName: String = "AtrModule"
     }
 
     val atrMapper = new ObjectMapper
