@@ -173,14 +173,11 @@ class CreatorTest extends DeserializationFixture {
     deser2.i shouldEqual 5
   }
 
-  it should "ignore default values when builder is overridden" in { f =>
-    val scalaModule = ScalaModule.builder()
-      .addAllBuiltinModules()
-      .applyDefaultValuesWhenDeserializing(false)
-      .build()
+  it should "ignore default values (when MapperFeature is overridden)" in { _ =>
     val mapper = initBuilder()
-      .addModule(scalaModule)
-      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+      .disable(MapperFeature.APPLY_DEFAULT_VALUES)
+      .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+      .addModule(DefaultScalaModule)
       .build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual null
@@ -194,27 +191,12 @@ class CreatorTest extends DeserializationFixture {
   it should "ignore default values when builder is overridden (using just ScalaAnnotationIntrospectorModule)" in { f =>
     val scalaModule = ScalaModule.builder()
       .addModule(ScalaAnnotationIntrospectorModule)
-      .applyDefaultValuesWhenDeserializing(false)
       .build()
     val mapper = initBuilder()
       .addModule(scalaModule)
-      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
-      .build()
-    val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
-    deser.s shouldEqual null
-    deser.i shouldEqual 0
-    deser.dummy shouldEqual null
-    val deser2 = mapper.readValue("""{"s":"passed","i":5}""", classOf[ConstructorWithDefaultValues])
-    deser2.s shouldEqual "passed"
-    deser2.i shouldEqual 5
-  }
-
-  it should "ignore default values (when MapperFeature is overridden)" in { _ =>
-    val builder = initBuilder()
       .disable(MapperFeature.APPLY_DEFAULT_VALUES)
-      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
-      .addModule(DefaultScalaModule)
-    val mapper = builder.build()
+      .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+      .build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual null
     deser.i shouldEqual 0

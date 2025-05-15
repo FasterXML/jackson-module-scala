@@ -77,7 +77,6 @@ val scalaModule = ScalaModule.builder()
 
 val mapper = JsonMapper.builder()
   .addModule(scalaModule)
-  .applyDefaultValuesWhenDeserializing(false) //default of true
   .supportScala3Classes(false) //default of true
   .build()
 ```

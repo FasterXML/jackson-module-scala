@@ -8,7 +8,7 @@ import tools.jackson.databind.cfg.MapperConfig
 import tools.jackson.databind.deser._
 import tools.jackson.databind.deser.std.StdValueInstantiator
 import tools.jackson.databind.introspect._
-import tools.jackson.databind.util.{AccessPattern, LookupCache, SimpleLookupCache}
+import tools.jackson.databind.util.{AccessPattern, LookupCache}
 import tools.jackson.databind.{BeanDescription, DeserializationConfig, DeserializationContext, JavaType, MapperFeature, PropertyName}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.{DefaultLookupCacheFactory, JacksonModule, LookupCacheFactory, ScalaModule}
@@ -209,8 +209,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
 
     private val overriddenConstructorArguments: Array[SettableBeanProperty] = {
       val overrides = scalaAnnotationIntrospectorModule.overrideMap.get(descriptor.beanType.getName).map(_.overrides.toMap).getOrElse(Map.empty)
-      val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES) &&
-        config.shouldApplyDefaultValuesWhenDeserializing()
+      val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
       val args = delegate.getFromObjectArguments(deserializationConfig)
       Option(args) match {
         case Some(array) if (applyDefaultValues || overrides.nonEmpty) => {

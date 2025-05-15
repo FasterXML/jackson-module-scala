@@ -13,14 +13,6 @@ class ScalaModuleTest extends BaseSpec {
     cfg.supportScala3Classes(true)
       .shouldSupportScala3Classes() shouldBe true
   }
-  it should "support enabling/disabling default value support" in {
-    val cfg = ScalaModule.builder()
-    cfg.shouldApplyDefaultValuesWhenDeserializing() shouldBe true
-    cfg.applyDefaultValuesWhenDeserializing(false)
-      .shouldApplyDefaultValuesWhenDeserializing() shouldBe false
-    cfg.applyDefaultValuesWhenDeserializing(true)
-      .shouldApplyDefaultValuesWhenDeserializing()shouldBe true
-  }
   it should "support addAllBuiltinModules" in {
     val cfg = ScalaModule.builder().addAllBuiltinModules()
     cfg.hasModule(IteratorModule) shouldBe true
