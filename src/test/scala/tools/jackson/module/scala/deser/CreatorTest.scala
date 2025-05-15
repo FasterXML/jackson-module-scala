@@ -7,7 +7,7 @@ import tools.jackson.databind.{DeserializationFeature, JsonNode, MapperFeature, 
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.node.IntNode
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
-import tools.jackson.module.scala.{DefaultScalaModule, ScalaModule}
+import tools.jackson.module.scala.{DefaultScalaModule, ScalaFeature, ScalaModule}
 
 class PositiveLong private (val value: Long) {
   override def toString() = s"PositiveLong($value)"
@@ -180,7 +180,8 @@ class CreatorTest extends DeserializationFixture {
       .build()
     val mapper = initBuilder()
       .addModule(scalaModule)
-      .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+      .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+      .disable(ScalaFeature.APPLY_DEFAULT_VALUES_WHEN_DESERIALIZING)
       .build()
     val deser = mapper.readValue("""{}""", classOf[ConstructorWithDefaultValues])
     deser.s shouldEqual null
