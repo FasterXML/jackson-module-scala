@@ -83,11 +83,11 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     a match {
       case ac: AnnotatedConstructor if (!isScala(ac)) => false
       case ac: AnnotatedConstructor =>
-        val annotatedFound = _descriptorFor(ac.getDeclaringClass).map { d =>
+        val annotatedFound = _descriptorFor(ac.getDeclaringClass).exists { d =>
           d.properties
             .flatMap(_.param)
             .exists(_.constructor == ac.getAnnotated)
-        }.getOrElse(false)
+        }
 
         // Ignore this annotation if there is another annotation that is actually annotated with @JsonCreator.
         val annotatedConstructor = {
