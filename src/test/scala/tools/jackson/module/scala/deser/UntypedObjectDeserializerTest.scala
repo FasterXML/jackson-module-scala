@@ -38,6 +38,7 @@ class UntypedObjectDeserializerTest extends DeserializerTest {
     }
 
     object AtrModule extends JacksonModule {
+      override def getModuleName: String = "AtrModule"
       override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
         val builder = new JacksonModule.InitializerBuilder()
         builder += (_ addAbstractTypeResolver ATR)

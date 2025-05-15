@@ -57,7 +57,9 @@ object ScalaModule {
     def build(): JacksonModule = {
       val configInstance = this
       new JacksonModule {
-        override val config = configInstance
+        override def getModuleName: String = "ScalaModule"
+
+        override val config: Builder = configInstance
         override def getInitializers(config: Config): Seq[SetupContext => Unit] = {
           modules.toSeq.flatMap(_.getInitializers(config))
         }

@@ -25,7 +25,7 @@ private class EitherDeserializer(javaType: JavaType,
       val paramDeserializer = Option( ctxt.findContextualValueDeserializer(containedType, property) )
       val typeDeserializer = Option(property).flatMap(p => Option(ctxt.findPropertyTypeDeserializer(containedType, p.getMember)) )
 
-      ElementDeserializerConfig( paramDeserializer.map(_.asInstanceOf[ValueDeserializer[AnyRef]]), typeDeserializer )
+      ElementDeserializerConfig(paramDeserializer, typeDeserializer)
     }
 
     javaType.containedTypeCount match {
@@ -104,7 +104,7 @@ private object EitherDeserializer {
   case class ElementDeserializerConfig(deserializer: Option[ValueDeserializer[AnyRef]], typeDeseriazlier: Option[TypeDeserializer])
 
   object ElementDeserializerConfig {
-    val empty = ElementDeserializerConfig(None, None)
+    val empty: ElementDeserializerConfig = ElementDeserializerConfig(None, None)
   }
 }
 
@@ -141,6 +141,7 @@ private class EitherDeserializerResolver(config: ScalaModule.Config) extends Des
 }
 
 trait EitherDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "EitherDeserializerModule"
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new EitherDeserializerResolver(config)

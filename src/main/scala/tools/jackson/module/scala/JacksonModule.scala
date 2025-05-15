@@ -62,8 +62,6 @@ object VersionExtractor {
 
 trait JacksonModule extends tools.jackson.databind.JacksonModule {
 
-  override def getModuleName: String = "JacksonModule"
-
   override def version(): Version = JacksonModule.version
 
   def setupModule(context: SetupContext): Unit = {
