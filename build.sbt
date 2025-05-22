@@ -20,9 +20,16 @@ ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 resolvers += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
+publishTo := {
+  if (isSnapshot.value)
+    Some("snapshots" at "https://central.sonatype.com/repository/maven-snapshots")
+  else
+    None
+}
+
 bomFormat := "xml"
 
-val jacksonVersion = "3.0.0-rc5-SNAPSHOT"
+val jacksonVersion = "3.0.0-rc5"
 
 autoAPIMappings := true
 
