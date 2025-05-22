@@ -7,7 +7,7 @@ name := "jackson-module-scala"
 
 organization := "tools.jackson.module"
 
-ThisBuild / version := "3.0.0-rc5-SNAPSHOT"
+//ThisBuild / version := "3.0.0-rc5"
 
 val scala213Version = "2.13.16"
 ThisBuild / scalaVersion := scala213Version
@@ -15,7 +15,6 @@ ThisBuild / scalaVersion := scala213Version
 ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.6")
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
-// ThisBuild / sonatypeRepository := "s01.oss.sonatype.org"
 
 resolvers += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
