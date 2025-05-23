@@ -14,6 +14,8 @@ ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.
 
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
+publishTo := sonatypePublishToBundle.value
+
 bomFormat := "xml"
 
 version := "2.20.0-SNAPSHOT"
