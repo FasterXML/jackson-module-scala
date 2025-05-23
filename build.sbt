@@ -19,11 +19,10 @@ ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 resolvers += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
-publishTo := {
-  if (isSnapshot.value)
-    Some("snapshots" at "https://central.sonatype.com/repository/maven-snapshots")
-  else
-    sonatypePublishToBundle.value
+ThisBuild / publishTo := {
+  val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+  if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+  else localStaging.value
 }
 
 bomFormat := "xml"
