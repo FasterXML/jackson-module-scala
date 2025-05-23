@@ -137,4 +137,4 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.CENTRAL_DEPLOY_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.CENTRAL_DEPLOY_USERNAME }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
-        run: sbt -J-Xmx2G +publishSigned
+        run: sbt -J-Xmx2G +publish
