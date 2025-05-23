@@ -1,0 +1,3 @@
+# Let's hope this works as expected
+
+tools.jackson.module.scala.DefaultScalaModule
