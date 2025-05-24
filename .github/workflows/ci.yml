@@ -131,10 +131,17 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
+      - name: move pgp_secret to gpg
+        run: |
+          mkdir -p ~/.gnupg
+          echo "${{ secrets.PGP_SECRET }}" > ~/.gnupg/pgp_secret.asc
+          gpg --import ~/.gnupg/pgp_secret.asc
+          rm ~/.gnupg/pgp_secret.asc
+
       - env:
           CI_SNAPSHOT_RELEASE: +publishSigned
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           SONATYPE_PASSWORD: ${{ secrets.CENTRAL_DEPLOY_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.CENTRAL_DEPLOY_USERNAME }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
-        run: sbt -J-Xmx2G +publish
+        run: sbt -J-Xmx2G +publishSigned
