@@ -1,4 +1,4 @@
-// import sbtghactions.JavaSpec.Distribution.Zulu
+import sbtghactions.JavaSpec.Distribution.Zulu
 import com.github.sbt.sbom._
 import xerial.sbt.Sonatype.sonatypeCentralHost
 
@@ -123,7 +123,6 @@ Compile / resourceGenerators += Def.task {
 
 Test / parallelExecution := false
 
-/*
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"))
 ThisBuild / githubWorkflowTargetBranches := Seq("3.x")
@@ -146,7 +145,6 @@ ThisBuild / githubWorkflowPublish := Seq(
     )
   )
 )
-*/
 
 enablePlugins(ReproducibleBuildsPlugin)
 // site
