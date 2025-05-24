@@ -133,10 +133,7 @@ jobs:
 
       - name: move pgp_secret to gpg
         run: |
-          mkdir -p ~/.gnupg
-          echo "${{ secrets.PGP_SECRET }}" > ~/.gnupg/pgp_secret.asc
-          gpg --import ~/.gnupg/pgp_secret.asc
-          rm ~/.gnupg/pgp_secret.asc
+          echo ${{ secrets.PGP_SECRET }} | base64 --decode | gpg --batch --import
 
       - env:
           CI_SNAPSHOT_RELEASE: +publishSigned
