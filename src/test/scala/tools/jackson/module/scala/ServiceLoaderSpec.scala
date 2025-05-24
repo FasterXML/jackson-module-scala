@@ -10,7 +10,7 @@ class ServiceLoaderSpec extends BaseSpec {
     val modules = loader.iterator().asScala.toList
     modules should not be empty
     modules.collectFirst {
-      case m if m.getClass.getName == "com.fasterxml.jackson.module.scala.DefaultScalaModule" => m
+      case m if m.getClass == classOf[DefaultScalaModule] => m
     } should not be empty
   }
 }
