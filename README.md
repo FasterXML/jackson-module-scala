@@ -126,6 +126,7 @@ content. The project `.gitignore` file intentionally prevents this file from bei
 
 ``` scala
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolver += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
 ```
 
 # Download, docs
