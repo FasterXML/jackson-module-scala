@@ -1,5 +1,5 @@
 ![Build Status](https://github.com/FasterXML/jackson-module-scala/actions/workflows/ci.yml/badge.svg?branch=3.x)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/tools.jackson.module/jackson-module-scala_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/tools.jackson.module/jackson-module-scala_2.13)
+![Maven Central Version](https://img.shields.io/maven-central/v/tools.jackson.module/jackson-module-scala_2.13)
 [![Sonatype Snapshots](https://img.shields.io/nexus/s/https/central.sonatype.com/tools.jackson.module/jackson-module-scala_2.13.svg)](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/tools/jackson/module/jackson-module-scala_2.13/)
 [![Tidelift](https://tidelift.com/badges/package/maven/com.fasterxml.jackson.module:jackson-module-scala_2.13)](https://tidelift.com/subscription/pkg/maven-com.fasterxml.jackson.module.jackson-module-scala.2.13?utm_source=maven-com.fasterxml.jackson.module.jackson-module-scala.2.13&utm_medium=github_sponsor_button&utm_campaign=readme)
 
