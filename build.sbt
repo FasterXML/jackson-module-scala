@@ -1,4 +1,4 @@
-// import sbtghactions.JavaSpec.Distribution.Zulu
+import sbtghactions.JavaSpec.Distribution.Zulu
 import com.github.sbt.sbom._
 import xerial.sbt.Sonatype.sonatypeCentralHost
 
@@ -17,7 +17,6 @@ ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.6")
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 
 resolvers += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
-resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 ThisBuild / dynverSonatypeSnapshots := true
 ThisBuild / publishTo := {
@@ -123,7 +122,6 @@ Compile / resourceGenerators += Def.task {
 
 Test / parallelExecution := false
 
-/*
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"))
 ThisBuild / githubWorkflowTargetBranches := Seq("3.x")
@@ -146,7 +144,6 @@ ThisBuild / githubWorkflowPublish := Seq(
     )
   )
 )
-*/
 
 enablePlugins(ReproducibleBuildsPlugin)
 // site
