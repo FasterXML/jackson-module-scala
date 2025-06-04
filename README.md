@@ -116,7 +116,7 @@ Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/a
 
 To import in sbt:
 ```scala
-libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.18.3"
+libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.19.0"
 ```
 
 ## Java/Kotlin users
@@ -138,6 +138,7 @@ content. The project `.gitignore` file intentionally prevents this file from bei
 
 ``` scala
 resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolver += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
 ```
 
 # Download, docs
