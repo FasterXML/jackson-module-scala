@@ -76,7 +76,12 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
 
     override def getEmptyValue(ctxt: DeserializationContext): Object = immutable.LongMap.empty[V]
 
-    override def getNullValue(ctxt: DeserializationContext): Object = getEmptyValue(ctxt)
+    override def getNullValue(ctxt: DeserializationContext): Object = {
+      if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+        super.getNullValue(ctxt)
+      else
+        getEmptyValue(ctxt)
+    }
   }
 
   private class MutableLongMapDeserializer[V](mapType: MapLikeType, containerDeserializer: MapDeserializer)

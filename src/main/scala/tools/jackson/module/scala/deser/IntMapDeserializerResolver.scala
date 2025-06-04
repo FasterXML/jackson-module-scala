@@ -70,7 +70,12 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
 
     override def getEmptyValue(ctxt: DeserializationContext): Object = IntMap.empty[V]
 
-    override def getNullValue(ctxt: DeserializationContext): Object = getEmptyValue(ctxt)
+    override def getNullValue(ctxt: DeserializationContext): Object = {
+      if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+        super.getNullValue(ctxt)
+      else
+        getEmptyValue(ctxt)
+    }
   }
 
   private class IntMapInstantiator(config: DeserializationConfig, mapType: MapLikeType) extends StdValueInstantiator(config, mapType) {

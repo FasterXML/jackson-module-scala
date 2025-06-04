@@ -2,7 +2,7 @@ package tools.jackson.module.scala.deser
 
 import tools.jackson.core.JsonParser
 import tools.jackson.databind.deser.std.StdDeserializer
-import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.{DeserializationContext, DeserializationFeature}
 import tools.jackson.databind.deser.jackson.JsonNodeDeserializer
 import tools.jackson.databind.node.ArrayNode
 
@@ -33,6 +33,9 @@ object ImmutableBitSetDeserializer extends StdDeserializer[immutable.BitSet](cla
     immutable.BitSet.empty
 
   override def getNullValue(ctxt: DeserializationContext): immutable.BitSet = {
-    getEmptyValue(ctxt)
+    if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+      super.getNullValue(ctxt).asInstanceOf[immutable.BitSet]
+    else
+      getEmptyValue(ctxt)
   }
 }
