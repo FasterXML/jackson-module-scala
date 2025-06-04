@@ -40,7 +40,6 @@ object ScalaModule {
       addModule(EnumerationModule)
       addModule(OptionModule)
       addModule(SeqModule)
-      addModule(IterableModule)
       addModule(TupleModule)
       addModule(MapModule)
       addModule(SetModule)

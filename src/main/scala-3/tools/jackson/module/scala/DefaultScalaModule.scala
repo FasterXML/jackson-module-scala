@@ -24,7 +24,6 @@ class DefaultScalaModule extends JacksonModule {
       EnumModule.getInitializers(config) ++
       OptionModule.getInitializers(config) ++
       SeqModule.getInitializers(config) ++
-      IterableModule.getInitializers(config) ++
       TupleModule.getInitializers(config) ++
       MapModule.getInitializers(config) ++
       SetModule.getInitializers(config) ++
