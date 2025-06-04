@@ -12,7 +12,7 @@ import scala.collection._
 import scala.language.existentials
 
 trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
-  override def getInitializers(config: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
+  override def getInitializers(moduleConfig: ScalaModule.Config): scala.Seq[SetupContext => Unit] = {
     super.getInitializers(config) ++ {
       val builder = new InitializerBuilder()
       builder += new GenericMapFactoryDeserializerResolver[Map, MapFactory](config) {
@@ -43,10 +43,10 @@ trait UnsortedMapDeserializerModule extends MapTypeModifierModule {
                                              elementTypeDeserializer: TypeDeserializer,
                                              elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
 
-          var deserializer = LongMapDeserializerResolver.findMapLikeDeserializer(
+          var deserializer = new LongMapDeserializerResolver(moduleConfig).findMapLikeDeserializer(
             theType, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
           if (deserializer == null) {
-            deserializer = IntMapDeserializerResolver.findMapLikeDeserializer(
+            deserializer = new IntMapDeserializerResolver(moduleConfig).findMapLikeDeserializer(
               theType, config, beanDesc, keyDeserializer, elementTypeDeserializer, elementDeserializer)
             if (deserializer == null) {
               deserializer = super.findMapLikeDeserializer(

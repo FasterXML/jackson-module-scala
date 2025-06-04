@@ -7,7 +7,7 @@ import tools.jackson.databind.deser.std.{ContainerDeserializerBase, StdValueInst
 import tools.jackson.databind.jsontype.TypeDeserializer
 import tools.jackson.databind._
 import tools.jackson.databind.deser.jdk.MapDeserializer
-import tools.jackson.module.scala.{DefaultScalaModule, IteratorModule}
+import tools.jackson.module.scala.{DefaultScalaModule, IteratorModule, ScalaModule}
 
 import java.util
 import scala.collection.JavaConverters._
@@ -19,7 +19,7 @@ import scala.collection.immutable.IntMap
  *
  * @since 2.14.0
  */
-private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
+private[deser] class IntMapDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val intMapClass = classOf[IntMap[_]]
 
@@ -71,7 +71,8 @@ private[deser] object IntMapDeserializerResolver extends Deserializers.Base {
     override def getEmptyValue(ctxt: DeserializationContext): Object = IntMap.empty[V]
 
     override def getNullValue(ctxt: DeserializationContext): Object = {
-      if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+      if (!config.shouldDeserializeNullCollectionsAsEmpty() ||
+          ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
         super.getNullValue(ctxt)
       else
         getEmptyValue(ctxt)

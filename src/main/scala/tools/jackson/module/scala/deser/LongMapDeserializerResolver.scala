@@ -7,7 +7,7 @@ import tools.jackson.databind.deser.std.{ContainerDeserializerBase, StdValueInst
 import tools.jackson.databind.jsontype.TypeDeserializer
 import tools.jackson.databind._
 import tools.jackson.databind.deser.jdk.MapDeserializer
-import tools.jackson.module.scala.{DefaultScalaModule, IteratorModule}
+import tools.jackson.module.scala.{DefaultScalaModule, IteratorModule, ScalaModule}
 
 import java.util
 import scala.collection.{immutable, mutable}
@@ -19,7 +19,7 @@ import scala.collection.JavaConverters._
  *
  * @since 2.14.0
  */
-private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
+private[deser] class LongMapDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
 
   private val immutableLongMapClass = classOf[immutable.LongMap[_]]
   private val mutableLongMapClass = classOf[mutable.LongMap[_]]
@@ -77,7 +77,8 @@ private[deser] object LongMapDeserializerResolver extends Deserializers.Base {
     override def getEmptyValue(ctxt: DeserializationContext): Object = immutable.LongMap.empty[V]
 
     override def getNullValue(ctxt: DeserializationContext): Object = {
-      if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+      if (!config.shouldDeserializeNullCollectionsAsEmpty() ||
+          ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
         super.getNullValue(ctxt)
       else
         getEmptyValue(ctxt)

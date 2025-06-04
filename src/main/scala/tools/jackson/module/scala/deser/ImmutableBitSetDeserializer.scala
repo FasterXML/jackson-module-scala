@@ -5,6 +5,7 @@ import tools.jackson.databind.deser.std.StdDeserializer
 import tools.jackson.databind.{DeserializationContext, DeserializationFeature}
 import tools.jackson.databind.deser.jackson.JsonNodeDeserializer
 import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.scala.ScalaModule
 
 import scala.collection.immutable
 import scala.collection.JavaConverters._
@@ -21,7 +22,9 @@ import scala.languageFeature.postfixOps
  *
  * @since 2.14.0
  */
-object ImmutableBitSetDeserializer extends StdDeserializer[immutable.BitSet](classOf[immutable.BitSet]) {
+class ImmutableBitSetDeserializer(config: ScalaModule.Config)
+    extends StdDeserializer[immutable.BitSet](classOf[immutable.BitSet]) {
+
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): immutable.BitSet = {
     val arrayNodeDeserializer = JsonNodeDeserializer.getDeserializer(classOf[ArrayNode])
     val arrayNode = arrayNodeDeserializer.deserialize(p, ctxt).asInstanceOf[ArrayNode]
@@ -33,7 +36,8 @@ object ImmutableBitSetDeserializer extends StdDeserializer[immutable.BitSet](cla
     immutable.BitSet.empty
 
   override def getNullValue(ctxt: DeserializationContext): immutable.BitSet = {
-    if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+    if (!config.shouldDeserializeNullCollectionsAsEmpty() ||
+        ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
       super.getNullValue(ctxt).asInstanceOf[immutable.BitSet]
     else
       getEmptyValue(ctxt)

@@ -24,7 +24,7 @@ import scala.collection.{BitSet, immutable, mutable}
 object BitSetDeserializerModule extends JacksonModule {
   override def getModuleName: String = "BitSetDeserializerModule"
 
-  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+  override def getInitializers(moduleConfig: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     builder += new Deserializers.Base {
       private val IMMUTABLE_BITSET_CLASS: Class[_] = classOf[immutable.BitSet]
@@ -37,7 +37,7 @@ object BitSetDeserializerModule extends JacksonModule {
                                                   elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
         val rawClass = `type`.getRawClass
         if (IMMUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-          ImmutableBitSetDeserializer.asInstanceOf[ValueDeserializer[BitSet]]
+          new ImmutableBitSetDeserializer(moduleConfig).asInstanceOf[ValueDeserializer[BitSet]]
         } else if (MUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
           MutableBitSetDeserializer.asInstanceOf[ValueDeserializer[BitSet]]
         } else {
