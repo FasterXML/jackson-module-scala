@@ -39,7 +39,7 @@ object BitSetDeserializerModule extends JacksonModule {
         if (IMMUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
           new ImmutableBitSetDeserializer(moduleConfig).asInstanceOf[ValueDeserializer[BitSet]]
         } else if (MUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-          MutableBitSetDeserializer.asInstanceOf[ValueDeserializer[BitSet]]
+          new MutableBitSetDeserializer(moduleConfig).asInstanceOf[ValueDeserializer[BitSet]]
         } else {
           None.orNull
         }
