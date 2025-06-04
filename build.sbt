@@ -25,8 +25,6 @@ ThisBuild / publishTo := {
   else localStaging.value
 }
 
-publishTo := sonatypePublishToBundle.value
-
 bomFormat := "xml"
 
 version := "2.20.0-SNAPSHOT"
