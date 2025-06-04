@@ -25,7 +25,6 @@ class DefaultScalaModule
      with EnumModule // Scala 3 only
      with OptionModule
      with SeqModule
-     with IterableModule
      with TupleModule
      with MapModule
      with SetModule

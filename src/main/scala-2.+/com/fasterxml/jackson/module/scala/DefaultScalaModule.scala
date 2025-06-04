@@ -20,7 +20,6 @@ class DefaultScalaModule
      with EnumerationModule
      with OptionModule
      with SeqModule
-     with IterableModule
      with TupleModule
      with MapModule
      with SetModule

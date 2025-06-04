@@ -8,7 +8,6 @@ class ScalaModuleTest extends BaseSpec {
   "A ScalaModule builder" should "support addAllBuiltinModules" in {
     val cfg = ScalaModule.builder().addAllBuiltinModules()
     cfg.hasModule(IteratorModule) shouldBe true
-    cfg.hasModule(IterableModule) shouldBe true
     cfg.hasModule(EnumerationModule) shouldBe true
     cfg.hasModule(EitherModule) shouldBe true
     cfg.hasModule(OptionModule) shouldBe true
