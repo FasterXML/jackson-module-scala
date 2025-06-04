@@ -1,5 +1,6 @@
 import com.typesafe.tools.mima.core._
 import sbtghactions.JavaSpec.Distribution.Zulu
+import xerial.sbt.Sonatype.sonatypeCentralHost
 
 // Basic facts
 name := "jackson-module-scala"
@@ -11,7 +12,17 @@ ThisBuild / scalaVersion := scala213Version
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.3.4")
 
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
+
 // resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+// resolvers += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
+
+ThisBuild / dynverSonatypeSnapshots := true
+ThisBuild / publishTo := {
+  val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+  if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+  else localStaging.value
+}
 
 val jacksonCoreVersion = "2.18.4"
 val jacksonNonCoreVersion = jacksonCoreVersion
@@ -167,8 +178,8 @@ ThisBuild / githubWorkflowPublish := Seq(
     env = Map(
       "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
       "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
-      "SONATYPE_PASSWORD" -> "${{ secrets.CI_DEPLOY_PASSWORD }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.CI_DEPLOY_USERNAME }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.CENTRAL_DEPLOY_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.CENTRAL_DEPLOY_USERNAME }}",
       "CI_SNAPSHOT_RELEASE" -> "+publishSigned"
     )
   )
