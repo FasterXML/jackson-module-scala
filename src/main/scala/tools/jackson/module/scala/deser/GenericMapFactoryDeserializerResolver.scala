@@ -167,7 +167,8 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](conf
     }
 
     override def getNullValue(ctxt: DeserializationContext): Object = {
-      if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+      if (!config.shouldDeserializeNullCollectionsAsEmpty() ||
+          ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
         super.getNullValue(ctxt)
       else
         getEmptyValue(ctxt)

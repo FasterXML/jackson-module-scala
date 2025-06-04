@@ -14,7 +14,7 @@ object ScalaModule {
     /**
      * @return whether the module should support deserializing null collections as empty (default: true)
      */
-    def shouldDeserializingNullCollectionsAsEmpty(): Boolean
+    def shouldDeserializeNullCollectionsAsEmpty(): Boolean
   }
 
   class Builder extends Config {
@@ -34,7 +34,7 @@ object ScalaModule {
 
     override def shouldSupportScala3Classes(): Boolean = supportScala3Classes
 
-    override def shouldDeserializingNullCollectionsAsEmpty(): Boolean = deserializeNullCollectionsAsEmpty
+    override def shouldDeserializeNullCollectionsAsEmpty(): Boolean = deserializeNullCollectionsAsEmpty
 
     def addModule(module: JacksonModule): Builder = {
       modules.+=(module)
@@ -85,6 +85,7 @@ object ScalaModule {
 
   val defaultBuilder: Config = new Config {
     override def shouldSupportScala3Classes(): Boolean = true
+    override def shouldDeserializeNullCollectionsAsEmpty(): Boolean = true
   }
 }
 
