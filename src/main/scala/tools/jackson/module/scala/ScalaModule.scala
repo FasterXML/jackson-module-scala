@@ -7,19 +7,34 @@ import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 object ScalaModule {
 
   trait Config {
+    /**
+     * @return whether the module should support classes built with Scala 3 compiler (default: true)
+     */
     def shouldSupportScala3Classes(): Boolean
+    /**
+     * @return whether the module should support deserializing null collections as empty (default: true)
+     */
+    def shouldDeserializingNullCollectionsAsEmpty(): Boolean
   }
 
   class Builder extends Config {
     private val modules = scala.collection.mutable.Buffer[JacksonModule]()
     private var supportScala3Classes = true
+    private var deserializeNullCollectionsAsEmpty = true
 
     def supportScala3Classes(support: Boolean): Builder = {
       supportScala3Classes = support
       this
     }
 
+    def deserializeNullCollectionsAsEmpty(asEmpty: Boolean): Builder = {
+      deserializeNullCollectionsAsEmpty = asEmpty
+      this
+    }
+
     override def shouldSupportScala3Classes(): Boolean = supportScala3Classes
+
+    override def shouldDeserializingNullCollectionsAsEmpty(): Boolean = deserializeNullCollectionsAsEmpty
 
     def addModule(module: JacksonModule): Builder = {
       modules.+=(module)
