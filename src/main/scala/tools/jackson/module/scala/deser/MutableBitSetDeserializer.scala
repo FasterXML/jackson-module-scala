@@ -2,9 +2,10 @@ package tools.jackson.module.scala.deser
 
 import tools.jackson.core.JsonParser
 import tools.jackson.databind.deser.std.StdDeserializer
-import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.{DeserializationContext, DeserializationFeature}
 import tools.jackson.databind.deser.jackson.JsonNodeDeserializer
 import tools.jackson.databind.node.ArrayNode
+import tools.jackson.module.scala.ScalaModule
 
 import scala.collection.mutable
 import scala.collection.JavaConverters._
@@ -21,11 +22,24 @@ import scala.languageFeature.postfixOps
  *
  * @since 2.14.0
  */
-object MutableBitSetDeserializer extends StdDeserializer[mutable.BitSet](classOf[mutable.BitSet]) {
+class MutableBitSetDeserializer(config: ScalaModule.Config)
+    extends StdDeserializer[mutable.BitSet](classOf[mutable.BitSet]) {
+
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): mutable.BitSet = {
     val arrayNodeDeserializer = JsonNodeDeserializer.getDeserializer(classOf[ArrayNode])
     val arrayNode = arrayNodeDeserializer.deserialize(p, ctxt).asInstanceOf[ArrayNode]
     val elements = arrayNode.values().asScala.toSeq.map(_.asInt())
     mutable.BitSet(elements: _*)
+  }
+
+  override def getEmptyValue(ctxt: DeserializationContext): mutable.BitSet =
+    mutable.BitSet.empty
+
+  override def getNullValue(ctxt: DeserializationContext): mutable.BitSet = {
+    if (!config.shouldDeserializeNullCollectionsAsEmpty() ||
+        ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+      super.getNullValue(ctxt).asInstanceOf[mutable.BitSet]
+    else
+      getEmptyValue(ctxt)
   }
 }

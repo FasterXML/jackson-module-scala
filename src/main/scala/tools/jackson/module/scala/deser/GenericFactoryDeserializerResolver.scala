@@ -146,7 +146,8 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: Scala
     }
 
     override def getNullValue(ctxt: DeserializationContext): Object = {
-      if (ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
+      if (!config.shouldDeserializeNullCollectionsAsEmpty() ||
+          ctxt.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES))
         super.getNullValue(ctxt)
       else
         getEmptyValue(ctxt)

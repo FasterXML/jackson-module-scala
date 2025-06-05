@@ -5,7 +5,7 @@ import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.databind.exc.MismatchedInputException
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.{DatabindException, DeserializationFeature, ObjectMapper, ObjectReader, PropertyNamingStrategies}
-import tools.jackson.module.scala.DefaultScalaModule
+import tools.jackson.module.scala.{DefaultScalaModule, ScalaModule}
 import tools.jackson.module.scala.ser.{ClassWithOnlyUnitField, ClassWithUnitField}
 
 import java.time.LocalDateTime
@@ -210,6 +210,17 @@ class CaseClassDeserializerTest extends DeserializerTest {
     result.list shouldBe List.empty
   }
 
+  it should "deserialize list as null if deserializeNullCollectionsAsEmpty config is false" in {
+    val input = """{}"""
+    val module = ScalaModule.builder()
+      .deserializeNullCollectionsAsEmpty(false)
+      .addAllBuiltinModules()
+      .build()
+    val mapper = JsonMapper.builder().addModule(module).build()
+    val res = mapper.readValue(input, classOf[ListHolder[String]])
+    res.list shouldBe null
+  }
+
   it should "fail when deserializing null input for list if FAIL_ON_NULL_CREATOR_PROPERTIES enabled" in {
     val input = """{}"""
     val mapper = newBuilder.enable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES).build()
@@ -255,5 +266,16 @@ class CaseClassDeserializerTest extends DeserializerTest {
     intercept[tools.jackson.databind.exc.MismatchedInputException] {
       mapper.readValue(input, classOf[MapHolder[Int, String]])
     }
+  }
+
+  it should "deserialize map as null if deserializeNullCollectionsAsEmpty config is false" in {
+    val input = """{}"""
+    val module = ScalaModule.builder()
+      .deserializeNullCollectionsAsEmpty(false)
+      .addAllBuiltinModules()
+      .build()
+    val mapper = JsonMapper.builder().addModule(module).build()
+    val res = mapper.readValue(input, classOf[MapHolder[Int, String]])
+    res.map shouldBe null
   }
 }

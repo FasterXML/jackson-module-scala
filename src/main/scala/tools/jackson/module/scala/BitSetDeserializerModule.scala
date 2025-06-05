@@ -31,15 +31,15 @@ object BitSetDeserializerModule extends JacksonModule {
       private val MUTABLE_BITSET_CLASS: Class[_] = classOf[mutable.BitSet]
 
       override def findCollectionLikeDeserializer(`type`: CollectionLikeType,
-                                                  config: DeserializationConfig,
+                                                  deserializationConfig: DeserializationConfig,
                                                   beanDesc: BeanDescription.Supplier,
                                                   elementTypeDeserializer: TypeDeserializer,
                                                   elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
         val rawClass = `type`.getRawClass
         if (IMMUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-          ImmutableBitSetDeserializer.asInstanceOf[ValueDeserializer[BitSet]]
+          new ImmutableBitSetDeserializer(config).asInstanceOf[ValueDeserializer[BitSet]]
         } else if (MUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-          MutableBitSetDeserializer.asInstanceOf[ValueDeserializer[BitSet]]
+          new MutableBitSetDeserializer(config).asInstanceOf[ValueDeserializer[BitSet]]
         } else {
           None.orNull
         }
