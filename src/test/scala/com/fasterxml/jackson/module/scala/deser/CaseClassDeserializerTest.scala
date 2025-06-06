@@ -206,6 +206,17 @@ class CaseClassDeserializerTest extends DeserializerTest {
     result.list shouldBe List.empty
   }
 
+  it should "deserialize list as null if deserializeNullCollectionsAsEmpty config is false" in {
+    val input = """{}"""
+    try {
+      ScalaModule.deserializeNullCollectionsAsEmpty(false)
+      val result = deserialize(input, classOf[ListHolder[String]])
+      result.list shouldBe null
+    } finally {
+      ScalaModule.deserializeNullCollectionsAsEmpty(true) // reset to default
+    }
+  }
+
   it should "fail when deserializing null input for list if FAIL_ON_NULL_CREATOR_PROPERTIES enabled" in {
     val input = """{}"""
     val mapper = newBuilder.enable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES).build()
@@ -235,4 +246,14 @@ class CaseClassDeserializerTest extends DeserializerTest {
     }
   }
 
+  it should "deserialize map as null if deserializeNullCollectionsAsEmpty config is false" in {
+    val input = """{}"""
+    try {
+      ScalaModule.deserializeNullCollectionsAsEmpty(false)
+      val result = deserialize(input, classOf[MapHolder[Int, String]])
+      result.map shouldBe null
+    } finally {
+      ScalaModule.deserializeNullCollectionsAsEmpty(true) // reset to default
+    }
+  }
 }

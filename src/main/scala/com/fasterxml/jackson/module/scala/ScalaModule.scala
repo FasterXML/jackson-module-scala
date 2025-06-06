@@ -49,6 +49,17 @@ object ScalaModule {
     }
   }
 
+  private var deserializeNullCollectionsAsEmpty = true
+
   def builder(): Builder = new Builder()
+
+  /**
+   * @return whether the module should support deserializing null collections as empty (default: true)
+   */
+  def shouldDeserializeNullCollectionsAsEmpty(): Boolean = deserializeNullCollectionsAsEmpty
+
+  def deserializeNullCollectionsAsEmpty(asEmpty: Boolean): Unit = {
+    deserializeNullCollectionsAsEmpty = asEmpty
+  }
 }
 
