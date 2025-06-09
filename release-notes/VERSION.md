@@ -3,6 +3,7 @@
 ## Fixes
 
 * [[gh-732]](https://github.com/FasterXML/jackson-module-scala/issues/732) if config has DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES then try to fail on null again (collections)
+* [[gh-pr-745]](https://github.com/FasterXML/jackson-module-scala/pull/745) add config to allow override of deserializeNullCollectionsAsEmpty
 
 # Version: 2.19.0
 
