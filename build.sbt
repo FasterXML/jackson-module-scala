@@ -15,8 +15,7 @@ ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 
-resolvers ++= Resolver.sonatypeOssRepos("snapshots")
-resolvers += "Sonatype Central Snapshots" at "https://central.sonatype.com/repository/maven-snapshots"
+resolvers += Resolver.sonatypeCentralSnapshots
 
 ThisBuild / dynverSonatypeSnapshots := true
 ThisBuild / publishTo := {
@@ -27,8 +26,8 @@ ThisBuild / publishTo := {
 
 bomFormat := "xml"
 
-//version := "2.19.1"
-val jacksonCoreVersion = "2.19.1"
+version := "2.19.2-SNAPSHOT"
+val jacksonCoreVersion = "2.19.2-SNAPSHOT"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
