@@ -11,11 +11,11 @@ class NumberSerializerTest extends SerializerTest {
     serialize(BigDecimal("123.456")) shouldBe "123.456"
   }
 
-  it should "serialize BigDecimal as a string ()" in {
+  it should "serialize BigDecimal as a number (JsonFormat.Shape.STRING)" in {
     val mapper = newMapper
-    mapper.configOverride(classOf[java.math.BigDecimal])
+    mapper.configOverride(classOf[BigDecimal])
       .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING))
-    serialize(BigDecimal("123.456"), mapper) shouldBe "123.456"
+    serialize(BigDecimal("123.456"), mapper) shouldBe """"123.456""""
   }
 
   it should "serialize BigInt as a number" in {

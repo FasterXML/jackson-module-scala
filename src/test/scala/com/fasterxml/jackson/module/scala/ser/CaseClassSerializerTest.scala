@@ -62,7 +62,13 @@ case class PrivateDefaultFields(
 case class ClassWithUnitField(field: Unit, intField: Int)
 case class ClassWithOnlyUnitField(field: Unit)
 
+object CaseClassSerializerTest {
+  case class BigDecimalHolder(bigDecimal: BigDecimal)
+}
+
 class CaseClassSerializerTest extends SerializerTest {
+
+  import CaseClassSerializerTest._
 
   case class NestedClass(field: String)
 
@@ -205,6 +211,17 @@ class CaseClassSerializerTest extends SerializerTest {
     }
 
     serialize(GeneratedDefaultArgumentClass()) shouldEqual "{}"
+  }
+
+  it should "serialize BigDecimalHolder" in {
+    serialize(BigDecimalHolder(BigDecimal("123.456"))) shouldEqual """{"bigDecimal":123.456}"""
+  }
+
+  it should "serialize BigDecimalHolder (JsonFormat.Shape.STRING)" in {
+    val mapper = newMapper
+    mapper.configOverride(classOf[BigDecimal])
+      .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING))
+    serialize(BigDecimalHolder(BigDecimal("123.456")), mapper) shouldEqual """{"bigDecimal":"123.456"}"""
   }
 
 }
