@@ -2,7 +2,8 @@ package tools.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonProperty.Access
 import com.fasterxml.jackson.annotation._
-import tools.jackson.databind.{MapperFeature, ObjectMapper, PropertyNamingStrategies}
+import tools.jackson.databind.cfg.MutableConfigOverride
+import tools.jackson.databind.{ObjectMapper, PropertyNamingStrategies}
 import tools.jackson.module.scala.DefaultScalaModule
 
 import scala.beans.BeanProperty
@@ -63,7 +64,13 @@ case class PrivateDefaultFields(
 case class ClassWithUnitField(field: Unit, intField: Int)
 case class ClassWithOnlyUnitField(field: Unit)
 
+object CaseClassSerializerTest {
+  case class BigDecimalHolder(bigDecimal: BigDecimal)
+}
+
 class CaseClassSerializerTest extends SerializerTest {
+
+  import CaseClassSerializerTest._
 
   case class NestedClass(field: String)
 
@@ -212,4 +219,14 @@ class CaseClassSerializerTest extends SerializerTest {
     serialize(GeneratedDefaultArgumentClass()) shouldEqual "{}"
   }
 
+  it should "serialize BigDecimalHolder" in {
+    serialize(BigDecimalHolder(BigDecimal("123.456"))) shouldEqual """{"bigDecimal":123.456}"""
+  }
+
+  it should "serialize BigDecimalHolder (JsonFormat.Shape.STRING)" in {
+    val builder = newBuilder
+      .withConfigOverride(classOf[BigDecimal],
+        (c: MutableConfigOverride) => c.setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING)))
+    serialize(BigDecimalHolder(BigDecimal("123.456")), builder.build()) shouldEqual """{"bigDecimal":"123.456"}"""
+  }
 }
