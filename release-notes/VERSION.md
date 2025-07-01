@@ -1,4 +1,4 @@
-# Version: 2.19.1 (not yet released)
+# Version: 2.19.1
 
 ## Fixes
 
