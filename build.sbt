@@ -27,7 +27,7 @@ ThisBuild / publishTo := {
 
 bomFormat := "xml"
 
-val jacksonVersion = "3.0.0-rc6-SNAPSHOT"
+val jacksonVersion = "3.0.0-rc6"
 
 autoAPIMappings := true
 
