@@ -26,7 +26,7 @@ ThisBuild / publishTo := {
 
 bomFormat := "xml"
 
-version := "2.19.2-SNAPSHOT"
+// version := "2.19.2"
 val jacksonCoreVersion = "2.19.2"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
