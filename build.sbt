@@ -27,7 +27,7 @@ ThisBuild / publishTo := {
 bomFormat := "xml"
 
 version := "2.20.0-SNAPSHOT"
-val jacksonCoreVersion = "2.20.0-SNAPSHOT"
+val jacksonCoreVersion = "2.20.0-rc1"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
