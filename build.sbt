@@ -27,6 +27,7 @@ ThisBuild / publishTo := {
 bomFormat := "xml"
 
 version := "2.20.0-SNAPSHOT"
+val jacksonAnnotationVersion = "2.20-rc1"
 val jacksonCoreVersion = "2.20.0-rc1"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
@@ -127,13 +128,13 @@ Test / unmanagedSourceDirectories ++= {
 val jacksonDependencies = if (jacksonCoreVersion.contains("SNAPSHOT"))
   Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonCoreVersion changing(),
-    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonCoreVersion changing(),
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonAnnotationVersion changing(),
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonCoreVersion changing()
   )
 else
   Seq(
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonCoreVersion,
-    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonCoreVersion,
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonAnnotationVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonCoreVersion
   )
 
