@@ -7,16 +7,12 @@ name := "jackson-module-scala"
 
 organization := "tools.jackson.module"
 
-ThisBuild / version := "3.0.0-rc7-SNAPSHOT"
-
 val scala213Version = "2.13.16"
 ThisBuild / scalaVersion := scala213Version
 
 ThisBuild / crossScalaVersions := Seq("2.12.20", scala213Version, "3.3.6")
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
-
-resolvers += Resolver.sonatypeCentralSnapshots
 
 ThisBuild / dynverSonatypeSnapshots := true
 ThisBuild / publishTo := {
@@ -27,6 +23,8 @@ ThisBuild / publishTo := {
 
 bomFormat := "xml"
 
+// resolvers += Resolver.sonatypeCentralSnapshots
+// ThisBuild / version := "3.0.0-rc7-SNAPSHOT"
 val jacksonVersion = "3.0.0-rc7"
 
 autoAPIMappings := true
