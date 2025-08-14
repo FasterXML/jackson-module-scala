@@ -13,3 +13,6 @@ Users who don't use DefaultScalaModule may need to change to using ScalaModule b
 * [[gh-pr-665]](https://github.com/FasterXML/jackson-module-scala/pull/665) Remove ScalaObjectMapper in favour of ClassTagExtensions
 * [[gh-pr-707]](https://github.com/FasterXML/jackson-module-scala/pull/707) Drop Scala 2.11 support and remove dependency on paranamer
 * [[gh-pr-720]](https://github.com/FasterXML/jackson-module-scala/pull/720) When deserializing Scala collections and the input is missing or null, create an empty collection.
+
+# Not yet released
+* [[gh-pr-759]](https://github.com/FasterXML/jackson-module-scala/pull/759) Remove ClassTagExtensions support for URL inputs
