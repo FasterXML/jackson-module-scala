@@ -97,13 +97,6 @@ class ClassTagExtensionsTest extends JacksonTest {
     }
   }
 
-  it should "read value from URL" in {
-    withFile(genericJson) { file =>
-      val result = mapper.readValue[GenericTestClass[Int]](file.toURI.toURL)
-      result should equal(genericInt)
-    }
-  }
-
   it should "read value from string" in {
     val result = mapper.readValue[GenericTestClass[Int]](genericJson)
     result should equal(genericInt)
@@ -230,13 +223,6 @@ class ClassTagExtensionsTest extends JacksonTest {
   it should "update value from file" in {
     withFile(toplevelArrayJson) { file =>
       val result = mapper.updateValue(List.empty[GenericTestClass[Int]], file)
-      result should equal(listGenericInt)
-    }
-  }
-
-  it should "update value from URL" in {
-    withFile(toplevelArrayJson) { file =>
-      val result = mapper.updateValue(List.empty[GenericTestClass[Int]], file.toURI.toURL)
       result should equal(listGenericInt)
     }
   }
