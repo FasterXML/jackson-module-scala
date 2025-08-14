@@ -6,7 +6,6 @@ import tools.jackson.databind.`type`.{MapLikeType, TypeFactory}
 import tools.jackson.databind.json.JsonMapper
 
 import java.io.{File, InputStream, Reader}
-import java.net.URL
 import scala.collection.immutable.IntMap
 import scala.collection.{immutable, mutable}
 import scala.reflect.ClassTag
@@ -112,10 +111,6 @@ trait ClassTagExtensions {
     readValue(src, constructType[T])
   }
 
-  def readValue[T: JavaTypeable](src: URL): T = {
-    readValue(src, constructType[T])
-  }
-
   def readValue[T: JavaTypeable](content: String): T = {
     readValue(content, constructType[T])
   }
@@ -137,10 +132,6 @@ trait ClassTagExtensions {
   }
 
   def updateValue[T: JavaTypeable](valueToUpdate: T, src: File): T = {
-    objectReaderFor(valueToUpdate).readValue(src)
-  }
-
-  def updateValue[T: JavaTypeable](valueToUpdate: T, src: URL): T = {
     objectReaderFor(valueToUpdate).readValue(src)
   }
 
