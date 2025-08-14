@@ -134,6 +134,7 @@ trait ClassTagExtensions {
     readValue(src, constructType[T])
   }
 
+  @deprecated("Use readValue(src: InputStream) instead", "2.20.0")
   def readValue[T: JavaTypeable](src: URL): T = {
     readValue(src, constructType[T])
   }
@@ -162,6 +163,7 @@ trait ClassTagExtensions {
     objectReaderFor(valueToUpdate).readValue(src)
   }
 
+  @deprecated("Use updateValue(valueToUpdate: T, src: InputStream) instead", "2.20.0")
   def updateValue[T: JavaTypeable](valueToUpdate: T, src: URL): T = {
     objectReaderFor(valueToUpdate).readValue(src)
   }
