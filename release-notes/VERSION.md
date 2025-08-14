@@ -1,3 +1,9 @@
+# Version: 2.20.0-rc2 (not yet released)
+
+## Fixes
+
+* [[gh-pr-758]](https://github.com/FasterXML/jackson-module-scala/pull/758) deprecate methods that take URL inputs
+
 # Version: 2.20.0-rc1
 
 This patch release tracks Jackson 2.20. The 2.20 series has full support for
