@@ -22,7 +22,7 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Setup Java (zulu@17)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: zulu
           java-version: 17
