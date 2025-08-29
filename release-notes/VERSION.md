@@ -1,3 +1,13 @@
+# Version: 2.20.0
+
+This patch release tracks Jackson 2.20. The 2.20 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
+There are no new fixes in this release.
+
+## Fixes
+
+* [[gh-pr-758]](https://github.com/FasterXML/jackson-module-scala/pull/758) deprecate methods that take URL inputs
+
 # Version: 2.19.2
 
 There are no new fixes in this release; it serves to track the 2.19.2 release
