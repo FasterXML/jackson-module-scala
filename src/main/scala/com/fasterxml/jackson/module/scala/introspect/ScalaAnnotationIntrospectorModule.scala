@@ -61,15 +61,15 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   }
 
   override def hasCreatorAnnotation(a: Annotated): Boolean = {
-    val jsonCreators: PartialFunction[Annotation, JsonCreator] = { case jc: JsonCreator => jc }
-
     a match {
       case ac: AnnotatedConstructor if isScala(ac) =>
-        def annotatedFound() = _descriptorFor(ac.getDeclaringClass).exists { d =>
+        val annotatedFound = _descriptorFor(ac.getDeclaringClass).exists { d =>
           d.properties
             .flatMap(_.param)
             .exists(_.constructor == ac.getAnnotated)
         }
+
+        val jsonCreators: PartialFunction[Annotation, JsonCreator] = { case jc: JsonCreator => jc }
 
         // Ignore this annotation if there is another annotation that is actually annotated with @JsonCreator.
         def annotatedConstructor() = {
@@ -80,7 +80,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
         // Ignore this annotation if it is Mode.DISABLED.
         def isDisabled() = ac.getAnnotated.getAnnotations.collect(jsonCreators).exists(_.mode() == JsonCreator.Mode.DISABLED)
 
-        annotatedFound() && annotatedConstructor().forall(_ == ac.getAnnotated) && !isDisabled()
+        annotatedFound && annotatedConstructor().forall(_ == ac.getAnnotated) && !isDisabled()
       case _ => false
     }
   }
