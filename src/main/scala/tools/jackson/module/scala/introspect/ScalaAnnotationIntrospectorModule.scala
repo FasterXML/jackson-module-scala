@@ -78,27 +78,26 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   }
 
   private def hasCreatorAnnotation(a: Annotated): Boolean = {
-    val jsonCreators: PartialFunction[Annotation, JsonCreator] = { case jc: JsonCreator => jc }
-
     a match {
-      case ac: AnnotatedConstructor if (!isScala(ac)) => false
-      case ac: AnnotatedConstructor =>
+      case ac: AnnotatedConstructor if isScala(ac) =>
         val annotatedFound = _descriptorFor(ac.getDeclaringClass).exists { d =>
           d.properties
             .flatMap(_.param)
             .exists(_.constructor == ac.getAnnotated)
         }
 
+        val jsonCreators: PartialFunction[Annotation, JsonCreator] = { case jc: JsonCreator => jc }
+
         // Ignore this annotation if there is another annotation that is actually annotated with @JsonCreator.
-        val annotatedConstructor = {
+        def annotatedConstructor() = {
           for (constructor <- ac.getDeclaringClass.getDeclaredConstructors;
                annotation: JsonCreator <- constructor.getAnnotations.collect(jsonCreators) if annotation.mode() != JsonCreator.Mode.DISABLED) yield constructor
         }.headOption
 
         // Ignore this annotation if it is Mode.DISABLED.
-        val isDisabled = ac.getAnnotated.getAnnotations.collect(jsonCreators).exists(_.mode() == JsonCreator.Mode.DISABLED)
+        def isDisabled() = ac.getAnnotated.getAnnotations.collect(jsonCreators).exists(_.mode() == JsonCreator.Mode.DISABLED)
 
-        annotatedFound && annotatedConstructor.forall(_ == ac.getAnnotated) && !isDisabled
+        annotatedFound && annotatedConstructor().forall(_ == ac.getAnnotated) && !isDisabled()
       case _ => false
     }
   }
