@@ -103,7 +103,7 @@ Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/a
 
 To import in sbt:
 ```scala
-libraryDependencies += "tools.jackson.module" %% "jackson-module-scala" % "3.0.0-rc5"
+libraryDependencies += "tools.jackson.module" %% "jackson-module-scala" % "3.0.0"
 ```
 
 ## Java/Kotlin users
