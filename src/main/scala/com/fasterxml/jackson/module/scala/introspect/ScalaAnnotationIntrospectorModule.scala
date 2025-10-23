@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.scala.introspect
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.{JsonCreator, JsonPropertyOrder}
 import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.databind.`type`.{CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
 import com.fasterxml.jackson.databind.cfg.MapperConfig
@@ -40,7 +40,13 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   override def findSerializationSortAlphabetically(ann: Annotated): java.lang.Boolean = {
     ann match {
       case ac: AnnotatedClass if isMaybeScalaBeanType(ac.getAnnotated) =>
-        java.lang.Boolean.FALSE
+        val annotation = _findAnnotation(ac, classOf[JsonPropertyOrder])
+        if (annotation != null) {
+          // delegate to JacksonAnnotationIntrospector
+          None.orNull
+        } else {
+          java.lang.Boolean.FALSE
+        }
       case _ => None.orNull
     }
   }
