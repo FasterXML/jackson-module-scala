@@ -39,7 +39,9 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   // For Scala, we want to use the declared order of the fields in the class
   override def findSerializationSortAlphabetically(ann: Annotated): java.lang.Boolean = {
     ann match {
-      case ac: AnnotatedClass if isMaybeScalaBeanType(ac.getAnnotated) =>
+      case ac: AnnotatedClass if
+          ScalaAnnotationIntrospectorModule.isCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder &&
+            isMaybeScalaBeanType(ac.getAnnotated) =>
         val annotation = _findAnnotation(ac, classOf[JsonPropertyOrder])
         if (annotation != null) {
           // delegate to JacksonAnnotationIntrospector
@@ -468,7 +470,27 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   def shouldSupportScala3Classes(): Boolean = _shouldSupportScala3Classes
 }
 
-object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule
+object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule {
+  private var caseClassDefaultOrderBasedOnDeclaredParamOrder = true
+
+  /**
+   * @return Whether to default the serialization order of Case Class params to the defined order in the class.
+   *         This should be set to false if you want to enable <code>MapperFeature.SORT_PROPERTIES_ALPHABETICALLY</code>.
+   *         This is not needed in Jackson 3.
+   * @since 2.20.1
+   */
+  def isCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder: Boolean =
+    caseClassDefaultOrderBasedOnDeclaredParamOrder
+
+  /**
+   * @param flag Whether to default the serialization order of Case Class params to the defined order in the class.
+   *             This should be set to false if you want to enable <code>MapperFeature.SORT_PROPERTIES_ALPHABETICALLY</code>.
+   *             This is not needed in Jackson 3.
+   * @since 2.20.1
+   */
+  def setCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder(flag: Boolean): Unit =
+    this.caseClassDefaultOrderBasedOnDeclaredParamOrder = flag
+}
 
 private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ClassHolder)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
