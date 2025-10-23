@@ -40,7 +40,7 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
   override def findSerializationSortAlphabetically(ann: Annotated): java.lang.Boolean = {
     ann match {
       case ac: AnnotatedClass if isMaybeScalaBeanType(ac.getAnnotated) =>
-        java.lang.Boolean.FALSE
+        !config.isEnabled(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
       case _ => None.orNull
     }
   }
