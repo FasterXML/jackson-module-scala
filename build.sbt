@@ -24,8 +24,8 @@ ThisBuild / publishTo := {
 bomFormat := "xml"
 
 resolvers += Resolver.sonatypeCentralSnapshots
-ThisBuild / version := "3.0.2-SNAPSHOT"
-val jacksonVersion = "3.0.2-SNAPSHOT"
+ThisBuild / version := "3.1.0-SNAPSHOT"
+val jacksonVersion = "3.1.0-SNAPSHOT"
 
 autoAPIMappings := true
 
@@ -122,12 +122,12 @@ Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"), JavaSpec(Zulu, "25"))
-ThisBuild / githubWorkflowTargetBranches := Seq("3.x")
+ThisBuild / githubWorkflowTargetBranches := Seq("3.x", "3.0")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches :=
   Seq(
     RefPredicate.StartsWith(Ref.Tag("v")),
-    RefPredicate.Equals(Ref.Branch("3.x"))
+    RefPredicate.StartsWith(Ref.Branch("3."))
   )
 
 ThisBuild / githubWorkflowPublish := Seq(

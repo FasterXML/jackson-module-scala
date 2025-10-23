@@ -9,9 +9,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: [3.x]
+    branches: [3.x, 3.0]
   push:
-    branches: [3.x]
+    branches: [3.x, 3.0]
     tags: [v*]
 
 env:
@@ -77,7 +77,7 @@ jobs:
   publish:
     name: Publish Artifacts
     needs: [build]
-    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/3.x')
+    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/3.'))
     strategy:
       matrix:
         os: [ubuntu-latest]
