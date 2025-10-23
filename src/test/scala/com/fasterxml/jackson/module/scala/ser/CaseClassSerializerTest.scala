@@ -67,6 +67,8 @@ object CaseClassSerializerTest {
   case class ClassWithUnorderedFields(f3: Int = 3, f2: Int = 2, f0: Int = 0, f1: Int = 1)
   @JsonPropertyOrder(Array("f0", "f1", "f2", "f3"))
   case class AnnotatedClassWithUnorderedFields(f3: Int = 3, f2: Int = 2, f0: Int = 0, f1: Int = 1)
+  @JsonPropertyOrder(alphabetic = true)
+  case class AnnotatedClassWithUnorderedFields2(f3: Int = 3, f2: Int = 2, f0: Int = 0, f1: Int = 1)
 }
 
 class CaseClassSerializerTest extends SerializerTest {
@@ -237,6 +239,10 @@ class CaseClassSerializerTest extends SerializerTest {
   }
 
   it should "respect JsonPropertyOrder" in {
+    serialize(AnnotatedClassWithUnorderedFields(), newMapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
+  }
+
+  it should "respect JsonPropertyOrder alphabetic=true" in {
     serialize(AnnotatedClassWithUnorderedFields(), newMapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
   }
 }
