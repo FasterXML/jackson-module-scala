@@ -1,6 +1,6 @@
 package tools.jackson.module.scala.introspect
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.{JsonCreator, JsonPropertyOrder}
 import tools.jackson.core.Version
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind.`type`.{CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
@@ -42,7 +42,13 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   override def findSerializationSortAlphabetically(config: MapperConfig[_], ann: Annotated): java.lang.Boolean = {
     ann match {
       case ac: AnnotatedClass if scalaAnnotationIntrospectorModule.isMaybeScalaBeanType(ac.getAnnotated) =>
-        !config.isEnabled(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
+        val annotation = _findAnnotation(ac, classOf[JsonPropertyOrder])
+        if (annotation != null) {
+          // delegate to JacksonAnnotationIntrospector
+          None.orNull
+        } else {
+          !config.isEnabled(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
+        }
       case _ => None.orNull
     }
   }
