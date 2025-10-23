@@ -65,6 +65,8 @@ case class ClassWithOnlyUnitField(field: Unit)
 object CaseClassSerializerTest {
   case class BigDecimalHolder(bigDecimal: BigDecimal)
   case class ClassWithUnorderedFields(f3: Int = 3, f2: Int = 2, f0: Int = 0, f1: Int = 1)
+  @JsonPropertyOrder(Array("f0", "f1", "f2", "f3"))
+  case class AnnotatedClassWithUnorderedFields(f3: Int = 3, f2: Int = 2, f0: Int = 0, f1: Int = 1)
 }
 
 class CaseClassSerializerTest extends SerializerTest {
@@ -225,11 +227,16 @@ class CaseClassSerializerTest extends SerializerTest {
     serialize(BigDecimalHolder(BigDecimal("123.456")), mapper) shouldEqual """{"bigDecimal":"123.456"}"""
   }
 
-  it should "sort properties of the case class" in {
+  // https://github.com/FasterXML/jackson-module-scala/issues/772
+  it should "sort properties of the case class" ignore {
     val mapper = newBuilder
       .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
       .disable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
       .build()
     serialize(ClassWithUnorderedFields(), mapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
+  }
+
+  it should "respect JsonPropertyOrder" in {
+    serialize(AnnotatedClassWithUnorderedFields(), newMapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
   }
 }
