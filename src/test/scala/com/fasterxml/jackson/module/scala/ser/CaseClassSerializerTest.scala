@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access
 import com.fasterxml.jackson.annotation._
 import com.fasterxml.jackson.databind.{MapperFeature, ObjectMapper, PropertyNamingStrategies}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 import scala.beans.BeanProperty
 
@@ -230,12 +231,16 @@ class CaseClassSerializerTest extends SerializerTest {
   }
 
   // https://github.com/FasterXML/jackson-module-scala/issues/772
-  it should "sort properties of the case class" ignore {
+  it should "sort properties of the case class" in {
     val mapper = newBuilder
       .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-      .disable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
       .build()
-    serialize(ClassWithUnorderedFields(), mapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
+    ScalaAnnotationIntrospectorModule.setCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder(false)
+    try {
+      serialize(ClassWithUnorderedFields(), mapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
+    } finally {
+      ScalaAnnotationIntrospectorModule.setCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder(true)
+    }
   }
 
   it should "respect JsonPropertyOrder" in {
