@@ -24,7 +24,7 @@ ThisBuild / publishTo := {
   else localStaging.value
 }
 
-val jacksonCoreVersion = "2.18.4"
+val jacksonCoreVersion = "2.18.5"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
