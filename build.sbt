@@ -79,9 +79,9 @@ scalacOptions ++= {
     if (scalaReleaseVersion.value == 2 && scalaMajorVersion.value <= 12) {
       Seq("-language:higherKinds", "-language:existentials")
     } else {
-      Seq.empty[String]
+      Seq("-release", "8")
     }
-  Seq("-release", "8", "-deprecation", "-unchecked", "-feature") ++ additionalSettings
+  Seq("-deprecation", "-unchecked", "-feature") ++ additionalSettings
 }
 
 javacOptions ++= Seq("--release", "8")
