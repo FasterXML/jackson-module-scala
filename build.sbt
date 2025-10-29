@@ -81,8 +81,10 @@ scalacOptions ++= {
     } else {
       Seq.empty[String]
     }
-  Seq("-deprecation", "-unchecked", "-feature") ++ additionalSettings
+  Seq("-release", "8", "-deprecation", "-unchecked", "-feature") ++ additionalSettings
 }
+
+javacOptions ++= Seq("--release", "8")
 
 // Temporarily disable warnings as error since SerializationFeature.WRITE_NULL_MAP_VALUES has been deprecated
 // and we use it.
