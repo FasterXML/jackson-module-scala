@@ -84,8 +84,6 @@ scalacOptions ++= {
   Seq("-deprecation", "-unchecked", "-feature") ++ additionalSettings
 }
 
-javacOptions ++= Seq("--release", "8")
-
 // Temporarily disable warnings as error since SerializationFeature.WRITE_NULL_MAP_VALUES has been deprecated
 // and we use it.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
