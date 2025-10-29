@@ -27,7 +27,7 @@ ThisBuild / publishTo := {
 bomFormat := "xml"
 
 version := "2.19.3-SNAPSHOT"
-val jacksonCoreVersion = "2.19.3"
+val jacksonCoreVersion = "2.19.2"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
@@ -166,7 +166,7 @@ Compile / resourceGenerators += Def.task {
 Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"), JavaSpec(Zulu, "11"),
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "11"),
   JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"))
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
 ThisBuild / githubWorkflowTargetBranches := Seq("2.*")
