@@ -8,6 +8,17 @@ There are no new fixes in this release.
 
 * [[gh-pr-758]](https://github.com/FasterXML/jackson-module-scala/pull/758) deprecate methods that take URL inputs
 
+# Version: 2.19.4
+
+There are no new fixes in this release; it serves to track the 2.19.4 release
+of the upstream Jackson projects.
+
+# Version: 2.19.3
+
+There are no new fixes in this release; it serves to track the 2.19.3 release
+of the upstream Jackson projects. It is recommended to skip to the 2.19.4 release
+because there was an issue in the Jackson 2.19.3 release where some classes require Java 11.
+
 # Version: 2.19.2
 
 There are no new fixes in this release; it serves to track the 2.19.2 release
