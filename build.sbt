@@ -24,11 +24,11 @@ ThisBuild / publishTo := {
 
 bomFormat := "xml"
 
-// resolvers += Resolver.sonatypeCentralSnapshots
+resolvers += Resolver.sonatypeCentralSnapshots
 
-// version := "2.21.1-SNAPSHOT"
+version := "2.20.2-SNAPSHOT"
 val jacksonAnnotationVersion = "2.20"
-val jacksonCoreVersion = "2.20.1"
+val jacksonCoreVersion = "2.20.2-SNAPSHOT"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
