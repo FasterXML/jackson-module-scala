@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.{JsonProperty, JsonSetter, Nulls}
 import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.databind.exc.MismatchedInputException
 import tools.jackson.databind.json.JsonMapper
-import tools.jackson.databind.{DatabindException, DeserializationFeature, ObjectMapper, ObjectReader, PropertyNamingStrategies}
+import tools.jackson.databind.{DatabindException, DeserializationFeature, MapperFeature, ObjectMapper, ObjectReader, PropertyNamingStrategies}
 import tools.jackson.module.scala.{DefaultScalaModule, ScalaModule}
 import tools.jackson.module.scala.ser.{ClassWithOnlyUnitField, ClassWithUnitField}
 
@@ -290,7 +290,11 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   it should "deserialize AnnotatedVarTestConstructor" in {
     val input = """{"t":123}"""
-    val res = JsonMapper.builderWithJackson2Defaults().build().readValue(input, classOf[AnnotatedVarTestConstructor])
+    val mapper = JsonMapper.builder()
+      .addModule(module)
+      //.enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
+      .build()
+    val res = mapper.readValue(input, classOf[AnnotatedVarTestConstructor])
     res.test shouldEqual 123
   }
 }
