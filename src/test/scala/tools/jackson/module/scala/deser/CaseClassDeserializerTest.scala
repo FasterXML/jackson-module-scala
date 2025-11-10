@@ -76,6 +76,8 @@ object CaseClassDeserializerTest {
 
   case class MapHolder[K, V](map: Map[K, V])
   case class AnnotatedMapHolder[K, V](@JsonSetter(nulls = Nulls.AS_EMPTY)map: Map[K, V])
+
+  case class VarTestConstructor(var test: Int)
 }
 
 class CaseClassDeserializerTest extends DeserializerTest {
@@ -277,5 +279,11 @@ class CaseClassDeserializerTest extends DeserializerTest {
     val mapper = JsonMapper.builder().addModule(module).build()
     val res = mapper.readValue(input, classOf[MapHolder[Int, String]])
     res.map shouldBe null
+  }
+
+  it should "deserialize VarTestConstructor" in {
+    val input = """{"test":123}"""
+    val res = newMapper.readValue(input, classOf[VarTestConstructor])
+    res.test shouldEqual 123
   }
 }
