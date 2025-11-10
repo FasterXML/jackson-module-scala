@@ -11,7 +11,7 @@ import scala.reflect.NameTransformer
 
 object JavaAnnotationIntrospector extends JavaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
 
-class JavaAnnotationIntrospectorInstance(config: ScalaModule.Config) extends NopAnnotationIntrospector {
+class JavaAnnotationIntrospectorInstance(cfg: ScalaModule.Config) extends NopAnnotationIntrospector {
 
   override def findNameForDeserialization(config: MapperConfig[_], a: Annotated): PropertyName = None.orNull
 
