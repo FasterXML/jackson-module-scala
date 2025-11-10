@@ -2,8 +2,9 @@ Check VERSION.md for jackson-module-scala 2.x release information. This file tra
 
 # 3.0.2
 
-There are no new fixes in this release; it serves to track the 3.0.2 release
-of the upstream Jackson projects.
+## Fixes
+
+* [[gh-pr-773]](https://github.com/FasterXML/jackson-module-scala/pull/773) fix serialization issue with alphabetic sorting of properties
 
 # 3.0.1
 
