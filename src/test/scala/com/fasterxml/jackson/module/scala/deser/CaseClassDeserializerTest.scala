@@ -74,6 +74,9 @@ object CaseClassDeserializerTest {
   case class OptionListHolder[T](list: Option[List[T]])
 
   case class MapHolder[K, V](map: Map[K, V])
+  case class AnnotatedMapHolder[K, V](@JsonSetter(nulls = Nulls.AS_EMPTY)map: Map[K, V])
+
+  case class VarTestConstructor(var test: Int)
 }
 
 class CaseClassDeserializerTest extends DeserializerTest {
@@ -268,5 +271,11 @@ class CaseClassDeserializerTest extends DeserializerTest {
     } finally {
       ScalaModule.deserializeNullCollectionsAsEmpty(true) // reset to default
     }
+  }
+
+  it should "deserialize VarTestConstructor" in {
+    val input = """{"test":123}"""
+    val res = newMapper.readValue(input, classOf[VarTestConstructor])
+    res.test shouldEqual 123
   }
 }
