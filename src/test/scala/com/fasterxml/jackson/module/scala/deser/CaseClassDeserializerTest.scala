@@ -282,7 +282,7 @@ class CaseClassDeserializerTest extends DeserializerTest {
 
   it should "deserialize AnnotatedVarTestConstructor" in {
     val input = """{"t":123}"""
-    val res = JsonMapper.builderWithJackson2Defaults().build().readValue(input, classOf[AnnotatedVarTestConstructor])
+    val res = newMapper.readValue(input, classOf[AnnotatedVarTestConstructor])
     res.test shouldEqual 123
   }
 }
