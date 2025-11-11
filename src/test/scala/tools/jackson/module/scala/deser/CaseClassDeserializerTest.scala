@@ -22,7 +22,7 @@ object CaseClassDeserializerTest {
     var stringProperty: String = _
   }
 
-  case class JacksonAnnotationTestCaseClass(@JsonProperty("foo") oof:String, bar: String)
+  case class JacksonAnnotationTestCaseClass(@JsonProperty("foo") oof: String, bar: String)
 
   case class GenericTestCaseClass[T](data: T)
 
