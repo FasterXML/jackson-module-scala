@@ -68,7 +68,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
       case _ => {
         val modifiedName = ann match {
           case af: AnnotatedField if af.getName.contains("$") => fieldName(af)
-          case am: AnnotatedMethod if am.getName.contains("$") => methodName(am)
+          //case am: AnnotatedMethod if am.getName.contains("$") => methodName(am)
           case ap: AnnotatedParameter if ap.getName.contains("$") => paramName(ap)
           case _ => None
         }
