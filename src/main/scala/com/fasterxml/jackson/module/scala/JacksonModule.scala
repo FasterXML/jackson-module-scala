@@ -44,8 +44,9 @@ trait JacksonModule extends Module {
   override def version(): Version = JacksonModule.version
 
   def setupModule(context: SetupContext): Unit = {
-    val MajorVersion = version.getMajorVersion
-    val MinorVersion = version.getMinorVersion
+    val v = version()
+    val MajorVersion = v.getMajorVersion
+    val MinorVersion = v.getMinorVersion
 
     val requiredVersion = new Version(MajorVersion, MinorVersion, 0, null, "com.fasterxml.jackson.core", "jackson-databind")
     val incompatibleVersion = new Version(MajorVersion, MinorVersion + 1, 0, null, "com.fasterxml.jackson.core", "jackson-databind")
@@ -57,7 +58,7 @@ trait JacksonModule extends Module {
         // success!
       case databindVersion =>
         val databindVersionError = "Scala module %s requires Jackson Databind version >= %s and < %s - Found jackson-databind version %s"
-          .format(version, requiredVersion, incompatibleVersion, databindVersion)
+          .format(v, requiredVersion, incompatibleVersion, databindVersion)
         throw new JsonMappingException(null, databindVersionError)
     }
 
