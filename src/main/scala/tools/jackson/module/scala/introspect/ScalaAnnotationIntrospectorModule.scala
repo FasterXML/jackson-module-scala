@@ -39,7 +39,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   }
 
   // For Scala, we want to use the declared order of the fields in the class
-  override def findSerializationSortAlphabetically(config: MapperConfig[_], ann: Annotated): java.lang.Boolean = {
+  override def findSerializationSortAlphabetically(mapperConfig: MapperConfig[_], ann: Annotated): java.lang.Boolean = {
     ann match {
       case ac: AnnotatedClass if scalaAnnotationIntrospectorModule.isMaybeScalaBeanType(ac.getAnnotated) =>
         val annotation = _findAnnotation(ac, classOf[JsonPropertyOrder])
@@ -47,7 +47,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
           // delegate to JacksonAnnotationIntrospector
           None.orNull
         } else {
-          !config.isEnabled(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
+          !mapperConfig.isEnabled(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         }
       case _ => None.orNull
     }
@@ -108,7 +108,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     }
   }
 
-  override def findCreatorAnnotation(config: MapperConfig[_], a: Annotated): JsonCreator.Mode = {
+  override def findCreatorAnnotation(mapperConfig: MapperConfig[_], a: Annotated): JsonCreator.Mode = {
     if (hasCreatorAnnotation(a)) {
       Option(findCreatorBinding(a)) match {
         case Some(mode) => mode

@@ -13,9 +13,9 @@ object JavaAnnotationIntrospector extends JavaAnnotationIntrospectorInstance(Sca
 
 class JavaAnnotationIntrospectorInstance(cfg: ScalaModule.Config) extends NopAnnotationIntrospector {
 
-  override def findNameForDeserialization(config: MapperConfig[_], a: Annotated): PropertyName = None.orNull
+  override def findNameForDeserialization(mapperConfig: MapperConfig[_], a: Annotated): PropertyName = None.orNull
 
-  override def findImplicitPropertyName(config: MapperConfig[_], param: AnnotatedMember): String = {
+  override def findImplicitPropertyName(mapperConfig: MapperConfig[_], param: AnnotatedMember): String = {
     val result = param match {
       case param: AnnotatedParameter if ScalaAnnotationIntrospectorModule.isMaybeScalaBeanType(param.getDeclaringClass) => {
         val index = param.getIndex
