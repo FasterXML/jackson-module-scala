@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.Module.SetupContext
 import com.fasterxml.jackson.module.scala.deser.{ScalaNumberDeserializersModule, ScalaObjectDeserializerModule, UntypedObjectDeserializerModule}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
+/**
+ * Build a customised Scala Module.
+ * @since 2.19.0
+ */
 object ScalaModule {
 
   class Builder {
