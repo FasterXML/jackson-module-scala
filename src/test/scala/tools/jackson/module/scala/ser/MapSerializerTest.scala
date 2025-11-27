@@ -6,7 +6,7 @@ import tools.jackson.core.JsonGenerator
 import tools.jackson.databind.annotation.JsonSerialize
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.{SerializationContext, ValueSerializer}
-import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import tools.jackson.module.scala.{AnnotatedColor, DefaultScalaModule, JacksonModule}
 
 import scala.annotation.meta.getter
 import scala.beans.BeanProperty
@@ -19,7 +19,6 @@ class TupleKeySerializer extends ValueSerializer[Product] {
     jgen.writeName(objectMapper.writeValueAsString(value))
   }
 }
-
 
 object MapSerializerTest {
 
@@ -104,5 +103,10 @@ class MapSerializerTest extends SerializerTest {
   it should "correctly serialize type information" in {
     val wrapper = MapValueBaseWrapper(Map("Double" -> MapValueDouble(1.0), "String" -> MapValueString("word")))
     serialize(wrapper) should be ("""{"map":{"Double":{"type":"MapValueDouble","value":1.0},"String":{"type":"MapValueString","value":"word"}}}""")
+  }
+
+  it should "support JsonProperty annotation on Java enum key" in {
+    val map = Map(AnnotatedColor.RED -> "redValue")
+    newMapper.writeValueAsString(map) shouldEqual """{"red":"redValue"}"""
   }
 }
