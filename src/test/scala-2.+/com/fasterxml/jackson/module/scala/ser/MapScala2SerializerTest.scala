@@ -6,6 +6,7 @@ import scala.collection.Map
 
 //see also MapSerializerTest for tests that also pass with Scala3
 class MapScala2SerializerTest extends SerializerTest {
+  import MapSerializerTest._
   def module = DefaultScalaModule
 
   "MapSerializer" should "correctly serialize type information" in {

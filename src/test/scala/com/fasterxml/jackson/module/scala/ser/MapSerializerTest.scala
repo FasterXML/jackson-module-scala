@@ -12,20 +12,6 @@ import scala.beans.BeanProperty
 import scala.collection._
 import scala.collection.immutable.ListMap
 
-class BeanieWeenie(@BeanProperty @JsonProperty("a") var a: Int,
-                   @BeanProperty @JsonProperty("b") var b: String,
-                   @BeanProperty @JsonProperty("c") var c: Boolean)
-
-class NonEmptyMaps {
-  @JsonProperty
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  def emptyMap = Map.empty[String,Int]
-
-  @JsonProperty
-  @JsonInclude(JsonInclude.Include.NON_EMPTY)
-  def nonEmptyMap = Map("x"->1)
-}
-
 class TupleKeySerializer extends JsonSerializer[Product] {
   override def serialize(value: Product, jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     val stringWriter = new java.io.StringWriter()
@@ -36,24 +22,42 @@ class TupleKeySerializer extends JsonSerializer[Product] {
   }
 }
 
-case class KeySerializerMap(
-  @(JsonSerialize @getter)(keyUsing = classOf[TupleKeySerializer])
-  keySerializerMap: Map[(String,String),Int])
 
-@JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
-@JsonSubTypes(Array(
-  new JsonSubTypes.Type(value = classOf[MapValueDouble], name = "MapValueDouble"),
-  new JsonSubTypes.Type(value = classOf[MapValueString], name = "MapValueString")
-))
-abstract class MapValueBase {}
-case class MapValueDouble(value: Double) extends MapValueBase
-case class MapValueString(value: String) extends MapValueBase
+object MapSerializerTest {
 
-case class MapValueBaseWrapper(map: Map[String, MapValueBase])
+  class BeanieWeenie(@BeanProperty @JsonProperty("a") var a: Int,
+                     @BeanProperty @JsonProperty("b") var b: String,
+                     @BeanProperty @JsonProperty("c") var c: Boolean)
+
+  class NonEmptyMaps {
+    @JsonProperty
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    def emptyMap = Map.empty[String,Int]
+
+    @JsonProperty
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    def nonEmptyMap = Map("x"->1)
+  }
+
+  case class KeySerializerMap(
+                               @(JsonSerialize @getter)(keyUsing = classOf[TupleKeySerializer])
+                               keySerializerMap: Map[(String,String),Int])
+
+  @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
+  @JsonSubTypes(Array(
+    new JsonSubTypes.Type(value = classOf[MapValueDouble], name = "MapValueDouble"),
+    new JsonSubTypes.Type(value = classOf[MapValueString], name = "MapValueString")
+  ))
+  abstract class MapValueBase {}
+  case class MapValueDouble(value: Double) extends MapValueBase
+  case class MapValueString(value: String) extends MapValueBase
+
+  case class MapValueBaseWrapper(map: Map[String, MapValueBase])
+}
 
 //see also MapScala2SerializerTest for tests that only pass with Scala2
 class MapSerializerTest extends SerializerTest {
-
+  import MapSerializerTest._
   lazy val module: JacksonModule = DefaultScalaModule
 
   "MapSerializerModule" should "serialize a map" in {
