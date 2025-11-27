@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.{JsonInclude, JsonProperty, JsonSubTypes
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.{JsonSerializer, SerializationFeature, SerializerProvider}
-import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import com.fasterxml.jackson.module.scala.{AnnotatedColor, DefaultScalaModule, JacksonModule}
 
 import scala.annotation.meta.getter
 import scala.beans.BeanProperty
@@ -21,7 +21,6 @@ class TupleKeySerializer extends JsonSerializer[Product] {
     jgen.writeFieldName(stringWriter.toString)
   }
 }
-
 
 object MapSerializerTest {
 
@@ -116,5 +115,10 @@ class MapSerializerTest extends SerializerTest {
     m.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
     val v = m.writeValueAsString(wrapper)
     v shouldBe """{"map":{}}"""
+  }
+
+  it should "support JsonProperty annotation on Java enum key" in {
+    val map = Map(AnnotatedColor.RED -> "redValue")
+    newMapper.writeValueAsString(map) shouldEqual """{"red":"redValue"}"""
   }
 }
