@@ -1,5 +1,11 @@
 Check VERSION.md for jackson-module-scala 2.x release information. This file tracks jackson-module-scala 3.x.
 
+# 3.0.3
+
+## Fixes
+
+* [[gh-781]](https://github.com/FasterXML/jackson-module-scala/issues/781) Cannot deserialize Scala case class when JsonProperty annotation is used with var constructor parameter
+
 # 3.0.2
 
 ## Fixes
