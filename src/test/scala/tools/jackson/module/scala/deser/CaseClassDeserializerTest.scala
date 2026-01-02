@@ -299,9 +299,10 @@ class CaseClassDeserializerTest extends DeserializerTest {
   // https://github.com/FasterXML/jackson-module-scala/issues/762
   it should "deserialize SecurityProfile" in {
     val input = """{"id": 1069, "snoozeAlerts": true, "autoverifyAlerts": false}"""
-    val mapper = newMapper
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    mapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+    val builder = newBuilder
+      .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    val settings = builder.baseSettings().`with`(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+    val mapper = builder.baseSettings(settings).build
     mapper.readValue(input, classOf[SecurityProfile]) shouldEqual SecurityProfile(true, 1069, false)
   }
 }
