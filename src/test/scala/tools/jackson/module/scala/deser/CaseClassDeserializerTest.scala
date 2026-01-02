@@ -79,6 +79,8 @@ object CaseClassDeserializerTest {
 
   case class VarTestConstructor(var test: Int)
   case class AnnotatedVarTestConstructor(@JsonProperty("t") var test: Int)
+
+  case class SecurityProfile(snoozeAlerts: Boolean, id: Int, autoverifyAlerts: Boolean)
 }
 
 class CaseClassDeserializerTest extends DeserializerTest {
@@ -292,5 +294,14 @@ class CaseClassDeserializerTest extends DeserializerTest {
     val input = """{"t":123}"""
     val res = newMapper.readValue(input, classOf[AnnotatedVarTestConstructor])
     res.test shouldEqual 123
+  }
+
+  // https://github.com/FasterXML/jackson-module-scala/issues/762
+  it should "deserialize SecurityProfile" in {
+    val input = """{"id": 1069, "snoozeAlerts": true, "autoverifyAlerts": false}"""
+    val mapper = newMapper
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    mapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+    mapper.readValue(input, classOf[SecurityProfile]) shouldEqual SecurityProfile(true, 1069, false)
   }
 }
