@@ -9,20 +9,36 @@ import java.{lang => jl}
 import scala.util.control.NonFatal
 
 private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
-                                           property: BeanProperty, valueSerializer: ValueSerializer[Object], unwrapSingle: jl.Boolean)
-  extends AsArraySerializerBase[collection.Iterator[Any]](collection.Iterator.getClass, elemType, staticTyping, vts, valueSerializer, unwrapSingle, property) {
+                                           property: BeanProperty, valueSerializer: ValueSerializer[Object],
+                                           unwrapSingle: jl.Boolean, suppressableValue: Any, suppressNulls: Boolean)
+  extends AsArraySerializerBase[collection.Iterator[Any]](collection.Iterator.getClass, elemType, staticTyping, vts, valueSerializer,
+    unwrapSingle, property, suppressableValue, suppressNulls) {
+
+  @deprecated(since = "3.1.0")
+  def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
+           property: BeanProperty, valueSerializer: ValueSerializer[Object], unwrapSingle: jl.Boolean) = {
+    this(elemType, staticTyping, vts, property, valueSerializer, unwrapSingle, None.orNull, false)
+  }
 
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer) = {
-    this(elemType, staticTyping, vts, None.orNull, None.orNull, None.orNull)
+    this(elemType, staticTyping, vts, None.orNull, None.orNull, None.orNull, None.orNull, false)
   }
 
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer, valueSerializer: ValueSerializer[Object]) = {
-    this(elemType, staticTyping, vts, None.orNull, valueSerializer.asInstanceOf[ValueSerializer[Object]], None.orNull)
+    this(elemType, staticTyping, vts, None.orNull, valueSerializer, None.orNull, None.orNull, false)
+  }
+
+  @deprecated(since = "3.1.0")
+  def this(src: ScalaIteratorSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
+           unwrapSingle: jl.Boolean) = {
+    this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]],
+      unwrapSingle, None.orNull, false)
   }
 
   def this(src: ScalaIteratorSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
-           unwrapSingle: jl.Boolean) = {
-    this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]], unwrapSingle)
+           unwrapSingle: jl.Boolean, suppressableValue: Any, suppressNulls: Boolean) = {
+    this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]],
+      unwrapSingle, suppressableValue, suppressNulls)
   }
 
   override def isEmpty(prov: SerializationContext, value: Iterator[Any]): Boolean = value.isEmpty
@@ -73,12 +89,13 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
   }
 
   override def withResolved(property: BeanProperty, vts: TypeSerializer, elementSerializer: ValueSerializer[_],
-                            unwrapSingle: jl.Boolean): AsArraySerializerBase[Iterator[Any]] = {
-    new ScalaIteratorSerializer(this, property, vts, elementSerializer, unwrapSingle)
+                            unwrapSingle: jl.Boolean, suppressableValue: Any,
+                            suppressNulls: Boolean): AsArraySerializerBase[Iterator[Any]] = {
+    new ScalaIteratorSerializer(this, property, vts, elementSerializer, unwrapSingle, suppressableValue, suppressNulls)
   }
 
   override def _withValueTypeSerializer(vts: TypeSerializer): StdContainerSerializer[_] = {
-    new ScalaIteratorSerializer(this, _property, vts, _elementSerializer, _unwrapSingle)
+    new ScalaIteratorSerializer(this, _property, vts, _elementSerializer, _unwrapSingle, _suppressableValue, _suppressNulls)
   }
 
   private def serializeContentsUsing(it: Iterator[Any], g: JsonGenerator, serializationContext: SerializationContext, ser: ValueSerializer[AnyRef]): Unit = {
