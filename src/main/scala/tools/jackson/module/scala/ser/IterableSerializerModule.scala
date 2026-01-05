@@ -40,8 +40,11 @@ private trait IterableSerializer
   override def withResolved(property: BeanProperty,
                             vts: TypeSerializer,
                             elementSerializer: ValueSerializer[_],
-                            unwrapSingle: jl.Boolean): ResolvedIterableSerializer =
-    new ResolvedIterableSerializer(this, property, vts, elementSerializer, unwrapSingle)
+                            unwrapSingle: jl.Boolean,
+                            suppressableValue: Any,
+                            suppressNulls: Boolean): ResolvedIterableSerializer =
+    new ResolvedIterableSerializer(this, property, vts, elementSerializer,
+      unwrapSingle, suppressableValue, suppressNulls)
 
   override def isEmpty(serializationContext: SerializationContext, value: collection.Iterable[Any]): Boolean = value.isEmpty
 }
@@ -50,15 +53,19 @@ private class ResolvedIterableSerializer( src: IterableSerializer,
                                           property: BeanProperty,
                                           vts: TypeSerializer,
                                           elementSerializer: ValueSerializer[_],
-                                          unwrapSingle: jl.Boolean )
-  extends AsArraySerializerBase[collection.Iterable[Any]](src, vts, elementSerializer, unwrapSingle, property)
+                                          unwrapSingle: jl.Boolean,
+                                          suppressableValue: Any,
+                                          suppressNulls: Boolean )
+  extends AsArraySerializerBase[collection.Iterable[Any]](src, vts, elementSerializer,
+    unwrapSingle, property, suppressableValue, suppressNulls)
   with IterableSerializer
 {
   val collectionSerializer =
     new ScalaIterableSerializer(src.collectionSerializer, property, vts, elementSerializer, unwrapSingle)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer): StdContainerSerializer[_] =
-    new ResolvedIterableSerializer(this, property, newVts, elementSerializer, unwrapSingle)
+    new ResolvedIterableSerializer(this, property, newVts, elementSerializer, unwrapSingle,
+      suppressableValue, suppressNulls)
 }
 
 
