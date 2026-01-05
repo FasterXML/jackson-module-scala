@@ -16,6 +16,9 @@ object JsonIncludeFilterSerializerTest {
     }
   }
 
+  case class FooCaseClass(@JsonInclude(
+    value = JsonInclude.Include.CUSTOM, valueFilter = classOf[FooFilter]) value: String)
+
   class FooMutableMapBean {
     @JsonInclude(content = JsonInclude.Include.CUSTOM, contentFilter = classOf[FooFilter])
     val stuff = new mutable.LinkedHashMap[String, String]()
@@ -50,5 +53,10 @@ class JsonIncludeFilterSerializerTest extends SerializerTest {
   it should "serialize immutable Map with a filter" in {
     val input = new FooImmutableMapBean().add("a", "1").add("b", "foo").add("c", "2")
     newMapper.writeValueAsString(input) shouldEqual """{"stuff":{"a":"1","c":"2"}}"""
+  }
+  it should "serialize a case class instance with a filter" in {
+    val mapper = newMapper
+    mapper.writeValueAsString(FooCaseClass("foo")) shouldEqual "{}"
+    mapper.writeValueAsString(FooCaseClass("x")) shouldEqual """{"value":"x"}"""
   }
 }
