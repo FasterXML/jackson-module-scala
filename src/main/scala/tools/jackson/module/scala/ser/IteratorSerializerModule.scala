@@ -73,7 +73,7 @@ private class UnresolvedIteratorSerializer( cls: Class[_],
   extends AsArraySerializerBase[collection.Iterator[Any]](cls, et, staticTyping, vts, elementSerializer)
   with IteratorSerializer {
 
-  val iteratorSerializer =
+  override val iteratorSerializer =
     new ScalaIteratorSerializer(et, staticTyping, vts)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer) =

@@ -60,7 +60,7 @@ private class ResolvedIterableSerializer( src: IterableSerializer,
     unwrapSingle, property, suppressableValue, suppressNulls)
   with IterableSerializer
 {
-  val collectionSerializer =
+  override val collectionSerializer =
     new ScalaIterableSerializer(src.collectionSerializer, property, vts, elementSerializer,
       unwrapSingle, suppressableValue, suppressNulls)
 
@@ -78,7 +78,7 @@ private class UnresolvedIterableSerializer( cls: Class[_],
   extends AsArraySerializerBase[collection.Iterable[Any]](cls, et, staticTyping, vts, elementSerializer)
   with IterableSerializer
 {
-  val collectionSerializer =
+  override val collectionSerializer =
     new ScalaIterableSerializer(et, staticTyping, vts, elementSerializer)
 
   override def _withValueTypeSerializer(newVts: TypeSerializer): StdContainerSerializer[_] =
