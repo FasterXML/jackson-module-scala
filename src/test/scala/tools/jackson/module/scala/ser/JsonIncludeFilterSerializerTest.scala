@@ -1,6 +1,7 @@
 package tools.jackson.module.scala.ser
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import tools.jackson.databind.SerializationFeature
 import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import scala.collection.{immutable, mutable}
@@ -38,6 +39,16 @@ object JsonIncludeFilterSerializerTest {
       this
     }
   }
+
+  class FooMutableListBean {
+    @JsonInclude(content = JsonInclude.Include.CUSTOM, contentFilter = classOf[FooFilter])
+    val items = new mutable.ListBuffer[String]()
+
+    def add(value: String): FooMutableListBean = {
+      items.+=(value)
+      this
+    }
+  }
 }
 
 class JsonIncludeFilterSerializerTest extends SerializerTest {
@@ -58,5 +69,13 @@ class JsonIncludeFilterSerializerTest extends SerializerTest {
     val mapper = newMapper
     mapper.writeValueAsString(FooCaseClass("foo")) shouldEqual "{}"
     mapper.writeValueAsString(FooCaseClass("x")) shouldEqual """{"value":"x"}"""
+  }
+  it should "serialize mutable List with a filter" in {
+    // see https://github.com/FasterXML/jackson-databind/blob/3.x/src/test/java/tools/jackson/databind/ser/filter/JsonIncludeForCollection5369Test.java
+    val mapper = newBuilder
+      .enable(SerializationFeature.APPLY_JSON_INCLUDE_FOR_CONTAINERS)
+      .build()
+    val input = new FooMutableListBean().add("1").add("foo").add("2")
+    mapper.writeValueAsString(input) shouldEqual """{"items":["1","2"]}"""
   }
 }

@@ -17,23 +17,9 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     property, valueSerializer, unwrapSingle = unwrapSingle,
     suppressableValue = suppressableValue, suppressNulls = suppressNulls)
 
-  @deprecated(since = "3.1.0")
-  def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
-           property: BeanProperty, valueSerializer: ValueSerializer[Object], unwrapSingle: jl.Boolean) = {
-    this(elemType, staticTyping, vts, property, valueSerializer, unwrapSingle = unwrapSingle,
-      suppressableValue = None.orNull, suppressNulls = false)
-  }
-
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer, valueSerializer: ValueSerializer[Object]) = {
     this(elemType, staticTyping, vts, property = None.orNull, valueSerializer, unwrapSingle = None.orNull,
       suppressableValue = None.orNull, suppressNulls = false)
-  }
-
-  @deprecated(since = "3.1.0")
-  def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
-           unwrapSingle: jl.Boolean) = {
-    this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]],
-      unwrapSingle = unwrapSingle, suppressableValue = None.orNull, suppressNulls = false)
   }
 
   def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],

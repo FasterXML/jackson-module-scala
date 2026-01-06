@@ -14,13 +14,6 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
   extends AsArraySerializerBase[collection.Iterator[Any]](collection.Iterator.getClass, elemType, staticTyping, vts, valueSerializer,
     unwrapSingle, property, suppressableValue, suppressNulls) {
 
-  @deprecated(since = "3.1.0")
-  def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
-           property: BeanProperty, valueSerializer: ValueSerializer[Object], unwrapSingle: jl.Boolean) = {
-    this(elemType, staticTyping, vts, property, valueSerializer, unwrapSingle = unwrapSingle,
-      suppressableValue = None.orNull, suppressNulls = false)
-  }
-
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer) = {
     this(elemType, staticTyping, vts, property = None.orNull, valueSerializer = None.orNull,
       unwrapSingle = None.orNull, suppressableValue = None.orNull, suppressNulls = false)
@@ -29,13 +22,6 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer, valueSerializer: ValueSerializer[Object]) = {
     this(elemType, staticTyping, vts, property = None.orNull, valueSerializer, unwrapSingle = None.orNull,
       suppressableValue = None.orNull, suppressNulls = false)
-  }
-
-  @deprecated(since = "3.1.0")
-  def this(src: ScalaIteratorSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
-           unwrapSingle: jl.Boolean) = {
-    this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]],
-      unwrapSingle, suppressableValue = None.orNull, suppressNulls = false)
   }
 
   def this(src: ScalaIteratorSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
@@ -61,14 +47,21 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
     if (_elementSerializer != null) {
       serializeContentsUsing(it, g, serializationContext, _elementSerializer)
     } else {
+      val needsFiltering = _needToCheckFiltering(serializationContext)
       if (it.hasNext) {
         val typeSer = _valueTypeSerializer
         var serializers = _dynamicValueSerializers
         var i = 0
         try while (it.hasNext) {
           val elem = it.next()
-          if (elem == null) serializationContext.defaultSerializeNullValue(g)
-          else {
+          if (elem == null) {
+            if (needsFiltering && _suppressNulls) {
+              // skip
+            } else {
+              serializationContext.defaultSerializeNullValue(g)
+              i += 1
+            }
+          } else {
             val cc = elem.getClass
             var serializer = serializers.serializerFor(cc)
             if (serializer == null) {
@@ -78,10 +71,16 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
                 serializer = _findAndAddDynamic(serializationContext, cc)
               serializers = _dynamicValueSerializers
             }
-            if (typeSer == null) serializer.serialize(elem.asInstanceOf[Object], g, serializationContext)
-            else serializer.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
+            if (needsFiltering && !_shouldSerializeElement(serializationContext, elem, serializer)) {
+              // skip
+            } else if (typeSer == null) {
+              serializer.serialize(elem.asInstanceOf[Object], g, serializationContext)
+              i += 1
+            } else {
+              serializer.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
+              i += 1
+            }
           }
-          i += 1
         }
         catch {
           case NonFatal(e) =>
@@ -102,19 +101,29 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
       suppressableValue = _suppressableValue, suppressNulls = _suppressNulls)
 
   private def serializeContentsUsing(it: Iterator[Any], g: JsonGenerator, serializationContext: SerializationContext, ser: ValueSerializer[AnyRef]): Unit = {
+    val needsFiltering = _needToCheckFiltering(serializationContext)
     if (it.hasNext) {
       val typeSer = _valueTypeSerializer
       var i = 0
       while (it.hasNext) {
         val elem = it.next()
-        try {
-          if (elem == null) serializationContext.defaultSerializeNullValue(g)
-          else if (typeSer == null) ser.serialize(elem.asInstanceOf[Object], g, serializationContext)
-          else ser.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
-          i += 1
-        } catch {
-          case NonFatal(e) =>
-            wrapAndThrow(serializationContext, e, it, i)
+        if (elem == null) {
+          if (needsFiltering && _suppressNulls) {
+            // skip
+          } else {
+            serializationContext.defaultSerializeNullValue(g)
+            i += 1
+          }
+        } else {
+          if (needsFiltering && !_shouldSerializeElement(serializationContext, elem, _elementSerializer)) {
+            // skip
+          } else if (typeSer == null) {
+            ser.serialize(elem.asInstanceOf[Object], g, serializationContext)
+            i += 1
+          } else {
+            ser.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
+            i += 1
+          }
         }
       }
     }
