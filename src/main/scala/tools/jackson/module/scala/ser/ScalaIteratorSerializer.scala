@@ -47,14 +47,21 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
     if (_elementSerializer != null) {
       serializeContentsUsing(it, g, serializationContext, _elementSerializer)
     } else {
+      val needsFiltering = _needToCheckFiltering(serializationContext)
       if (it.hasNext) {
         val typeSer = _valueTypeSerializer
         var serializers = _dynamicValueSerializers
         var i = 0
         try while (it.hasNext) {
           val elem = it.next()
-          if (elem == null) serializationContext.defaultSerializeNullValue(g)
-          else {
+          if (elem == null) {
+            if (needsFiltering && _suppressNulls) {
+              // skip
+            } else {
+              serializationContext.defaultSerializeNullValue(g)
+              i += 1
+            }
+          } else {
             val cc = elem.getClass
             var serializer = serializers.serializerFor(cc)
             if (serializer == null) {
@@ -64,10 +71,16 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
                 serializer = _findAndAddDynamic(serializationContext, cc)
               serializers = _dynamicValueSerializers
             }
-            if (typeSer == null) serializer.serialize(elem.asInstanceOf[Object], g, serializationContext)
-            else serializer.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
+            if (needsFiltering && !_shouldSerializeElement(serializationContext, elem, serializer)) {
+              // skip
+            } else if (typeSer == null) {
+              serializer.serialize(elem.asInstanceOf[Object], g, serializationContext)
+              i += 1
+            } else {
+              serializer.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
+              i += 1
+            }
           }
-          i += 1
         }
         catch {
           case NonFatal(e) =>

@@ -21,7 +21,7 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     this(elemType, staticTyping, vts, property = None.orNull, valueSerializer, unwrapSingle = None.orNull,
       suppressableValue = None.orNull, suppressNulls = false)
   }
-  
+
   def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
            unwrapSingle: jl.Boolean, suppressableValue: Any, suppressNulls: Boolean) = {
     this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]],
