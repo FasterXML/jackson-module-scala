@@ -45,7 +45,7 @@ object JsonIncludeFilterSerializerTest {
     val items = new mutable.ListBuffer[String]()
 
     def add(value: String): FooMutableListBean = {
-      items.addOne(value)
+      items.+=(value)
       this
     }
   }
