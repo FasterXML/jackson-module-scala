@@ -6,7 +6,6 @@ import tools.jackson.databind.ser.std.{AsArraySerializerBase, StdContainerSerial
 import tools.jackson.databind._
 
 import java.{lang => jl}
-import scala.util.control.NonFatal
 
 private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
                                            property: BeanProperty, valueSerializer: ValueSerializer[Object],
@@ -14,107 +13,52 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
   extends AsArraySerializerBase[collection.Iterable[Any]](collection.Iterable.getClass, elemType, staticTyping, vts, valueSerializer,
     unwrapSingle, property, suppressableValue, suppressNulls) {
 
+  private val iteratorSerializer = ScalaIteratorSerializer(elemType, staticTyping = staticTyping, vts,
+    property, valueSerializer, unwrapSingle = unwrapSingle,
+    suppressableValue = suppressableValue, suppressNulls = suppressNulls)
+
   @deprecated(since = "3.1.0")
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer,
            property: BeanProperty, valueSerializer: ValueSerializer[Object], unwrapSingle: jl.Boolean) = {
-    this(elemType, staticTyping, vts, property, valueSerializer, unwrapSingle, None.orNull, false)
+    this(elemType, staticTyping, vts, property, valueSerializer, unwrapSingle = unwrapSingle,
+      suppressableValue = None.orNull, suppressNulls = false)
   }
 
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer, valueSerializer: ValueSerializer[Object]) = {
-    this(elemType, staticTyping, vts, None.orNull, valueSerializer, None.orNull, None.orNull, false)
+    this(elemType, staticTyping, vts, property = None.orNull, valueSerializer, unwrapSingle = None.orNull,
+      suppressableValue = None.orNull, suppressNulls = false)
   }
 
   @deprecated(since = "3.1.0")
   def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
            unwrapSingle: jl.Boolean) = {
     this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]],
-      unwrapSingle, None.orNull, false)
+      unwrapSingle = unwrapSingle, suppressableValue = None.orNull, suppressNulls = false)
   }
 
   def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],
            unwrapSingle: jl.Boolean, suppressableValue: Any, suppressNulls: Boolean) = {
     this(src.elemType, src.staticTyping, vts, property, valueSerializer.asInstanceOf[ValueSerializer[Object]],
-      unwrapSingle, suppressableValue, suppressNulls)
+      unwrapSingle = unwrapSingle, suppressableValue = suppressableValue, suppressNulls = suppressNulls)
   }
 
   override def isEmpty(prov: SerializationContext, value: Iterable[Any]): Boolean = value.isEmpty
 
   override def hasSingleElement(value: Iterable[Any]): Boolean = value.size == 1
 
-  override def serialize(value: Iterable[Any], g: JsonGenerator, serializationContext: SerializationContext): Unit = {
-    if (((_unwrapSingle == null && serializationContext.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED))
-      || _unwrapSingle) && hasSingleElement(value)) {
-      serializeContents(value, g, serializationContext)
-    } else {
-      g.writeStartArray(value)
-      serializeContents(value, g, serializationContext)
-      g.writeEndArray()
-    }
-  }
+  override def serialize(value: Iterable[Any], g: JsonGenerator, serializationContext: SerializationContext): Unit =
+    iteratorSerializer.serialize(value.iterator, g, serializationContext)
 
-  override def serializeContents(value: Iterable[Any], g: JsonGenerator, serializationContext: SerializationContext): Unit = {
-    g.assignCurrentValue(value)
-    if (_elementSerializer != null) {
-      serializeContentsUsing(value, g, serializationContext, _elementSerializer)
-    } else {
-      val it = value.iterator
-      if (it.hasNext) {
-        val typeSer = _valueTypeSerializer
-        var serializers = _dynamicValueSerializers
-        var i = 0
-        try while (it.hasNext) {
-          val elem = it.next()
-          if (elem == null) serializationContext.defaultSerializeNullValue(g)
-          else {
-            val cc = elem.getClass
-            var serializer = serializers.serializerFor(cc)
-            if (serializer == null) {
-              if (_elementType.hasGenericTypes)
-                serializer = _findAndAddDynamic(serializationContext, serializationContext.constructSpecializedType(_elementType, cc))
-              else
-                serializer = _findAndAddDynamic(serializationContext, cc)
-              serializers = _dynamicValueSerializers
-            }
-            if (typeSer == null) serializer.serialize(elem.asInstanceOf[Object], g, serializationContext)
-            else serializer.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
-          }
-          i += 1
-        }
-        catch {
-          case NonFatal(e) =>
-            wrapAndThrow(serializationContext, e, value, i)
-        }
-      }
-    }
-  }
+  override def serializeContents(value: Iterable[Any], g: JsonGenerator, serializationContext: SerializationContext): Unit =
+    iteratorSerializer.serializeContents(value.iterator, g, serializationContext)
 
   override def withResolved(property: BeanProperty, vts: TypeSerializer, elementSerializer: ValueSerializer[_],
                             unwrapSingle: jl.Boolean, suppressableValue: Any,
-                            suppressNulls: Boolean): AsArraySerializerBase[Iterable[Any]] = {
-    new ScalaIterableSerializer(this, property, vts, elementSerializer, unwrapSingle, suppressableValue, suppressNulls)
-  }
+                            suppressNulls: Boolean): AsArraySerializerBase[Iterable[Any]] =
+    new ScalaIterableSerializer(this, property, vts, elementSerializer, unwrapSingle = unwrapSingle,
+      suppressableValue = suppressableValue, suppressNulls = suppressNulls)
 
-  override def _withValueTypeSerializer(vts: TypeSerializer): StdContainerSerializer[_] = {
-    new ScalaIterableSerializer(this, _property, vts, _elementSerializer, _unwrapSingle, _suppressableValue, _suppressNulls)
-  }
-
-  private def serializeContentsUsing(value: Iterable[Any], g: JsonGenerator, serializationContext: SerializationContext, ser: ValueSerializer[AnyRef]): Unit = {
-    val it = value.iterator
-    if (it.hasNext) {
-      val typeSer = _valueTypeSerializer
-      var i = 0
-      while (it.hasNext) {
-        val elem = it.next()
-        try {
-          if (elem == null) serializationContext.defaultSerializeNullValue(g)
-          else if (typeSer == null) ser.serialize(elem.asInstanceOf[Object], g, serializationContext)
-          else ser.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
-          i += 1
-        } catch {
-          case NonFatal(e) =>
-            wrapAndThrow(serializationContext, e, value, i)
-        }
-      }
-    }
-  }
+  override def _withValueTypeSerializer(vts: TypeSerializer): StdContainerSerializer[_] =
+    new ScalaIterableSerializer(this, _property, vts, _elementSerializer, unwrapSingle = _unwrapSingle,
+      suppressableValue = _suppressableValue, suppressNulls = _suppressNulls)
 }
