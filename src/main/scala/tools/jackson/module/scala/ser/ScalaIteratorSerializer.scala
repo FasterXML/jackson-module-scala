@@ -102,19 +102,29 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
       suppressableValue = _suppressableValue, suppressNulls = _suppressNulls)
 
   private def serializeContentsUsing(it: Iterator[Any], g: JsonGenerator, serializationContext: SerializationContext, ser: ValueSerializer[AnyRef]): Unit = {
+    val needsFiltering = _needToCheckFiltering(serializationContext)
     if (it.hasNext) {
       val typeSer = _valueTypeSerializer
       var i = 0
       while (it.hasNext) {
         val elem = it.next()
-        try {
-          if (elem == null) serializationContext.defaultSerializeNullValue(g)
-          else if (typeSer == null) ser.serialize(elem.asInstanceOf[Object], g, serializationContext)
-          else ser.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
-          i += 1
-        } catch {
-          case NonFatal(e) =>
-            wrapAndThrow(serializationContext, e, it, i)
+        if (elem == null) {
+          if (needsFiltering && _suppressNulls) {
+            // skip
+          } else {
+            serializationContext.defaultSerializeNullValue(g)
+            i += 1
+          }
+        } else {
+          if (needsFiltering && !_shouldSerializeElement(serializationContext, elem, _elementSerializer)) {
+            // skip
+          } else if (typeSer == null) {
+            ser.serialize(elem.asInstanceOf[Object], g, serializationContext)
+            i += 1
+          } else {
+            ser.serializeWithType(elem.asInstanceOf[Object], g, serializationContext, typeSer)
+            i += 1
+          }
         }
       }
     }
