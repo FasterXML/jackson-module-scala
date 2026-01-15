@@ -16,12 +16,12 @@ object ClassTagExtensions {
 
   final class Mixin private[ClassTagExtensions](mapper: JsonMapper)
     extends JsonMapper(mapper.rebuild()) with ClassTagExtensions {
-    override def readTree[T <: TreeNode](jsonParser: JsonParser): T = mapper.readTree(jsonParser)
+    override def readTree(jsonParser: JsonParser): JsonNode = mapper.readTree(jsonParser)
   }
 
   final class ObjectMapperMixin private[ClassTagExtensions](mapper: ObjectMapper)
     extends ObjectMapper(mapper.rebuild()) with ClassTagExtensions {
-    override def readTree[T <: TreeNode](jsonParser: JsonParser): T = mapper.readTree(jsonParser)
+    override def readTree(jsonParser: JsonParser): JsonNode = mapper.readTree(jsonParser)
   }
 }
 
