@@ -28,7 +28,7 @@ resolvers += Resolver.sonatypeCentralSnapshots
 
 ThisBuild / version := "2.21.1-SNAPSHOT"
 val jacksonAnnotationVersion = "2.21"
-val jacksonCoreVersion = "2.21.0"
+val jacksonCoreVersion = "2.21.1-SNAPSHOT"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
