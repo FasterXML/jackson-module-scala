@@ -8,11 +8,11 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.0")
 
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.4")
 
-addSbtPlugin("com.github.sbt" % "sbt-github-actions" % "0.28.0")
+addSbtPlugin("com.github.sbt" % "sbt-github-actions" % "0.29.0")
 
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.12.2")
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.11.2")
 
 addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.32")
 
-addSbtPlugin("com.github.sbt" %% "sbt-sbom" % "0.4.0")
+addSbtPlugin("com.github.sbt" %% "sbt-sbom" % "0.5.0")
