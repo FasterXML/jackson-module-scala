@@ -26,9 +26,9 @@ bomFormat := "xml"
 
 resolvers += Resolver.sonatypeCentralSnapshots
 
-version := "2.20.2-SNAPSHOT"
+// ThisBuild / version := "2.20.2"
 val jacksonAnnotationVersion = "2.20"
-val jacksonCoreVersion = "2.20.2-SNAPSHOT"
+val jacksonCoreVersion = "2.20.2"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
