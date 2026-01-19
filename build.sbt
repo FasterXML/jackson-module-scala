@@ -8,10 +8,10 @@ name := "jackson-module-scala"
 
 organization := "com.fasterxml.jackson.module"
 
-val scala213Version = "2.13.17"
+val scala213Version = "2.13.18"
 ThisBuild / scalaVersion := scala213Version
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", scala213Version, "3.3.7")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.21", scala213Version, "3.3.7")
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 
@@ -27,8 +27,8 @@ bomFormat := "xml"
 resolvers += Resolver.sonatypeCentralSnapshots
 
 ThisBuild / version := "2.21.0-SNAPSHOT"
-val jacksonAnnotationVersion = "2.21-SNAPSHOT"
-val jacksonCoreVersion = "2.21.0-SNAPSHOT"
+val jacksonAnnotationVersion = "2.21"
+val jacksonCoreVersion = "2.21.0"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
