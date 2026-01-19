@@ -166,16 +166,4 @@ enablePlugins(SiteScaladocPlugin)
 git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
 
 mimaBinaryIssueFilters ++= Seq(
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.IterableSerializer.withResolved"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.ResolvedIterableSerializer.withResolved"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.ResolvedIterableSerializer.this"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.ResolvedIteratorSerializer.withResolved"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.ResolvedIteratorSerializer.this"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.ScalaIterableSerializer.*"),
-  ProblemFilters.exclude[MissingTypesProblem]("tools.jackson.module.scala.ser.ScalaIterableSerializer$"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.ScalaIteratorSerializer.*"),
-  ProblemFilters.exclude[MissingTypesProblem]("tools.jackson.module.scala.ser.ScalaIteratorSerializer$"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.UnresolvedIterableSerializer.withResolved"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.UnresolvedIteratorSerializer.withResolved"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.IteratorSerializer.withResolved")
 )
