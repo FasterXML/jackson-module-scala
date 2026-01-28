@@ -33,8 +33,10 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
           (classOf[mutable.SortedSet[_]], mutable.SortedSet.asInstanceOf[Factory])
         ))
 
-        override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] =
-          cf.newBuilder[A](OrderingLocator.locate[A](valueType))
+        override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] = {
+          implicit val ordering: Ordering[A] = OrderingLocator.locate[A](valueType)
+          cf.newBuilder[A]
+        }
 
         override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {
           CLASS_DOMAIN.isAssignableFrom(valueType) && !MUTABLE_BITSET_CLASS.isAssignableFrom(valueType) &&
