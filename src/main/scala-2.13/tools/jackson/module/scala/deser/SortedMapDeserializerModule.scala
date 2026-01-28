@@ -26,8 +26,10 @@ trait SortedMapDeserializerModule extends MapTypeModifierModule {
           (classOf[mutable.TreeMap[_, _]], mutable.TreeMap)
         ))
 
-        override def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V] =
-          factory.newBuilder[K, V](OrderingLocator.locate[K](keyType))
+        override def builderFor[K, V](factory: Factory, keyType: JavaType, valueType: JavaType): Builder[K, V] = {
+          implicit val ordering: Ordering[K] = OrderingLocator.locate[K](keyType)
+          factory.newBuilder[K, V]
+        }
       }
       builder.build()
     }
