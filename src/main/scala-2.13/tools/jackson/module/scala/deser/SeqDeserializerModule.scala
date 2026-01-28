@@ -56,8 +56,10 @@ trait SeqDeserializerModule extends ScalaTypeModifierModule {
           (classOf[mutable.UnrolledBuffer[_]], mutable.UnrolledBuffer)
         )
 
-        def builderFor[A](cf: TagFactory, valueType: JavaType): Builder[A] =
-          cf.newBuilder[A](ClassTag(valueType.getRawClass))
+        def builderFor[A](cf: TagFactory, valueType: JavaType): Builder[A] = {
+          implicit val classTag: ClassTag[A] = ClassTag(valueType.getRawClass).asInstanceOf[ClassTag[A]]
+          cf.newBuilder[A]
+        }
 
         def tryTagFactory[A](cls: Class[_], valueType: JavaType): Option[Builder[A]] = tagFactories
           .find(_._1.isAssignableFrom(cls))
