@@ -25,7 +25,7 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
     ))
 
     override def builderFor[A](cf: Factory, valueType: JavaType): Builder[A] =
-      cf.newBuilder[A](OrderingLocator.locate(valueType).asInstanceOf[Ordering[A]])
+      cf.newBuilder[A](OrderingLocator.locate[A](valueType))
 
     override def findCollectionLikeDeserializer(collectionType: CollectionLikeType,
                                                 config: DeserializationConfig,
