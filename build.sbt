@@ -23,8 +23,8 @@ ThisBuild / publishTo := {
 
 resolvers += Resolver.sonatypeCentralSnapshots
 
-// ThisBuild / version := "2.18.7-SNAPSHOT"
-val jacksonCoreVersion = "2.18.6"
+ThisBuild / version := "2.18.7-SNAPSHOT"
+val jacksonCoreVersion = "2.18.7-SNAPSHOT"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
