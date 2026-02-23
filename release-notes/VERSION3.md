@@ -1,10 +1,11 @@
 Check VERSION.md for jackson-module-scala 2.x release information. This file tracks jackson-module-scala 3.x.
 
-# 3.1.0-rc1
+# 3.1.0
 
-This patch release tracks Jackson 3.1.0-rc1. The 3.1 series has full support for Scala 2.12, 2.13 and 3.
+This patch release tracks Jackson 3.1.0. The 3.1 series has full support for Scala 2.12, 2.13 and 3.
 
 * [[gh-787]](https://github.com/FasterXML/jackson-module-scala/issues/787) support JsonInclude filter for Scala collections
+* [[gh-pr-799]](https://github.com/FasterXML/jackson-module-scala/pull/799) Scala 3.8+ requires us to make an underlying field in a Scala 2 Enumeration class accessible
 
 # 3.0.4
 
