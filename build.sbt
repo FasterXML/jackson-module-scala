@@ -138,7 +138,7 @@ Test / parallelExecution := false
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"), JavaSpec(Zulu, "25"))
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
-ThisBuild / githubWorkflowTargetBranches := Seq("3.x", "3.0")
+ThisBuild / githubWorkflowTargetBranches := Seq("3.x", "3.1", "3.0")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches :=
   Seq(
