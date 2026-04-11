@@ -24,6 +24,8 @@ private class EnumerationSerializer extends JsonSerializer[scala.Enumeration#Val
   override def serialize(value: scala.Enumeration#Value, jgen: JsonGenerator, provider: SerializerProvider) = {
     val parentEnum = value.asInstanceOf[AnyRef].getClass.getSuperclass.getDeclaredFields.find( f => f.getName == "$outer" )
       .getOrElse(throw new RuntimeException("failed to find $outer field on Enumeration class"))
+    // setAccessible is needed for Scala 3.8+ (https://github.com/FasterXML/jackson-module-scala/issues/795)
+    parentEnum.setAccessible(true)
     val enumClass = parentEnum.get(value).getClass.getName stripSuffix "$"
     jgen.writeStartObject()
     jgen.writeStringField("enumClass", enumClass)
