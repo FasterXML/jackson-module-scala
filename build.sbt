@@ -25,7 +25,7 @@ ThisBuild / publishTo := {
 bomFormat := "xml"
 
 // resolvers += Resolver.sonatypeCentralSnapshots
-ThisBuild / version := "3.1.3-SNAPSHOT"
+// ThisBuild / version := "3.1.3"
 val jacksonVersion = "3.1.3"
 
 autoAPIMappings := true
