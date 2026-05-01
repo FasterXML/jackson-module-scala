@@ -1,5 +1,10 @@
 Check VERSION.md for jackson-module-scala 2.x release information. This file tracks jackson-module-scala 3.x.
 
+# 3.1.3
+
+There are no new fixes in this release; it serves to track the 3.1.3 release
+of the upstream Jackson projects.
+
 # 3.1.2
 
 There are no new fixes in this release; it serves to track the 3.1.2 release
