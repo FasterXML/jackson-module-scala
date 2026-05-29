@@ -21,10 +21,10 @@ ThisBuild / publishTo := {
   else localStaging.value
 }
 
-// resolvers += Resolver.sonatypeCentralSnapshots
+resolvers += Resolver.sonatypeCentralSnapshots
 
-// ThisBuild / version := "2.18.8-SNAPSHOT"
-val jacksonCoreVersion = "2.18.8"
+ThisBuild / version := "2.18.9-SNAPSHOT"
+val jacksonCoreVersion = "2.18.9-SNAPSHOT"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
 autoAPIMappings := true
