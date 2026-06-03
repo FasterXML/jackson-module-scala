@@ -24,9 +24,9 @@ ThisBuild / publishTo := {
 
 bomFormat := "xml"
 
-resolvers += Resolver.sonatypeCentralSnapshots
+// resolvers += Resolver.sonatypeCentralSnapshots
 
-ThisBuild / version := "2.22.0-SNAPSHOT"
+// ThisBuild / version := "2.22.0-SNAPSHOT"
 val jacksonAnnotationVersion = "2.22"
 val jacksonCoreVersion = "2.22.0"
 val jacksonNonCoreVersion = jacksonCoreVersion
