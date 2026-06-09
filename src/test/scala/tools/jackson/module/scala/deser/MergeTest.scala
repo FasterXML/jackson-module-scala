@@ -18,7 +18,7 @@ class MergeTest extends DeserializerTest {
   val module: DefaultScalaModule.type = DefaultScalaModule
 
   // This test relies on enabling MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS
-  // which is not enabled by default in the Jackson v2 but not in Jackson v3
+  // which is not enabled by default in Jackson v2 but not in Jackson v3
   def newScalaMapper: ObjectMapper = newBuilder
     .enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
     .build()
