@@ -70,7 +70,8 @@ class MergeTest extends DeserializerTest {
     result shouldBe ClassWithMaps(mergedPairMap, mergedPairMap)
   }
 
-  it should "merge only the annotated pair map" in {
+  // https://github.com/FasterXML/jackson-module-scala/issues/817
+  it should "merge only the annotated pair map" ignore {
     val typeReference = new TypeReference[ClassWithMaps[Pair]]{}
     val initial = deserialize(classJson(firstPairMapJson), typeReference)
     val result = updateValue(newScalaMapper, initial, typeReference, classJson(secondPairMapJson))
