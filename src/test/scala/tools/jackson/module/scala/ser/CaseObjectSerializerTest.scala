@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.{JsonAutoDetect, PropertyAccessor}
 import tools.jackson.databind.introspect.VisibilityChecker
 import tools.jackson.module.scala.DefaultScalaModule
 
-import scala.compat.java8.FunctionConverters.asJavaUnaryOperator
-
 case object CaseObjectExample {
   val field1: String = "test"
   val field2: Int = 42
@@ -29,11 +27,11 @@ class CaseObjectSerializerTest extends SerializerTest {
   // https://github.com/FasterXML/jackson-module-scala/issues/596
   it should "serialize a case object when visibility settings set" ignore {
     val mapper = newBuilder
-      .changeDefaultVisibility(asJavaUnaryOperator((a: Any) => {
+      .changeDefaultVisibility(_ => {
         VisibilityChecker.defaultInstance()
           .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
           .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-      }))
+      })
       .build()
     mapper.writeValueAsString(CaseObjectExample) should (
       equal("""{"field1":"test","field2":42}""") or
@@ -43,11 +41,11 @@ class CaseObjectSerializerTest extends SerializerTest {
 
   it should "serialize an inner case object when visibility settings set" in {
     val mapper = newBuilder
-      .changeDefaultVisibility(asJavaUnaryOperator((a: Any) => {
+      .changeDefaultVisibility(_ => {
         VisibilityChecker.defaultInstance()
           .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
           .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-      }))
+      })
       .build()
     mapper.writeValueAsString(Foo) shouldEqual """{"field":"bar"}"""
   }

@@ -7,7 +7,6 @@ import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import java.util
 import scala.annotation.meta.{field, getter}
-import scala.compat.java8.FunctionConverters._
 
 object OptionSerializerTest {
   class NonEmptyOptions {
@@ -263,7 +262,7 @@ class OptionSerializerTest extends SerializerTest {
   }
 
   private def newMapperWithPropertyInclusion(includeValue: JsonInclude.Value): ObjectMapper = {
-    val builder = newBuilder.changeDefaultPropertyInclusion(asJavaUnaryOperator((a: Any) => includeValue))
+    val builder = newBuilder.changeDefaultPropertyInclusion(_ => includeValue)
     builder.build()
   }
 }

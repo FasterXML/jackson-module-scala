@@ -9,7 +9,6 @@ import tools.jackson.module.scala.DefaultScalaModule
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 import scala.annotation.meta.field
-import scala.compat.java8.FunctionConverters
 
 object OptionDeserializerTest {
   case class UnavailableField(foo: Option[String])
@@ -97,7 +96,7 @@ class OptionDeserializerTest extends DeserializerTest {
 
   it should "handle conversion of null to empty collection" in {
     val mapper = newBuilder
-      .changeDefaultNullHandling(FunctionConverters.asJavaUnaryOperator(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY)))
+      .changeDefaultNullHandling(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY))
       .build()
     val json = """{"o": null}"""
     val result1 = mapper.readValue(json, classOf[JavaOptionalWrapper])
