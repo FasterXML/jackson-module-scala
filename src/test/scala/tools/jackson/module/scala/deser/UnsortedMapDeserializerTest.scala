@@ -10,7 +10,6 @@ import org.scalatest.OptionValues
 
 import java.util.UUID
 import scala.collection._
-import scala.compat.java8.FunctionConverters
 
 case class JavaMapWrapper(m: java.util.HashMap[String, String])
 case class MapWrapper(m: Map[String, String])
@@ -106,7 +105,7 @@ class UnsortedMapDeserializerTest extends DeserializerTest with OptionValues {
   it should "handle conversion of null to empty collection" in {
     val mapper = JsonMapper.builder()
       .addModule(DefaultScalaModule)
-      .changeDefaultNullHandling(FunctionConverters.asJavaUnaryOperator(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY)))
+      .changeDefaultNullHandling(_ => JsonSetter.Value.construct(Nulls.AS_EMPTY, Nulls.AS_EMPTY))
       .build()
     val json = """{"m": null}"""
     val result1 = mapper.readValue(json, classOf[JavaMapWrapper])

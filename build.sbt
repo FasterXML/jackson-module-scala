@@ -119,7 +119,6 @@ else
   )
 
 libraryDependencies ++= jacksonDependencies ++ Seq(
-  "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
   "org.scalatest" %% "scalatest" % "3.2.20" % Test
