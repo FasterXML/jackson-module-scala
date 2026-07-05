@@ -11,7 +11,7 @@ organization := "tools.jackson.module"
 val scala213Version = "2.13.18"
 ThisBuild / scalaVersion := scala213Version
 
-ThisBuild / crossScalaVersions := Seq("2.12.21", scala213Version, "3.3.7")
+ThisBuild / crossScalaVersions := Seq("2.12.21", scala213Version, "3.3.8")
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 
