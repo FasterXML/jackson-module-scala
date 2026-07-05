@@ -8,10 +8,12 @@ name := "jackson-module-scala"
 
 organization := "tools.jackson.module"
 
+val scala212Version = "2.12.21"
 val scala213Version = "2.13.18"
-ThisBuild / scalaVersion := scala213Version
+val scala3Version = "3.8.1"
+ThisBuild / scalaVersion := scala3Version
 
-ThisBuild / crossScalaVersions := Seq("2.12.21", scala213Version, "3.3.7")
+ThisBuild / crossScalaVersions := Seq(scala212Version, scala213Version, scala3Version)
 
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 
