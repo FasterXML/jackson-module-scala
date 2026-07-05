@@ -23,12 +23,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.11.12, 2.12.21, 2.13.18, 3.3.7]
+        scala: [2.11.12, 2.12.21, 2.13.18, 3.3.8]
         java: [zulu@8, zulu@11, zulu@17, zulu@21, zulu@25]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -76,9 +76,9 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Check that workflows are up to date
-        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' githubWorkflowCheck
+        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}; githubWorkflowCheck'
 
-      - run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' test mimaReportBinaryIssues
+      - run: sbt -J-Xmx2G '++ ${{ matrix.scala }}; test; mimaReportBinaryIssues'
 
       - name: Compress target directories
         run: tar cf targets.tar target project/target
@@ -101,7 +101,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -178,12 +178,12 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.3.7)
+      - name: Download target directories (3.3.8)
         uses: actions/download-artifact@v8
         with:
-          name: target-${{ matrix.os }}-3.3.7-${{ matrix.java }}
+          name: target-${{ matrix.os }}-3.3.8-${{ matrix.java }}
 
-      - name: Inflate target directories (3.3.7)
+      - name: Inflate target directories (3.3.8)
         run: |
           tar xf targets.tar
           rm targets.tar
