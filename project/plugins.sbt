@@ -6,7 +6,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.0")
 
 //addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
 
-addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.4")
+addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.6")
 
 addSbtPlugin("com.github.sbt" % "sbt-github-actions" % "0.31.0")
 
