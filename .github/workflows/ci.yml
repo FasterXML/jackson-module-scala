@@ -9,9 +9,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: [3.x, 3.0]
+    branches: [3.x, 3.2, 3.1, 3.0]
   push:
-    branches: [3.x, 3.0]
+    branches: [3.x, 3.2, 3.1, 3.0]
     tags: [v*]
 
 env:
@@ -68,7 +68,7 @@ jobs:
         run: tar cf targets.tar target project/target
 
       - name: Upload target directories
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}
           path: targets.tar
@@ -117,7 +117,7 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Download target directories (2.12.21)
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: target-${{ matrix.os }}-2.12.21-${{ matrix.java }}
 
@@ -127,7 +127,7 @@ jobs:
           rm targets.tar
 
       - name: Download target directories (2.13.18)
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: target-${{ matrix.os }}-2.13.18-${{ matrix.java }}
 

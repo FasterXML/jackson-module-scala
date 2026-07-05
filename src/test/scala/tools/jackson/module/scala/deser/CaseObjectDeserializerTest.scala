@@ -8,8 +8,6 @@ import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
-import scala.compat.java8.FunctionConverters.asJavaUnaryOperator
-
 object CaseObjectDeserializerTest {
   case object TestObject
 
@@ -51,11 +49,11 @@ class CaseObjectDeserializerTest extends DeserializerTest {
 
   it should "deserialize Foo and not create a new instance (visibility settings)" in {
     val mapper = newBuilder
-      .changeDefaultVisibility(asJavaUnaryOperator((a: Any) => {
+      .changeDefaultVisibility(_ => {
         VisibilityChecker.defaultInstance()
           .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
           .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-      }))
+      })
       .build()
     val original = Foo
     val json = mapper.writeValueAsString(original)

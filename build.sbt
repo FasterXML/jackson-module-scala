@@ -27,8 +27,8 @@ ThisBuild / publishTo := {
 bomFormat := "xml"
 
 resolvers += Resolver.sonatypeCentralSnapshots
-ThisBuild / version := "3.1.0-SNAPSHOT"
-val jacksonVersion = "3.1.0-SNAPSHOT"
+ThisBuild / version := "3.3.0-SNAPSHOT"
+val jacksonVersion = "3.3.0-SNAPSHOT"
 
 autoAPIMappings := true
 
@@ -121,10 +121,9 @@ else
   )
 
 libraryDependencies ++= jacksonDependencies ++ Seq(
-  "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2" % Test,
   "javax.ws.rs" % "javax.ws.rs-api" % "2.1.1" % Test,
   "io.swagger" % "swagger-core" % "1.6.8" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.19" % Test
+  "org.scalatest" %% "scalatest" % "3.2.20" % Test
 )
 
 // build.properties
@@ -140,7 +139,7 @@ Test / parallelExecution := false
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"), JavaSpec(Zulu, "25"))
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
-ThisBuild / githubWorkflowTargetBranches := Seq("3.x", "3.0")
+ThisBuild / githubWorkflowTargetBranches := Seq("3.x", "3.2", "3.1", "3.0")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches :=
   Seq(

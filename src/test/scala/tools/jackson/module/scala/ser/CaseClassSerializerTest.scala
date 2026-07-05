@@ -7,7 +7,6 @@ import tools.jackson.databind.{MapperFeature, ObjectMapper, PropertyNamingStrate
 import tools.jackson.module.scala.DefaultScalaModule
 
 import scala.beans.BeanProperty
-import scala.compat.java8.FunctionConverters
 
 case class ConstructorTestCaseClass(intValue: Int, stringValue: String)
 
@@ -134,8 +133,8 @@ class CaseClassSerializerTest extends SerializerTest {
 
   def nonNullMapper: ObjectMapper = {
     newBuilder
-      .changeDefaultPropertyInclusion(FunctionConverters.asJavaUnaryOperator(_ =>
-        JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL)))
+      .changeDefaultPropertyInclusion(_ =>
+        JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL))
       .build()
   }
 
