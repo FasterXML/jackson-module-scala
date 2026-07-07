@@ -1,3 +1,20 @@
+# Version: 2.22.1
+
+## Fixes
+
+* [[gh-pr-800]](https://github.com/FasterXML/jackson-module-scala/pull/800) Scala 3.8+ requires us to make an underlying field in a Scala 2 Enumeration class accessible
+
+# Version: 2.22.0
+
+This patch release tracks Jackson 2.22. The 2.22 series has full support for
+Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
+There are no new fixes in this release.
+
+# Version: 2.21.5
+
+There are no new fixes in this release; it serves to track the 2.21.5 release
+of the upstream Jackson projects.
+
 # Version: 2.21.4
 
 There are no new fixes in this release; it serves to track the 2.21.4 release
