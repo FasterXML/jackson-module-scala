@@ -1,5 +1,20 @@
 Check VERSION.md for jackson-module-scala 2.x release information. This file tracks jackson-module-scala 3.x.
 
+# 3.2.1
+
+There are no new fixes in this release; it serves to track the 3.2.1 release
+of the upstream Jackson projects.
+
+# 3.2.0
+
+This patch release tracks Jackson 3.2.0. The 3.2 series has full support for Scala 2.12, 2.13 and 3.
+There are no new fixes in this release.
+
+# 3.1.5
+
+There are no new fixes in this release; it serves to track the 3.1.5 release
+of the upstream Jackson projects.
+
 # 3.1.4
 
 There are no new fixes in this release; it serves to track the 3.1.4 release
@@ -52,6 +67,7 @@ of the upstream Jackson projects.
 # 3.0.0
 
 This patch release tracks Jackson 3.0.0. The 3.0 series has full support for Scala 2.12, 2.13 and 3.
+Java 17 is the minimum supported version now (Jackson 3 generally has a minimum requirement of Java 17).
 There are many changes in related Jackson libraries that affect all Jackson users. jackson-module-scala changes
 are less significant. The most notable change is the addition of ScalaModule builder.
 Users who don't use DefaultScalaModule may need to change to using ScalaModule builder.
