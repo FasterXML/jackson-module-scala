@@ -45,11 +45,11 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
         val annotation = _findAnnotation(ac, classOf[JsonPropertyOrder])
         if (annotation != null) {
           // delegate to JacksonAnnotationIntrospector
-          None.orNull
+          null
         } else {
           !mapperConfig.isEnabled(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
         }
-      case _ => None.orNull
+      case _ => null
     }
   }
 
@@ -58,13 +58,13 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
       case af: AnnotatedField => fieldName(af).orNull
       case am: AnnotatedMethod => methodName(am).orNull
       case ap: AnnotatedParameter => paramName(ap).orNull
-      case _ => None.orNull
+      case _ => null
     }
   }
 
   override def findNameForDeserialization(mapperConfig: MapperConfig[_], ann: Annotated): PropertyName = {
     Option(mapperConfig.getPropertyNamingStrategy) match {
-      case Some(_) => None.orNull
+      case Some(_) => null
       case _ => {
         val modifiedName = ann match {
           case af: AnnotatedField if af.getName.contains("$") => fieldName(af)
@@ -114,7 +114,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
         case Some(mode) => mode
         case _ => JsonCreator.Mode.DEFAULT
       }
-    } else None.orNull
+    } else null
   }
 
   private def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
@@ -123,7 +123,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
       case _ => {
         if (isScala(a) && hasCreatorAnnotation(a)) {
           JsonCreator.Mode.PROPERTIES
-        } else None.orNull
+        } else null
       }
     }
   }
@@ -146,7 +146,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   }
 
   override def findValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueInstantiator = {
-    None.orNull
+    null
   }
 
   override def version(): Version = JacksonModule.version

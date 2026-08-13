@@ -45,7 +45,7 @@ trait UnsortedSetDeserializerModule extends ScalaTypeModifierModule {
                                                     elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
           val rawClass = collectionType.getRawClass
           if (IGNORE_CLASS_DOMAIN.isAssignableFrom(rawClass)) {
-            None.orNull
+            null
           } else {
             super.findCollectionLikeDeserializer(collectionType,
               config, beanDesc, elementTypeDeserializer, elementDeserializer)

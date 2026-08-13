@@ -20,7 +20,7 @@ private object EnumDeserializerShared {
 
   def tryValueOf(clz: Class[_], key: String): Option[_] = {
     Try(clz.getMethod("valueOf", EnumDeserializerShared.StringClass)).toOption.map { method =>
-      method.invoke(None.orNull, key)
+      method.invoke(null, key)
     }
   }
 
@@ -33,7 +33,7 @@ private object EnumDeserializerShared {
     }
     companionObjectClassOption.flatMap { companionObjectClass =>
       Try(companionObjectClass.getField("MODULE$")).toOption.flatMap { moduleField =>
-        val instance = moduleField.get(None.orNull)
+        val instance = moduleField.get(null)
         Try(clz.getMethod("fromOrdinal", IntClass)).toOption.flatMap { method =>
           var i = 0
           var matched: Option[_] = None
@@ -115,7 +115,7 @@ private class EnumDeserializerResolver(config: ScalaModule.Config) extends Deser
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[Enum] =
     if (EnumDeserializerShared.EnumClass isAssignableFrom javaType.getRawClass)
       EnumDeserializer(javaType.getRawClass.asInstanceOf[Class[Enum]])
-    else None.orNull
+    else null
 
   override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean =
     EnumDeserializerShared.EnumClass isAssignableFrom valueType
@@ -125,7 +125,7 @@ private class EnumKeyDeserializerResolver(config: ScalaModule.Config) extends Ke
   override def findKeyDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): KeyDeserializer =
     if (EnumDeserializerShared.EnumClass isAssignableFrom javaType.getRawClass)
       EnumKeyDeserializer(javaType.getRawClass.asInstanceOf[Class[Enum]])
-    else None.orNull
+    else null
 }
 
 trait EnumDeserializerModule extends JacksonModule {

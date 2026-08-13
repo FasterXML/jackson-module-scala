@@ -151,7 +151,7 @@ private class EitherSerializerResolver(config: ScalaModule.Config) extends Seria
                                        formatOverrides: JsonFormat.Value,
                                        contentTypeSerializer: TypeSerializer,
                                        contentValueSerializer: ValueSerializer[AnyRef]): ValueSerializer[_] = {
-    if (!EITHER.isAssignableFrom(refType.getRawClass)) None.orNull
+    if (!EITHER.isAssignableFrom(refType.getRawClass)) null
     else {
       val javaType = if (LEFT.isAssignableFrom(refType.getRawClass) || RIGHT.isAssignableFrom(refType.getRawClass)) {
         refType.getReferencedType.getSuperClass

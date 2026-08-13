@@ -102,7 +102,7 @@ abstract class GenericMapFactoryDeserializerResolver[CC[K, V], CF[X[_, _]]](conf
         baseMap += ((k, v))
         oldValue
       } else {
-        None.orNull
+        null
       }
     }
 

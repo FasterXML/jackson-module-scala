@@ -13,7 +13,7 @@ object JavaAnnotationIntrospector extends JavaAnnotationIntrospectorInstance(Sca
 
 class JavaAnnotationIntrospectorInstance(cfg: ScalaModule.Config) extends NopAnnotationIntrospector {
 
-  override def findNameForDeserialization(mapperConfig: MapperConfig[_], a: Annotated): PropertyName = None.orNull
+  override def findNameForDeserialization(mapperConfig: MapperConfig[_], a: Annotated): PropertyName = null
 
   override def findImplicitPropertyName(mapperConfig: MapperConfig[_], param: AnnotatedMember): String = {
     val result = param match {
@@ -36,7 +36,7 @@ class JavaAnnotationIntrospectorInstance(cfg: ScalaModule.Config) extends NopAnn
       }
       case _ => None
     }
-    result.map(NameTransformer.decode).getOrElse(None.orNull)
+    result.map(NameTransformer.decode).orNull
   }
 
   override def version(): Version = JacksonModule.version

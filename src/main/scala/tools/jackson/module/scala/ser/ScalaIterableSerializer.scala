@@ -18,8 +18,8 @@ private case class ScalaIterableSerializer(elemType: JavaType, staticTyping: Boo
     suppressableValue = suppressableValue, suppressNulls = suppressNulls)
 
   def this(elemType: JavaType, staticTyping: Boolean, vts: TypeSerializer, valueSerializer: ValueSerializer[Object]) = {
-    this(elemType, staticTyping, vts, property = None.orNull, valueSerializer, unwrapSingle = None.orNull,
-      suppressableValue = None.orNull, suppressNulls = false)
+    this(elemType, staticTyping, vts, property = null, valueSerializer, unwrapSingle = null,
+      suppressableValue = null, suppressNulls = false)
   }
 
   def this(src: ScalaIterableSerializer, property: BeanProperty, vts: TypeSerializer, valueSerializer: ValueSerializer[_],

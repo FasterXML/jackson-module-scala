@@ -39,7 +39,7 @@ private[deser] class LongMapDeserializerResolver(config: ScalaModule.Config) ext
         elementDeserializer.asInstanceOf[ValueDeserializer[AnyRef]], elementTypeDeserializer)
       new MutableLongMapDeserializer(theType, mapDeserializer)
     } else {
-      None.orNull
+      null
     }
   }
 
@@ -159,7 +159,7 @@ private[deser] class LongMapDeserializerResolver(config: ScalaModule.Config) ext
     override def get(key: Object): Object = key match {
       case n: Number => baseMap.get(n.longValue()).orNull
       case s: String => baseMap.get(s.toInt).orNull
-      case _ => None.orNull
+      case _ => null
     }
 
     // Isn't used by the deserializer
@@ -200,7 +200,7 @@ private[deser] class LongMapDeserializerResolver(config: ScalaModule.Config) ext
     override def get(key: Object): Object = key match {
       case n: Number => baseMap.get(n.longValue()).orNull
       case s: String => baseMap.get(s.toInt).orNull
-      case _ => None.orNull
+      case _ => null
     }
 
     // Isn't used by the deserializer

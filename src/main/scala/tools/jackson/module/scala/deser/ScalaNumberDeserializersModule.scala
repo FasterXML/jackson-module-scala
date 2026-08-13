@@ -45,7 +45,7 @@ private class NumberDeserializers(config: ScalaModule.Config) extends Deserializ
     tpe.getRawClass match {
       case NumberDeserializers.BigDecimalClass => BigDecimalDeserializer
       case NumberDeserializers.BigIntClass => BigIntDeserializer
-      case _ => None.orNull
+      case _ => null
     }
 
   override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean = {

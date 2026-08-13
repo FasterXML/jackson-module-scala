@@ -31,7 +31,7 @@ private class EnumSerializerResolver(config: ScalaModule.Config) extends Seriali
                               formatOverrides: JsonFormat.Value): ValueSerializer[Enum] =
     if (EnumSerializerShared.EnumClass.isAssignableFrom(javaType.getRawClass))
       EnumSerializer
-    else None.orNull
+    else null
 }
 
 private class EnumKeySerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
@@ -39,7 +39,7 @@ private class EnumKeySerializerResolver(config: ScalaModule.Config) extends Seri
                               formatOverrides: JsonFormat.Value): ValueSerializer[Enum] =
     if (EnumSerializerShared.EnumClass isAssignableFrom javaType.getRawClass)
       EnumKeySerializer
-    else None.orNull
+    else null
 }
 
 trait EnumSerializerModule extends JacksonModule {

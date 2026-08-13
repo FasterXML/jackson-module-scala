@@ -29,7 +29,7 @@ private[deser] class IntMapDeserializerResolver(config: ScalaModule.Config) exte
                                        keyDeserializer: KeyDeserializer,
                                        elementTypeDeserializer: TypeDeserializer,
                                        elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
-    if (!intMapClass.isAssignableFrom(theType.getRawClass)) None.orNull
+    if (!intMapClass.isAssignableFrom(theType.getRawClass)) null
     else {
       val mapDeserializer = new MapDeserializer(theType, new IntMapInstantiator(config, theType), keyDeserializer,
         elementDeserializer.asInstanceOf[ValueDeserializer[AnyRef]], elementTypeDeserializer)
@@ -115,7 +115,7 @@ private[deser] class IntMapDeserializerResolver(config: ScalaModule.Config) exte
     override def get(key: Object): Object = key match {
       case n: Number => baseMap.get(n.intValue()).orNull
       case s: String => baseMap.get(s.toInt).orNull
-      case _ => None.orNull
+      case _ => null
     }
 
     // Isn't used by the deserializer
