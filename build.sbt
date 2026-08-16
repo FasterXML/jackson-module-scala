@@ -21,9 +21,9 @@ ThisBuild / publishTo := {
   else localStaging.value
 }
 
-resolvers += Resolver.sonatypeCentralSnapshots
+// resolvers += Resolver.sonatypeCentralSnapshots
 
-ThisBuild / version := "2.18.10-SNAPSHOT"
+// ThisBuild / version := "2.18.10-SNAPSHOT"
 val jacksonCoreVersion = "2.18.10"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
