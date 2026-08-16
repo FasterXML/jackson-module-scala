@@ -1,3 +1,8 @@
+# Version: 2.22.2
+
+There are no new fixes in this release; it serves to track the 2.22.2 release
+of the upstream Jackson projects.
+
 # Version: 2.22.1
 
 ## Fixes
@@ -9,6 +14,11 @@
 This patch release tracks Jackson 2.22. The 2.22 series has full support for
 Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 There are no new fixes in this release.
+
+# Version: 2.21.6
+
+There are no new fixes in this release; it serves to track the 2.21.6 release
+of the upstream Jackson projects.
 
 # Version: 2.21.5
 
@@ -94,6 +104,16 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 * [[gh-pr-706]](https://github.com/FasterXML/jackson-module-scala/pull/706) Upgrade paranamer dependency to 2.8.3
 * [[gh-pr-713]](https://github.com/FasterXML/jackson-module-scala/pull/713) Add ScalaModule.builder() to over another way to customise the Scala module
 * [[gh-722]](https://github.com/FasterXML/jackson-module-scala/issues/722) Collection deserializer should create empty collection instead of null (when input is null)
+
+# Version: 2.18.10
+
+There are no new fixes in this release; it serves to track the 2.18.10 release
+of the upstream Jackson projects.
+
+# Version: 2.18.9
+
+There are no new fixes in this release; it serves to track the 2.18.9 release
+of the upstream Jackson projects.
 
 # Version: 2.18.8
 
