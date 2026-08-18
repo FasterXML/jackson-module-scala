@@ -23,87 +23,59 @@ private object EnumDeserializerShared {
   }
 
   def matchBasedOnOrdinal(clz: Class[_], key: String): Option[_] = {
-    val className = clz.getName
-    val companionObjectClassOption = if (className.endsWith("$")) {
-      Some(clz)
-    } else {
-      Try(Class.forName(className + "$")).toOption
-    }
-    companionObjectClassOption.flatMap { companionObjectClass =>
-      Try(companionObjectClass.getField("MODULE$")).toOption.flatMap { moduleField =>
-        val instance = moduleField.get(None.orNull)
-        Try(clz.getMethod("fromOrdinal", IntClass)).toOption.flatMap { method =>
-          var i = 0
-          var matched: Option[_] = None
-          var complete = false
-          while (!complete) {
-            try {
-              val enumValue = method.invoke(instance, i)
-              if (enumValue.toString == key) {
-                matched = Some(enumValue)
-                complete = true
-              }
-            } catch {
-              case _: NoSuchElementException => {
+    Try(clz.getMethod("fromOrdinal", IntClass)).toOption.flatMap { method =>
+      var i = 0
+      var matched: Option[_] = None
+      var complete = false
+      while (!complete) {
+        try {
+          val enumValue = method.invoke(None.orNull, i)
+          if (enumValue.toString == key) {
+            matched = Some(enumValue)
+            complete = true
+          }
+        } catch {
+          case _: NoSuchElementException => {
+            matched = None
+            complete = true
+          }
+          case itex: InvocationTargetException => {
+            Option(itex.getCause) match {
+              case Some(e) if e.isInstanceOf[NoSuchElementException] => {
                 matched = None
                 complete = true
               }
-              case itex: InvocationTargetException => {
-                Option(itex.getCause) match {
-                  case Some(e) if e.isInstanceOf[NoSuchElementException] => {
-                    matched = None
-                    complete = true
-                  }
-                  case Some(e) => throw e
-                  case _ => throw itex 
-                }
-              }
+              case Some(e) => throw e
+              case _ => throw itex
             }
-            i += 1
           }
-          matched
         }
+        i += 1
       }
+      matched
     }
   }
 }
 
 private case class EnumDeserializer[T <: Enum](clazz: Class[T]) extends StdDeserializer[T](clazz) {
-  private val clazzName = clazz.getName
-
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): T = {
     val result = Option(p.getValueAsString).flatMap { text =>
-      val objectClassOption = if(clazzName.endsWith("$")) {
-        Try(Class.forName(clazzName.substring(0, clazzName.length - 1))).toOption
-      } else {
-        Some(clazz)
-      }
-      objectClassOption.flatMap { objectClass =>
-        Try {
-          EnumDeserializerShared.tryValueOf(objectClass, text)
-            .orElse(EnumDeserializerShared.matchBasedOnOrdinal(objectClass, text))
-        }.toOption.flatten
-      }.asInstanceOf[Option[T]]
+      Try {
+        EnumDeserializerShared.tryValueOf(clazz, text)
+          .orElse(EnumDeserializerShared.matchBasedOnOrdinal(clazz, text))
+      }.toOption.flatten
     }
     result.getOrElse(throw new IllegalArgumentException(s"Failed to create Enum instance for ${p.getValueAsString}"))
+      .asInstanceOf[T]
   }
 }
 
 private case class EnumKeyDeserializer[T <: Enum](clazz: Class[T]) extends KeyDeserializer {
-  private val clazzName = clazz.getName
-
   override def deserializeKey(key: String, ctxt: DeserializationContext): AnyRef = {
-    val objectClassOption = if(clazzName.endsWith("$")) {
-      Try(Class.forName(clazzName.substring(0, clazzName.length - 1))).toOption
-    } else {
-      Some(clazz)
-    }
-    val result = objectClassOption.flatMap { objectClass =>
-      Try {
-        EnumDeserializerShared.tryValueOf(objectClass, key)
-          .orElse(EnumDeserializerShared.matchBasedOnOrdinal(objectClass, key))
-      }.toOption.flatten
-    }
+    val result = Try {
+      EnumDeserializerShared.tryValueOf(clazz, key)
+        .orElse(EnumDeserializerShared.matchBasedOnOrdinal(clazz, key))
+    }.toOption.flatten
     val enumResult = result.getOrElse(throw new IllegalArgumentException(s"Failed to create Enum instance for $key"))
     enumResult.asInstanceOf[AnyRef]
   }
