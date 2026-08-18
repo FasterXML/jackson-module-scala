@@ -17,12 +17,20 @@ private object EnumSerializerShared {
 }
 
 private object EnumSerializer extends ValueSerializer[Enum] {
-  def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
+  override def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
     jgen.writeString(value.toString)
+
+  override def serializeWithType(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext,
+                                 typeSer: TypeSerializer): Unit = {
+    val typeId = typeSer.typeId(value, JsonToken.VALUE_STRING)
+    typeSer.writeTypePrefix(g, ctxt, typeId)
+    serializationContext.defaultSerializeValue(value, jgen)
+    typeSer.writeTypeSuffix(g, ctxt, typeId)
+  }
 }
 
 private object EnumKeySerializer extends ValueSerializer[Enum] {
-  def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
+  override def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
     jgen.writeName(value.toString)
 }
 

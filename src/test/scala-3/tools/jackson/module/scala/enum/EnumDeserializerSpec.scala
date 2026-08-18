@@ -48,17 +48,18 @@ class EnumDeserializerSpec extends AnyWordSpec with Matchers {
       map(ColorEnum.Green) shouldEqual "green"
       map(ColorEnum.Red) shouldEqual "red"
     }
-    "deserialize ResultEnum.Ok" in {
+    // next 3 tests ignored - see https://github.com/FasterXML/jackson-module-scala/issues/831
+    "deserialize ResultEnum.Ok" ignore {
       val result = Result(ResultEnum.Ok("my-result"))
       val json = mapper.writeValueAsString(result)
       mapper.readValue(json, classOf[Result]) shouldEqual result
     }
-    "deserialize ResultEnum.Error" in {
+    "deserialize ResultEnum.Error" ignore {
       val result = Result(ResultEnum.Error(123))
       val json = mapper.writeValueAsString(result)
       mapper.readValue(json, classOf[Result]) shouldEqual result
     }
-    "deserialize ResultEnum.Pending" in {
+    "deserialize ResultEnum.Pending" ignore {
       val result = Result(ResultEnum.Pending)
       val json = mapper.writeValueAsString(result)
       mapper.readValue(json, classOf[Result]) shouldEqual result

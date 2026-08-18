@@ -26,12 +26,14 @@ private object EnumDeserializerShared {
 
   def matchBasedOnOrdinal(clz: Class[_], key: String): Option[_] = {
     Try(clz.getMethod("fromOrdinal", IntClass)).toOption.flatMap { method =>
+      println(s"matchBasedOnOrdinal $key $method")
       var i = 0
       var matched: Option[_] = None
       var complete = false
       while (!complete) {
         try {
           val enumValue = method.invoke(None.orNull, i)
+          println(s"matchBasedOnOrdinal $key trying to match $enumValue")
           if (enumValue.toString == key) {
             matched = Some(enumValue)
             complete = true
