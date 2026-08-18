@@ -158,8 +158,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
         case Some(result) => result
         case _ => {
           val result = clz.extendsScalaClass(config.shouldSupportScala3Classes()) || clz.hasSignature
-          scalaAnnotationIntrospectorModule._scalaTypeCache.put(key, result)
-          result
+          Option(scalaAnnotationIntrospectorModule._scalaTypeCache.putIfAbsent(key, result)).getOrElse(result)
         }
       }
     }
@@ -168,7 +167,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
         case Some(result) => Some(result)
         case _ => {
           val introspector = BeanIntrospector(clz)
-          scalaAnnotationIntrospectorModule._descriptorCache.put(key, introspector)
+          Option(scalaAnnotationIntrospectorModule._descriptorCache.putIfAbsent(key, introspector)).getOrElse(introspector)
           Some(introspector)
         }
       }
@@ -420,8 +419,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
       case Some(result) => result
       case _ => {
         val result = cls.extendsScalaClass(config.shouldSupportScala3Classes()) || cls.hasSignature
-        _scalaTypeCache.put(key, result)
-        result
+        Option(_scalaTypeCache.putIfAbsent(key, result)).getOrElse(result)
       }
     }
     flag && !isScalaPackage(Option(cls.getPackage))
