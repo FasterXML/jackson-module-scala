@@ -77,7 +77,8 @@ trait JacksonModule extends tools.jackson.databind.JacksonModule {
       case VersionExtractor(MajorVersion, MinorVersion) =>
         // success!
       case databindVersion =>
-        val databindVersionError = s"Scala module $version requires Jackson Databind version >= $requiredVersion and < $incompatibleVersion - Found jackson-databind version $databindVersion"
+        val databindVersionError =
+          s"Scala module ${version()} requires Jackson Databind version >= $requiredVersion and < $incompatibleVersion - Found jackson-databind version $databindVersion"
         throw DatabindException.from(null.asInstanceOf[JsonParser], databindVersionError)
     }
 
