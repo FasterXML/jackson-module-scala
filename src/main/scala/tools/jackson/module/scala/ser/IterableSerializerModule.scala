@@ -99,9 +99,9 @@ private class IterableSerializerResolver(config: ScalaModule.Config) extends Ser
                    elementTypeSerializer: TypeSerializer,
                    elementSerializer: ValueSerializer[Object]): ValueSerializer[_] = {
     val rawClass = collectionType.getRawClass
-    if (!ITERABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
-    else if (MAP_CLASS.isAssignableFrom(rawClass)) None.orNull
-    else if (JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
+    if (!ITERABLE_CLASS.isAssignableFrom(rawClass)) null
+    else if (MAP_CLASS.isAssignableFrom(rawClass)) null
+    else if (JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) null
     else {
       // CollectionSerializer *needs* an elementType, but AsArraySerializerBase *forces*
       // static typing if the element type is final. This makes sense to Java, but Scala

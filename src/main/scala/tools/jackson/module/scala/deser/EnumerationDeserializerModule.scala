@@ -35,7 +35,7 @@ private class EnumerationDeserializer(theType: JavaType) extends ValueDeserializ
           ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
         } else {
           jp.nextToken()
-          Class.forName(eclassName + "$").getField("MODULE$").get(None.orNull).asInstanceOf[Enumeration].withName(valueValue)
+          Class.forName(eclassName + "$").getField("MODULE$").get(null).asInstanceOf[Enumeration].withName(valueValue)
         }
       }
     }
@@ -69,7 +69,7 @@ private class EnumerationDeserializerResolver(config: ScalaModule.Config) extend
     if (ENUMERATION.isAssignableFrom(clazz)) {
       new EnumerationDeserializer(javaType)
     } else {
-      None.orNull
+      null
     }
   }
 
@@ -99,7 +99,7 @@ private class EnumerationKeyDeserializers(config: ScalaModule.Config) extends Ke
     if (valueClass.isAssignableFrom(tp.getRawClass)) {
       new EnumerationKeyDeserializer(None)
     }
-    else None.orNull
+    else null
   }
 }
 

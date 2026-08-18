@@ -92,7 +92,7 @@ private class ScalaIteratorSerializerResolver(config: ScalaModule.Config) extend
                                             elementSerializer: ValueSerializer[Object]): ValueSerializer[_] = {
 
     val rawClass = collectionType.getRawClass
-    if (!SCALAITERATOR_CLASS.isAssignableFrom(rawClass) || JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
+    if (!SCALAITERATOR_CLASS.isAssignableFrom(rawClass) || JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) null
     else new UnresolvedIteratorSerializer(rawClass, collectionType.getContentType, false, elementTypeSerializer, elementSerializer)
   }
 }

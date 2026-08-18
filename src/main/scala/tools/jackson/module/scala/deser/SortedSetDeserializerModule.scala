@@ -50,9 +50,9 @@ trait SortedSetDeserializerModule extends ScalaTypeModifierModule {
                                                     elementDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
           val rawClass = collectionType.getRawClass
           if (IMMUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-            None.orNull
+            null
           } else if (MUTABLE_BITSET_CLASS.isAssignableFrom(rawClass)) {
-            None.orNull
+            null
           } else {
             super.findCollectionLikeDeserializer(collectionType,
               config, beanDesc, elementTypeDeserializer, elementDeserializer)

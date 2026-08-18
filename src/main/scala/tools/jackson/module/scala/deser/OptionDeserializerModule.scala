@@ -15,7 +15,7 @@ private class OptionDeserializer(fullType: JavaType,
                                  valueTypeDeserializer: Option[TypeDeserializer],
                                  valueDeserializer: Option[ValueDeserializer[AnyRef]],
                                  beanProperty: Option[BeanProperty] = None)
-  extends ReferenceTypeDeserializer[Option[AnyRef]](fullType, None.orNull, valueTypeDeserializer.orNull, valueDeserializer.orNull) {
+  extends ReferenceTypeDeserializer[Option[AnyRef]](fullType, null, valueTypeDeserializer.orNull, valueDeserializer.orNull) {
 
   override def getValueType: JavaType = fullType
 
@@ -111,7 +111,7 @@ private class OptionDeserializerResolver(config: ScalaModule.Config) extends Des
                                          beanDesc: BeanDescription.Supplier,
                                          contentTypeDeserializer: TypeDeserializer,
                                          contentDeserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
-    if (!OPTION.isAssignableFrom(refType.getRawClass)) None.orNull
+    if (!OPTION.isAssignableFrom(refType.getRawClass)) null
     else {
       val elementType = refType.getContentType
       val typeDeser = Option(contentTypeDeserializer).orElse(Option(elementType.getTypeHandler.asInstanceOf[TypeDeserializer]))

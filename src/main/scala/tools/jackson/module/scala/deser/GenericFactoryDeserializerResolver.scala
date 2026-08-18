@@ -96,7 +96,7 @@ abstract class GenericFactoryDeserializerResolver[CC[_], CF[X[_]]](config: Scala
     override def add(e: A): Boolean = { builder += e; size += 1; true }
 
     // Required by AbstractCollection, but not implemented
-    override def iterator(): util.Iterator[A] = None.orNull
+    override def iterator(): util.Iterator[A] = null
 
     def setInitialValue(init: Collection[A]): Unit = init.asInstanceOf[Iterable[A]].foreach(add)
   }

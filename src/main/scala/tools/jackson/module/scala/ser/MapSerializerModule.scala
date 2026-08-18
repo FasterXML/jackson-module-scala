@@ -43,7 +43,7 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
 
     val rawClass = mapLikeType.getRawClass
 
-    if (!BASE_CLASS.isAssignableFrom(rawClass) || JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
+    if (!BASE_CLASS.isAssignableFrom(rawClass) || JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) null
     else new StdDelegatingSerializer(new MapConverter(mapLikeType, serializationConfig))
   }
 
