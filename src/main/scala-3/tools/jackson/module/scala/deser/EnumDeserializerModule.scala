@@ -9,11 +9,10 @@ import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 
 import java.lang.reflect.InvocationTargetException
-import scala.languageFeature.postfixOps
 import scala.reflect.Enum
 import scala.util.Try
 
-private object EnumDeserializerShared {
+private[scala] object EnumDeserializerShared {
   val IntClass = classOf[Int]
   val StringClass = classOf[String]
   val EnumClass = classOf[Enum]
@@ -24,16 +23,25 @@ private object EnumDeserializerShared {
     }
   }
 
+  // if any of the enum cases is parameterized then Scala does not support fromOrdinal
+  def canFindByOrdinal(clz: Class[_]): Boolean = {
+    Try(clz.getMethod("fromOrdinal", IntClass)).toOption.map { method =>
+      try {
+        method.invoke(None.orNull, 0) != null
+      } catch {
+        case _ => false
+      }
+    }.getOrElse(false)
+  }
+
   def matchBasedOnOrdinal(clz: Class[_], key: String): Option[_] = {
     Try(clz.getMethod("fromOrdinal", IntClass)).toOption.flatMap { method =>
-      println(s"matchBasedOnOrdinal $key $method")
       var i = 0
       var matched: Option[_] = None
       var complete = false
       while (!complete) {
         try {
           val enumValue = method.invoke(None.orNull, i)
-          println(s"matchBasedOnOrdinal $key trying to match $enumValue")
           if (enumValue.toString == key) {
             matched = Some(enumValue)
             complete = true
@@ -87,17 +95,18 @@ private case class EnumKeyDeserializer[T <: Enum](clazz: Class[T]) extends KeyDe
 
 private class EnumDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[Enum] =
-    if (EnumDeserializerShared.EnumClass isAssignableFrom javaType.getRawClass)
+    if (hasDeserializerFor(config, javaType.getRawClass))
       EnumDeserializer(javaType.getRawClass.asInstanceOf[Class[Enum]])
     else None.orNull
 
   override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean =
-    EnumDeserializerShared.EnumClass isAssignableFrom valueType
+    EnumDeserializerShared.EnumClass.isAssignableFrom(valueType)
+      && EnumDeserializerShared.canFindByOrdinal(valueType)
 }
 
 private class EnumKeyDeserializerResolver(config: ScalaModule.Config) extends KeyDeserializers {
   override def findKeyDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): KeyDeserializer =
-    if (EnumDeserializerShared.EnumClass isAssignableFrom javaType.getRawClass)
+    if (EnumDeserializerShared.EnumClass.isAssignableFrom(javaType.getRawClass))
       EnumKeyDeserializer(javaType.getRawClass.asInstanceOf[Class[Enum]])
     else None.orNull
 }
