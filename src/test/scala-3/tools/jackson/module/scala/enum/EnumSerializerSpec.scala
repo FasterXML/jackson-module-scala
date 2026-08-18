@@ -36,5 +36,14 @@ class EnumSerializerSpec extends AnyWordSpec with Matchers {
     "serialize Enum as Map Key" in {
       mapper.writeValueAsString(Map(ColorEnum.Green -> "green")) shouldEqual s"""{"Green":"green"}"""
     }
+    "serialize ResultEnum.Ok" in {
+      mapper.writeValueAsString(Result(ResultEnum.Ok("my-result"))) shouldEqual s"""{"result":"Ok(my-result)"}"""
+    }
+    "serialize ResultEnum.Error" in {
+      mapper.writeValueAsString(Result(ResultEnum.Error(123))) shouldEqual s"""{"result":"Error(123)"}"""
+    }
+    "serialize ResultEnum.Pending" in {
+      mapper.writeValueAsString(Result(ResultEnum.Pending)) shouldEqual s"""{"result":"Pending"}"""
+    }
   }
 }
