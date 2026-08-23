@@ -1,9 +1,10 @@
 package tools.jackson.module.scala.util
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import tools.jackson.databind.util.LookupCache
+import tools.jackson.module.scala.DefaultLookupCacheFactory
 
 import java.lang.reflect.Modifier
-import java.util.concurrent.ConcurrentHashMap
 import scala.deriving.Mirror
 import scala.util.Try
 
@@ -47,7 +48,12 @@ private[scala] object Scala3EnumInfo {
     def parameterizedCaseFor(clazz: Class[_]): Option[EnumCase] = casesByClass.get(clazz)
   }
 
-  private val cache = new ConcurrentHashMap[Class[_], Option[Info]]()
+  // Bounded so that classes loaded by a child classloader (hot redeploy, OSGi, script engines) are
+  // not retained indefinitely by this object. Keyed by Class rather than by class name because the
+  // cached Info holds Class instances - two same-named enums from different classloaders must not
+  // share an entry.
+  private val cache: LookupCache[Class[_], Option[Info]] =
+    DefaultLookupCacheFactory.createLookupCache(16, 1000)
 
   /**
    * Returns the case table of the Scala 3 enum that `clazz` belongs to - `clazz` may be the enum
@@ -55,7 +61,12 @@ private[scala] object Scala3EnumInfo {
    */
   def infoFor(clazz: Class[_]): Option[Info] = {
     if (clazz == null || !EnumClass.isAssignableFrom(clazz)) None
-    else cache.computeIfAbsent(clazz, _ => findInfo(clazz))
+    else Option(cache.get(clazz)) match {
+      case Some(info) => info
+      case _ =>
+        val info = findInfo(clazz)
+        Option(cache.putIfAbsent(clazz, info)).getOrElse(info)
+    }
   }
 
   private def findInfo(clazz: Class[_]): Option[Info] = {
