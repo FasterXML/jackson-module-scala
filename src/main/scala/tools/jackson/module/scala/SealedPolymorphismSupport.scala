@@ -23,8 +23,8 @@ package tools.jackson.module.scala
  *
  * {{{
  * sealed trait Dup extends SealedPolymorphismSupport
- * object Boxed  { case class Same(v: Int)    extends Dup }  // {"@type":"Boxed$Same","v":1}
- * object Nested { case class Same(v: String) extends Dup }  // {"@type":"Nested$Same","v":"x"}
+ * object Boxed  { case class Same(v: Int)    extends Dup }  // {"@type":"Boxed.Same","v":1}
+ * object Nested { case class Same(v: String) extends Dup }  // {"@type":"Nested.Same","v":"x"}
  * }}}
  *
  * On the way back in, a name is resolved only against types declared alongside the base type - its
