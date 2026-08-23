@@ -1,25 +1,25 @@
 package tools.jackson.module.scala
 
 import tools.jackson.databind.JacksonModule.SetupContext
-import tools.jackson.module.scala.deser.SimplePolymorphismDeserializerModule
-import tools.jackson.module.scala.ser.SimplePolymorphismSerializerModule
-import tools.jackson.module.scala.util.SimplePolymorphism
+import tools.jackson.module.scala.deser.SealedPolymorphismDeserializerModule
+import tools.jackson.module.scala.ser.SealedPolymorphismSerializerModule
+import tools.jackson.module.scala.util.SealedPolymorphism
 
 /**
- * Automatic polymorphic support for hierarchies marked with [[SimplePolymorphismSupport]].
+ * Automatic polymorphic support for hierarchies marked with [[SealedPolymorphismSupport]].
  *
  * @since 3.3.0
  */
-trait SimplePolymorphismModule extends SimplePolymorphismSerializerModule with SimplePolymorphismDeserializerModule {
-  override def getModuleName: String = "SimplePolymorphismModule"
+trait SealedPolymorphismModule extends SealedPolymorphismSerializerModule with SealedPolymorphismDeserializerModule {
+  override def getModuleName: String = "SealedPolymorphismModule"
 
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
-    SimplePolymorphismSerializerModule.getInitializers(config) ++
-      SimplePolymorphismDeserializerModule.getInitializers(config)
+    SealedPolymorphismSerializerModule.getInitializers(config) ++
+      SealedPolymorphismDeserializerModule.getInitializers(config)
   }
 }
 
-object SimplePolymorphismModule extends SimplePolymorphismModule {
+object SealedPolymorphismModule extends SealedPolymorphismModule {
 
   /**
    * Replaces the [[LookupCacheFactory]] used for the cache of resolved `@type` names. The default
@@ -34,7 +34,7 @@ object SimplePolymorphismModule extends SimplePolymorphismModule {
    * @since 3.3.0
    */
   def setLookupCacheFactory(lookupCacheFactory: LookupCacheFactory): Unit =
-    SimplePolymorphism.setLookupCacheFactory(lookupCacheFactory)
+    SealedPolymorphism.setLookupCacheFactory(lookupCacheFactory)
 
   /**
    * Resize the cache of resolved `@type` names. The default size is 1000.
@@ -43,12 +43,12 @@ object SimplePolymorphismModule extends SimplePolymorphismModule {
    * @see [[setLookupCacheFactory]]
    * @since 3.3.0
    */
-  def setSubtypeCacheSize(size: Int): Unit = SimplePolymorphism.setCacheSize(size)
+  def setSubtypeCacheSize(size: Int): Unit = SealedPolymorphism.setCacheSize(size)
 
   /**
    * Empties the cache of resolved `@type` names.
    *
    * @since 3.3.0
    */
-  def clearSubtypeCache(): Unit = SimplePolymorphism.clearCache()
+  def clearSubtypeCache(): Unit = SealedPolymorphism.clearCache()
 }

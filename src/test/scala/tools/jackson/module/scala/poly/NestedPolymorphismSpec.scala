@@ -14,7 +14,7 @@ class NestedPolymorphismSpec extends AnyWordSpec with Matchers {
 
   private def roundTrip[T](value: T, clazz: Class[T]): T = mapper.readValue(mapper.writeValueAsString(value), clazz)
 
-  "SimplePolymorphismModule" should {
+  "SealedPolymorphismModule" should {
     "tag both levels when both hierarchies are marked" in {
       mapper.writeValueAsString(NestHolder(OuterA(InnerA(1)))) shouldEqual
         """{"outer":{"@type":"OuterA","inner":{"@type":"InnerA","a":1}}}"""

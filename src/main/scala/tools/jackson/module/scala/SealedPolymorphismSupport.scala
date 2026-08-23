@@ -8,7 +8,7 @@ package tools.jackson.module.scala
  * naming the implementation:
  *
  * {{{
- * sealed trait Animal extends SimplePolymorphismSupport
+ * sealed trait Animal extends SealedPolymorphismSupport
  * case class Dog(name: String) extends Animal
  * case object Unknown extends Animal
  *
@@ -22,9 +22,9 @@ package tools.jackson.module.scala
  * each hold an implementation called the same thing:
  *
  * {{{
- * sealed trait Dup extends SimplePolymorphismSupport
- * object Left  { case class Same(v: Int)    extends Dup }   // {"@type":"Left$Same","v":1}
- * object Right { case class Same(v: String) extends Dup }   // {"@type":"Right$Same","v":"x"}
+ * sealed trait Dup extends SealedPolymorphismSupport
+ * object Boxed  { case class Same(v: Int)    extends Dup }  // {"@type":"Boxed$Same","v":1}
+ * object Nested { case class Same(v: String) extends Dup }  // {"@type":"Nested$Same","v":"x"}
  * }}}
  *
  * On the way back in, a name is resolved only against types declared alongside the base type - its
@@ -42,4 +42,4 @@ package tools.jackson.module.scala
  *
  * @since 3.3.0
  */
-trait SimplePolymorphismSupport
+trait SealedPolymorphismSupport

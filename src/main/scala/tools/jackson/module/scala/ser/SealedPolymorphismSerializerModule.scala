@@ -5,33 +5,33 @@ import tools.jackson.databind.{BeanDescription, SerializationConfig, ValueSerial
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
-import tools.jackson.module.scala.util.SimplePolymorphism
+import tools.jackson.module.scala.util.SealedPolymorphism
 
-private class SimplePolymorphismSerializerModifier(config: ScalaModule.Config) extends ValueSerializerModifier {
+private class SealedPolymorphismSerializerModifier(config: ScalaModule.Config) extends ValueSerializerModifier {
   override def modifySerializer(config: SerializationConfig, beanDesc: BeanDescription.Supplier,
                                 serializer: ValueSerializer[_]): ValueSerializer[_] = {
     val rawClass = beanDesc.getBeanClass
-    if (SimplePolymorphism.conflictingJsonTypeInfo(rawClass)) {
-      throw new IllegalArgumentException(SimplePolymorphism.conflictMessage(rawClass))
+    if (SealedPolymorphism.conflictingJsonTypeInfo(rawClass)) {
+      throw new IllegalArgumentException(SealedPolymorphism.conflictMessage(rawClass))
     }
     // base types are never written directly - only the implementation dispatched to at runtime
-    if (SimplePolymorphism.isSupported(rawClass) && !SimplePolymorphism.isBaseType(rawClass)) {
+    if (SealedPolymorphism.isSupported(rawClass) && !SealedPolymorphism.isBaseType(rawClass)) {
       // refuse to write a value that could not be read back
-      SimplePolymorphism.unreachableReason(rawClass).foreach(reason => throw new IllegalArgumentException(reason))
-      new TypeTaggedSerializer(SimplePolymorphism.TypePropertyName, SimplePolymorphism.typeNameFor(rawClass),
+      SealedPolymorphism.unreachableReason(rawClass).foreach(reason => throw new IllegalArgumentException(reason))
+      new TypeTaggedSerializer(SealedPolymorphism.TypePropertyName, SealedPolymorphism.typeNameFor(rawClass),
         serializer.asInstanceOf[ValueSerializer[AnyRef]])
     } else serializer
   }
 }
 
-trait SimplePolymorphismSerializerModule extends JacksonModule {
-  override def getModuleName: String = "SimplePolymorphismSerializerModule"
+trait SealedPolymorphismSerializerModule extends JacksonModule {
+  override def getModuleName: String = "SealedPolymorphismSerializerModule"
 
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
-    builder += new SimplePolymorphismSerializerModifier(config)
+    builder += new SealedPolymorphismSerializerModifier(config)
     builder.build()
   }
 }
 
-object SimplePolymorphismSerializerModule extends SimplePolymorphismSerializerModule
+object SealedPolymorphismSerializerModule extends SealedPolymorphismSerializerModule

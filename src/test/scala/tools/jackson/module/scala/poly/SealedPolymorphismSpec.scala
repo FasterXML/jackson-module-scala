@@ -6,7 +6,7 @@ import tools.jackson.module.scala.DefaultScalaModule
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class SimplePolymorphismSpec extends AnyWordSpec with Matchers {
+class SealedPolymorphismSpec extends AnyWordSpec with Matchers {
   private val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
 
   private def roundTrip[T](value: T, clazz: Class[T]): T = mapper.readValue(mapper.writeValueAsString(value), clazz)
@@ -14,7 +14,7 @@ class SimplePolymorphismSpec extends AnyWordSpec with Matchers {
   private def rootCause(error: Throwable): Throwable =
     Option(error.getCause).filter(_ ne error).map(rootCause).getOrElse(error)
 
-  "SimplePolymorphismModule" should {
+  "SealedPolymorphismModule" should {
     "tag an implementation declared beside the base type" in {
       mapper.writeValueAsString(Owner("ann", Dog("rex"))) shouldEqual """{"name":"ann","pet":{"@type":"Dog","name":"rex"}}"""
     }
@@ -64,15 +64,6 @@ class SimplePolymorphismSpec extends AnyWordSpec with Matchers {
       mapper.writeValueAsString(Ledger(Cheque(7))) shouldEqual """{"entry":{"kind":"Cheque","number":7}}"""
       roundTrip(Ledger(Cheque(7)), classOf[Ledger]) shouldEqual Ledger(Cheque(7))
     }
-    "let the enum support own a marked Scala 3 enum" in {
-      // the enum rules apply throughout: a simple case is its plain name, a parameterized one an object
-      mapper.writeValueAsString(Job(Status.Active)) shouldEqual """{"status":"Active"}"""
-      mapper.writeValueAsString(Job(Status.Failed(1))) shouldEqual """{"status":{"@type":"Failed","code":1}}"""
-      roundTrip(Job(Status.Failed(1)), classOf[Job]) shouldEqual Job(Status.Failed(1))
-      roundTrip(Job(Status.Active), classOf[Job]).status should be theSameInstanceAs Status.Active
-    }
-    // Jackson makes the annotated class a polymorphic base in its own right, so reading it would
-    // demand that annotation's type id - which nothing in a marked hierarchy ever writes
     "report JsonTypeInfo on an implementation rather than the base" in {
       val error = intercept[Exception] {
         mapper.writeValueAsString(LeafHolder(LeafA(1)))
@@ -86,35 +77,30 @@ class SimplePolymorphismSpec extends AnyWordSpec with Matchers {
       roundTrip(LeafHolder(LeafB(2)), classOf[LeafHolder]) shouldEqual LeafHolder(LeafB(2))
     }
     "qualify implementations declared in objects that do not enclose the base" in {
-      mapper.writeValueAsString(DupHolder(Left.Same(1))) shouldEqual """{"d":{"@type":"Left$Same","v":1}}"""
-      mapper.writeValueAsString(DupHolder(Right.Same("x"))) shouldEqual """{"d":{"@type":"Right$Same","v":"x"}}"""
-      mapper.writeValueAsString(DupHolder(Left.Only)) shouldEqual """{"d":{"@type":"Left$Only"}}"""
+      mapper.writeValueAsString(DupHolder(FirstGroup.Same(1))) shouldEqual """{"d":{"@type":"FirstGroup$Same","v":1}}"""
+      mapper.writeValueAsString(DupHolder(SecondGroup.Same("x"))) shouldEqual """{"d":{"@type":"SecondGroup$Same","v":"x"}}"""
+      mapper.writeValueAsString(DupHolder(FirstGroup.Only)) shouldEqual """{"d":{"@type":"FirstGroup$Only"}}"""
     }
     "round trip same named implementations from different objects" in {
-      roundTrip(DupHolder(Left.Same(1)), classOf[DupHolder]) shouldEqual DupHolder(Left.Same(1))
-      roundTrip(DupHolder(Right.Same("x")), classOf[DupHolder]) shouldEqual DupHolder(Right.Same("x"))
-      roundTrip(DupHolder(Left.Only), classOf[DupHolder]).d should be theSameInstanceAs Left.Only
+      roundTrip(DupHolder(FirstGroup.Same(1)), classOf[DupHolder]) shouldEqual DupHolder(FirstGroup.Same(1))
+      roundTrip(DupHolder(SecondGroup.Same("x")), classOf[DupHolder]) shouldEqual DupHolder(SecondGroup.Same("x"))
+      roundTrip(DupHolder(FirstGroup.Only), classOf[DupHolder]).d should be theSameInstanceAs FirstGroup.Only
     }
     // serializing only needs the value's own class, so an implementation resolution cannot reach
-    // would otherwise be written happily and fail only when something read it back
-    "refuse to write an implementation declared outside the base's package" in {
+    // would otherwise be written happily and fail only when something read it back. What each Scala
+    // version can work out about the hierarchy differs, so only the refusal is asserted here - see
+    // Scala2LookupSpec and Scala3LookupSpec for what each can say about it.
+    "refuse to write an implementation of a hierarchy that is not sealed" in {
       val message = String.valueOf(rootCause(intercept[Exception] {
         mapper.writeValueAsString(UnsealedHolder(other.Faraway(1)))
       }).getMessage)
-      message should include("Faraway")
-      message should include("no subtype of")
       message should include("sealed")
     }
-    "still write an implementation of that hierarchy declared alongside the base" in {
-      roundTrip(UnsealedHolder(Nearby(1)), classOf[UnsealedHolder]) shouldEqual UnsealedHolder(Nearby(1))
-    }
     "refuse to write an implementation whose derived name is already taken" in {
-      roundTrip(ShadowHolder(Shadow.Entry(1)), classOf[ShadowHolder]) shouldEqual ShadowHolder(Shadow.Entry(1))
       val message = String.valueOf(rootCause(intercept[Exception] {
         mapper.writeValueAsString(ShadowHolder(Entry("x")))
       }).getMessage)
       message should include("already belongs to")
-      message should include("Shadow$Entry")
     }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""

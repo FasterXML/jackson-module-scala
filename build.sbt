@@ -124,6 +124,13 @@ libraryDependencies ++= jacksonDependencies ++ Seq(
   "org.scalatest" %% "scalatest" % "3.2.20" % Test
 )
 
+// SealedPolymorphismSupport enumerates a sealed hierarchy through scala-reflect on Scala 2. It is
+// optional: only applications that use that marker trait need it on the runtime classpath.
+libraryDependencies ++= {
+  if (scalaReleaseVersion.value == 2) Seq("org.scala-lang" % "scala-reflect" % scalaVersion.value % Optional)
+  else Seq.empty
+}
+
 // build.properties
 Compile / resourceGenerators += Def.task {
     val file = (Compile / resourceManaged).value / "tools" / "jackson" / "module" / "scala" / "build.properties"

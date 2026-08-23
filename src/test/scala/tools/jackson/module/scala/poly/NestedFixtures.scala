@@ -1,15 +1,15 @@
 package tools.jackson.module.scala.poly
 
 import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
-import tools.jackson.module.scala.SimplePolymorphismSupport
+import tools.jackson.module.scala.SealedPolymorphismSupport
 
 // the inner hierarchy, marked
-sealed trait Inner extends SimplePolymorphismSupport
+sealed trait Inner extends SealedPolymorphismSupport
 case class InnerA(a: Int) extends Inner
 case object InnerB extends Inner
 
 // both hierarchies marked - a polymorphic value holding a polymorphic value
-sealed trait Outer extends SimplePolymorphismSupport
+sealed trait Outer extends SealedPolymorphismSupport
 case class OuterA(inner: Inner) extends Outer
 case object OuterB extends Outer
 case class OuterC(inners: Seq[Inner]) extends Outer
@@ -24,7 +24,7 @@ case class NestHolder(outer: Outer)
   new JsonSubTypes.Type(value = classOf[AnnOuterA], name = "AnnOuterA"),
   new JsonSubTypes.Type(value = classOf[AnnOuterB], name = "AnnOuterB")
 ))
-sealed trait AnnOuter extends SimplePolymorphismSupport
+sealed trait AnnOuter extends SealedPolymorphismSupport
 case class AnnOuterA(inner: Inner) extends AnnOuter
 case class AnnOuterB(label: String) extends AnnOuter
 
@@ -36,11 +36,11 @@ case class AnnOuterHolder(outer: AnnOuter)
   new JsonSubTypes.Type(value = classOf[AnnInnerA], name = "AnnInnerA"),
   new JsonSubTypes.Type(value = classOf[AnnInnerB], name = "AnnInnerB")
 ))
-sealed trait AnnInner extends SimplePolymorphismSupport
+sealed trait AnnInner extends SealedPolymorphismSupport
 case class AnnInnerA(a: Int) extends AnnInner
 case class AnnInnerB(b: String) extends AnnInner
 
-sealed trait PlainOuter extends SimplePolymorphismSupport
+sealed trait PlainOuter extends SealedPolymorphismSupport
 case class PlainOuterA(inner: AnnInner) extends PlainOuter
 case object PlainOuterB extends PlainOuter
 

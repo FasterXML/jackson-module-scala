@@ -2,28 +2,26 @@ package tools.jackson.module.scala.util
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import tools.jackson.databind.util.LookupCache
-import tools.jackson.module.scala.{DefaultLookupCacheFactory, LookupCacheFactory, SimplePolymorphismSupport}
+import tools.jackson.module.scala.{DefaultLookupCacheFactory, LookupCacheFactory, SealedPolymorphismSupport}
 
 import java.lang.reflect.Modifier
 import scala.util.Try
 
 /**
- * Naming and lookup rules behind [[tools.jackson.module.scala.SimplePolymorphismSupport]].
+ * Naming rules and policy behind [[tools.jackson.module.scala.SealedPolymorphismSupport]].
  *
- * A Scala 3 `sealed` hierarchy leaves no trace of its implementations in the bytecode - the JVM
- * `PermittedSubclasses` attribute is not emitted, and unlike an `enum` the companion carries no
- * `Mirror.Sum`. So implementations are not enumerated. They do not need to be: writing a value only
- * needs its own class, and reading one only needs to turn a `@type` name back into a class. That is
- * done by deriving candidate class names from where the base type itself is declared, and keeping
- * only candidates that really are subtypes of it.
+ * The name written to `@type` is derived here, identically on every Scala version, so that a value
+ * written by one can be read by another. Finding an implementation again from that name is what
+ * differs, and is left to the version specific [[SubtypeLookup]]: Scala 2 can enumerate a sealed
+ * hierarchy through scala-reflect, while Scala 3 records nothing about `sealed` on the JVM and has
+ * to work from where the base type is declared.
  */
-private[scala] object SimplePolymorphism {
+private[scala] object SealedPolymorphism {
 
   /** Name of the JSON property that carries the derived type name. */
   val TypePropertyName = "@type"
 
-  private val MarkerClass = classOf[SimplePolymorphismSupport]
-  private val EnumClass = classOf[scala.reflect.Enum]
+  private[scala] val MarkerClass = classOf[SealedPolymorphismSupport]
   private val ModuleFieldName = "MODULE$"
 
   final case class Subtype(clazz: Class[_], singleton: Option[AnyRef])
@@ -36,11 +34,17 @@ private[scala] object SimplePolymorphism {
    * Two hierarchies are handed back: a Scala 3 `enum`, which the enum support already tags from an
    * exact case table, and one whose root carries `@JsonTypeInfo`, which is left to the standard
    * Jackson polymorphic handling rather than being tagged twice.
+   *
+   * This is the first thing every path asks, and the marker check comes first, so it is also where
+   * a lookup that cannot run at all is reported - only ever for a type that actually uses the
+   * marker, never for the rest of an application's classes.
    */
-  def isSupported(clazz: Class[_]): Boolean =
-    MarkerClass.isAssignableFrom(clazz) &&
-      !EnumClass.isAssignableFrom(clazz) &&
-      rootOf(clazz).getAnnotation(classOf[JsonTypeInfo]) == null
+  def isSupported(clazz: Class[_]): Boolean = {
+    MarkerClass.isAssignableFrom(clazz) && {
+      SubtypeLookup.checkAvailable(clazz)
+      !SubtypeLookup.isScalaEnum(clazz) && rootOf(clazz).getAnnotation(classOf[JsonTypeInfo]) == null
+    }
+  }
 
   /**
    * `@JsonTypeInfo` on an implementation rather than on the root cannot be honoured alongside
@@ -52,7 +56,7 @@ private[scala] object SimplePolymorphism {
     isSupported(clazz) && clazz.getAnnotation(classOf[JsonTypeInfo]) != null
 
   def conflictMessage(clazz: Class[_]): String =
-    s"${clazz.getName} carries @JsonTypeInfo but belongs to the ${classOf[SimplePolymorphismSupport].getSimpleName} " +
+    s"${clazz.getName} carries @JsonTypeInfo but belongs to the ${classOf[SealedPolymorphismSupport].getSimpleName} " +
       s"hierarchy rooted at ${rootOf(clazz).getName}. Move the annotation to the root to use Jackson's polymorphic " +
       s"handling for the whole hierarchy, or remove it to use $TypePropertyName."
 
@@ -66,21 +70,16 @@ private[scala] object SimplePolymorphism {
    * the root's package, which `sealed` would have prevented, and one whose derived name is already
    * taken by another implementation declared closer to the root.
    */
-  def unreachableReason(clazz: Class[_]): Option[String] = {
-    val root = rootOf(clazz)
-    val typeName = typeNameFor(clazz)
-    resolve(root, typeName) match {
-      case Some(subtype) if subtype.clazz == clazz => None
-      case Some(subtype) => Some(
-        s"${clazz.getName} is written as $TypePropertyName '$typeName', but that name already belongs to " +
-          s"${subtype.clazz.getName}, which is declared closer to ${root.getName}. Rename one of them, or move " +
-          s"${clazz.getName} so that the two derive different names.")
-      case None => Some(
-        s"${clazz.getName} is written as $TypePropertyName '$typeName', but no subtype of ${root.getName} is " +
-          s"declared under that name alongside it. An implementation has to be declared in the same file as " +
-          s"${root.getName} - which is what `sealed` guarantees - so that it can be found again when reading.")
-    }
-  }
+  def unreachableReason(clazz: Class[_]): Option[String] = SubtypeLookup.unreachableReason(clazz)
+
+  private[scala] def nameTakenMessage(clazz: Class[_], typeName: String, taken: Class[_]): String =
+    s"${clazz.getName} is written as $TypePropertyName '$typeName', but that name already belongs to " +
+      s"${taken.getName}. Rename one of them so that the two derive different names."
+
+  private[scala] def notFoundMessage(clazz: Class[_], typeName: String, root: Class[_]): String =
+    s"${clazz.getName} is written as $TypePropertyName '$typeName', but no subtype of ${root.getName} is " +
+      s"declared under that name alongside it. An implementation has to be declared in the same file as " +
+      s"${root.getName} - which is what `sealed` guarantees - so that it can be found again when reading."
 
   /**
    * The top of the marked hierarchy `clazz` belongs to. The opt-out is read from the root rather
@@ -142,7 +141,7 @@ private[scala] object SimplePolymorphism {
       Option(cache.get(key)) match {
         case Some(subtype) => subtype
         case _ =>
-          val subtype = findSubtype(baseClass, typeName)
+          val subtype = SubtypeLookup.findSubtype(baseClass, typeName)
           Option(cache.putIfAbsent(key, subtype)).getOrElse(subtype)
       }
     }
@@ -154,32 +153,12 @@ private[scala] object SimplePolymorphism {
   private def isPlainName(typeName: String): Boolean =
     typeName != null && typeName.nonEmpty && typeName.forall(c => c != '.' && c != '/' && c != '[' && c != ';')
 
-  private def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
-    val loader = loaderFor(baseClass)
-    // anchored on the root, so a property declared as an intermediate type still resolves the names
-    // that were written for the hierarchy as a whole
-    candidateNames(rootOf(baseClass).getName, typeName).view
-      .flatMap(name => Try(Class.forName(name, false, loader)).toOption)
-      .filter(candidate => baseClass.isAssignableFrom(candidate) && candidate != baseClass)
-      .map(candidate => Subtype(candidate, moduleInstance(candidate)))
-      .headOption
-  }
-
-  /**
-   * Class names a `sealed` implementation could have been compiled to. A candidate that is not a
-   * subtype of the base is discarded by the caller, so the companion of a case class and the static
-   * forwarder class of a case object are both ignored.
-   */
-  private def candidateNames(rootName: String, typeName: String): Seq[String] =
-    // the object form is tried first - a case object's instances have the `$` class
-    prefixesFor(rootName).flatMap(prefix => Seq(prefix + typeName + "$", prefix + typeName))
-
   /**
    * Where an implementation of the hierarchy could have been declared, longest prefix first: nested
    * inside the root or its companion, nested inside any object enclosing the root, or alongside the
    * root in its package.
    */
-  private def prefixesFor(rootName: String): Seq[String] = {
+  private[scala] def prefixesFor(rootName: String): Seq[String] = {
     val packagePrefix = rootName.lastIndexOf('.') match {
       case -1 => ""
       case index => rootName.substring(0, index + 1)
@@ -197,10 +176,10 @@ private[scala] object SimplePolymorphism {
     prefixes.result().distinct
   }
 
-  private def moduleInstance(clazz: Class[_]): Option[AnyRef] =
+  private[scala] def moduleInstance(clazz: Class[_]): Option[AnyRef] =
     Try(clazz.getField(ModuleFieldName).get(None.orNull)).toOption.map(_.asInstanceOf[AnyRef])
 
-  private def loaderFor(clazz: Class[_]): ClassLoader =
+  private[scala] def loaderFor(clazz: Class[_]): ClassLoader =
     Option(clazz.getClassLoader).getOrElse(ClassLoader.getSystemClassLoader)
 
   private var _lookupCacheFactory: LookupCacheFactory = DefaultLookupCacheFactory

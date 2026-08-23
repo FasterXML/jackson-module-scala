@@ -7,18 +7,18 @@ import tools.jackson.databind._
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
-import tools.jackson.module.scala.util.SimplePolymorphism
+import tools.jackson.module.scala.util.SealedPolymorphism
 
 /**
- * Reads a value of a hierarchy marked with [[tools.jackson.module.scala.SimplePolymorphismSupport]]
+ * Reads a value of a hierarchy marked with [[tools.jackson.module.scala.SealedPolymorphismSupport]]
  * by dispatching on its `@type` property.
  */
-private case class SimplePolymorphicDeserializer(baseClass: Class[_]) extends StdDeserializer[AnyRef](baseClass) {
+private case class SealedPolymorphicDeserializer(baseClass: Class[_]) extends StdDeserializer[AnyRef](baseClass) {
 
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): AnyRef = {
     if (p.currentToken() != JsonToken.START_OBJECT) {
       throw new IllegalArgumentException(
-        s"Expected a JSON object with a ${SimplePolymorphism.TypePropertyName} property to create ${baseClass.getName}")
+        s"Expected a JSON object with a ${SealedPolymorphism.TypePropertyName} property to create ${baseClass.getName}")
     }
     val buffer = ctxt.bufferForInputBuffering(p)
     buffer.writeStartObject()
@@ -26,7 +26,7 @@ private case class SimplePolymorphicDeserializer(baseClass: Class[_]) extends St
     while (p.nextToken() != JsonToken.END_OBJECT) {
       val name = p.currentName()
       p.nextToken()
-      if (typeName == null && name == SimplePolymorphism.TypePropertyName) {
+      if (typeName == null && name == SealedPolymorphism.TypePropertyName) {
         typeName = p.getValueAsString
       } else {
         buffer.writeName(name)
@@ -34,7 +34,7 @@ private case class SimplePolymorphicDeserializer(baseClass: Class[_]) extends St
       }
     }
     buffer.writeEndObject()
-    val subtype = Option(typeName).flatMap(SimplePolymorphism.resolve(baseClass, _)).getOrElse(failed(typeName))
+    val subtype = Option(typeName).flatMap(SealedPolymorphism.resolve(baseClass, _)).getOrElse(failed(typeName))
     subtype.singleton match {
       case Some(instance) => instance
       case None => ctxt.readValue(buffer.asParserOnFirstToken(ctxt), subtype.clazz.asInstanceOf[Class[AnyRef]])
@@ -45,13 +45,13 @@ private case class SimplePolymorphicDeserializer(baseClass: Class[_]) extends St
     throw new IllegalArgumentException(s"Failed to create ${baseClass.getName} instance for $typeName")
 }
 
-private class SimplePolymorphismDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
+private class SealedPolymorphismDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[AnyRef] =
-    if (hasDeserializerFor(config, javaType.getRawClass)) SimplePolymorphicDeserializer(javaType.getRawClass)
+    if (hasDeserializerFor(config, javaType.getRawClass)) SealedPolymorphicDeserializer(javaType.getRawClass)
     else None.orNull
 
   override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean =
-    SimplePolymorphism.isBaseType(valueType)
+    SealedPolymorphism.isBaseType(valueType)
 }
 
 /**
@@ -59,29 +59,29 @@ private class SimplePolymorphismDeserializerResolver(config: ScalaModule.Config)
  * as the implementation type rather than the base type, in which case the value is read straight as
  * a bean and has to tolerate the tag.
  */
-private class SimplePolymorphismDeserializerModifier(config: ScalaModule.Config) extends ValueDeserializerModifier {
+private class SealedPolymorphismDeserializerModifier(config: ScalaModule.Config) extends ValueDeserializerModifier {
   override def updateBuilder(config: DeserializationConfig, beanDesc: BeanDescription.Supplier,
                              builder: BeanDeserializerBuilder): BeanDeserializerBuilder = {
     val rawClass = beanDesc.getBeanClass
-    if (SimplePolymorphism.conflictingJsonTypeInfo(rawClass)) {
-      throw new IllegalArgumentException(SimplePolymorphism.conflictMessage(rawClass))
+    if (SealedPolymorphism.conflictingJsonTypeInfo(rawClass)) {
+      throw new IllegalArgumentException(SealedPolymorphism.conflictMessage(rawClass))
     }
-    if (SimplePolymorphism.isSupported(rawClass) && !SimplePolymorphism.isBaseType(rawClass)) {
-      builder.addIgnorable(SimplePolymorphism.TypePropertyName)
+    if (SealedPolymorphism.isSupported(rawClass) && !SealedPolymorphism.isBaseType(rawClass)) {
+      builder.addIgnorable(SealedPolymorphism.TypePropertyName)
     }
     builder
   }
 }
 
-trait SimplePolymorphismDeserializerModule extends JacksonModule {
-  override def getModuleName: String = "SimplePolymorphismDeserializerModule"
+trait SealedPolymorphismDeserializerModule extends JacksonModule {
+  override def getModuleName: String = "SealedPolymorphismDeserializerModule"
 
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
-    builder += new SimplePolymorphismDeserializerResolver(config)
-    builder += new SimplePolymorphismDeserializerModifier(config)
+    builder += new SealedPolymorphismDeserializerResolver(config)
+    builder += new SealedPolymorphismDeserializerModifier(config)
     builder.build()
   }
 }
 
-object SimplePolymorphismDeserializerModule extends SimplePolymorphismDeserializerModule
+object SealedPolymorphismDeserializerModule extends SealedPolymorphismDeserializerModule
