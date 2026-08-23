@@ -10,11 +10,25 @@ import scala.quoted.*
  * `Option[Int]`, and a small JSON number is read as an `Integer` a `Long` field cannot hold.
  */
 trait ScalaTypeInfo[T] {
-  /** Field name to the type argument the JVM erased, for the fields where one was erased. */
-  def erasedTypeArguments: Seq[(String, Class[?])]
+  /**
+   * Field name to the type argument the JVM erased, for the fields where one was erased.
+   *
+   * Deliberately not public. One class per field cannot describe a field that erases two of them,
+   * as `Map[Long, Int]` does, so what this carries is not settled - keeping it in makes that a
+   * change to the module rather than to anything a user wrote.
+   */
+  private[scala] def erasedTypeArguments: Seq[(String, Class[?])]
 }
 
 object ScalaTypeInfo {
+
+  /**
+   * Called by what `derived` generates, which is expanded where the class is declared and so can
+   * only reach what is public. Nothing else should call it.
+   */
+  def derivedFrom[T](erased: Seq[(String, Class[?])]): ScalaTypeInfo[T] = new ScalaTypeInfo[T] {
+    override private[scala] def erasedTypeArguments: Seq[(String, Class[?])] = erased
+  }
 
   inline def derived[T]: ScalaTypeInfo[T] = ${ derivedImpl[T] }
 
@@ -54,10 +68,6 @@ object ScalaTypeInfo {
       }
     }
 
-    '{
-      new ScalaTypeInfo[T] {
-        override def erasedTypeArguments: Seq[(String, Class[?])] = Seq(${ Varargs(entries) }*)
-      }
-    }
+    '{ ScalaTypeInfo.derivedFrom[T](Seq(${ Varargs(entries) }*)) }
   }
 }
