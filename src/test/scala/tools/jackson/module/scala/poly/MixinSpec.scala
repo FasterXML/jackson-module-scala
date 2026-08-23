@@ -35,6 +35,11 @@ class MixinSpec extends AnyWordSpec with Matchers {
       roundTrip(Garage(Truck(3, "sand"))) shouldEqual Garage(Truck(3, "sand"))
       roundTrip(Garage(Bike)).vehicle should be theSameInstanceAs Bike
     }
+    "reach an implementation below an intermediate trait" in {
+      val mapper = mapperWith(classOf[VehicleMixin])
+      mapper.writeValueAsString(Garage(Van(3))) shouldEqual """{"vehicle":{"@type":"Van","seats":3}}"""
+      mapper.readValue(mapper.writeValueAsString(Garage(Van(3))), classOf[Garage]) shouldEqual Garage(Van(3))
+    }
     "accept an anonymous class as the mix-in" in {
       val anonymous = (new SealedPolymorphismSupport {}).getClass
       val mapper = mapperWith(anonymous)

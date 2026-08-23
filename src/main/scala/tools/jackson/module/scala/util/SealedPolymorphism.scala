@@ -87,6 +87,10 @@ private[scala] object SealedPolymorphism {
     prefixes.result().distinct
   }
 
+  /** What a type directly extends, stopping at `AnyRef` since nothing above it can be marked. */
+  private[scala] def supertypesOf(clazz: Class[_]): Seq[Class[_]] =
+    (Option(clazz.getSuperclass).toSeq ++ clazz.getInterfaces).filter(_ != classOf[AnyRef])
+
   private[scala] def moduleInstance(clazz: Class[_]): Option[AnyRef] =
     Try(clazz.getField(ModuleFieldName).get(None.orNull)).toOption.map(_.asInstanceOf[AnyRef])
 
@@ -124,17 +128,12 @@ private[scala] class SealedPolymorphism {
    * time rather than remembered - two mappers sharing a module must not see each other's.
    */
   def isMarked(clazz: Class[_], config: MixInResolver): Boolean =
-    MarkerClass.isAssignableFrom(clazz) || markedByMixin(clazz, config)
+    MarkerClass.isAssignableFrom(clazz) || markedByMixin(clazz, config) || lookup.isDerived(clazz)
 
-  private def markedByMixin(clazz: Class[_], config: MixInResolver): Boolean = {
-    var current: Class[_] = clazz
-    var found = false
-    while (!found && current != null && current != classOf[AnyRef]) {
-      found = mixinMarks(current, config) || current.getInterfaces.exists(mixinMarks(_, config))
-      current = current.getSuperclass
-    }
-    found
-  }
+  // the whole supertype graph, not just what each superclass implements directly: an
+  // implementation may sit below an intermediate trait that is what the mix-in was put on
+  private def markedByMixin(clazz: Class[_], config: MixInResolver): Boolean =
+    mixinMarks(clazz, config) || supertypesOf(clazz).exists(markedByMixin(_, config))
 
   private def mixinMarks(clazz: Class[_], config: MixInResolver): Boolean = {
     val mixin = config.findMixInClassFor(clazz)
@@ -158,8 +157,7 @@ private[scala] class SealedPolymorphism {
   }
 
   private def markedParentOf(clazz: Class[_], config: MixInResolver): Option[Class[_]] =
-    (Option(clazz.getSuperclass).toSeq ++ clazz.getInterfaces)
-      .find(parent => parent != MarkerClass && isMarked(parent, config))
+    supertypesOf(clazz).find(parent => parent != MarkerClass && isMarked(parent, config))
 
   /**
    * The name written to `@type`: the implementation's class name with the longest prefix shared
