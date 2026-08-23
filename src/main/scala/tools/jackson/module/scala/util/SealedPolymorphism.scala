@@ -8,13 +8,13 @@ import java.lang.reflect.Modifier
 import scala.util.Try
 
 /**
- * Naming rules and policy behind [[tools.jackson.module.scala.SealedPolymorphismSupport]].
+ * The naming rules behind [[tools.jackson.module.scala.SealedPolymorphismSupport]] that depend on
+ * nothing but the classes themselves. A name is derived identically on every Scala version, so a
+ * value written by one can be read by another.
  *
- * The name written to `@type` is derived here, identically on every Scala version, so that a value
- * written by one can be read by another. Finding an implementation again from that name is what
- * differs, and is left to the version specific [[SubtypeLookup]]: Scala 2 can enumerate a sealed
- * hierarchy through scala-reflect, while Scala 3 records nothing about `sealed` on the JVM and has
- * to work from where the base type is declared.
+ * Everything that holds state - the caches, and the lookup that fills them - lives on the
+ * [[SealedPolymorphism]] instance rather than here, so that a module built with
+ * [[tools.jackson.module.scala.ScalaModule.Builder]] keeps its own.
  */
 private[scala] object SealedPolymorphism {
 
@@ -26,51 +26,12 @@ private[scala] object SealedPolymorphism {
 
   final case class Subtype(clazz: Class[_], singleton: Option[AnyRef])
 
-  private final case class SubtypeKey(baseClass: Class[_], typeName: String)
+  private[scala] final case class SubtypeKey(baseClass: Class[_], typeName: String)
 
-  /**
-   * True for a type in a marked hierarchy that this module should handle.
-   *
-   * Two hierarchies are handed back: a Scala 3 `enum`, which the enum support already tags from an
-   * exact case table, and one whose root carries `@JsonTypeInfo`, which is left to the standard
-   * Jackson polymorphic handling rather than being tagged twice.
-   *
-   * This is the first thing every path asks, and the marker check comes first, so it is also where
-   * a lookup that cannot run at all is reported - only ever for a type that actually uses the
-   * marker, never for the rest of an application's classes.
-   */
-  def isSupported(clazz: Class[_]): Boolean = {
-    MarkerClass.isAssignableFrom(clazz) && {
-      SubtypeLookup.checkAvailable(clazz)
-      !SubtypeLookup.isScalaEnum(clazz) && rootOf(clazz).getAnnotation(classOf[JsonTypeInfo]) == null
-    }
-  }
-
-  /**
-   * `@JsonTypeInfo` on an implementation rather than on the root cannot be honoured alongside
-   * `@type`: Jackson treats the annotated class as a polymorphic base in its own right, so reading
-   * it demands that annotation's type id, which nothing in a marked hierarchy ever writes. The
-   * combination is reported rather than left to produce JSON that cannot be read back.
-   */
-  def conflictingJsonTypeInfo(clazz: Class[_]): Boolean =
-    isSupported(clazz) && clazz.getAnnotation(classOf[JsonTypeInfo]) != null
-
-  def conflictMessage(clazz: Class[_]): String =
+  private[scala] def conflictMessage(clazz: Class[_]): String =
     s"${clazz.getName} carries @JsonTypeInfo but belongs to the ${classOf[SealedPolymorphismSupport].getSimpleName} " +
       s"hierarchy rooted at ${rootOf(clazz).getName}. Move the annotation to the root to use Jackson's polymorphic " +
       s"handling for the whole hierarchy, or remove it to use $TypePropertyName."
-
-  /**
-   * Checks that an implementation can be found again from the name it is written under, and
-   * describes the problem if it cannot.
-   *
-   * Serializing needs only the value's own class, so without this check an implementation that
-   * resolution cannot reach would be written happily and fail only when something tried to read it
-   * back - possibly in another process. Two things get caught: an implementation declared outside
-   * the root's package, which `sealed` would have prevented, and one whose derived name is already
-   * taken by another implementation declared closer to the root.
-   */
-  def unreachableReason(clazz: Class[_]): Option[String] = SubtypeLookup.unreachableReason(clazz)
 
   private[scala] def nameTakenMessage(clazz: Class[_], typeName: String, taken: Class[_]): String =
     s"${clazz.getName} is written as $TypePropertyName '$typeName', but that name already belongs to " +
@@ -101,25 +62,9 @@ private[scala] object SealedPolymorphism {
     (Option(clazz.getSuperclass).toSeq ++ clazz.getInterfaces)
       .find(parent => parent != MarkerClass && MarkerClass.isAssignableFrom(parent))
 
-  /**
-   * True for a type that can only be dispatched on, never instantiated - a trait or abstract class.
-   */
-  def isBaseType(clazz: Class[_]): Boolean =
-    isSupported(clazz) && !isConcrete(clazz)
-
   /** True for a type that can hold a value of its own, so can carry a name of its own. */
   def isConcrete(clazz: Class[_]): Boolean =
     !clazz.isInterface && !Modifier.isAbstract(clazz.getModifiers)
-
-  /**
-   * True for a concrete type that other implementations may extend - `sealed class Node` is both a
-   * value in its own right and a base its subclasses are read through, and so is any concrete class
-   * part way down such a hierarchy. A property declared at one of these has to dispatch rather than
-   * read straight through to the bean, or a subclass would be silently read back as the type it was
-   * declared as.
-   */
-  def needsSubtypeDispatch(clazz: Class[_]): Boolean =
-    isSupported(clazz) && isConcrete(clazz) && SubtypeLookup.mayHaveSubtypes(clazz)
 
   /**
    * The name written to `@type`: the implementation's class name with the longest prefix shared
@@ -143,28 +88,10 @@ private[scala] object SealedPolymorphism {
     }
   }
 
-  /**
-   * Resolves a `@type` name to an implementation of `baseClass`, or `None` if the name does not
-   * belong to that hierarchy.
-   */
-  def resolve(baseClass: Class[_], typeName: String): Option[Subtype] = {
-    if (!isPlainName(typeName)) None
-    else {
-      val key = SubtypeKey(baseClass, typeName)
-      val cache = _cache
-      Option(cache.get(key)) match {
-        case Some(subtype) => subtype
-        case _ =>
-          val subtype = SubtypeLookup.findSubtype(baseClass, typeName)
-          Option(cache.putIfAbsent(key, subtype)).getOrElse(subtype)
-      }
-    }
-  }
-
   // guards against a `@type` value that tries to escape the hierarchy by naming a package or an
   // array. `$` is allowed, since a name may carry the object that encloses the implementation, but
   // a candidate is still only reachable if it turns out to be a subtype of the base
-  private def isPlainName(typeName: String): Boolean =
+  private[scala] def isPlainName(typeName: String): Boolean =
     typeName != null && typeName.nonEmpty && typeName.forall(c => c != '.' && c != '/' && c != '[' && c != ';')
 
   /**
@@ -195,6 +122,92 @@ private[scala] object SealedPolymorphism {
 
   private[scala] def loaderFor(clazz: Class[_]): ClassLoader =
     Option(clazz.getClassLoader).getOrElse(ClassLoader.getSystemClassLoader)
+}
+
+/**
+ * The state behind [[tools.jackson.module.scala.SealedPolymorphismSupport]]: the cache of resolved
+ * `@type` names, and the version specific [[SubtypeLookup]] that fills it.
+ *
+ * One of these belongs to each module instance, so a `ScalaModule` built through its builder keeps
+ * its own caches and its own cache settings, while the `DefaultScalaModule` object shares the one
+ * that comes with the [[tools.jackson.module.scala.SealedPolymorphismModule]] object.
+ */
+private[scala] class SealedPolymorphism {
+
+  import SealedPolymorphism._
+
+  // `this` is handed over, so it is only built on first use, once this instance is fully constructed
+  private lazy val lookup: SubtypeLookup = new SubtypeLookup(this)
+
+  /**
+   * True for a type in a marked hierarchy that this module should handle.
+   *
+   * Two hierarchies are handed back: a Scala 3 `enum`, which the enum support already tags from an
+   * exact case table, and one whose root carries `@JsonTypeInfo`, which is left to the standard
+   * Jackson polymorphic handling rather than being tagged twice.
+   *
+   * This is the first thing every path asks, and the marker check comes first, so it is also where
+   * a lookup that cannot run at all is reported - only ever for a type that actually uses the
+   * marker, never for the rest of an application's classes.
+   */
+  def isSupported(clazz: Class[_]): Boolean = {
+    MarkerClass.isAssignableFrom(clazz) && {
+      lookup.checkAvailable(clazz)
+      !lookup.isScalaEnum(clazz) && rootOf(clazz).getAnnotation(classOf[JsonTypeInfo]) == null
+    }
+  }
+
+  /**
+   * `@JsonTypeInfo` on an implementation rather than on the root cannot be honoured alongside
+   * `@type`: Jackson treats the annotated class as a polymorphic base in its own right, so reading
+   * it demands that annotation's type id, which nothing in a marked hierarchy ever writes. The
+   * combination is reported rather than left to produce JSON that cannot be read back.
+   */
+  def conflictingJsonTypeInfo(clazz: Class[_]): Boolean =
+    isSupported(clazz) && clazz.getAnnotation(classOf[JsonTypeInfo]) != null
+
+  /**
+   * True for a type that can only be dispatched on, never instantiated - a trait or abstract class.
+   */
+  def isBaseType(clazz: Class[_]): Boolean = isSupported(clazz) && !isConcrete(clazz)
+
+  /**
+   * True for a concrete type that other implementations may extend - `sealed class Node` is both a
+   * value in its own right and a base its subclasses are read through, and so is any concrete class
+   * part way down such a hierarchy. A property declared at one of these has to dispatch rather than
+   * read straight through to the bean, or a subclass would be silently read back as the type it was
+   * declared as.
+   */
+  def needsSubtypeDispatch(clazz: Class[_]): Boolean =
+    isSupported(clazz) && isConcrete(clazz) && lookup.mayHaveSubtypes(clazz)
+
+  /**
+   * Checks that an implementation can be found again from the name it is written under, and
+   * describes the problem if it cannot.
+   *
+   * Serializing needs only the value's own class, so without this check an implementation that
+   * resolution cannot reach would be written happily and fail only when something tried to read it
+   * back - possibly in another process.
+   */
+  def unreachableReason(clazz: Class[_]): Option[String] = lookup.unreachableReason(clazz)
+
+  /**
+   * Resolves a `@type` name to an implementation of `baseClass`, or `None` if the name does not
+   * belong to that hierarchy.
+   */
+  def resolve(baseClass: Class[_], typeName: String): Option[Subtype] = {
+    if (!isPlainName(typeName)) None
+    else {
+      val key = SubtypeKey(baseClass, typeName)
+      val cache = _cache
+      Option(cache.get(key)) match {
+        case Some(subtype) => subtype
+        case _ =>
+          val subtype = lookup.findSubtype(baseClass, typeName)
+          Option(cache.putIfAbsent(key, subtype)).getOrElse(subtype)
+      }
+    }
+  }
 
   private var _lookupCacheFactory: LookupCacheFactory = DefaultLookupCacheFactory
   private var _cacheSize: Int = 1000
@@ -213,10 +226,13 @@ private[scala] object SealedPolymorphism {
     recreateCache()
   }
 
-  def clearCache(): Unit = _cache.clear()
+  def clearCache(): Unit = {
+    _cache.clear()
+    lookup.clearCache()
+  }
 
   private def recreateCache(): Unit = {
-    _cache.clear()
+    clearCache()
     _cache = _lookupCacheFactory.createLookupCache(16, _cacheSize)
   }
 }

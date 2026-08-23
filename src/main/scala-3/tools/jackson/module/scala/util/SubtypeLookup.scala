@@ -15,7 +15,10 @@ import scala.util.Try
  * the class names an implementation could have been compiled to, from where the root is declared,
  * and keeping only candidates that really are subtypes of the base.
  */
-private[scala] object SubtypeLookup {
+private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
+
+  import SealedPolymorphism._
+
 
   private val EnumClass = classOf[scala.reflect.Enum]
 
@@ -34,14 +37,14 @@ private[scala] object SubtypeLookup {
   def mayHaveSubtypes(clazz: Class[_]): Boolean = !Modifier.isFinal(clazz.getModifiers)
 
   def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
-    val loader = SealedPolymorphism.loaderFor(baseClass)
+    val loader = loaderFor(baseClass)
     // anchored on the root, so a property declared as an intermediate type still resolves the names
     // that were written for the hierarchy as a whole
-    candidateNames(SealedPolymorphism.rootOf(baseClass).getName, typeName).iterator
+    candidateNames(rootOf(baseClass).getName, typeName).iterator
       .flatMap(name => Try(Class.forName(name, false, loader)).toOption)
       // a concrete root names itself, so the base is only excluded when it cannot hold a value
-      .filter(candidate => baseClass.isAssignableFrom(candidate) && SealedPolymorphism.isConcrete(candidate))
-      .map(candidate => Subtype(candidate, SealedPolymorphism.moduleInstance(candidate)))
+      .filter(candidate => baseClass.isAssignableFrom(candidate) && isConcrete(candidate))
+      .map(candidate => Subtype(candidate, moduleInstance(candidate)))
       .nextOption()
   }
 
@@ -55,12 +58,12 @@ private[scala] object SubtypeLookup {
    * by another implementation declared closer to the root.
    */
   def unreachableReason(clazz: Class[_]): Option[String] = {
-    val root = SealedPolymorphism.rootOf(clazz)
-    val typeName = SealedPolymorphism.typeNameFor(clazz)
-    SealedPolymorphism.resolve(root, typeName) match {
+    val root = rootOf(clazz)
+    val typeName = typeNameFor(clazz)
+    polymorphism.resolve(root, typeName) match {
       case Some(subtype) if subtype.clazz == clazz => None
-      case Some(subtype) => Some(SealedPolymorphism.nameTakenMessage(clazz, typeName, subtype.clazz))
-      case None => Some(SealedPolymorphism.notFoundMessage(clazz, typeName, root))
+      case Some(subtype) => Some(nameTakenMessage(clazz, typeName, subtype.clazz))
+      case None => Some(notFoundMessage(clazz, typeName, root))
     }
   }
 
@@ -71,5 +74,8 @@ private[scala] object SubtypeLookup {
    */
   private def candidateNames(rootName: String, typeName: String): Seq[String] =
     // the object form is tried first - a case object's instances have the `$` class
-    SealedPolymorphism.prefixesFor(rootName).flatMap(prefix => Seq(prefix + typeName + "$", prefix + typeName))
+    prefixesFor(rootName).flatMap(prefix => Seq(prefix + typeName + "$", prefix + typeName))
+
+  /** Nothing is cached here - resolution is memoised on the SealedPolymorphism instance. */
+  def clearCache(): Unit = ()
 }

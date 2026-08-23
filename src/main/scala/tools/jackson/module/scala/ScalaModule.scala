@@ -29,6 +29,15 @@ object ScalaModule {
      */
     val scalaAnnotationIntrospectorModule: ScalaAnnotationIntrospectorModule =
       ScalaAnnotationIntrospectorModule.newStandaloneInstance()
+
+    /**
+     * This builder's own automatic polymorphic support, with caches and cache settings independent
+     * of every other builder and of the [[SealedPolymorphismModule]] object. Exposed so that it can
+     * be configured for this build.
+     *
+     * @since 3.3.0
+     */
+    val sealedPolymorphismModule: SealedPolymorphismModule = new SealedPolymorphismModule {}
     private var supportScala3Classes = true
     private var deserializeNullCollectionsAsEmpty = true
 
@@ -83,7 +92,8 @@ object ScalaModule {
       addModule(UntypedObjectDeserializerModule)
       addModule(EitherModule)
       addModule(SymbolModule)
-      addModule(SealedPolymorphismModule)
+      // this builder's own instance, so a built module keeps its own polymorphism state
+      addModule(sealedPolymorphismModule)
       BuiltinModules.addScalaVersionSpecificModules(this)
       this
     }

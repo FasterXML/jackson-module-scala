@@ -2,7 +2,9 @@ package tools.jackson.module.scala.poly
 
 import tools.jackson.core.`type`.TypeReference
 import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.scala.DefaultScalaModule
+import tools.jackson.module.scala.{DefaultScalaModule, ScalaModule, SealedPolymorphismModule}
+import tools.jackson.module.scala.deser.SealedPolymorphismDeserializerModule
+import tools.jackson.module.scala.ser.SealedPolymorphismSerializerModule
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -131,6 +133,25 @@ class SealedPolymorphismSpec extends AnyWordSpec with Matchers {
       val branch = mapper.readValue("""{"branch":{"id":4,"label":"u"}}""", classOf[Limb]).branch
       branch.getClass shouldEqual classOf[Branch]
       branch.label shouldEqual "u"
+    }
+    "give each module instance state of its own" in {
+      val first = new SealedPolymorphismModule {}
+      val second = new SealedPolymorphismModule {}
+      first.sealedPolymorphism should not be theSameInstanceAs(second.sealedPolymorphism)
+      SealedPolymorphismModule.sealedPolymorphism should not be theSameInstanceAs(first.sealedPolymorphism)
+    }
+    "share one instance between the two halves of a module" in {
+      val module = new SealedPolymorphismModule {}
+      (module: SealedPolymorphismSerializerModule).sealedPolymorphism should be theSameInstanceAs
+        (module: SealedPolymorphismDeserializerModule).sealedPolymorphism
+    }
+    "tie the state of a built ScalaModule to that build" in {
+      val builder = ScalaModule.builder().addAllBuiltinModules()
+      builder.sealedPolymorphismModule.sealedPolymorphism should not be
+        theSameInstanceAs(SealedPolymorphismModule.sealedPolymorphism)
+      val built = JsonMapper.builder().addModule(builder.build()).build()
+      val value = Owner("ann", Dog("rex"))
+      built.readValue(built.writeValueAsString(value), classOf[Owner]) shouldEqual value
     }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""

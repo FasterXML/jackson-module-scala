@@ -18,12 +18,15 @@ import scala.util.Try
  * trait, so its absence is reported the first time a marked type is met rather than at startup, and
  * never for an application that does not use the feature.
  */
-private[scala] object SubtypeLookup {
+private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
+
+  import SealedPolymorphism._
+
 
   private val ScalaReflectClassName = "scala.reflect.runtime.package$"
 
   private lazy val scalaReflectAvailable: Boolean =
-    Try(Class.forName(ScalaReflectClassName, false, SealedPolymorphism.loaderFor(MarkerLoaderAnchor))).isSuccess
+    Try(Class.forName(ScalaReflectClassName, false, loaderFor(MarkerLoaderAnchor))).isSuccess
 
   private val MarkerLoaderAnchor = classOf[SealedPolymorphismSupport]
 
@@ -45,11 +48,11 @@ private[scala] object SubtypeLookup {
    * through to its bean rather than paying to be dispatched.
    */
   def mayHaveSubtypes(clazz: Class[_]): Boolean =
-    tableFor(SealedPolymorphism.rootOf(clazz)).byName.values
+    tableFor(rootOf(clazz)).byName.values
       .exists(subtype => subtype.clazz != clazz && clazz.isAssignableFrom(subtype.clazz))
 
   def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
-    tableFor(SealedPolymorphism.rootOf(baseClass)).byName.get(typeName)
+    tableFor(rootOf(baseClass)).byName.get(typeName)
       .filter(subtype => baseClass.isAssignableFrom(subtype.clazz))
   }
 
@@ -59,19 +62,19 @@ private[scala] object SubtypeLookup {
    * be reported the first time the hierarchy is used, instead of one implementation at a time.
    */
   def unreachableReason(clazz: Class[_]): Option[String] = {
-    val root = SealedPolymorphism.rootOf(clazz)
+    val root = rootOf(clazz)
     val table = tableFor(root)
-    val typeName = SealedPolymorphism.typeNameFor(clazz)
+    val typeName = typeNameFor(clazz)
     if (!table.sealedRoot) {
       Some(s"${root.getName} is not sealed. ${classOf[SealedPolymorphismSupport].getSimpleName} needs a sealed " +
         "hierarchy, so that every implementation can be found again when reading.")
     } else table.duplicates.get(typeName) match {
       case Some(clashing) =>
-        Some(SealedPolymorphism.nameTakenMessage(clazz, typeName, clashing.find(_ != clazz).getOrElse(clazz)))
+        Some(nameTakenMessage(clazz, typeName, clashing.find(_ != clazz).getOrElse(clazz)))
       case None => table.byName.get(typeName) match {
         case Some(subtype) if subtype.clazz == clazz => None
-        case Some(subtype) => Some(SealedPolymorphism.nameTakenMessage(clazz, typeName, subtype.clazz))
-        case None => Some(SealedPolymorphism.notFoundMessage(clazz, typeName, root))
+        case Some(subtype) => Some(nameTakenMessage(clazz, typeName, subtype.clazz))
+        case None => Some(notFoundMessage(clazz, typeName, root))
       }
     }
   }
@@ -91,7 +94,7 @@ private[scala] object SubtypeLookup {
 
   private def buildTable(root: Class[_]): Table = {
     import scala.reflect.runtime.{universe => ru}
-    val mirror = ru.runtimeMirror(SealedPolymorphism.loaderFor(root))
+    val mirror = ru.runtimeMirror(loaderFor(root))
     val rootSymbol = mirror.classSymbol(root)
     if (!rootSymbol.isSealed) Table(sealedRoot = false, Map.empty, Map.empty)
     else {
@@ -110,9 +113,9 @@ private[scala] object SubtypeLookup {
       val rootItself: Seq[ru.ClassSymbol] =
         if (rootSymbol.isTrait || rootSymbol.isAbstract) Nil else Seq(rootSymbol)
       val classes: Seq[Class[_]] = (rootItself ++ concreteBelow(rootSymbol)).flatMap(runtimeClassOf).distinct
-      val grouped: Map[String, Seq[Class[_]]] = classes.groupBy(clazz => SealedPolymorphism.typeNameFor(clazz))
+      val grouped: Map[String, Seq[Class[_]]] = classes.groupBy(clazz => typeNameFor(clazz))
       val unique: Map[String, Subtype] = grouped.collect {
-        case (name, Seq(only)) => name -> Subtype(only, SealedPolymorphism.moduleInstance(only))
+        case (name, Seq(only)) => name -> Subtype(only, moduleInstance(only))
       }
       Table(sealedRoot = true, byName = unique, duplicates = grouped.filter(_._2.size > 1))
     }
@@ -122,5 +125,5 @@ private[scala] object SubtypeLookup {
   @volatile private var _cache: LookupCache[Class[_], Table] =
     DefaultLookupCacheFactory.createLookupCache(16, 1000)
 
-  private[scala] def clearCache(): Unit = _cache.clear()
+  def clearCache(): Unit = _cache.clear()
 }
