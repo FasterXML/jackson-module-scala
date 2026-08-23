@@ -95,6 +95,27 @@ class SimplePolymorphismSpec extends AnyWordSpec with Matchers {
       roundTrip(DupHolder(Right.Same("x")), classOf[DupHolder]) shouldEqual DupHolder(Right.Same("x"))
       roundTrip(DupHolder(Left.Only), classOf[DupHolder]).d should be theSameInstanceAs Left.Only
     }
+    // serializing only needs the value's own class, so an implementation resolution cannot reach
+    // would otherwise be written happily and fail only when something read it back
+    "refuse to write an implementation declared outside the base's package" in {
+      val message = String.valueOf(rootCause(intercept[Exception] {
+        mapper.writeValueAsString(UnsealedHolder(other.Faraway(1)))
+      }).getMessage)
+      message should include("Faraway")
+      message should include("no subtype of")
+      message should include("sealed")
+    }
+    "still write an implementation of that hierarchy declared alongside the base" in {
+      roundTrip(UnsealedHolder(Nearby(1)), classOf[UnsealedHolder]) shouldEqual UnsealedHolder(Nearby(1))
+    }
+    "refuse to write an implementation whose derived name is already taken" in {
+      roundTrip(ShadowHolder(Shadow.Entry(1)), classOf[ShadowHolder]) shouldEqual ShadowHolder(Shadow.Entry(1))
+      val message = String.valueOf(rootCause(intercept[Exception] {
+        mapper.writeValueAsString(ShadowHolder(Entry("x")))
+      }).getMessage)
+      message should include("already belongs to")
+      message should include("Shadow$Entry")
+    }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""
     }

@@ -16,6 +16,8 @@ private class SimplePolymorphismSerializerModifier(config: ScalaModule.Config) e
     }
     // base types are never written directly - only the implementation dispatched to at runtime
     if (SimplePolymorphism.isSupported(rawClass) && !SimplePolymorphism.isBaseType(rawClass)) {
+      // refuse to write a value that could not be read back
+      SimplePolymorphism.unreachableReason(rawClass).foreach(reason => throw new IllegalArgumentException(reason))
       new TypeTaggedSerializer(SimplePolymorphism.TypePropertyName, SimplePolymorphism.typeNameFor(rawClass),
         serializer.asInstanceOf[ValueSerializer[AnyRef]])
     } else serializer

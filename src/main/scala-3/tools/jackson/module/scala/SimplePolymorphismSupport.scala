@@ -33,6 +33,13 @@ package tools.jackson.module.scala
  * same file, so that is exactly the set of legal implementations: a `@type` value cannot name
  * anything else on the classpath.
  *
+ * The base is therefore expected to be `sealed`. Scala does not record that on the JVM, so it
+ * cannot be checked directly; instead every implementation is checked, as its serializer is built,
+ * to be findable again under the name it would be written with. One declared outside the base's
+ * package - which `sealed` would have prevented - or one whose derived name is already taken by an
+ * implementation declared closer to the base is rejected there and then, rather than written out as
+ * JSON that could never be read back.
+ *
  * @since 3.3.0
  */
 trait SimplePolymorphismSupport

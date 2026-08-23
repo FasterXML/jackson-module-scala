@@ -57,6 +57,32 @@ private[scala] object SimplePolymorphism {
       s"handling for the whole hierarchy, or remove it to use $TypePropertyName."
 
   /**
+   * Checks that an implementation can be found again from the name it is written under, and
+   * describes the problem if it cannot.
+   *
+   * Serializing needs only the value's own class, so without this check an implementation that
+   * resolution cannot reach would be written happily and fail only when something tried to read it
+   * back - possibly in another process. Two things get caught: an implementation declared outside
+   * the root's package, which `sealed` would have prevented, and one whose derived name is already
+   * taken by another implementation declared closer to the root.
+   */
+  def unreachableReason(clazz: Class[_]): Option[String] = {
+    val root = rootOf(clazz)
+    val typeName = typeNameFor(clazz)
+    resolve(root, typeName) match {
+      case Some(subtype) if subtype.clazz == clazz => None
+      case Some(subtype) => Some(
+        s"${clazz.getName} is written as $TypePropertyName '$typeName', but that name already belongs to " +
+          s"${subtype.clazz.getName}, which is declared closer to ${root.getName}. Rename one of them, or move " +
+          s"${clazz.getName} so that the two derive different names.")
+      case None => Some(
+        s"${clazz.getName} is written as $TypePropertyName '$typeName', but no subtype of ${root.getName} is " +
+          s"declared under that name alongside it. An implementation has to be declared in the same file as " +
+          s"${root.getName} - which is what `sealed` guarantees - so that it can be found again when reading.")
+    }
+  }
+
+  /**
    * The top of the marked hierarchy `clazz` belongs to. The opt-out is read from the root rather
    * than from `clazz` itself so that both halves of the module agree: an annotation on one
    * implementation governs that implementation's own subtypes, and must not silently switch off
