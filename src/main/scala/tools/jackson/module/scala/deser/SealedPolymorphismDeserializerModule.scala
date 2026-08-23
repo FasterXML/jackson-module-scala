@@ -9,17 +9,9 @@ import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.util.SealedPolymorphism
 
-/**
- * Reads a value of a hierarchy marked with [[tools.jackson.module.scala.SealedPolymorphismSupport]]
- * by dispatching on its `@type` property.
- */
-private case class SealedPolymorphicDeserializer(baseClass: Class[_]) extends StdDeserializer[AnyRef](baseClass) {
-
-  override def deserialize(p: JsonParser, ctxt: DeserializationContext): AnyRef = {
-    if (p.currentToken() != JsonToken.START_OBJECT) {
-      throw new IllegalArgumentException(
-        s"Expected a JSON object with a ${SealedPolymorphism.TypePropertyName} property to create ${baseClass.getName}")
-    }
+/** Buffers a tagged object, pulling the `@type` property out of the tokens handed on. */
+private object TaggedObject {
+  def split(p: JsonParser, ctxt: DeserializationContext): (String, JsonParser) = {
     val buffer = ctxt.bufferForInputBuffering(p)
     buffer.writeStartObject()
     var typeName: String = None.orNull
@@ -34,15 +26,62 @@ private case class SealedPolymorphicDeserializer(baseClass: Class[_]) extends St
       }
     }
     buffer.writeEndObject()
-    val subtype = Option(typeName).flatMap(SealedPolymorphism.resolve(baseClass, _)).getOrElse(failed(typeName))
-    subtype.singleton match {
-      case Some(instance) => instance
-      case None => ctxt.readValue(buffer.asParserOnFirstToken(ctxt), subtype.clazz.asInstanceOf[Class[AnyRef]])
-    }
+    (typeName, buffer.asParserOnFirstToken(ctxt))
   }
 
-  private def failed(typeName: String): Nothing =
+  def failed(baseClass: Class[_], typeName: String): Nothing =
     throw new IllegalArgumentException(s"Failed to create ${baseClass.getName} instance for $typeName")
+}
+
+/**
+ * Reads a value of a hierarchy marked with [[tools.jackson.module.scala.SealedPolymorphismSupport]]
+ * by dispatching on its `@type` property. Bound to a trait or abstract class, which never holds a
+ * value of its own.
+ */
+private case class SealedPolymorphicDeserializer(baseClass: Class[_]) extends StdDeserializer[AnyRef](baseClass) {
+
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): AnyRef = {
+    if (p.currentToken() != JsonToken.START_OBJECT) {
+      throw new IllegalArgumentException(
+        s"Expected a JSON object with a ${SealedPolymorphism.TypePropertyName} property to create ${baseClass.getName}")
+    }
+    val (typeName, buffered) = TaggedObject.split(p, ctxt)
+    val subtype = Option(typeName).flatMap(SealedPolymorphism.resolve(baseClass, _))
+      .getOrElse(TaggedObject.failed(baseClass, typeName))
+    subtype.singleton match {
+      case Some(instance) => instance
+      case None => ctxt.readValue(buffered, subtype.clazz.asInstanceOf[Class[AnyRef]])
+    }
+  }
+}
+
+/**
+ * Reads a value of a hierarchy whose root is a concrete class. The root is both a value in its own
+ * right and a base its subclasses are read through, so this wraps the root's own bean deserializer:
+ * a `@type` naming the root reads through to it, and anything else is dispatched. Wrapping rather
+ * than replacing is what makes reading the root itself possible without recursing.
+ */
+private class ConcreteRootDeserializer(rootClass: Class[_], delegate: ValueDeserializer[AnyRef])
+  extends ValueDeserializer[AnyRef] {
+
+  override def resolve(ctxt: DeserializationContext): Unit = delegate.resolve(ctxt)
+
+  override def createContextual(ctxt: DeserializationContext, property: BeanProperty): ValueDeserializer[_] = {
+    val contextual = delegate.createContextual(ctxt, property)
+    if (contextual eq delegate) this
+    else new ConcreteRootDeserializer(rootClass, contextual.asInstanceOf[ValueDeserializer[AnyRef]])
+  }
+
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): AnyRef = {
+    if (p.currentToken() != JsonToken.START_OBJECT) delegate.deserialize(p, ctxt)
+    else {
+      val (typeName, buffered) = TaggedObject.split(p, ctxt)
+      val subtype = Option(typeName).flatMap(SealedPolymorphism.resolve(rootClass, _))
+        .getOrElse(TaggedObject.failed(rootClass, typeName))
+      if (subtype.clazz == rootClass) delegate.deserialize(buffered, ctxt)
+      else subtype.singleton.getOrElse(ctxt.readValue(buffered, subtype.clazz.asInstanceOf[Class[AnyRef]]))
+    }
+  }
 }
 
 private class SealedPolymorphismDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
@@ -70,6 +109,14 @@ private class SealedPolymorphismDeserializerModifier(config: ScalaModule.Config)
       builder.addIgnorable(SealedPolymorphism.TypePropertyName)
     }
     builder
+  }
+
+  override def modifyDeserializer(config: DeserializationConfig, beanDesc: BeanDescription.Supplier,
+                                  deserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
+    val rawClass = beanDesc.getBeanClass
+    if (SealedPolymorphism.isConcreteRoot(rawClass)) {
+      new ConcreteRootDeserializer(rawClass, deserializer.asInstanceOf[ValueDeserializer[AnyRef]])
+    } else deserializer
   }
 }
 

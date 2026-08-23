@@ -102,10 +102,22 @@ private[scala] object SealedPolymorphism {
       .find(parent => parent != MarkerClass && MarkerClass.isAssignableFrom(parent))
 
   /**
-   * True for a type that is dispatched on rather than instantiated - the base of the hierarchy.
+   * True for a type that can only be dispatched on, never instantiated - a trait or abstract class.
    */
   def isBaseType(clazz: Class[_]): Boolean =
-    isSupported(clazz) && (clazz.isInterface || Modifier.isAbstract(clazz.getModifiers))
+    isSupported(clazz) && !isConcrete(clazz)
+
+  /** True for a type that can hold a value of its own, so can carry a name of its own. */
+  def isConcrete(clazz: Class[_]): Boolean =
+    !clazz.isInterface && !Modifier.isAbstract(clazz.getModifiers)
+
+  /**
+   * True for a concrete type that is also the top of its hierarchy - `sealed class Node` is both a
+   * value in its own right and a base its subclasses are read through, so a property declared at
+   * that type has to dispatch rather than read straight through to the bean.
+   */
+  def isConcreteRoot(clazz: Class[_]): Boolean =
+    isSupported(clazz) && isConcrete(clazz) && rootOf(clazz) == clazz
 
   /**
    * The name written to `@type`: the implementation's class name with the longest prefix shared

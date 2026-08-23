@@ -67,6 +67,12 @@ object SecondGroup { case class Same(v: String) extends Dup }
 
 case class DupHolder(d: Dup)
 
+// a concrete sealed class - a value in its own right, and a base its subclasses are read through
+sealed class Node(val id: Int) extends SealedPolymorphismSupport
+class Branch(id: Int, val label: String) extends Node(id)
+
+case class Tree(node: Node)
+
 // a hierarchy that is not marked - it must be untouched
 sealed trait Plain
 case class PlainDog(name: String) extends Plain

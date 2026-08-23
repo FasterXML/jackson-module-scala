@@ -102,6 +102,23 @@ class SealedPolymorphismSpec extends AnyWordSpec with Matchers {
       }).getMessage)
       message should include("already belongs to")
     }
+    // `sealed class Node` is instantiable, so the root carries a name of its own and a property
+    // declared at that root still has to dispatch
+    "tag a concrete root as well as its subclasses" in {
+      mapper.writeValueAsString(Tree(new Node(1))) shouldEqual """{"node":{"@type":"Node","id":1}}"""
+      mapper.writeValueAsString(Tree(new Branch(2, "b"))) shouldEqual """{"node":{"@type":"Branch","id":2,"label":"b"}}"""
+    }
+    "read a concrete root back as itself" in {
+      val node = mapper.readValue("""{"node":{"@type":"Node","id":1}}""", classOf[Tree]).node
+      node.getClass shouldEqual classOf[Node]
+      node.id shouldEqual 1
+    }
+    "read a subclass of a concrete root without losing it" in {
+      val node = mapper.readValue(mapper.writeValueAsString(Tree(new Branch(2, "b"))), classOf[Tree]).node
+      node shouldBe a[Branch]
+      node.id shouldEqual 2
+      node.asInstanceOf[Branch].label shouldEqual "b"
+    }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""
     }

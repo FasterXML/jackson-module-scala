@@ -30,7 +30,8 @@ private[scala] object SubtypeLookup {
     // that were written for the hierarchy as a whole
     candidateNames(SealedPolymorphism.rootOf(baseClass).getName, typeName).iterator
       .flatMap(name => Try(Class.forName(name, false, loader)).toOption)
-      .filter(candidate => baseClass.isAssignableFrom(candidate) && candidate != baseClass)
+      // a concrete root names itself, so the base is only excluded when it cannot hold a value
+      .filter(candidate => baseClass.isAssignableFrom(candidate) && SealedPolymorphism.isConcrete(candidate))
       .map(candidate => Subtype(candidate, SealedPolymorphism.moduleInstance(candidate)))
       .nextOption()
   }

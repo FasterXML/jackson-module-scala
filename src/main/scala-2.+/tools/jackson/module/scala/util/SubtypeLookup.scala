@@ -42,7 +42,7 @@ private[scala] object SubtypeLookup {
 
   def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
     tableFor(SealedPolymorphism.rootOf(baseClass)).byName.get(typeName)
-      .filter(subtype => baseClass.isAssignableFrom(subtype.clazz) && subtype.clazz != baseClass)
+      .filter(subtype => baseClass.isAssignableFrom(subtype.clazz))
   }
 
   /**
@@ -98,7 +98,10 @@ private[scala] object SubtypeLookup {
       // spelled out rather than inferred - 2.12 cannot infer through the existential in Class[_]
       def runtimeClassOf(symbol: ru.ClassSymbol): Seq[Class[_]] =
         Try(mirror.runtimeClass(symbol)).toOption.toSeq
-      val classes: Seq[Class[_]] = concreteBelow(rootSymbol).flatMap(runtimeClassOf).distinct
+      // a concrete root is a value in its own right, so it needs a name like any implementation
+      val rootItself: Seq[ru.ClassSymbol] =
+        if (rootSymbol.isTrait || rootSymbol.isAbstract) Nil else Seq(rootSymbol)
+      val classes: Seq[Class[_]] = (rootItself ++ concreteBelow(rootSymbol)).flatMap(runtimeClassOf).distinct
       val grouped: Map[String, Seq[Class[_]]] = classes.groupBy(clazz => SealedPolymorphism.typeNameFor(clazz))
       val unique: Map[String, Subtype] = grouped.collect {
         case (name, Seq(only)) => name -> Subtype(only, SealedPolymorphism.moduleInstance(only))
