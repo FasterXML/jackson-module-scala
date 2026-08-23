@@ -82,6 +82,9 @@ private class EnumSerializerModifier(config: ScalaModule.Config, enumInfo: Scala
                                 serializer: ValueSerializer[_]): ValueSerializer[_] = {
     val rawClass = beanDesc.getBeanClass
     enumInfo.taggedSumInfo(rawClass).flatMap(_.parameterizedCaseFor(rawClass)) match {
+      // registering the module twice would otherwise wrap a wrapper, and the inner one would write
+      // a whole object where the outer expected only properties
+      case Some(_) if serializer.isInstanceOf[Scala3EnumCaseSerializer] => serializer
       case Some(enumCase) => new Scala3EnumCaseSerializer(enumCase.name, serializer.asInstanceOf[ValueSerializer[AnyRef]])
       case None => serializer
     }

@@ -41,6 +41,19 @@ class EnumModuleStateSpec extends AnyWordSpec with Matchers {
       val mapper = JsonMapper.builder().addModule(builder.build()).build()
       mapper.writeValueAsString(Result(ResultEnum.Ok("my-result"))) should not include "@type"
     }
+    "not tag twice when the module is registered again alongside DefaultScalaModule" in {
+      val mapper = JsonMapper.builder().addModule(DefaultScalaModule).addModule(new EnumModule {}).build()
+      val instance = Result(ResultEnum.Ok("my-result"))
+      mapper.writeValueAsString(instance) shouldEqual """{"result":{"@type":"Ok","value":"my-result"}}"""
+      mapper.readValue(mapper.writeValueAsString(instance), classOf[Result]) shouldEqual instance
+    }
+    "register a builtin module only once per builder" in {
+      val built = ScalaModule.builder().addAllBuiltinModules().addAllBuiltinModules().build()
+      val mapper = JsonMapper.builder().addModule(built).build()
+      val instance = Result(ResultEnum.Ok("my-result"))
+      mapper.writeValueAsString(instance) shouldEqual """{"result":{"@type":"Ok","value":"my-result"}}"""
+      mapper.readValue(mapper.writeValueAsString(instance), classOf[Result]) shouldEqual instance
+    }
     "rebuild a case table after the instance cache is cleared" in {
       val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
       val instance = Result(ResultEnum.Error(123))

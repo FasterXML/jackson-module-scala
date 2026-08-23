@@ -178,5 +178,14 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.UnresolvedIteratorSerializer.withResolved"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.IteratorSerializer.withResolved"),
   ProblemFilters.exclude[MissingClassProblem]("tools.jackson.module.scala.ser.EnumSerializerShared"),
-  ProblemFilters.exclude[MissingClassProblem]("tools.jackson.module.scala.ser.EnumSerializerShared$")
+  ProblemFilters.exclude[MissingClassProblem]("tools.jackson.module.scala.ser.EnumSerializerShared$"),
+  // Scala 3 enum support keeps its cache on the module instance rather than in a singleton. Holding
+  // that in a trait means a val, which Scala compiles to an accessor and a setter the implementing
+  // class has to provide, so anyone extending these traits has to recompile.
+  ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.EnumModule.scala3EnumInfo"),
+  ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.EnumModule.tools$jackson$module$scala$Scala3EnumSupportState$_setter_$scala3EnumInfo_="),
+  ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.deser.EnumDeserializerModule.scala3EnumInfo"),
+  ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.deser.EnumDeserializerModule.tools$jackson$module$scala$Scala3EnumSupportState$_setter_$scala3EnumInfo_="),
+  ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.ser.EnumSerializerModule.scala3EnumInfo"),
+  ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.ser.EnumSerializerModule.tools$jackson$module$scala$Scala3EnumSupportState$_setter_$scala3EnumInfo_=")
 )

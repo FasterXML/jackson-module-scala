@@ -37,7 +37,8 @@ object ScalaModule {
     override def shouldDeserializeNullCollectionsAsEmpty(): Boolean = deserializeNullCollectionsAsEmpty
 
     def addModule(module: JacksonModule): Builder = {
-      modules.+=(module)
+      // a module registered twice would contribute its serializers and deserializers twice over
+      if (!hasModule(module)) modules.+=(module)
       this
     }
 
