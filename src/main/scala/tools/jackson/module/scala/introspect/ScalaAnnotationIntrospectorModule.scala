@@ -271,7 +271,8 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
     val sai = new ScalaAnnotationIntrospectorInstance(this, config)
-    builder += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(config)) }
+    // this instance's state, not the module object's
+    builder += { _.appendAnnotationIntrospector(new JavaAnnotationIntrospectorInstance(config, this)) }
     builder += { _.appendAnnotationIntrospector(sai) }
     builder += { _.addValueInstantiators(sai) }
     builder.build()

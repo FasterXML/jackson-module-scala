@@ -19,6 +19,16 @@ object ScalaModule {
 
   class Builder extends Config {
     private val modules = scala.collection.mutable.Buffer[JacksonModule]()
+
+    /**
+     * This builder's own annotation introspection, with caches, cache settings and referenced value
+     * type registrations independent of every other builder and of the
+     * [[tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule]] object.
+     *
+     * @since 3.3.0
+     */
+    val scalaAnnotationIntrospectorModule: ScalaAnnotationIntrospectorModule =
+      ScalaAnnotationIntrospectorModule.newStandaloneInstance()
     private var supportScala3Classes = true
     private var deserializeNullCollectionsAsEmpty = true
 
@@ -68,7 +78,7 @@ object ScalaModule {
       addModule(MapModule)
       addModule(SetModule)
       addModule(ScalaNumberDeserializersModule)
-      addModule(ScalaAnnotationIntrospectorModule)
+      addModule(scalaAnnotationIntrospectorModule)
       addModule(ScalaObjectDeserializerModule)
       addModule(UntypedObjectDeserializerModule)
       addModule(EitherModule)
