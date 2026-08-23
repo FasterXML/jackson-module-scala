@@ -5,7 +5,7 @@ import tools.jackson.core.{JsonParser, Version}
 import tools.jackson.databind.DatabindException
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind.`type`.TypeModifier
-import tools.jackson.databind.deser.{Deserializers, KeyDeserializers}
+import tools.jackson.databind.deser.{Deserializers, KeyDeserializers, ValueDeserializerModifier}
 import tools.jackson.databind.ser.{Serializers, ValueSerializerModifier}
 
 import java.util.Properties
@@ -51,6 +51,9 @@ object JacksonModule {
     }
     def +=(beanSerMod: ValueSerializerModifier): this.type = this += { context =>
       context.addSerializerModifier(beanSerMod)
+    }
+    def +=(beanDeserMod: ValueDeserializerModifier): this.type = this += { context =>
+      context.addDeserializerModifier(beanDeserMod)
     }
     def build(): Seq[SetupContext => Unit] = initializers.result()
   }

@@ -5,7 +5,6 @@ import tools.jackson.core.JsonGenerator
 import tools.jackson.databind.ser.{Serializers, ValueSerializerModifier}
 import tools.jackson.databind._
 import tools.jackson.databind.JacksonModule.SetupContext
-import tools.jackson.databind.util.NameTransformer
 import tools.jackson.module.scala.{JacksonModule, ScalaModule, Scala3EnumSupportState}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.deser.EnumDeserializerShared
@@ -27,7 +26,7 @@ private object EnumKeySerializer extends ValueSerializer[Enum] {
 /**
  * Serializer bound to the declared type of a Scala 3 enum that has parameterized cases. Simple
  * cases are written as their name; parameterized cases are delegated to the serializer of the
- * generated case class, which [[Scala3EnumCaseSerializer]] has tagged with a `type` property.
+ * generated case class, which [[TypeTaggedSerializer]] has tagged with a `type` property.
  */
 private case class Scala3EnumSumSerializer(info: Scala3EnumInfo.Info) extends ValueSerializer[Enum] {
   override def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
@@ -36,31 +35,6 @@ private case class Scala3EnumSumSerializer(info: Scala3EnumInfo.Info) extends Va
     } else {
       jgen.writeString(value.toString)
     }
-  }
-}
-
-/**
- * Wraps the bean serializer of a parameterized Scala 3 enum case so that the case name is written
- * as a `type` property, making the value round-trippable.
- */
-private class Scala3EnumCaseSerializer(typeName: String, delegate: ValueSerializer[AnyRef])
-  extends ValueSerializer[AnyRef] {
-
-  private lazy val unwrapped = delegate.unwrappingSerializer(NameTransformer.NOP)
-
-  override def resolve(serializationContext: SerializationContext): Unit = delegate.resolve(serializationContext)
-
-  override def createContextual(serializationContext: SerializationContext, property: BeanProperty): ValueSerializer[_] = {
-    val contextual = delegate.createContextual(serializationContext, property)
-    if (contextual eq delegate) this
-    else new Scala3EnumCaseSerializer(typeName, contextual.asInstanceOf[ValueSerializer[AnyRef]])
-  }
-
-  override def serialize(value: AnyRef, jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
-    jgen.writeStartObject(value)
-    jgen.writeStringProperty(Scala3EnumInfo.TypePropertyName, typeName)
-    unwrapped.serialize(value, jgen, serializationContext)
-    jgen.writeEndObject()
   }
 }
 
@@ -84,8 +58,9 @@ private class EnumSerializerModifier(config: ScalaModule.Config, enumInfo: Scala
     enumInfo.taggedSumInfo(rawClass).flatMap(_.parameterizedCaseFor(rawClass)) match {
       // registering the module twice would otherwise wrap a wrapper, and the inner one would write
       // a whole object where the outer expected only properties
-      case Some(_) if serializer.isInstanceOf[Scala3EnumCaseSerializer] => serializer
-      case Some(enumCase) => new Scala3EnumCaseSerializer(enumCase.name, serializer.asInstanceOf[ValueSerializer[AnyRef]])
+      case Some(_) if serializer.isInstanceOf[TypeTaggedSerializer] => serializer
+      case Some(enumCase) =>
+        new TypeTaggedSerializer(Scala3EnumInfo.TypePropertyName, enumCase.name, serializer.asInstanceOf[ValueSerializer[AnyRef]])
       case None => serializer
     }
   }
