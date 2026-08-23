@@ -2,6 +2,7 @@ package tools.jackson.module.scala.poly
 
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.{DefaultScalaModule, SealedPolymorphismSupport}
+import tools.jackson.module.scala.poly.mixin.VehicleMixin
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -10,6 +11,11 @@ import org.scalatest.wordspec.AnyWordSpec
  * than by extending it. A mix-in does not change the type on the JVM, so the marker is not
  * inherited by the implementations - the module has to read the registration from the mapper's
  * config instead.
+ *
+ * The mix-in lives in another package, as a third party's would. It cannot extend `Vehicle`: that is
+ * "illegal inheritance from sealed trait Vehicle" outside the file the hierarchy is declared in,
+ * which is exactly the situation this exists for. Jackson does not require a mix-in to be a subtype
+ * of what it is mixed into.
  */
 class MixinSpec extends AnyWordSpec with Matchers {
 
