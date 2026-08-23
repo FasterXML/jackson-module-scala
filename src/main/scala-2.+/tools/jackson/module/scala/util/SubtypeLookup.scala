@@ -40,6 +40,14 @@ private[scala] object SubtypeLookup {
     }
   }
 
+  /**
+   * Answered from the enumerated hierarchy, so a concrete class nothing extends reads straight
+   * through to its bean rather than paying to be dispatched.
+   */
+  def mayHaveSubtypes(clazz: Class[_]): Boolean =
+    tableFor(SealedPolymorphism.rootOf(clazz)).byName.values
+      .exists(subtype => subtype.clazz != clazz && clazz.isAssignableFrom(subtype.clazz))
+
   def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
     tableFor(SealedPolymorphism.rootOf(baseClass)).byName.get(typeName)
       .filter(subtype => baseClass.isAssignableFrom(subtype.clazz))

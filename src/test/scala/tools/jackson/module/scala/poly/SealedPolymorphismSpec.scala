@@ -119,6 +119,19 @@ class SealedPolymorphismSpec extends AnyWordSpec with Matchers {
       node.id shouldEqual 2
       node.asInstanceOf[Branch].label shouldEqual "b"
     }
+    "dispatch at a concrete type part way down the hierarchy" in {
+      val json = mapper.writeValueAsString(Limb(new Twig(3, "t", 9)))
+      json shouldEqual """{"branch":{"@type":"Twig","id":3,"label":"t","length":9}}"""
+      val branch = mapper.readValue(json, classOf[Limb]).branch
+      branch shouldBe a[Twig]
+      branch.asInstanceOf[Twig].length shouldEqual 9
+      branch.label shouldEqual "t"
+    }
+    "read an untagged object at a concrete declared type" in {
+      val branch = mapper.readValue("""{"branch":{"id":4,"label":"u"}}""", classOf[Limb]).branch
+      branch.getClass shouldEqual classOf[Branch]
+      branch.label shouldEqual "u"
+    }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""
     }

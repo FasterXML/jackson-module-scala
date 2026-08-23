@@ -69,9 +69,13 @@ case class DupHolder(d: Dup)
 
 // a concrete sealed class - a value in its own right, and a base its subclasses are read through
 sealed class Node(val id: Int) extends SealedPolymorphismSupport
-class Branch(id: Int, val label: String) extends Node(id)
+// sealed at every level, so the hierarchy stays closed all the way down
+sealed class Branch(id: Int, val label: String) extends Node(id)
+// concrete, and part way down the hierarchy rather than at the top
+class Twig(id: Int, label: String, val length: Int) extends Branch(id, label)
 
 case class Tree(node: Node)
+case class Limb(branch: Branch)
 
 // a hierarchy that is not marked - it must be untouched
 sealed trait Plain

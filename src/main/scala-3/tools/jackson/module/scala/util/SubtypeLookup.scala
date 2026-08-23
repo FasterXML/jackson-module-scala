@@ -2,6 +2,7 @@ package tools.jackson.module.scala.util
 
 import tools.jackson.module.scala.util.SealedPolymorphism.Subtype
 
+import java.lang.reflect.Modifier
 import scala.util.Try
 
 /**
@@ -23,6 +24,14 @@ private[scala] object SubtypeLookup {
 
   /** Nothing extra is needed to look up a Scala 3 hierarchy. */
   def checkAvailable(clazz: Class[_]): Unit = ()
+
+  /**
+   * Scala 3 cannot enumerate a hierarchy, so a subclass can only be ruled out where the JVM proves
+   * it: a final class, which covers the module class of every `case object`. A `case class` is not
+   * final in bytecode and can be extended by a plain class, so it cannot be ruled out here - Scala 2
+   * answers the same question exactly, from the hierarchy itself.
+   */
+  def mayHaveSubtypes(clazz: Class[_]): Boolean = !Modifier.isFinal(clazz.getModifiers)
 
   def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
     val loader = SealedPolymorphism.loaderFor(baseClass)

@@ -112,12 +112,14 @@ private[scala] object SealedPolymorphism {
     !clazz.isInterface && !Modifier.isAbstract(clazz.getModifiers)
 
   /**
-   * True for a concrete type that is also the top of its hierarchy - `sealed class Node` is both a
-   * value in its own right and a base its subclasses are read through, so a property declared at
-   * that type has to dispatch rather than read straight through to the bean.
+   * True for a concrete type that other implementations may extend - `sealed class Node` is both a
+   * value in its own right and a base its subclasses are read through, and so is any concrete class
+   * part way down such a hierarchy. A property declared at one of these has to dispatch rather than
+   * read straight through to the bean, or a subclass would be silently read back as the type it was
+   * declared as.
    */
-  def isConcreteRoot(clazz: Class[_]): Boolean =
-    isSupported(clazz) && isConcrete(clazz) && rootOf(clazz) == clazz
+  def needsSubtypeDispatch(clazz: Class[_]): Boolean =
+    isSupported(clazz) && isConcrete(clazz) && SubtypeLookup.mayHaveSubtypes(clazz)
 
   /**
    * The name written to `@type`: the implementation's class name with the longest prefix shared
