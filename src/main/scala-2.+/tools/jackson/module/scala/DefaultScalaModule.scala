@@ -21,6 +21,7 @@ class DefaultScalaModule extends JacksonModule {
   override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     IteratorModule.getInitializers(config) ++
       EnumerationModule.getInitializers(config) ++
+      SealedPolymorphismModule.getInitializers(config) ++
       OptionModule.getInitializers(config) ++
       SeqModule.getInitializers(config) ++
       TupleModule.getInitializers(config) ++
