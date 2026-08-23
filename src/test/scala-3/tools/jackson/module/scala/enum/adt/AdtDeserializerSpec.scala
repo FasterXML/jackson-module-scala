@@ -19,8 +19,12 @@ class AdtDeserializerSpec extends AnyWordSpec with Matchers {
         mapper.readValue(json, classOf[Color])
       }
     }
+    "deserialize Color.Mix" in {
+      val json = mapper.writeValueAsString(Color.Mix(0x4488FF))
+      mapper.readValue(json, classOf[Color]) shouldEqual Color.Mix(0x4488FF)
+    }
     "deserialize ColorSet" in {
-      val colors = ColorSet(Set(Color.Red, Color.Green))
+      val colors = ColorSet(Set(Color.Red, Color.Green, Color.Mix(0x4488FF)))
       val json = mapper.writeValueAsString(colors)
       mapper.readValue(json, classOf[ColorSet]) shouldEqual colors
     }
