@@ -12,14 +12,15 @@ private class SealedPolymorphismSerializerModifier(config: ScalaModule.Config, p
   override def modifySerializer(config: SerializationConfig, beanDesc: BeanDescription.Supplier,
                                 serializer: ValueSerializer[_]): ValueSerializer[_] = {
     val rawClass = beanDesc.getBeanClass
-    if (polymorphism.conflictingJsonTypeInfo(rawClass)) {
-      throw new IllegalArgumentException(SealedPolymorphism.conflictMessage(rawClass))
+    if (polymorphism.conflictingJsonTypeInfo(rawClass, config)) {
+      throw new IllegalArgumentException(polymorphism.conflictMessage(rawClass, config))
     }
     // base types are never written directly - only the implementation dispatched to at runtime
-    if (polymorphism.isSupported(rawClass) && !polymorphism.isBaseType(rawClass)) {
+    if (polymorphism.isSupported(rawClass, config) && !polymorphism.isBaseType(rawClass, config)) {
       // refuse to write a value that could not be read back
-      polymorphism.unreachableReason(rawClass).foreach(reason => throw new IllegalArgumentException(reason))
-      new TypeTaggedSerializer(SealedPolymorphism.TypePropertyName, SealedPolymorphism.typeNameFor(rawClass),
+      polymorphism.unreachableReason(rawClass, config).foreach(reason => throw new IllegalArgumentException(reason))
+      val typeName = polymorphism.typeNameFor(rawClass, polymorphism.rootOf(rawClass, config))
+      new TypeTaggedSerializer(SealedPolymorphism.TypePropertyName, typeName,
         serializer.asInstanceOf[ValueSerializer[AnyRef]])
     } else serializer
   }

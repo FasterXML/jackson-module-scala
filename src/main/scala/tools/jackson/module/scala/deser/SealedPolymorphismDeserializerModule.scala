@@ -38,7 +38,8 @@ private object TaggedObject {
  * by dispatching on its `@type` property. Bound to a trait or abstract class, which never holds a
  * value of its own.
  */
-private case class SealedPolymorphicDeserializer(baseClass: Class[_], polymorphism: SealedPolymorphism)
+private case class SealedPolymorphicDeserializer(baseClass: Class[_], rootClass: Class[_],
+                                                 polymorphism: SealedPolymorphism)
   extends StdDeserializer[AnyRef](baseClass) {
 
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): AnyRef = {
@@ -47,7 +48,7 @@ private case class SealedPolymorphicDeserializer(baseClass: Class[_], polymorphi
         s"Expected a JSON object with a ${SealedPolymorphism.TypePropertyName} property to create ${baseClass.getName}")
     }
     val (typeName, buffered) = TaggedObject.split(p, ctxt)
-    val subtype = Option(typeName).flatMap(polymorphism.resolve(baseClass, _))
+    val subtype = Option(typeName).flatMap(polymorphism.resolve(baseClass, rootClass, _))
       .getOrElse(TaggedObject.failed(baseClass, typeName))
     subtype.singleton match {
       case Some(instance) => instance
@@ -63,8 +64,8 @@ private case class SealedPolymorphicDeserializer(baseClass: Class[_], polymorphi
  * anything else is dispatched. Wrapping rather than replacing is what lets the type be read as
  * itself without recursing.
  */
-private class TaggedBeanDeserializer(declaredClass: Class[_], polymorphism: SealedPolymorphism,
-                                     delegate: ValueDeserializer[AnyRef])
+private class TaggedBeanDeserializer(declaredClass: Class[_], rootClass: Class[_],
+                                     polymorphism: SealedPolymorphism, delegate: ValueDeserializer[AnyRef])
   extends ValueDeserializer[AnyRef] {
 
   override def resolve(ctxt: DeserializationContext): Unit = delegate.resolve(ctxt)
@@ -72,7 +73,8 @@ private class TaggedBeanDeserializer(declaredClass: Class[_], polymorphism: Seal
   override def createContextual(ctxt: DeserializationContext, property: BeanProperty): ValueDeserializer[_] = {
     val contextual = delegate.createContextual(ctxt, property)
     if (contextual eq delegate) this
-    else new TaggedBeanDeserializer(declaredClass, polymorphism, contextual.asInstanceOf[ValueDeserializer[AnyRef]])
+    else new TaggedBeanDeserializer(declaredClass, rootClass, polymorphism,
+      contextual.asInstanceOf[ValueDeserializer[AnyRef]])
   }
 
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): AnyRef = {
@@ -81,7 +83,7 @@ private class TaggedBeanDeserializer(declaredClass: Class[_], polymorphism: Seal
       val (typeName, buffered) = TaggedObject.split(p, ctxt)
       // an untagged object is simply a value of the type it was declared as
       if (typeName == null) delegate.deserialize(buffered, ctxt)
-      else polymorphism.resolve(declaredClass, typeName) match {
+      else polymorphism.resolve(declaredClass, rootClass, typeName) match {
         case Some(subtype) if subtype.clazz == declaredClass => delegate.deserialize(buffered, ctxt)
         case Some(subtype) =>
           subtype.singleton.getOrElse(ctxt.readValue(buffered, subtype.clazz.asInstanceOf[Class[AnyRef]]))
@@ -94,11 +96,13 @@ private class TaggedBeanDeserializer(declaredClass: Class[_], polymorphism: Seal
 private class SealedPolymorphismDeserializerResolver(config: ScalaModule.Config, polymorphism: SealedPolymorphism)
   extends Deserializers.Base {
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[AnyRef] =
-    if (hasDeserializerFor(config, javaType.getRawClass)) SealedPolymorphicDeserializer(javaType.getRawClass, polymorphism)
-    else None.orNull
+    if (hasDeserializerFor(config, javaType.getRawClass)) {
+      val rawClass = javaType.getRawClass
+      SealedPolymorphicDeserializer(rawClass, polymorphism.rootOf(rawClass, config), polymorphism)
+    } else None.orNull
 
   override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean =
-    polymorphism.isBaseType(valueType)
+    polymorphism.isBaseType(valueType, deserializationConfig)
 }
 
 /**
@@ -111,10 +115,10 @@ private class SealedPolymorphismDeserializerModifier(config: ScalaModule.Config,
   override def updateBuilder(config: DeserializationConfig, beanDesc: BeanDescription.Supplier,
                              builder: BeanDeserializerBuilder): BeanDeserializerBuilder = {
     val rawClass = beanDesc.getBeanClass
-    if (polymorphism.conflictingJsonTypeInfo(rawClass)) {
-      throw new IllegalArgumentException(SealedPolymorphism.conflictMessage(rawClass))
+    if (polymorphism.conflictingJsonTypeInfo(rawClass, config)) {
+      throw new IllegalArgumentException(polymorphism.conflictMessage(rawClass, config))
     }
-    if (polymorphism.isSupported(rawClass) && !polymorphism.isBaseType(rawClass)) {
+    if (polymorphism.isSupported(rawClass, config) && !polymorphism.isBaseType(rawClass, config)) {
       builder.addIgnorable(SealedPolymorphism.TypePropertyName)
     }
     builder
@@ -123,8 +127,9 @@ private class SealedPolymorphismDeserializerModifier(config: ScalaModule.Config,
   override def modifyDeserializer(config: DeserializationConfig, beanDesc: BeanDescription.Supplier,
                                   deserializer: ValueDeserializer[_]): ValueDeserializer[_] = {
     val rawClass = beanDesc.getBeanClass
-    if (polymorphism.needsSubtypeDispatch(rawClass)) {
-      new TaggedBeanDeserializer(rawClass, polymorphism, deserializer.asInstanceOf[ValueDeserializer[AnyRef]])
+    if (polymorphism.needsSubtypeDispatch(rawClass, config)) {
+      new TaggedBeanDeserializer(rawClass, polymorphism.rootOf(rawClass, config), polymorphism,
+        deserializer.asInstanceOf[ValueDeserializer[AnyRef]])
     } else deserializer
   }
 }

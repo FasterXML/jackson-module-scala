@@ -34,13 +34,13 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
    * final in bytecode and can be extended by a plain class, so it cannot be ruled out here - Scala 2
    * answers the same question exactly, from the hierarchy itself.
    */
-  def mayHaveSubtypes(clazz: Class[_]): Boolean = !Modifier.isFinal(clazz.getModifiers)
+  def mayHaveSubtypes(clazz: Class[_], root: Class[_]): Boolean = !Modifier.isFinal(clazz.getModifiers)
 
-  def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
+  def findSubtype(baseClass: Class[_], root: Class[_], typeName: String): Option[Subtype] = {
     val loader = loaderFor(baseClass)
     // anchored on the root, so a property declared as an intermediate type still resolves the names
     // that were written for the hierarchy as a whole
-    candidateNames(rootOf(baseClass).getName, typeName).iterator
+    candidateNames(root.getName, typeName).iterator
       .flatMap(name => Try(Class.forName(name, false, loader)).toOption)
       // a concrete root names itself, so the base is only excluded when it cannot hold a value
       .filter(candidate => baseClass.isAssignableFrom(candidate) && isConcrete(candidate))
@@ -57,10 +57,9 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
    * root's package, which `sealed` would have prevented, and one whose derived name is already taken
    * by another implementation declared closer to the root.
    */
-  def unreachableReason(clazz: Class[_]): Option[String] = {
-    val root = rootOf(clazz)
-    val typeName = typeNameFor(clazz)
-    polymorphism.resolve(root, typeName) match {
+  def unreachableReason(clazz: Class[_], root: Class[_]): Option[String] = {
+    val typeName = polymorphism.typeNameFor(clazz, root)
+    polymorphism.resolve(root, root, typeName) match {
       case Some(subtype) if subtype.clazz == clazz => None
       case Some(subtype) => Some(nameTakenMessage(clazz, typeName, subtype.clazz))
       case None => Some(notFoundMessage(clazz, typeName, root))

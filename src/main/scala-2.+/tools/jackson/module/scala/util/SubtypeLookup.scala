@@ -47,12 +47,12 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
    * Answered from the enumerated hierarchy, so a concrete class nothing extends reads straight
    * through to its bean rather than paying to be dispatched.
    */
-  def mayHaveSubtypes(clazz: Class[_]): Boolean =
-    tableFor(rootOf(clazz)).byName.values
+  def mayHaveSubtypes(clazz: Class[_], root: Class[_]): Boolean =
+    tableFor(root).byName.values
       .exists(subtype => subtype.clazz != clazz && clazz.isAssignableFrom(subtype.clazz))
 
-  def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
-    tableFor(rootOf(baseClass)).byName.get(typeName)
+  def findSubtype(baseClass: Class[_], root: Class[_], typeName: String): Option[Subtype] = {
+    tableFor(root).byName.get(typeName)
       .filter(subtype => baseClass.isAssignableFrom(subtype.clazz))
   }
 
@@ -61,10 +61,9 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
    * are enumerated, a base that is not `sealed` and a name claimed by two implementations can both
    * be reported the first time the hierarchy is used, instead of one implementation at a time.
    */
-  def unreachableReason(clazz: Class[_]): Option[String] = {
-    val root = rootOf(clazz)
+  def unreachableReason(clazz: Class[_], root: Class[_]): Option[String] = {
     val table = tableFor(root)
-    val typeName = typeNameFor(clazz)
+    val typeName = polymorphism.typeNameFor(clazz, root)
     if (!table.sealedRoot) {
       Some(s"${root.getName} is not sealed. ${classOf[SealedPolymorphismSupport].getSimpleName} needs a sealed " +
         "hierarchy, so that every implementation can be found again when reading.")
@@ -113,7 +112,7 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
       val rootItself: Seq[ru.ClassSymbol] =
         if (rootSymbol.isTrait || rootSymbol.isAbstract) Nil else Seq(rootSymbol)
       val classes: Seq[Class[_]] = (rootItself ++ concreteBelow(rootSymbol)).flatMap(runtimeClassOf).distinct
-      val grouped: Map[String, Seq[Class[_]]] = classes.groupBy(clazz => typeNameFor(clazz))
+      val grouped: Map[String, Seq[Class[_]]] = classes.groupBy(clazz => polymorphism.typeNameFor(clazz, root))
       val unique: Map[String, Subtype] = grouped.collect {
         case (name, Seq(only)) => name -> Subtype(only, moduleInstance(only))
       }
