@@ -153,6 +153,22 @@ class SealedPolymorphismSpec extends AnyWordSpec with Matchers {
       val value = Owner("ann", Dog("rex"))
       built.readValue(built.writeValueAsString(value), classOf[Owner]) shouldEqual value
     }
+    // @JsonTypeInfo hands the hierarchy to Jackson, which can no more enumerate a sealed hierarchy
+    // than this module can on Scala 3 - without being told the names it writes what it cannot read
+    "refuse a hierarchy handed to Jackson with no way of reading it back" in {
+      val message = String.valueOf(rootCause(intercept[Exception] {
+        mapper.writeValueAsString(BareHolder(BareA(1)))
+      }).getMessage)
+      message should include("@JsonTypeInfo")
+      message should include("@JsonSubTypes")
+    }
+    "accept that hierarchy once its subtypes are registered on the mapper" in {
+      val registered = JsonMapper.builder().addModule(DefaultScalaModule)
+        .registerSubtypes(classOf[BareA], classOf[BareB]).build()
+      val value = BareHolder(BareA(1))
+      registered.writeValueAsString(value) shouldEqual """{"bare":{"kind":"BareA","x":1}}"""
+      registered.readValue(registered.writeValueAsString(value), classOf[BareHolder]) shouldEqual value
+    }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""
     }

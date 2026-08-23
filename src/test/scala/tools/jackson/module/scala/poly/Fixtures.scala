@@ -77,6 +77,15 @@ class Twig(id: Int, label: String, val length: Int) extends Branch(id, label)
 case class Tree(node: Node)
 case class Limb(branch: Branch)
 
+// marked, but handed to Jackson by the annotation - and Jackson is told nothing about the names,
+// so it would write what it cannot read
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "kind")
+sealed trait Bare extends SealedPolymorphismSupport
+case class BareA(x: Int) extends Bare
+case class BareB(y: String) extends Bare
+
+case class BareHolder(bare: Bare)
+
 // a hierarchy that is not marked - it must be untouched
 sealed trait Plain
 case class PlainDog(name: String) extends Plain

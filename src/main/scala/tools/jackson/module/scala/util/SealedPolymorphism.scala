@@ -1,7 +1,9 @@
 package tools.jackson.module.scala.util
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import tools.jackson.databind.introspect.MixInResolver
+import tools.jackson.databind.annotation.JsonTypeIdResolver
+import tools.jackson.databind.cfg.MapperConfig
+import tools.jackson.databind.introspect.{AnnotatedClassResolver, MixInResolver}
 import tools.jackson.databind.util.LookupCache
 import tools.jackson.module.scala.{DefaultLookupCacheFactory, LookupCacheFactory, SealedPolymorphismSupport}
 
@@ -28,6 +30,11 @@ private[scala] object SealedPolymorphism {
   final case class Subtype(clazz: Class[_], singleton: Option[AnyRef])
 
   private[scala] final case class SubtypeKey(baseClass: Class[_], typeName: String)
+
+  private[scala] def incompleteMessage(root: Class[_]): String =
+    s"${root.getName} carries @JsonTypeInfo(use = Id.NAME) but nothing tells Jackson what the names are, so a " +
+      s"value of this hierarchy would be written and then fail to be read. Add @JsonSubTypes, or register the " +
+      s"subtypes on the mapper, or remove the annotation to use $TypePropertyName instead."
 
   private[scala] def conflictMessage(clazz: Class[_], root: Class[_]): String =
     s"${clazz.getName} carries @JsonTypeInfo but belongs to the ${classOf[SealedPolymorphismSupport].getSimpleName} " +
@@ -201,6 +208,34 @@ private[scala] class SealedPolymorphism {
 
   def conflictMessage(clazz: Class[_], config: MixInResolver): String =
     SealedPolymorphism.conflictMessage(clazz, rootOf(clazz, config))
+
+  /**
+   * `@JsonTypeInfo` on the root hands the hierarchy to Jackson, which needs to be told what the
+   * type names are - Jackson can no more enumerate a sealed hierarchy than this module can on
+   * Scala 3. Without that it writes happily and then cannot read what it wrote, which is the one
+   * shape of silently write-only JSON this module otherwise refuses to produce, so it is reported.
+   *
+   * Only `Id.NAME` without a custom resolver is judged: `Id.CLASS` and the like carry enough to
+   * resolve themselves, and a custom resolver may know names from anywhere.
+   */
+  def incompleteJsonTypeInfo(clazz: Class[_], config: MapperConfig[_]): Option[String] = {
+    if (!isMarked(clazz, config)) None
+    else {
+      val root = rootOf(clazz, config)
+      Option(root.getAnnotation(classOf[JsonTypeInfo]))
+        .filter(_.use == JsonTypeInfo.Id.NAME)
+        .filter(_ => root.getAnnotation(classOf[JsonTypeIdResolver]) == null)
+        .filter(_ => !hasKnownSubtypes(root, config))
+        .map(_ => SealedPolymorphism.incompleteMessage(root))
+    }
+  }
+
+  // covers both @JsonSubTypes and subtypes registered on the mapper - the resolver collects both
+  private def hasKnownSubtypes(root: Class[_], config: MapperConfig[_]): Boolean = {
+    val annotated = AnnotatedClassResolver.resolveWithoutSuperTypes(config, root, config)
+    val named = config.getSubtypeResolver.collectAndResolveSubtypesByTypeId(config, annotated)
+    named != null && named.stream().anyMatch(namedType => namedType.getType != root)
+  }
 
   /**
    * True for a type that can only be dispatched on, never instantiated - a trait or abstract class.

@@ -15,6 +15,9 @@ private class SealedPolymorphismSerializerModifier(config: ScalaModule.Config, p
     if (polymorphism.conflictingJsonTypeInfo(rawClass, config)) {
       throw new IllegalArgumentException(polymorphism.conflictMessage(rawClass, config))
     }
+    // refuse to write for a hierarchy handed to Jackson that Jackson could not read back
+    polymorphism.incompleteJsonTypeInfo(rawClass, config)
+      .foreach(reason => throw new IllegalArgumentException(reason))
     // base types are never written directly - only the implementation dispatched to at runtime
     if (polymorphism.isSupported(rawClass, config) && !polymorphism.isBaseType(rawClass, config)) {
       // refuse to write a value that could not be read back
