@@ -66,6 +66,16 @@ class EnumDeserializerSpec extends AnyWordSpec with Matchers {
       val json = mapper.writeValueAsString(instance)
       mapper.readValue(json, classOf[Result]) shouldEqual instance
     }
+    "deserialize a case that has its own type field" in {
+      val instance = TypeFieldHolder(TypeFieldEnum.Typed("custom"))
+      val json = mapper.writeValueAsString(instance)
+      mapper.readValue(json, classOf[TypeFieldHolder]) shouldEqual instance
+    }
+    "deserialize a simple case of an enum that has a type field elsewhere" in {
+      val instance = TypeFieldHolder(TypeFieldEnum.Untyped)
+      val json = mapper.writeValueAsString(instance)
+      mapper.readValue(json, classOf[TypeFieldHolder]) shouldEqual instance
+    }
     "deserialize ShapeEnumAnnotated.Circle" in {
       val instance = ShapeEnumAnnotatedHolder(ShapeEnumAnnotated.Circle(1.5))
       val json = mapper.writeValueAsString(instance)

@@ -20,8 +20,12 @@ import scala.util.Try
  */
 private[scala] object Scala3EnumInfo {
 
-  /** Name of the JSON property used to tag a parameterized enum case. */
-  val TypePropertyName = "type"
+  /**
+   * Name of the JSON property used to tag a parameterized enum case. `@type` rather than `type` so
+   * that it cannot clash with a field of the case itself - it is also what Jackson uses by default
+   * for `JsonTypeInfo.Id.NAME`.
+   */
+  val TypePropertyName = "@type"
 
   private val ModuleFieldName = "MODULE$"
   private val EnumClass = classOf[scala.reflect.Enum]
