@@ -2,7 +2,7 @@ package tools.jackson.module.scala.util
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import tools.jackson.databind.util.LookupCache
-import tools.jackson.module.scala.DefaultLookupCacheFactory
+import tools.jackson.module.scala.{DefaultLookupCacheFactory, LookupCacheFactory}
 
 import java.lang.reflect.Modifier
 import scala.deriving.Mirror
@@ -48,12 +48,15 @@ private[scala] object Scala3EnumInfo {
     def parameterizedCaseFor(clazz: Class[_]): Option[EnumCase] = casesByClass.get(clazz)
   }
 
+  private var _lookupCacheFactory: LookupCacheFactory = DefaultLookupCacheFactory
+  private var _cacheSize: Int = 1000
+
   // Bounded so that classes loaded by a child classloader (hot redeploy, OSGi, script engines) are
   // not retained indefinitely by this object. Keyed by Class rather than by class name because the
   // cached Info holds Class instances - two same-named enums from different classloaders must not
-  // share an entry.
-  private val cache: LookupCache[Class[_], Option[Info]] =
-    DefaultLookupCacheFactory.createLookupCache(16, 1000)
+  // share an entry. The cache is a pure memo - an evicted entry is rebuilt on the next lookup.
+  @volatile private var _cache: LookupCache[Class[_], Option[Info]] =
+    _lookupCacheFactory.createLookupCache(16, _cacheSize)
 
   /**
    * Returns the case table of the Scala 3 enum that `clazz` belongs to - `clazz` may be the enum
@@ -61,12 +64,32 @@ private[scala] object Scala3EnumInfo {
    */
   def infoFor(clazz: Class[_]): Option[Info] = {
     if (clazz == null || !EnumClass.isAssignableFrom(clazz)) None
-    else Option(cache.get(clazz)) match {
-      case Some(info) => info
-      case _ =>
-        val info = findInfo(clazz)
-        Option(cache.putIfAbsent(clazz, info)).getOrElse(info)
+    else {
+      val cache = _cache
+      Option(cache.get(clazz)) match {
+        case Some(info) => info
+        case _ =>
+          val info = findInfo(clazz)
+          Option(cache.putIfAbsent(clazz, info)).getOrElse(info)
+      }
     }
+  }
+
+  def setLookupCacheFactory(lookupCacheFactory: LookupCacheFactory): Unit = {
+    _lookupCacheFactory = lookupCacheFactory
+    recreateCache()
+  }
+
+  def setCacheSize(size: Int): Unit = {
+    _cacheSize = size
+    recreateCache()
+  }
+
+  def clearCache(): Unit = _cache.clear()
+
+  private def recreateCache(): Unit = {
+    _cache.clear()
+    _cache = _lookupCacheFactory.createLookupCache(16, _cacheSize)
   }
 
   private def findInfo(clazz: Class[_]): Option[Info] = {
