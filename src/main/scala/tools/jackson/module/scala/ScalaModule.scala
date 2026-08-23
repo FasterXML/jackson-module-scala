@@ -42,13 +42,21 @@ object ScalaModule {
     }
 
     def removeModule(module: JacksonModule): Builder = {
-      modules.-=(module)
+      val remaining = modules.filterNot(sameModule(_, module)).toList
+      modules.clear()
+      modules.++=(remaining)
       this
     }
 
     def hasModule(module: JacksonModule): Boolean = {
-      modules.contains(module)
+      modules.exists(sameModule(_, module))
     }
+
+    // Some builtin modules are registered as an instance of their own, so that a built module keeps
+    // state independent of the module object. Matching on the module name as well as on the
+    // instance keeps `removeModule(EnumModule)` working for those.
+    private def sameModule(existing: JacksonModule, module: JacksonModule): Boolean =
+      existing == module || existing.getModuleName == module.getModuleName
 
     def addAllBuiltinModules(): Builder = {
       addModule(IteratorModule)

@@ -5,7 +5,7 @@ import tools.jackson.databind.deser.{Deserializers, KeyDeserializers}
 import tools.jackson.databind.deser.std.StdDeserializer
 import tools.jackson.databind._
 import tools.jackson.databind.JacksonModule.SetupContext
-import tools.jackson.module.scala.{JacksonModule, ScalaModule}
+import tools.jackson.module.scala.{JacksonModule, ScalaModule, Scala3EnumSupportState}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.util.Scala3EnumInfo
 
@@ -69,10 +69,6 @@ private[scala] object EnumDeserializerShared {
     }
   }
 
-  // Scala 3 enums that mix parameterized and simple cases have neither valueOf nor a usable
-  // fromOrdinal, so they are handled from the reflective case table instead.
-  def taggedSumInfo(clz: Class[_]): Option[Scala3EnumInfo.Info] =
-    Scala3EnumInfo.infoFor(clz).filter(_.isTaggedSum)
 }
 
 private case class EnumDeserializer[T <: Enum](clazz: Class[T]) extends StdDeserializer[T](clazz) {
@@ -146,7 +142,7 @@ private case class EnumKeyDeserializer[T <: Enum](clazz: Class[T]) extends KeyDe
   }
 }
 
-private class EnumDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
+private class EnumDeserializerResolver(config: ScalaModule.Config, enumInfo: Scala3EnumInfo) extends Deserializers.Base {
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[Enum] =
     deserializerFor(javaType.getRawClass).orNull
 
@@ -155,7 +151,7 @@ private class EnumDeserializerResolver(config: ScalaModule.Config) extends Deser
 
   private def deserializerFor(rawClass: Class[_]): Option[ValueDeserializer[Enum]] = {
     if (!EnumDeserializerShared.EnumClass.isAssignableFrom(rawClass)) None
-    else EnumDeserializerShared.taggedSumInfo(rawClass) match {
+    else enumInfo.taggedSumInfo(rawClass) match {
       // the generated case classes are left to the standard bean deserializer
       case Some(info) => if (info.rootClass == rawClass) Some(Scala3EnumSumDeserializer(info)) else None
       case None =>
@@ -172,15 +168,18 @@ private class EnumKeyDeserializerResolver(config: ScalaModule.Config) extends Ke
     else None.orNull
 }
 
-trait EnumDeserializerModule extends JacksonModule {
+trait EnumDeserializerModule extends JacksonModule with Scala3EnumSupportState {
   override def getModuleName: String = "EnumDeserializerModule"
 
-  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
+  protected def deserializerInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] = {
     val builder = new InitializerBuilder()
-    builder += new EnumDeserializerResolver(config)
+    builder += new EnumDeserializerResolver(config, scala3EnumInfo)
     builder += new EnumKeyDeserializerResolver(config)
     builder.build()
   }
+
+  override def getInitializers(config: ScalaModule.Config): Seq[SetupContext => Unit] =
+    deserializerInitializers(config)
 }
 
 object EnumDeserializerModule extends EnumDeserializerModule
