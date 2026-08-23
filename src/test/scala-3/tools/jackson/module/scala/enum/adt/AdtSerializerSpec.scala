@@ -12,8 +12,10 @@ class AdtSerializerSpec extends AnyWordSpec with Matchers {
     "serialize Color ADT" in {
       mapper.writeValueAsString(Color.Red) shouldEqual (s""""${Color.Red}"""")
     }
+    // the parameterized case is written as a JSON object tagged with a type marker
+    // see https://github.com/FasterXML/jackson-module-scala/issues/831
     "serialize Color.Mix" in {
-      mapper.writeValueAsString(Color.Mix(0x4488FF)) shouldEqual (s""""Mix(4491519)"""")
+      mapper.writeValueAsString(Color.Mix(0x4488FF)) shouldEqual (s"""{"type":"Mix","mix":4491519,"rgb":4491519}""")
     }
     "serialize ColorSet" in {
       val json = mapper.writeValueAsString(ColorSet(Set(Color.Red, Color.Green)))

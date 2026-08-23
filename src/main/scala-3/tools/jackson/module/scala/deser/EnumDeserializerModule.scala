@@ -1,12 +1,13 @@
 package tools.jackson.module.scala.deser
 
-import tools.jackson.core.JsonParser
+import tools.jackson.core.{JsonParser, JsonToken}
 import tools.jackson.databind.deser.{Deserializers, KeyDeserializers}
 import tools.jackson.databind.deser.std.StdDeserializer
 import tools.jackson.databind._
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
+import tools.jackson.module.scala.util.Scala3EnumInfo
 
 import java.lang.reflect.InvocationTargetException
 import scala.reflect.Enum
@@ -67,6 +68,11 @@ private[scala] object EnumDeserializerShared {
       matched
     }
   }
+
+  // Scala 3 enums that mix parameterized and simple cases have neither valueOf nor a usable
+  // fromOrdinal, so they are handled from the reflective case table instead.
+  def taggedSumInfo(clz: Class[_]): Option[Scala3EnumInfo.Info] =
+    Scala3EnumInfo.infoFor(clz).filter(_.isTaggedSum)
 }
 
 private case class EnumDeserializer[T <: Enum](clazz: Class[T]) extends StdDeserializer[T](clazz) {
@@ -82,6 +88,53 @@ private case class EnumDeserializer[T <: Enum](clazz: Class[T]) extends StdDeser
   }
 }
 
+/**
+ * Deserializer for Scala 3 enums that have parameterized cases. Simple cases are read from their
+ * name (as written by the serializer), parameterized cases from a JSON object tagged with a
+ * `type` property naming the case.
+ */
+private case class Scala3EnumSumDeserializer[T <: Enum](info: Scala3EnumInfo.Info)
+  extends StdDeserializer[T](info.rootClass) {
+
+  override def deserialize(p: JsonParser, ctxt: DeserializationContext): T = {
+    val value = p.currentToken() match {
+      case JsonToken.START_OBJECT => fromObject(p, ctxt)
+      case _ => fromName(p.getValueAsString)
+    }
+    value.asInstanceOf[T]
+  }
+
+  private def fromName(name: String): AnyRef = {
+    if (name == null) failed(name)
+    else info.caseForName(name).flatMap(_.singleton).getOrElse(failed(name))
+  }
+
+  private def fromObject(p: JsonParser, ctxt: DeserializationContext): AnyRef = {
+    val buffer = ctxt.bufferForInputBuffering(p)
+    buffer.writeStartObject()
+    var typeId: String = None.orNull
+    while (p.nextToken() != JsonToken.END_OBJECT) {
+      val name = p.currentName()
+      p.nextToken()
+      if (typeId == null && name == Scala3EnumInfo.TypePropertyName) {
+        typeId = p.getValueAsString
+      } else {
+        buffer.writeName(name)
+        buffer.copyCurrentStructure(p)
+      }
+    }
+    buffer.writeEndObject()
+    val enumCase = Option(typeId).flatMap(info.caseForName).getOrElse(failed(typeId))
+    enumCase.singleton match {
+      case Some(singleton) => singleton
+      case None => ctxt.readValue(buffer.asParserOnFirstToken(ctxt), enumCase.clazz.asInstanceOf[Class[AnyRef]])
+    }
+  }
+
+  private def failed(name: String): Nothing =
+    throw new IllegalArgumentException(s"Failed to create ${info.rootClass.getName} instance for $name")
+}
+
 private case class EnumKeyDeserializer[T <: Enum](clazz: Class[T]) extends KeyDeserializer {
   override def deserializeKey(key: String, ctxt: DeserializationContext): AnyRef = {
     val result = Try {
@@ -95,13 +148,21 @@ private case class EnumKeyDeserializer[T <: Enum](clazz: Class[T]) extends KeyDe
 
 private class EnumDeserializerResolver(config: ScalaModule.Config) extends Deserializers.Base {
   override def findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription.Supplier): ValueDeserializer[Enum] =
-    if (hasDeserializerFor(config, javaType.getRawClass))
-      EnumDeserializer(javaType.getRawClass.asInstanceOf[Class[Enum]])
-    else None.orNull
+    deserializerFor(javaType.getRawClass).orNull
 
   override def hasDeserializerFor(deserializationConfig: DeserializationConfig, valueType: Class[_]): Boolean =
-    EnumDeserializerShared.EnumClass.isAssignableFrom(valueType)
-      && EnumDeserializerShared.canFindByOrdinal(valueType)
+    deserializerFor(valueType).isDefined
+
+  private def deserializerFor(rawClass: Class[_]): Option[ValueDeserializer[Enum]] = {
+    if (!EnumDeserializerShared.EnumClass.isAssignableFrom(rawClass)) None
+    else EnumDeserializerShared.taggedSumInfo(rawClass) match {
+      // the generated case classes are left to the standard bean deserializer
+      case Some(info) => if (info.rootClass == rawClass) Some(Scala3EnumSumDeserializer(info)) else None
+      case None =>
+        if (EnumDeserializerShared.canFindByOrdinal(rawClass)) Some(EnumDeserializer(rawClass.asInstanceOf[Class[Enum]]))
+        else None
+    }
+  }
 }
 
 private class EnumKeyDeserializerResolver(config: ScalaModule.Config) extends KeyDeserializers {
