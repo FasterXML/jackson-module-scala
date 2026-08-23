@@ -33,6 +33,9 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
   /** Scala 2 has no `scala.reflect.Enum` - `Enumeration` is handled by a different module. */
   def isScalaEnum(clazz: Class[_]): Boolean = false
 
+  /** Deriving is a Scala 3 way of capturing a hierarchy; Scala 2 reads it from the class file. */
+  def isDerived(clazz: Class[_]): Boolean = false
+
   def checkAvailable(clazz: Class[_]): Unit = {
     if (!scalaReflectAvailable) {
       throw new IllegalStateException(
