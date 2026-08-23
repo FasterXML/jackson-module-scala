@@ -23,6 +23,7 @@ private[scala] object SimplePolymorphism {
   val TypePropertyName = "@type"
 
   private val MarkerClass = classOf[SimplePolymorphismSupport]
+  private val EnumClass = classOf[scala.reflect.Enum]
   private val ModuleFieldName = "MODULE$"
 
   final case class Subtype(clazz: Class[_], singleton: Option[AnyRef])
@@ -30,19 +31,50 @@ private[scala] object SimplePolymorphism {
   private final case class SubtypeKey(baseClass: Class[_], typeName: String)
 
   /**
-   * True for a type in a marked hierarchy. A hierarchy that also carries `@JsonTypeInfo` is left to
-   * the standard Jackson polymorphic handling rather than being tagged twice.
+   * True for a type in a marked hierarchy that this module should handle.
+   *
+   * Two hierarchies are handed back: a Scala 3 `enum`, which the enum support already tags from an
+   * exact case table, and one whose root carries `@JsonTypeInfo`, which is left to the standard
+   * Jackson polymorphic handling rather than being tagged twice.
    */
   def isSupported(clazz: Class[_]): Boolean =
-    MarkerClass.isAssignableFrom(clazz) && !hasJsonTypeInfo(clazz)
+    MarkerClass.isAssignableFrom(clazz) &&
+      !EnumClass.isAssignableFrom(clazz) &&
+      rootOf(clazz).getAnnotation(classOf[JsonTypeInfo]) == null
 
-  // Jackson's own annotations are not @Inherited, so the hierarchy has to be walked
-  private def hasJsonTypeInfo(clazz: Class[_]): Boolean = {
-    clazz != null && MarkerClass.isAssignableFrom(clazz) && (
-      clazz.getAnnotation(classOf[JsonTypeInfo]) != null ||
-        hasJsonTypeInfo(clazz.getSuperclass) ||
-        clazz.getInterfaces.exists(hasJsonTypeInfo))
+  /**
+   * `@JsonTypeInfo` on an implementation rather than on the root cannot be honoured alongside
+   * `@type`: Jackson treats the annotated class as a polymorphic base in its own right, so reading
+   * it demands that annotation's type id, which nothing in a marked hierarchy ever writes. The
+   * combination is reported rather than left to produce JSON that cannot be read back.
+   */
+  def conflictingJsonTypeInfo(clazz: Class[_]): Boolean =
+    isSupported(clazz) && clazz.getAnnotation(classOf[JsonTypeInfo]) != null
+
+  def conflictMessage(clazz: Class[_]): String =
+    s"${clazz.getName} carries @JsonTypeInfo but belongs to the ${classOf[SimplePolymorphismSupport].getSimpleName} " +
+      s"hierarchy rooted at ${rootOf(clazz).getName}. Move the annotation to the root to use Jackson's polymorphic " +
+      s"handling for the whole hierarchy, or remove it to use $TypePropertyName."
+
+  /**
+   * The top of the marked hierarchy `clazz` belongs to. The opt-out is read from the root rather
+   * than from `clazz` itself so that both halves of the module agree: an annotation on one
+   * implementation governs that implementation's own subtypes, and must not silently switch off
+   * tagging for it while the base is still dispatching on `@type`.
+   */
+  def rootOf(clazz: Class[_]): Class[_] = {
+    var root = clazz
+    var parent = markedParentOf(root)
+    while (parent.isDefined) {
+      root = parent.get
+      parent = markedParentOf(root)
+    }
+    root
   }
+
+  private def markedParentOf(clazz: Class[_]): Option[Class[_]] =
+    (Option(clazz.getSuperclass).toSeq ++ clazz.getInterfaces)
+      .find(parent => parent != MarkerClass && MarkerClass.isAssignableFrom(parent))
 
   /**
    * True for a type that is dispatched on rather than instantiated - the base of the hierarchy.

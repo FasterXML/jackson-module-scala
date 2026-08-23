@@ -26,7 +26,7 @@ private object EnumKeySerializer extends ValueSerializer[Enum] {
 /**
  * Serializer bound to the declared type of a Scala 3 enum that has parameterized cases. Simple
  * cases are written as their name; parameterized cases are delegated to the serializer of the
- * generated case class, which [[TypeTaggedSerializer]] has tagged with a `type` property.
+ * generated case class, which [[TypeTaggedSerializer]] has tagged with an `@type` property.
  */
 private case class Scala3EnumSumSerializer(info: Scala3EnumInfo.Info) extends ValueSerializer[Enum] {
   override def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {

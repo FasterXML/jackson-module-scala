@@ -47,6 +47,22 @@ case class Cheque(number: Int) extends Annotated
 
 case class Ledger(entry: Annotated)
 
+// the annotation sits on one implementation rather than on the base - it governs that
+// implementation's own subtypes and must not switch off tagging for the hierarchy
+sealed trait Leafy extends SimplePolymorphismSupport
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "kind")
+case class LeafA(x: Int) extends Leafy
+case class LeafB(y: Int) extends Leafy
+
+case class LeafHolder(leaf: Leafy)
+
+// a Scala 3 enum carrying the marker - the enum support owns it, from its exact case table
+enum Status extends SimplePolymorphismSupport:
+  case Active
+  case Failed(code: Int)
+
+case class Job(status: Status)
+
 // a hierarchy that is not marked - it must be untouched
 sealed trait Plain
 case class PlainDog(name: String) extends Plain

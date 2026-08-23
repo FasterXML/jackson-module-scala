@@ -63,6 +63,9 @@ private class SimplePolymorphismDeserializerModifier(config: ScalaModule.Config)
   override def updateBuilder(config: DeserializationConfig, beanDesc: BeanDescription.Supplier,
                              builder: BeanDeserializerBuilder): BeanDeserializerBuilder = {
     val rawClass = beanDesc.getBeanClass
+    if (SimplePolymorphism.conflictingJsonTypeInfo(rawClass)) {
+      throw new IllegalArgumentException(SimplePolymorphism.conflictMessage(rawClass))
+    }
     if (SimplePolymorphism.isSupported(rawClass) && !SimplePolymorphism.isBaseType(rawClass)) {
       builder.addIgnorable(SimplePolymorphism.TypePropertyName)
     }

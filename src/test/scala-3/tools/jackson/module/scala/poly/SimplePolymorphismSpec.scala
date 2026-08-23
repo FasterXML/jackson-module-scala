@@ -11,6 +11,9 @@ class SimplePolymorphismSpec extends AnyWordSpec with Matchers {
 
   private def roundTrip[T](value: T, clazz: Class[T]): T = mapper.readValue(mapper.writeValueAsString(value), clazz)
 
+  private def rootCause(error: Throwable): Throwable =
+    Option(error.getCause).filter(_ ne error).map(rootCause).getOrElse(error)
+
   "SimplePolymorphismModule" should {
     "tag an implementation declared beside the base type" in {
       mapper.writeValueAsString(Owner("ann", Dog("rex"))) shouldEqual """{"name":"ann","pet":{"@type":"Dog","name":"rex"}}"""
@@ -60,6 +63,27 @@ class SimplePolymorphismSpec extends AnyWordSpec with Matchers {
     "defer to JsonTypeInfo when the hierarchy is also annotated" in {
       mapper.writeValueAsString(Ledger(Cheque(7))) shouldEqual """{"entry":{"kind":"Cheque","number":7}}"""
       roundTrip(Ledger(Cheque(7)), classOf[Ledger]) shouldEqual Ledger(Cheque(7))
+    }
+    "let the enum support own a marked Scala 3 enum" in {
+      // the enum rules apply throughout: a simple case is its plain name, a parameterized one an object
+      mapper.writeValueAsString(Job(Status.Active)) shouldEqual """{"status":"Active"}"""
+      mapper.writeValueAsString(Job(Status.Failed(1))) shouldEqual """{"status":{"@type":"Failed","code":1}}"""
+      roundTrip(Job(Status.Failed(1)), classOf[Job]) shouldEqual Job(Status.Failed(1))
+      roundTrip(Job(Status.Active), classOf[Job]).status should be theSameInstanceAs Status.Active
+    }
+    // Jackson makes the annotated class a polymorphic base in its own right, so reading it would
+    // demand that annotation's type id - which nothing in a marked hierarchy ever writes
+    "report JsonTypeInfo on an implementation rather than the base" in {
+      val error = intercept[Exception] {
+        mapper.writeValueAsString(LeafHolder(LeafA(1)))
+      }
+      val message = String.valueOf(rootCause(error).getMessage)
+      message should include("LeafA")
+      message should include("carries @JsonTypeInfo")
+      message should include("rooted at")
+    }
+    "leave other implementations of that hierarchy working" in {
+      roundTrip(LeafHolder(LeafB(2)), classOf[LeafHolder]) shouldEqual LeafHolder(LeafB(2))
     }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""

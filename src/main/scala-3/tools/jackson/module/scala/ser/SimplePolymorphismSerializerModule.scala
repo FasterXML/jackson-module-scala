@@ -11,6 +11,9 @@ private class SimplePolymorphismSerializerModifier(config: ScalaModule.Config) e
   override def modifySerializer(config: SerializationConfig, beanDesc: BeanDescription.Supplier,
                                 serializer: ValueSerializer[_]): ValueSerializer[_] = {
     val rawClass = beanDesc.getBeanClass
+    if (SimplePolymorphism.conflictingJsonTypeInfo(rawClass)) {
+      throw new IllegalArgumentException(SimplePolymorphism.conflictMessage(rawClass))
+    }
     // base types are never written directly - only the implementation dispatched to at runtime
     if (SimplePolymorphism.isSupported(rawClass) && !SimplePolymorphism.isBaseType(rawClass)) {
       new TypeTaggedSerializer(SimplePolymorphism.TypePropertyName, SimplePolymorphism.typeNameFor(rawClass),
