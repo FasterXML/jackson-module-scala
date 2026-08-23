@@ -12,6 +12,9 @@ case class Erased(aLong: Option[Long], anInt: Option[Int], aStr: Option[String],
 // only ever used by the precedence test, so nothing has introspected it beforehand
 case class ErasedPrecedence(aLong: Option[Long]) derives ScalaTypeInfo
 
+case class Layered(twice: Option[Option[Long]], inSeq: Option[Seq[Long]], ofOption: Seq[Option[Long]],
+                   mapValue: Map[String, Long], mapKey: Map[Long, String]) derives ScalaTypeInfo
+
 class ScalaTypeInfoSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
 
   private val json = """{"aLong":2,"anInt":1,"aStr":"x","longs":[3],"plain":"p"}"""
@@ -45,6 +48,24 @@ class ScalaTypeInfoSpec extends AnyWordSpec with Matchers with BeforeAndAfterEac
       read.anInt.map(_ + 1) shouldEqual Some(2)
       read.aStr shouldEqual Some("x")
       read.plain shouldEqual "p"
+    }
+    "reach a type argument however deeply it is nested" in {
+      val captured = summon[ScalaTypeInfo[Layered]].erasedTypeArguments.toMap
+      captured("twice") shouldEqual classOf[Long]
+      captured("inSeq") shouldEqual classOf[Long]
+      captured("ofOption") shouldEqual classOf[Long]
+      captured("mapValue") shouldEqual classOf[Long]
+      // the primitive is the key here, and the module replaces the value type - naming it would
+      // turn a field that merely loses its key type into one that cannot be read at all
+      captured.keySet should not contain "mapKey"
+    }
+    "read every nested shape back with nothing registered by hand" in {
+      val json = """{"twice":2,"inSeq":[2],"ofOption":[2],"mapValue":{"a":2},"mapKey":{"2":"a"}}"""
+      val read = mapper.readValue(json, classOf[Layered])
+      read.twice.map(_.map(_ + 1L)) shouldEqual Some(Some(3L))
+      read.inSeq.map(_.map(_ + 1L)) shouldEqual Some(Seq(3L))
+      read.ofOption.map(_.map(_ + 1L)) shouldEqual Seq(Some(3L))
+      read.mapValue.map { case (_, v) => v + 1L } shouldEqual Seq(3L)
     }
     "leave a registration made by hand alone" in {
       // registered before anything introspects the class, so deriving would be the one to clobber it

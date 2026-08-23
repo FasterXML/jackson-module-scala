@@ -24,10 +24,19 @@ object ScalaTypeInfo {
     val target = TypeRepr.of[T].dealias.typeSymbol
     val params = target.primaryConstructor.paramSymss.flatten.filterNot(_.isTypeParam)
 
+    // Walk to the innermost content type, which is the one the module replaces: for a Map that is
+    // the value, so `Map[String, Long]` is reached and `Map[Long, String]` is deliberately not -
+    // there the primitive is the key, and naming it would replace the value type instead and turn a
+    // field that merely loses its key type into one that cannot be read at all.
+    def contentLeaf(tpe: TypeRepr): TypeRepr = tpe.dealias match {
+      case AppliedType(_, args) if args.nonEmpty => contentLeaf(args.last)
+      case leaf => leaf
+    }
+
     // only a primitive is lost: a reference type argument survives in the generic signature, and
     // Jackson reads it from there without any help
     def erasedArgument(tpe: TypeRepr): Option[TypeRepr] = tpe.dealias match {
-      case AppliedType(_, args) => args.map(_.dealias).find(isPrimitive)
+      case AppliedType(_, _) => Some(contentLeaf(tpe)).filter(isPrimitive)
       case _ => None
     }
 
