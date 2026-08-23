@@ -83,14 +83,25 @@ private[scala] object SimplePolymorphism {
     isSupported(clazz) && (clazz.isInterface || Modifier.isAbstract(clazz.getModifiers))
 
   /**
-   * The name written to `@type`: the implementation's simple name, with any enclosing types and the
-   * trailing `$` of a Scala object removed. Never a fully qualified class name.
+   * The name written to `@type`: the implementation's class name with the longest prefix shared
+   * with the hierarchy root removed, and the trailing `$` of a Scala object dropped. Never a fully
+   * qualified class name.
+   *
+   * An implementation declared beside the root, or inside the root's companion, keeps its simple
+   * name. One declared inside some other object keeps that object in its name - `Left$Same` rather
+   * than `Same` - so that two objects can each hold an implementation of the same name.
+   *
+   * The prefixes are the same ones [[resolve]] searches, so a name always names exactly the class
+   * it came from.
    */
   def typeNameFor(clazz: Class[_]): String = {
     val name = clazz.getName
-    val afterPackage = name.substring(name.lastIndexOf('.') + 1)
-    val afterModuleSuffix = if (afterPackage.endsWith("$")) afterPackage.dropRight(1) else afterPackage
-    afterModuleSuffix.substring(afterModuleSuffix.lastIndexOf('$') + 1)
+    val withoutModuleSuffix = if (name.endsWith("$")) name.dropRight(1) else name
+    // prefixes run longest to shortest, so the first match is the most specific
+    prefixesFor(rootOf(clazz).getName).find(withoutModuleSuffix.startsWith) match {
+      case Some(prefix) => withoutModuleSuffix.substring(prefix.length)
+      case None => withoutModuleSuffix.substring(withoutModuleSuffix.lastIndexOf('.') + 1)
+    }
   }
 
   /**
@@ -111,14 +122,17 @@ private[scala] object SimplePolymorphism {
     }
   }
 
-  // guards against a `@type` value that tries to escape the hierarchy by naming a package, an
-  // enclosing type or an array
+  // guards against a `@type` value that tries to escape the hierarchy by naming a package or an
+  // array. `$` is allowed, since a name may carry the object that encloses the implementation, but
+  // a candidate is still only reachable if it turns out to be a subtype of the base
   private def isPlainName(typeName: String): Boolean =
-    typeName != null && typeName.nonEmpty && typeName.forall(c => c != '.' && c != '$' && c != '/' && c != '[' && c != ';')
+    typeName != null && typeName.nonEmpty && typeName.forall(c => c != '.' && c != '/' && c != '[' && c != ';')
 
   private def findSubtype(baseClass: Class[_], typeName: String): Option[Subtype] = {
     val loader = loaderFor(baseClass)
-    candidateNames(baseClass.getName, typeName).view
+    // anchored on the root, so a property declared as an intermediate type still resolves the names
+    // that were written for the hierarchy as a whole
+    candidateNames(rootOf(baseClass).getName, typeName).view
       .flatMap(name => Try(Class.forName(name, false, loader)).toOption)
       .filter(candidate => baseClass.isAssignableFrom(candidate) && candidate != baseClass)
       .map(candidate => Subtype(candidate, moduleInstance(candidate)))
@@ -126,19 +140,27 @@ private[scala] object SimplePolymorphism {
   }
 
   /**
-   * Class names a `sealed` implementation could have been compiled to: nested inside the base type
-   * or its companion, nested inside any object enclosing the base type, or a sibling in the same
-   * package. A candidate that is not a subtype of the base is discarded by the caller, so the
-   * companion of a case class and the static forwarder class of a case object are both ignored.
+   * Class names a `sealed` implementation could have been compiled to. A candidate that is not a
+   * subtype of the base is discarded by the caller, so the companion of a case class and the static
+   * forwarder class of a case object are both ignored.
    */
-  private def candidateNames(baseName: String, typeName: String): Seq[String] = {
-    val packagePrefix = baseName.lastIndexOf('.') match {
+  private def candidateNames(rootName: String, typeName: String): Seq[String] =
+    // the object form is tried first - a case object's instances have the `$` class
+    prefixesFor(rootName).flatMap(prefix => Seq(prefix + typeName + "$", prefix + typeName))
+
+  /**
+   * Where an implementation of the hierarchy could have been declared, longest prefix first: nested
+   * inside the root or its companion, nested inside any object enclosing the root, or alongside the
+   * root in its package.
+   */
+  private def prefixesFor(rootName: String): Seq[String] = {
+    val packagePrefix = rootName.lastIndexOf('.') match {
       case -1 => ""
-      case index => baseName.substring(0, index + 1)
+      case index => rootName.substring(0, index + 1)
     }
     val prefixes = Seq.newBuilder[String]
-    prefixes += baseName + "$"
-    var enclosing = baseName
+    prefixes += rootName + "$"
+    var enclosing = rootName
     var separator = enclosing.lastIndexOf('$')
     while (separator > packagePrefix.length) {
       enclosing = enclosing.substring(0, separator)
@@ -146,8 +168,7 @@ private[scala] object SimplePolymorphism {
       separator = enclosing.lastIndexOf('$')
     }
     prefixes += packagePrefix
-    // the object form is tried first - a case object's instances have the `$` class
-    prefixes.result().distinct.flatMap(prefix => Seq(prefix + typeName + "$", prefix + typeName))
+    prefixes.result().distinct
   }
 
   private def moduleInstance(clazz: Class[_]): Option[AnyRef] =

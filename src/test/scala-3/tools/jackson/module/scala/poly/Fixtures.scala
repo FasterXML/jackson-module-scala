@@ -63,6 +63,17 @@ enum Status extends SimplePolymorphismSupport:
 
 case class Job(status: Status)
 
+// implementations grouped into objects that do not enclose the base - each keeps its enclosing
+// object in the derived name, so two objects can hold an implementation of the same name
+sealed trait Dup extends SimplePolymorphismSupport
+object Left {
+  case class Same(v: Int) extends Dup
+  case object Only extends Dup
+}
+object Right { case class Same(v: String) extends Dup }
+
+case class DupHolder(d: Dup)
+
 // a hierarchy that is not marked - it must be untouched
 sealed trait Plain
 case class PlainDog(name: String) extends Plain

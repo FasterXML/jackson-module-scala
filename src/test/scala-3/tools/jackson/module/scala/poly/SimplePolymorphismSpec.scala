@@ -85,6 +85,16 @@ class SimplePolymorphismSpec extends AnyWordSpec with Matchers {
     "leave other implementations of that hierarchy working" in {
       roundTrip(LeafHolder(LeafB(2)), classOf[LeafHolder]) shouldEqual LeafHolder(LeafB(2))
     }
+    "qualify implementations declared in objects that do not enclose the base" in {
+      mapper.writeValueAsString(DupHolder(Left.Same(1))) shouldEqual """{"d":{"@type":"Left$Same","v":1}}"""
+      mapper.writeValueAsString(DupHolder(Right.Same("x"))) shouldEqual """{"d":{"@type":"Right$Same","v":"x"}}"""
+      mapper.writeValueAsString(DupHolder(Left.Only)) shouldEqual """{"d":{"@type":"Left$Only"}}"""
+    }
+    "round trip same named implementations from different objects" in {
+      roundTrip(DupHolder(Left.Same(1)), classOf[DupHolder]) shouldEqual DupHolder(Left.Same(1))
+      roundTrip(DupHolder(Right.Same("x")), classOf[DupHolder]) shouldEqual DupHolder(Right.Same("x"))
+      roundTrip(DupHolder(Left.Only), classOf[DupHolder]).d should be theSameInstanceAs Left.Only
+    }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""
     }
