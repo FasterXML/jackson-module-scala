@@ -86,6 +86,16 @@ case class BareB(y: String) extends Bare
 
 case class BareHolder(bare: Bare)
 
+// `::` is compiled to `$colon$colon`, a dollar that is Scala's own and not nesting
+sealed trait Expr extends SealedPolymorphismSupport
+case class Lit(v: Int) extends Expr
+case class ::(head: Int, tail: Int) extends Expr
+object Grouped {
+  case class Inner(v: Int) extends Expr
+}
+
+case class ExprHolder(expr: Expr)
+
 // a hierarchy that is not marked - it must be untouched
 sealed trait Plain
 case class PlainDog(name: String) extends Plain

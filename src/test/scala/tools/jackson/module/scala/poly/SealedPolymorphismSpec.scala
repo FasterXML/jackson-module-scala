@@ -79,9 +79,9 @@ class SealedPolymorphismSpec extends AnyWordSpec with Matchers {
       roundTrip(LeafHolder(LeafB(2)), classOf[LeafHolder]) shouldEqual LeafHolder(LeafB(2))
     }
     "qualify implementations declared in objects that do not enclose the base" in {
-      mapper.writeValueAsString(DupHolder(FirstGroup.Same(1))) shouldEqual """{"d":{"@type":"FirstGroup$Same","v":1}}"""
-      mapper.writeValueAsString(DupHolder(SecondGroup.Same("x"))) shouldEqual """{"d":{"@type":"SecondGroup$Same","v":"x"}}"""
-      mapper.writeValueAsString(DupHolder(FirstGroup.Only)) shouldEqual """{"d":{"@type":"FirstGroup$Only"}}"""
+      mapper.writeValueAsString(DupHolder(FirstGroup.Same(1))) shouldEqual """{"d":{"@type":"FirstGroup.Same","v":1}}"""
+      mapper.writeValueAsString(DupHolder(SecondGroup.Same("x"))) shouldEqual """{"d":{"@type":"SecondGroup.Same","v":"x"}}"""
+      mapper.writeValueAsString(DupHolder(FirstGroup.Only)) shouldEqual """{"d":{"@type":"FirstGroup.Only"}}"""
     }
     "round trip same named implementations from different objects" in {
       roundTrip(DupHolder(FirstGroup.Same(1)), classOf[DupHolder]) shouldEqual DupHolder(FirstGroup.Same(1))
@@ -168,6 +168,17 @@ class SealedPolymorphismSpec extends AnyWordSpec with Matchers {
       val value = BareHolder(BareA(1))
       registered.writeValueAsString(value) shouldEqual """{"bare":{"kind":"BareA","x":1}}"""
       registered.readValue(registered.writeValueAsString(value), classOf[BareHolder]) shouldEqual value
+    }
+    // Scala spells `::` as `$colon$colon`, which is not nesting and must survive intact
+    "keep a name Scala itself spelled with a dollar" in {
+      val json = mapper.writeValueAsString(ExprHolder(new ::(1, 2)))
+      json shouldEqual """{"expr":{"@type":"$colon$colon","head":1,"tail":2}}"""
+      mapper.readValue(json, classOf[ExprHolder]) shouldEqual ExprHolder(new ::(1, 2))
+    }
+    "use a dot for the object enclosing an implementation" in {
+      val json = mapper.writeValueAsString(ExprHolder(Grouped.Inner(5)))
+      json shouldEqual """{"expr":{"@type":"Grouped.Inner","v":5}}"""
+      mapper.readValue(json, classOf[ExprHolder]) shouldEqual ExprHolder(Grouped.Inner(5))
     }
     "leave an unmarked hierarchy alone" in {
       mapper.writeValueAsString(PlainDog("rex")) shouldEqual """{"name":"rex"}"""

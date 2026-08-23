@@ -71,9 +71,12 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
    * subtype of the base is discarded by the caller, so the companion of a case class and the static
    * forwarder class of a case object are both ignored.
    */
-  private def candidateNames(rootName: String, typeName: String): Seq[String] =
+  private def candidateNames(rootName: String, typeName: String): Seq[String] = {
+    // a derived name separates nesting with a dot, the JVM with a `$`
+    val jvm = jvmName(typeName)
     // the object form is tried first - a case object's instances have the `$` class
-    prefixesFor(rootName).flatMap(prefix => Seq(prefix + typeName + "$", prefix + typeName))
+    prefixesFor(rootName).flatMap(prefix => Seq(prefix + jvm + "$", prefix + jvm))
+  }
 
   /** Nothing is cached here - resolution is memoised on the SealedPolymorphism instance. */
   def clearCache(): Unit = ()

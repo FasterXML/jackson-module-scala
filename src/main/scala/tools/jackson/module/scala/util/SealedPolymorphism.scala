@@ -54,11 +54,15 @@ private[scala] object SealedPolymorphism {
   def isConcrete(clazz: Class[_]): Boolean =
     !clazz.isInterface && !Modifier.isAbstract(clazz.getModifiers)
 
-  // guards against a `@type` value that tries to escape the hierarchy by naming a package or an
-  // array. `$` is allowed, since a name may carry the object that encloses the implementation, but
-  // a candidate is still only reachable if it turns out to be a subtype of the base
+  // A dot separates an implementation from the object enclosing it, and is turned back into the `$`
+  // the JVM uses before anything is looked up - so it can only ever address a nested class, never a
+  // package, and a fully qualified name resolves to nothing. A candidate is in any case only
+  // reachable if it turns out to be a subtype of the base.
   private[scala] def isPlainName(typeName: String): Boolean =
-    typeName != null && typeName.nonEmpty && typeName.forall(c => c != '.' && c != '/' && c != '[' && c != ';')
+    typeName != null && typeName.nonEmpty && typeName.forall(c => c != '/' && c != '[' && c != ';')
+
+  /** The JVM spelling of a derived name: nesting is a dot here and a `$` there. */
+  private[scala] def jvmName(typeName: String): String = typeName.replace('.', '$')
 
   /**
    * Where an implementation of the hierarchy could have been declared, longest prefix first: nested
@@ -163,8 +167,10 @@ private[scala] class SealedPolymorphism {
    * qualified class name.
    *
    * An implementation declared beside the root, or inside the root's companion, keeps its simple
-   * name. One declared inside some other object keeps that object in its name - `Boxed$Same` rather
-   * than `Same` - so that two objects can each hold an implementation of the same name.
+   * name. One declared inside some other object keeps that object in its name - `Boxed.Same` rather
+   * than `Same` - so that two objects can each hold an implementation of the same name. The dot
+   * matches how jackson-databind separates a name from what encloses it, and is turned back into
+   * the JVM's `$` before anything is looked up.
    *
    * The prefixes are the same ones [[resolve]] searches, so a name always names exactly the class
    * it came from.
@@ -173,10 +179,32 @@ private[scala] class SealedPolymorphism {
     val name = clazz.getName
     val withoutModuleSuffix = if (name.endsWith("$")) name.dropRight(1) else name
     // prefixes run longest to shortest, so the first match is the most specific
-    prefixesFor(root.getName).find(withoutModuleSuffix.startsWith) match {
-      case Some(prefix) => withoutModuleSuffix.substring(prefix.length)
-      case None => withoutModuleSuffix.substring(withoutModuleSuffix.lastIndexOf('.') + 1)
+    val start = prefixesFor(root.getName).find(withoutModuleSuffix.startsWith) match {
+      case Some(prefix) => prefix.length
+      case None => withoutModuleSuffix.lastIndexOf('.') + 1
     }
+    val derived = new StringBuilder(withoutModuleSuffix.substring(start))
+    nestingBoundaries(clazz).foreach { boundary =>
+      if (boundary >= start) derived.setCharAt(boundary - start, '.')
+    }
+    derived.toString
+  }
+
+  /**
+   * Where in a class name a `$` separates a class from the one enclosing it.
+   *
+   * Only those are nesting, and only those become a dot. Scala puts `$` in a name of its own making
+   * too - `case class ::` is compiled to `$colon$colon` - and the enclosing chain is what tells the
+   * two apart, since such a class has no enclosing class at all.
+   */
+  private def nestingBoundaries(clazz: Class[_]): Seq[Int] = {
+    val boundaries = Seq.newBuilder[Int]
+    var enclosing = clazz.getEnclosingClass
+    while (enclosing != null) {
+      boundaries += enclosing.getName.length
+      enclosing = enclosing.getEnclosingClass
+    }
+    boundaries.result()
   }
 
   /**
