@@ -166,6 +166,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
       Option(scalaAnnotationIntrospectorModule._descriptorCache.get(key)) match {
         case Some(result) => Some(result)
         case _ => {
+          scalaAnnotationIntrospectorModule.registerDerivedReferencedValueTypes(clz)
           val introspector = BeanIntrospector(clz)
           Option(scalaAnnotationIntrospectorModule._descriptorCache.putIfAbsent(key, introspector)).getOrElse(introspector)
           Some(introspector)
@@ -330,6 +331,20 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @see [[registerReferencedValueType]]
    * @since 2.13.1
    */
+  /**
+   * Registers what `clazz` captured by deriving `ScalaTypeInfo`, so that a type argument the JVM
+   * erased does not have to be supplied by hand. Called the first time a class is introspected.
+   *
+   * A registration made by hand is deliberate, and is left alone.
+   */
+  private[introspect] def registerDerivedReferencedValueTypes(clazz: Class[_]): Unit = {
+    DerivedTypeInfo.erasedTypeArguments(clazz).foreach { case (fieldName, referencedType) =>
+      if (getRegisteredReferencedValueType(clazz, fieldName).isEmpty) {
+        registerReferencedValueType(clazz, fieldName, referencedType)
+      }
+    }
+  }
+
   def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
     overrideMap.get(clazz.getName).flatMap { overrides =>
       overrides.overrides.get(fieldName).flatMap(_.valueClass)
