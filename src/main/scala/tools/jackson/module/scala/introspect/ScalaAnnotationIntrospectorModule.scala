@@ -331,6 +331,12 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * @see [[registerReferencedValueType]]
    * @since 2.13.1
    */
+  def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
+    overrideMap.get(clazz.getName).flatMap { overrides =>
+      overrides.overrides.get(fieldName).flatMap(_.valueClass)
+    }
+  }
+
   /**
    * Registers what `clazz` captured by deriving `ScalaTypeInfo`, so that a type argument the JVM
    * erased does not have to be supplied by hand. Called the first time a class is introspected.
@@ -342,12 +348,6 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
       if (getRegisteredReferencedValueType(clazz, fieldName).isEmpty) {
         registerReferencedValueType(clazz, fieldName, referencedType)
       }
-    }
-  }
-
-  def getRegisteredReferencedValueType(clazz: Class[_], fieldName: String): Option[Class[_]] = {
-    overrideMap.get(clazz.getName).flatMap { overrides =>
-      overrides.overrides.get(fieldName).flatMap(_.valueClass)
     }
   }
 
