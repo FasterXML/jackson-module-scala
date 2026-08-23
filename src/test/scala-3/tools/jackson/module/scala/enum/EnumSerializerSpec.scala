@@ -36,5 +36,23 @@ class EnumSerializerSpec extends AnyWordSpec with Matchers {
     "serialize Enum as Map Key" in {
       mapper.writeValueAsString(Map(ColorEnum.Green -> "green")) shouldEqual s"""{"Green":"green"}"""
     }
+    "serialize ResultEnum.Ok" ignore {
+      // not a great serialization and should be changed to write a JSON object with a type marker
+      // see https://github.com/FasterXML/jackson-module-scala/issues/831
+      mapper.writeValueAsString(Result(ResultEnum.Ok("my-result"))) shouldEqual s"""{"result":"Ok(my-result)"}"""
+    }
+    "serialize ResultEnum.Error" ignore {
+      // not a great serialization and should be changed to write a JSON object with a type marker
+      // see https://github.com/FasterXML/jackson-module-scala/issues/831
+      mapper.writeValueAsString(Result(ResultEnum.Error(123))) shouldEqual s"""{"result":"Error(123)"}"""
+    }
+    "serialize ResultEnum.Pending" ignore {
+      // broken - see https://github.com/FasterXML/jackson-module-scala/issues/831
+      mapper.writeValueAsString(Result(ResultEnum.Pending)) shouldEqual s"""{"result":"Pending"}"""
+    }
+    "serialize ShapeEnumAnnotated.Circle" in {
+      mapper.writeValueAsString(ShapeEnumAnnotatedHolder(ShapeEnumAnnotated.Circle(1.5))) shouldEqual
+        s"""{"shape":{"type":"Circle","radius":1.5}}"""
+    }
   }
 }

@@ -8,28 +8,27 @@ import tools.jackson.databind.deser.KeyDeserializers
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.module.scala.{JacksonModule, ScalaModule}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
+import tools.jackson.module.scala.deser.EnumDeserializerShared
 
 import scala.languageFeature.postfixOps
 import scala.reflect.Enum
 
-private object EnumSerializerShared {
-  val EnumClass = classOf[Enum]
-}
-
 private object EnumSerializer extends ValueSerializer[Enum] {
-  def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
+  override def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
     jgen.writeString(value.toString)
+
 }
 
 private object EnumKeySerializer extends ValueSerializer[Enum] {
-  def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
+  override def serialize(value: Enum, jgen: JsonGenerator, serializationContext: SerializationContext): Unit =
     jgen.writeName(value.toString)
 }
 
 private class EnumSerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
   override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription.Supplier,
                               formatOverrides: JsonFormat.Value): ValueSerializer[Enum] =
-    if (EnumSerializerShared.EnumClass.isAssignableFrom(javaType.getRawClass))
+    if (EnumDeserializerShared.EnumClass.isAssignableFrom(javaType.getRawClass)
+        && EnumDeserializerShared.canFindByOrdinal(javaType.getRawClass))
       EnumSerializer
     else None.orNull
 }
@@ -37,7 +36,7 @@ private class EnumSerializerResolver(config: ScalaModule.Config) extends Seriali
 private class EnumKeySerializerResolver(config: ScalaModule.Config) extends Serializers.Base {
   override def findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription.Supplier,
                               formatOverrides: JsonFormat.Value): ValueSerializer[Enum] =
-    if (EnumSerializerShared.EnumClass isAssignableFrom javaType.getRawClass)
+    if (EnumDeserializerShared.EnumClass isAssignableFrom javaType.getRawClass)
       EnumKeySerializer
     else None.orNull
 }

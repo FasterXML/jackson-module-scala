@@ -176,5 +176,7 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[MissingTypesProblem]("tools.jackson.module.scala.ser.ScalaIteratorSerializer$"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.UnresolvedIterableSerializer.withResolved"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.UnresolvedIteratorSerializer.withResolved"),
-  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.IteratorSerializer.withResolved")
+  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.IteratorSerializer.withResolved"),
+  ProblemFilters.exclude[MissingClassProblem]("tools.jackson.module.scala.ser.EnumSerializerShared"),
+  ProblemFilters.exclude[MissingClassProblem]("tools.jackson.module.scala.ser.EnumSerializerShared$")
 )
