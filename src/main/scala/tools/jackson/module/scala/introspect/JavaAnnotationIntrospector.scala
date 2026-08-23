@@ -11,13 +11,18 @@ import scala.reflect.NameTransformer
 
 object JavaAnnotationIntrospector extends JavaAnnotationIntrospectorInstance(ScalaModule.defaultBuilder)
 
-class JavaAnnotationIntrospectorInstance(cfg: ScalaModule.Config) extends NopAnnotationIntrospector {
+class JavaAnnotationIntrospectorInstance(cfg: ScalaModule.Config,
+                                         introspectorModule: ScalaAnnotationIntrospectorModule)
+  extends NopAnnotationIntrospector {
+
+  // kept so that the previous constructor still resolves; it uses the module object's state
+  def this(cfg: ScalaModule.Config) = this(cfg, ScalaAnnotationIntrospectorModule)
 
   override def findNameForDeserialization(mapperConfig: MapperConfig[_], a: Annotated): PropertyName = None.orNull
 
   override def findImplicitPropertyName(mapperConfig: MapperConfig[_], param: AnnotatedMember): String = {
     val result = param match {
-      case param: AnnotatedParameter if ScalaAnnotationIntrospectorModule.isMaybeScalaBeanType(param.getDeclaringClass) => {
+      case param: AnnotatedParameter if introspectorModule.isMaybeScalaBeanType(param.getDeclaringClass) => {
         val index = param.getIndex
         val owner = param.getOwner
         owner.getAnnotated match {
