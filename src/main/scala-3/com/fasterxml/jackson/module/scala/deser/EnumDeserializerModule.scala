@@ -27,7 +27,7 @@ private object EnumDeserializerShared {
     val companionObjectClassOption = if (className.endsWith("$")) {
       Some(clz)
     } else {
-      Try(Class.forName(className + "$")).toOption
+      Try(Class.forName(className + "$", false, clz.getClassLoader)).toOption
     }
     companionObjectClassOption.flatMap { companionObjectClass =>
       Try(companionObjectClass.getField("MODULE$")).toOption.flatMap { moduleField =>
@@ -74,7 +74,7 @@ private case class EnumDeserializer[T <: Enum](clazz: Class[T]) extends StdDeser
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): T = {
     val result = Option(p.getValueAsString).flatMap { text =>
       val objectClassOption = if(clazzName.endsWith("$")) {
-        Try(Class.forName(clazzName.substring(0, clazzName.length - 1))).toOption
+        Try(Class.forName(clazzName.substring(0, clazzName.length - 1), false, clazz.getClassLoader)).toOption
       } else {
         Some(clazz)
       }
@@ -94,7 +94,7 @@ private case class EnumKeyDeserializer[T <: Enum](clazz: Class[T]) extends KeyDe
 
   override def deserializeKey(key: String, ctxt: DeserializationContext): AnyRef = {
     val objectClassOption = if(clazzName.endsWith("$")) {
-      Try(Class.forName(clazzName.substring(0, clazzName.length - 1))).toOption
+      Try(Class.forName(clazzName.substring(0, clazzName.length - 1), false, clazz.getClassLoader)).toOption
     } else {
       Some(clazz)
     }
