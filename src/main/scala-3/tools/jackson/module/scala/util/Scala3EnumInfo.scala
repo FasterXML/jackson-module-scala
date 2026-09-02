@@ -96,7 +96,7 @@ private[scala] object Scala3EnumInfo {
 
   private def companionOf(clazz: Class[_]): Option[AnyRef] = {
     Try {
-      val companionClass = Class.forName(clazz.getName + "$", true, loaderFor(clazz))
+      val companionClass = Class.forName(clazz.getName + "$", false, loaderFor(clazz))
       companionClass.getField(ModuleFieldName).get(None.orNull)
     }.toOption
   }

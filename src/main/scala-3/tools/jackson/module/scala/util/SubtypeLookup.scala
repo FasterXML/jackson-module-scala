@@ -131,7 +131,7 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
 
   private def readDerivedTable(root: Class[_]): Option[Seq[Subtype]] = {
     Try {
-      val companion = Class.forName(root.getName + "$", true, loaderFor(root))
+      val companion = Class.forName(root.getName + "$", false, loaderFor(root))
       val module = companion.getField("MODULE$").get(None.orNull)
       val derived = companion.getMethod(DerivedMethodName).invoke(module).asInstanceOf[SealedSubtypes[_]]
       derived.subtypes.map { case (clazz, singleton) => Subtype(clazz, singleton) }
