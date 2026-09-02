@@ -18,7 +18,7 @@ private[introspect] object DerivedTypeInfo {
   def erasedTypeArguments(clazz: Class[_]): Seq[(String, Class[_])] = {
     Try {
       val loader = Option(clazz.getClassLoader).getOrElse(ClassLoader.getSystemClassLoader)
-      val companion = Class.forName(clazz.getName + "$", true, loader)
+      val companion = Class.forName(clazz.getName + "$", false, loader)
       val instance = companion.getField("MODULE$").get(None.orNull)
       val derived = companion.getMethod(MethodName).invoke(instance).asInstanceOf[ScalaTypeInfo[_]]
       derived.erasedTypeArguments.map { case (field, argument) => (field, argument: Class[_]) }
