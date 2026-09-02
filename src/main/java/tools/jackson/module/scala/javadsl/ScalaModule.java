@@ -22,7 +22,8 @@ public final class ScalaModule {
      */
     public static JacksonModule enumModule() {
         try {
-            Class<?> objectClass = Class.forName("tools.jackson.module.scala.EnumModule$");
+            Class<?> objectClass = Class.forName(
+                    "tools.jackson.module.scala.EnumModule$", false, ScalaModule.class.getClassLoader());
             VarHandle varHandle = MethodHandles.publicLookup().findStaticVarHandle(
                     objectClass, "MODULE$", objectClass);
             return (JacksonModule) varHandle.get();
