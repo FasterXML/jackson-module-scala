@@ -32,7 +32,8 @@ private class EnumerationDeserializer(theType:JavaType) extends JsonDeserializer
           ctxt.handleUnexpectedToken(theType.getRawClass, jp).asInstanceOf[Enumeration#Value]
         } else {
           jp.nextToken()
-          Class.forName(eclassName + "$").getField("MODULE$").get(None.orNull).asInstanceOf[Enumeration].withName(valueValue)
+          Class.forName(eclassName + "$", false, getClass.getClassLoader)
+            .getField("MODULE$").get(None.orNull).asInstanceOf[Enumeration].withName(valueValue)
         }
       }
     }
