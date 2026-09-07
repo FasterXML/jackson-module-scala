@@ -7,6 +7,16 @@ import org.scalatest.matchers.Matcher
 
 import scala.collection.{Iterator, immutable, mutable}
 
+class NonEmptyIterators {
+  @JsonProperty
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  def emptyIterator: Iterator[Int] = Iterator.empty
+
+  @JsonProperty
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
+  def nonEmptyIterator: Iterator[Int] = Iterator(1, 2, 3)
+}
+
 class NonEmptyCollections {
   @JsonProperty
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -114,6 +124,10 @@ class IterableSerializerTest extends SerializerTest {
 
   it should "honor the JsonInclude(NON_EMPTY) annotation" in {
     serialize(new NonEmptyCollections) should be("""{"nonEmptyIterable":[1,2,3]}""")
+  }
+
+  it should "honor the JsonInclude(NON_EMPTY) annotation for Iterators" in {
+    serialize(new NonEmptyIterators) should be("""{"nonEmptyIterator":[1,2,3]}""")
   }
 
   it should "honor JsonTypeInfo" in {

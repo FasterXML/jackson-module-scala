@@ -28,7 +28,8 @@ private trait IteratorSerializer
     new ResolvedIteratorSerializer(this, property, vts, elementSerializer, unwrapSingle)
 
 
-  override def isEmpty(serializerProvider: SerializerProvider, value: collection.Iterator[Any]): Boolean = value.hasNext
+  // hasNext leaves the iterator where it found it, so this is safe to ask before serializing
+  override def isEmpty(serializerProvider: SerializerProvider, value: collection.Iterator[Any]): Boolean = !value.hasNext
 }
 
 private class ResolvedIteratorSerializer( src: IteratorSerializer,
