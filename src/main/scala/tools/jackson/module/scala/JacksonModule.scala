@@ -17,7 +17,11 @@ object JacksonModule {
   lazy val buildProps: scala.collection.mutable.Map[String, String] = {
     val props = new Properties
     val stream = cls.getClassLoader.getResourceAsStream(buildPropsFilename)
-    if (stream ne null) props.load(stream)
+    // try/finally rather than scala.util.Using, which 2.12 does not have
+    if (stream ne null) {
+      try props.load(stream)
+      finally stream.close()
+    }
 
     props.asScala
   }
