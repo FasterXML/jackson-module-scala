@@ -1,6 +1,7 @@
 package tools.jackson.module.scala.poly
 
 import tools.jackson.core.`type`.TypeReference
+import tools.jackson.databind.DatabindException
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.{DefaultScalaModule, ScalaModule, SealedPolymorphismModule}
 import tools.jackson.module.scala.deser.SealedPolymorphismDeserializerModule
@@ -26,6 +27,15 @@ class SealedPolymorphismSpec extends AnyWordSpec with Matchers {
     "round trip an implementation declared beside the base type" in {
       roundTrip(Owner("ann", Dog("rex")), classOf[Owner]) shouldEqual Owner("ann", Dog("rex"))
       roundTrip(Owner("ann", Bird("tweety", true)), classOf[Owner]) shouldEqual Owner("ann", Bird("tweety", true))
+    }
+    "refuse a second @type rather than reading past it" in {
+      // the old handling kept the first and let the second through as an ordinary property, which
+      // addIgnorable then dropped - so which of the two was used came down to their order
+      val json = """{"name":"ann","pet":{"@type":"Dog","@type":"Bird","name":"rex"}}"""
+      val thrown = the[DatabindException] thrownBy mapper.readValue(json, classOf[Owner])
+      thrown.getMessage should include("Duplicate @type")
+      thrown.getMessage should include("Dog")
+      thrown.getMessage should include("Bird")
     }
     "round trip a case object to the same instance" in {
       roundTrip(Owner("ann", Unknown), classOf[Owner]).pet should be theSameInstanceAs Unknown
