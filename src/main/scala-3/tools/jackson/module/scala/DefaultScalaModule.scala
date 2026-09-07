@@ -33,7 +33,8 @@ class DefaultScalaModule extends JacksonModule {
       ScalaAnnotationIntrospectorModule.getInitializers(config) ++
       UntypedObjectDeserializerModule.getInitializers(config) ++
       EitherModule.getInitializers(config) ++
-      SymbolModule.getInitializers(config)
+      SymbolModule.getInitializers(config) ++
+      DurationModule.getInitializers(config)
   }
 }
 
