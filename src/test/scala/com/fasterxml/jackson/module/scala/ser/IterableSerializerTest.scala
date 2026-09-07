@@ -28,6 +28,16 @@ object IterableSerializerTest {
 
   case class CHolder(c: Seq[C])
 
+  // a user-written Iterator, which is resolved to a serializer by its own class rather than by the
+  // declared Iterator type
+  class Counted(elems: String*) extends Iterator[String] {
+    private val underlying = elems.iterator
+    def hasNext: Boolean = underlying.hasNext
+    def next(): String = underlying.next()
+  }
+
+  case class IteratorHolder(it: Iterator[String])
+
 }
 
 class IterableSerializerTest extends SerializerTest {
@@ -125,6 +135,26 @@ class IterableSerializerTest extends SerializerTest {
       .build()
     mapper.writeValueAsString(Seq("123")) shouldBe """"123""""
     mapper.writeValueAsString(Seq("123", "abc")) shouldBe """["123","abc"]"""
+  }
+
+  it should "honor SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED for Iterators" in {
+    val mapper = newBuilder.enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)
+      .build()
+    mapper.writeValueAsString(new Counted("123")) shouldBe """"123""""
+    mapper.writeValueAsString(new Counted("123", "abc")) shouldBe """["123","abc"]"""
+    mapper.writeValueAsString(new Counted()) shouldBe "[]"
+  }
+
+  it should "honor SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED for Iterator properties" in {
+    val mapper = newBuilder.enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)
+      .build()
+    mapper.writeValueAsString(IteratorHolder(new Counted("123"))) shouldBe """{"it":"123"}"""
+    mapper.writeValueAsString(IteratorHolder(new Counted("123", "abc"))) shouldBe """{"it":["123","abc"]}"""
+  }
+
+  it should "write every element of an Iterator when single elements are not unwrapped" in {
+    serialize(new Counted("123", "abc")) shouldBe """["123","abc"]"""
+    serialize(IteratorHolder(new Counted("123"))) shouldBe """{"it":["123"]}"""
   }
 
   val matchUnorderedSet: Matcher[Any] = {

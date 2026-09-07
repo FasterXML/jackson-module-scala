@@ -29,7 +29,9 @@ private case class ScalaIteratorSerializer(elemType: JavaType, staticTyping: Boo
 
   override def isEmpty(prov: SerializerProvider, value: Iterator[Any]): Boolean = value.isEmpty
 
-  override def hasSingleElement(value: Iterator[Any]): Boolean = value.size == 1
+  // counting an iterator consumes it, so the question cannot be answered here without destroying
+  // the value - see the note on serialize below
+  override def hasSingleElement(value: Iterator[Any]): Boolean = false
 
   override def serialize(value: Iterator[Any], g: JsonGenerator, provider: SerializerProvider): Unit = {
     //writeSingleElement is unsupported - also unsupported in com.fasterxml.jackson.databind.ser.impl.IteratorSerializer
