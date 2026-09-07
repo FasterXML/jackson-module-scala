@@ -5,6 +5,8 @@ import tools.jackson.module.scala.{DefaultLookupCacheFactory, ScalaModule}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.util.concurrent.{CountDownLatch, Executors, TimeUnit}
+
 case class IntrospectorStateHolder(valueLong: Option[Long])
 
 /**
@@ -50,6 +52,77 @@ class ScalaAnnotationIntrospectorStateSpec extends AnyWordSpec with Matchers {
         builder.scalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
       }
     }
+    // introspecting a class registers what it derived, on whatever thread first deserializes it, so
+    // registrations are made concurrently now rather than once at startup from one thread
+    "keep every registration made from many threads at once" in {
+      val module = ScalaAnnotationIntrospectorModule.newStandaloneInstance()
+      val threads = 8
+      val perThread = 250
+      val pool = Executors.newFixedThreadPool(threads)
+      val start = new CountDownLatch(1)
+      try {
+        (0 until threads).foreach { t =>
+          pool.execute(new Runnable {
+            override def run(): Unit = {
+              start.await()
+              (0 until perThread).foreach { i =>
+                module.registerReferencedValueType(classOf[IntrospectorStateHolder], s"field-$t-$i", classOf[Long])
+              }
+            }
+          })
+        }
+        start.countDown()
+        pool.shutdown()
+        pool.awaitTermination(60, TimeUnit.SECONDS) shouldBe true
+        val missing = for {
+          t <- 0 until threads
+          i <- 0 until perThread
+          if module.getRegisteredReferencedValueType(classOf[IntrospectorStateHolder], s"field-$t-$i").isEmpty
+        } yield s"field-$t-$i"
+        withClue(s"${missing.size} of ${threads * perThread} registrations were lost: ") {
+          missing shouldBe empty
+        }
+      } finally {
+        pool.shutdownNow()
+        module.clearRegisteredReferencedTypes()
+      }
+    }
+
+    "keep registrations for different classes made from many threads at once" in {
+      val module = ScalaAnnotationIntrospectorModule.newStandaloneInstance()
+      val classes = Seq(classOf[IntrospectorStateHolder], classOf[String], classOf[Integer], classOf[java.lang.Long])
+      val threads = 8
+      val pool = Executors.newFixedThreadPool(threads)
+      val start = new CountDownLatch(1)
+      try {
+        (0 until threads).foreach { t =>
+          pool.execute(new Runnable {
+            override def run(): Unit = {
+              start.await()
+              (0 until 250).foreach { i =>
+                classes.foreach(c => module.registerReferencedValueType(c, s"field-$t-$i", classOf[Long]))
+              }
+            }
+          })
+        }
+        start.countDown()
+        pool.shutdown()
+        pool.awaitTermination(60, TimeUnit.SECONDS) shouldBe true
+        val missing = for {
+          c <- classes
+          t <- 0 until threads
+          i <- 0 until 250
+          if module.getRegisteredReferencedValueType(c, s"field-$t-$i").isEmpty
+        } yield s"${c.getName}.field-$t-$i"
+        withClue(s"${missing.size} registrations were lost: ") {
+          missing shouldBe empty
+        }
+      } finally {
+        pool.shutdownNow()
+        module.clearRegisteredReferencedTypes()
+      }
+    }
+
     "still recognise the module object when removing it from a builder" in {
       val builder = ScalaModule.builder().addAllBuiltinModules()
       builder.hasModule(ScalaAnnotationIntrospectorModule) shouldEqual true
