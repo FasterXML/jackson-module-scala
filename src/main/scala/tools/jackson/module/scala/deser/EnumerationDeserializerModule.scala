@@ -9,6 +9,8 @@ import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.util.EnumResolver
 import tools.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 
+import scala.util.control.NonFatal
+
 private trait ContextualEnumerationDeserializer {
   self: ValueDeserializer[Enumeration#Value] =>
 
@@ -35,10 +37,38 @@ private class EnumerationDeserializer(theType: JavaType) extends ValueDeserializ
           ctxt.handleUnexpectedToken(theType, jp).asInstanceOf[Enumeration#Value]
         } else {
           jp.nextToken()
-          Class.forName(eclassName + "$", false, getClass.getClassLoader)
-            .getField("MODULE$").get(None.orNull).asInstanceOf[Enumeration].withName(valueValue)
+          enumerationValue(eclassName, valueValue, ctxt)
         }
       }
+    }
+  }
+
+  /**
+   * The value `valueName` of the Enumeration named by `enumClassName`.
+   *
+   * The JSON names the class, so both halves of this fail on input a service does not control: the
+   * class may not be there, and the name may not be one of its values. Either is a databind problem
+   * and is reported as one, rather than letting a raw ClassNotFoundException or NoSuchElementException
+   * out of readValue past everything catching JacksonException.
+   */
+  private def enumerationValue(enumClassName: String, valueName: String, ctxt: DeserializationContext): Enumeration#Value = {
+    val enumeration =
+      try {
+        // the mapper's loader first: this module's own is the wrong one wherever the application's
+        // classes are loaded by a child loader, which is where this used to fail to find them
+        val loader = Option(ctxt.getTypeFactory.getClassLoader).getOrElse(getClass.getClassLoader)
+        Class.forName(enumClassName + "$", false, loader)
+          .getField("MODULE$").get(None.orNull).asInstanceOf[Enumeration]
+      } catch {
+        case NonFatal(e) =>
+          return ctxt.handleInstantiationProblem(classOf[Enumeration], enumClassName, e)
+            .asInstanceOf[Enumeration#Value]
+      }
+    try enumeration.withName(valueName)
+    catch {
+      case NonFatal(_) =>
+        ctxt.handleWeirdStringValue(enumeration.getClass, valueName,
+          s"not a value of Enumeration $enumClassName").asInstanceOf[Enumeration#Value]
     }
   }
 
