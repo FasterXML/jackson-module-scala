@@ -1,6 +1,6 @@
 package tools.jackson.module.scala.deser
 
-import tools.jackson.core.{JsonParser, JsonToken}
+import tools.jackson.core.JsonParser
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind.deser.Deserializers
 import tools.jackson.databind.deser.std.StdDeserializer
@@ -13,11 +13,12 @@ import scala.languageFeature.postfixOps
 
 private class ScalaObjectDeserializer(value: Any) extends StdDeserializer[Any](classOf[Any]) {
   override def deserialize(p: JsonParser, ctxt: DeserializationContext): Any = {
-    if (p.currentToken() != JsonToken.END_OBJECT) {
-      while (p.nextToken() != JsonToken.END_OBJECT) {
-        // consume the object
-      }
-    }
+    // A Scala object holds no state, so whatever was written for it is consumed and discarded.
+    // skipChildren stops at the end token matching the one it started on - not at the first one it
+    // meets - and does nothing at all for a scalar, so a nested object no longer ends the value
+    // early and a scalar no longer eats the tokens of whatever encloses it. Reading a scalar at the
+    // root used to spin forever here: nextToken returns null at end of input, never END_OBJECT.
+    p.skipChildren()
     value
   }
 }
