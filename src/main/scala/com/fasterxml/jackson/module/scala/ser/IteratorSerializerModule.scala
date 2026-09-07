@@ -17,8 +17,39 @@ private trait IteratorSerializer
 {
   def iteratorSerializer: ScalaIteratorSerializer
 
-  override def hasSingleElement(p1: collection.Iterator[Any]): Boolean =
-    p1.size == 1
+  // An iterator cannot be counted without being consumed, so this cannot be answered without
+  // destroying the value it is asked about - the same reason databind's own IteratorSerializer
+  // answers false here. WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED is honoured in serialize instead, from a
+  // single element held back rather than from a length.
+  override def hasSingleElement(p1: collection.Iterator[Any]): Boolean = false
+
+  // AsArraySerializerBase.serialize would otherwise ask hasSingleElement whenever the feature is on
+  override def serialize(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
+    if (provider.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)) {
+      serializeUnwrappingSingle(value, jgen, provider)
+    } else {
+      writeArray(value, jgen, provider)
+    }
+  }
+
+  // Pulls one element to find out whether a second follows, then serializes that element and the
+  // rest of the iterator together - so nothing is lost whichever way the answer goes.
+  private def serializeUnwrappingSingle(value: collection.Iterator[Any], jgen: JsonGenerator,
+                                        provider: SerializerProvider): Unit = {
+    if (!value.hasNext) writeArray(value, jgen, provider)
+    else {
+      val first = value.next()
+      if (value.hasNext) writeArray(Iterator.single(first) ++ value, jgen, provider)
+      else serializeContents(Iterator.single(first), jgen, provider)
+    }
+  }
+
+  private def writeArray(value: collection.Iterator[Any], jgen: JsonGenerator,
+                         provider: SerializerProvider): Unit = {
+    jgen.writeStartArray(value)
+    serializeContents(value, jgen, provider)
+    jgen.writeEndArray()
+  }
 
   def serializeContents(value: collection.Iterator[Any], jgen: JsonGenerator, provider: SerializerProvider): Unit = {
     iteratorSerializer.serializeContents(value, jgen, provider)

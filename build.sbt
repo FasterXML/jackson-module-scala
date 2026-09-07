@@ -194,6 +194,12 @@ git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
 mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[IncompatibleResultTypeProblem]("com.fasterxml.jackson.module.scala.deser.ImmutableBitSetDeserializer.getNullValue"),
   ProblemFilters.exclude[MissingTypesProblem]("com.fasterxml.jackson.module.scala.DefaultScalaModule"),
-  ProblemFilters.exclude[MissingTypesProblem]("com.fasterxml.jackson.module.scala.DefaultScalaModule$")
+  ProblemFilters.exclude[MissingTypesProblem]("com.fasterxml.jackson.module.scala.DefaultScalaModule$"),
+  // IteratorSerializer takes over serialize so that WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED no longer
+  // has to count an iterator to be answered. On 2.11 a concrete trait method is an interface method
+  // the implementing class provides, so the trait growing one is a change to what an implementor
+  // must supply - but the trait is private to this package and only the two serializers here
+  // implement it, so there is no implementor outside the module to break.
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("com.fasterxml.jackson.module.scala.ser.IteratorSerializer.serialize")
 )
 
