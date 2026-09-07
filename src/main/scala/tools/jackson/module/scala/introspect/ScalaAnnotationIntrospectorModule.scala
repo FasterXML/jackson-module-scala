@@ -15,6 +15,7 @@ import tools.jackson.module.scala.{DefaultLookupCacheFactory, JacksonModule, Loo
 import tools.jackson.module.scala.util.Implicits._
 
 import java.lang.annotation.Annotation
+import scala.collection.concurrent.TrieMap
 import scala.collection.mutable.{Map => MutableMap}
 
 class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: ScalaAnnotationIntrospectorModule,
@@ -283,18 +284,26 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   private var _descriptorCacheSize: Int = 100
   private var _scalaTypeCacheSize: Int = 1000
 
-  private[introspect] val overrideMap = MutableMap[String, ClassOverrides]()
+  // Registering a referenced value type used to be something an application did at startup, from one
+  // thread, before any mapper was used. It is not any more: introspecting a class registers what it
+  // captured by deriving ScalaTypeInfo, and that happens on whatever application thread first
+  // deserializes the class - and again for every class whose bean descriptor has been evicted. A
+  // plain mutable.HashMap read and written that way can lose an entry, or leave a reader walking a
+  // bucket chain that a resize is in the middle of moving.
+  // Declared as the general type it has always had, so this stays an implementation detail rather
+  // than a signature change; TrieMap.getOrElseUpdate is atomic on every version cross-built here.
+  private[introspect] val overrideMap: MutableMap[String, ClassOverrides] = TrieMap.empty
 
-  private[introspect] var _descriptorCache: LookupCache[String, BeanDescriptor] =
+  @volatile private[introspect] var _descriptorCache: LookupCache[String, BeanDescriptor] =
     _lookupCacheFactory.createLookupCache(16, _descriptorCacheSize)
 
-  private[introspect] var _scalaTypeCache: LookupCache[String, Boolean] =
+  @volatile private[introspect] var _scalaTypeCache: LookupCache[String, Boolean] =
     _lookupCacheFactory.createLookupCache(16, _scalaTypeCacheSize)
 
   // What each class captured by deriving ScalaTypeInfo. Belongs to this module instance like the
   // caches above it, so a module built through ScalaModule.Builder remembers what it has read
   // independently of every other module.
-  private[introspect] var _derivedTypeInfo: DerivedTypeInfo = new DerivedTypeInfo(_lookupCacheFactory)
+  @volatile private[introspect] var _derivedTypeInfo: DerivedTypeInfo = new DerivedTypeInfo(_lookupCacheFactory)
 
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
