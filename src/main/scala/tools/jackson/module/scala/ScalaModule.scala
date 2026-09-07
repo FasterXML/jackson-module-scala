@@ -92,6 +92,7 @@ object ScalaModule {
       addModule(UntypedObjectDeserializerModule)
       addModule(EitherModule)
       addModule(SymbolModule)
+      addModule(DurationModule)
       // this builder's own instance, so a built module keeps its own polymorphism state
       addModule(sealedPolymorphismModule)
       BuiltinModules.addScalaVersionSpecificModules(this)
