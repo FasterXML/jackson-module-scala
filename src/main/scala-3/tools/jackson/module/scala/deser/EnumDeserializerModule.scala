@@ -12,6 +12,7 @@ import tools.jackson.module.scala.util.Scala3EnumInfo
 import java.lang.reflect.InvocationTargetException
 import scala.reflect.Enum
 import scala.util.Try
+import scala.util.control.NonFatal
 
 private[scala] object EnumDeserializerShared {
   val IntClass = classOf[Int]
@@ -30,42 +31,46 @@ private[scala] object EnumDeserializerShared {
       try {
         method.invoke(None.orNull, 0) != null
       } catch {
-        case _ => false
+        // An enum with no case at ordinal 0 answers by throwing, which is the question being asked
+        // here. Reflection wraps whatever fromOrdinal threw, so the cause is what decides: a fatal
+        // one - an OutOfMemoryError, a thread interrupt - belongs to the caller, not to this
+        // question, and arrives wrapped exactly as an ordinary failure does.
+        case e: InvocationTargetException => e.getCause match {
+          case null => false
+          case NonFatal(_) => false
+          case fatal => throw fatal
+        }
+        case NonFatal(_) => false
       }
     }.getOrElse(false)
   }
 
-  def matchBasedOnOrdinal(clz: Class[_], key: String): Option[_] = {
-    Try(clz.getMethod("fromOrdinal", IntClass)).toOption.flatMap { method =>
-      var i = 0
-      var matched: Option[_] = None
-      var complete = false
-      while (!complete) {
-        try {
-          val enumValue = method.invoke(None.orNull, i)
-          if (enumValue.toString == key) {
-            matched = Some(enumValue)
-            complete = true
-          }
-        } catch {
-          case _: NoSuchElementException => {
-            matched = None
-            complete = true
-          }
-          case itex: InvocationTargetException => {
-            Option(itex.getCause) match {
-              case Some(e) if e.isInstanceOf[NoSuchElementException] => {
-                matched = None
-                complete = true
-              }
-              case Some(e) => throw e
-              case _ => throw itex
-            }
-          }
+  /**
+   * The case of `clz` whose name is `key`, or `None` where it has none.
+   *
+   * Read from the enum's own case table. This used to walk the ordinals instead, calling
+   * `fromOrdinal(0)`, `fromOrdinal(1)` and so on until one of them threw NoSuchElementException -
+   * which cost a reflective call per case on the way to every answer, and ended only if
+   * out-of-range was signalled in that one way, leaving an enum that signalled it differently to be
+   * walked without bound. `values` is generated alongside `fromOrdinal`, by the same enums, and
+   * gives the whole table in a single call that cannot run long or throw at all.
+   */
+  def matchByName(clz: Class[_], key: String): Option[_] = {
+    valuesOf(clz).flatMap(_.find(_.toString == key))
+  }
+
+  private def valuesOf(clz: Class[_]): Option[Array[AnyRef]] = {
+    Try(clz.getMethod("values")).toOption.flatMap { method =>
+      try {
+        Option(method.invoke(None.orNull)).map(_.asInstanceOf[Array[AnyRef]])
+      } catch {
+        case e: InvocationTargetException => e.getCause match {
+          case null => None
+          case NonFatal(_) => None
+          case fatal => throw fatal
         }
-        i += 1
+        case NonFatal(_) => None
       }
-      matched
     }
   }
 
@@ -76,7 +81,7 @@ private case class EnumDeserializer[T <: Enum](clazz: Class[T]) extends StdDeser
     val result = Option(p.getValueAsString).flatMap { text =>
       Try {
         EnumDeserializerShared.tryValueOf(clazz, text)
-          .orElse(EnumDeserializerShared.matchBasedOnOrdinal(clazz, text))
+          .orElse(EnumDeserializerShared.matchByName(clazz, text))
       }.toOption.flatten
     }
     result.getOrElse(throw new IllegalArgumentException(s"Failed to create Enum instance for ${p.getValueAsString}"))
@@ -135,7 +140,7 @@ private case class EnumKeyDeserializer[T <: Enum](clazz: Class[T]) extends KeyDe
   override def deserializeKey(key: String, ctxt: DeserializationContext): AnyRef = {
     val result = Try {
       EnumDeserializerShared.tryValueOf(clazz, key)
-        .orElse(EnumDeserializerShared.matchBasedOnOrdinal(clazz, key))
+        .orElse(EnumDeserializerShared.matchByName(clazz, key))
     }.toOption.flatten
     val enumResult = result.getOrElse(throw new IllegalArgumentException(s"Failed to create Enum instance for $key"))
     enumResult.asInstanceOf[AnyRef]
