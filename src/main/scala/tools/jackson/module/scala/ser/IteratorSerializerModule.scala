@@ -20,17 +20,37 @@ private trait IteratorSerializer
 {
   def iteratorSerializer: ScalaIteratorSerializer
 
-  override def hasSingleElement(p1: collection.Iterator[Any]): Boolean =
-    p1.size == 1
+  // An iterator cannot be counted without being consumed, so this cannot be answered without
+  // destroying the value it is asked about - the same reason databind's own IteratorSerializer
+  // answers false here. WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED is honoured in serialize instead, from a
+  // single element held back rather than from a length.
+  override def hasSingleElement(p1: collection.Iterator[Any]): Boolean = false
 
   override def serialize(value: collection.Iterator[Any], jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
-    if (serializationContext.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
-      iteratorSerializer.serializeContents(value, jgen, serializationContext)
+    if (serializationContext.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)) {
+      serializeUnwrappingSingle(value, jgen, serializationContext)
     } else {
-      jgen.writeStartArray(value)
-      iteratorSerializer.serializeContents(value, jgen, serializationContext)
-      jgen.writeEndArray()
+      writeArray(value, jgen, serializationContext)
     }
+  }
+
+  // Pulls one element to find out whether a second follows, then serializes that element and the
+  // rest of the iterator together - so nothing is lost whichever way the answer goes.
+  private def serializeUnwrappingSingle(value: collection.Iterator[Any], jgen: JsonGenerator,
+                                        serializationContext: SerializationContext): Unit = {
+    if (!value.hasNext) writeArray(value, jgen, serializationContext)
+    else {
+      val first = value.next()
+      if (value.hasNext) writeArray(Iterator.single(first) ++ value, jgen, serializationContext)
+      else iteratorSerializer.serializeContents(Iterator.single(first), jgen, serializationContext)
+    }
+  }
+
+  private def writeArray(value: collection.Iterator[Any], jgen: JsonGenerator,
+                         serializationContext: SerializationContext): Unit = {
+    jgen.writeStartArray(value)
+    iteratorSerializer.serializeContents(value, jgen, serializationContext)
+    jgen.writeEndArray()
   }
 
   override def serializeContents(value: collection.Iterator[Any], gen: JsonGenerator, serializationContext: SerializationContext): Unit = {
