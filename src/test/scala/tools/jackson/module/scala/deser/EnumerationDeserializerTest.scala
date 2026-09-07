@@ -7,7 +7,12 @@ import tools.jackson.module.scala.OuterWeekday.InnerWeekday
 import tools.jackson.module.scala.Weekday
 import tools.jackson.module.scala.ser.EnumerationSerializerTest.{AnnotationHolder, AnnotationOptionHolder, WeekdayType}
 
+import tools.jackson.databind.DatabindException
+import tools.jackson.databind.`type`.TypeFactory
+import tools.jackson.databind.json.JsonMapper
+
 import scala.beans.BeanProperty
+import scala.collection.mutable
 
 class EnumContainer {
   var day: Weekday.Value = Weekday.Fri
@@ -67,6 +72,36 @@ class EnumerationDeserializerTest extends DeserializerTest {
   it should "deserialize an annotated optional Enumeration value (JsonScalaEnumeration)" in {
     val result = deserialize(annotatedFridayJson, classOf[AnnotationOptionHolder])
     result.weekday shouldBe Some(Weekday.Fri)
+  }
+
+  // read at the root rather than as a bean property: a property deserializer wraps what it catches,
+  // so the root is where a raw reflection failure escapes readValue
+  it should "report an enumClass it cannot find as a databind problem" in {
+    val json = """{"enumClass":"tools.jackson.module.scala.NoSuchWeekday","value":"Fri"}"""
+    val thrown = the[DatabindException] thrownBy newMapper.readValue(json, classOf[Weekday.Value])
+    thrown.getMessage should include("NoSuchWeekday")
+  }
+
+  it should "report a value the Enumeration does not have as a databind problem" in {
+    val json = """{"enumClass":"tools.jackson.module.scala.Weekday","value":"Caturday"}"""
+    val thrown = the[DatabindException] thrownBy newMapper.readValue(json, classOf[Weekday.Value])
+    thrown.getMessage should include("Caturday")
+  }
+
+  it should "resolve the enumClass through the mapper's own classloader" in {
+    val asked = mutable.Buffer[String]()
+    val recording = new ClassLoader(getClass.getClassLoader) {
+      override def loadClass(name: String, resolve: Boolean): Class[_] = {
+        asked += name
+        super.loadClass(name, resolve)
+      }
+    }
+    val mapper = JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .typeFactory(TypeFactory.createDefaultInstance().withClassLoader(recording))
+      .build()
+    mapper.readValue(fridayEnumJson, classOf[EnumContainer]).day should be (Weekday.Fri)
+    asked should contain ("tools.jackson.module.scala.Weekday$")
   }
 
   val fridayEnumJson = """{"day": {"enumClass":"tools.jackson.module.scala.Weekday","value":"Fri"}}"""
