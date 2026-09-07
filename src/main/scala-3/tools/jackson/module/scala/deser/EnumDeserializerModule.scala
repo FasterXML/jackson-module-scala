@@ -117,7 +117,13 @@ private case class Scala3EnumSumDeserializer[T <: Enum](info: Scala3EnumInfo.Inf
     while (p.nextToken() != JsonToken.END_OBJECT) {
       val name = p.currentName()
       p.nextToken()
-      if (typeId == null && name == Scala3EnumInfo.TypePropertyName) {
+      if (name == Scala3EnumInfo.TypePropertyName) {
+        // a second one is refused rather than written on as an ordinary property: which of the two
+        // the case was read from would otherwise depend on nothing but their order
+        if (typeId != null) {
+          ctxt.reportInputMismatch(info.rootClass,
+            s"Duplicate ${Scala3EnumInfo.TypePropertyName} property: '$typeId' then '${p.getValueAsString}'")
+        }
         typeId = p.getValueAsString
       } else {
         buffer.writeName(name)
@@ -128,7 +134,9 @@ private case class Scala3EnumSumDeserializer[T <: Enum](info: Scala3EnumInfo.Inf
     val enumCase = Option(typeId).flatMap(info.caseForName).getOrElse(failed(typeId))
     enumCase.singleton match {
       case Some(singleton) => singleton
-      case None => ctxt.readValue(buffer.asParserOnFirstToken(ctxt), enumCase.clazz.asInstanceOf[Class[AnyRef]])
+      // the source parser is handed over so that what is read from the buffer still reports where in
+      // the input it came from - databind's own AsPropertyTypeDeserializer buffers the same way
+      case None => ctxt.readValue(buffer.asParserOnFirstToken(ctxt, p), enumCase.clazz.asInstanceOf[Class[AnyRef]])
     }
   }
 

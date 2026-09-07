@@ -18,7 +18,13 @@ private object TaggedObject {
     while (p.nextToken() != JsonToken.END_OBJECT) {
       val name = p.currentName()
       p.nextToken()
-      if (typeName == null && name == SealedPolymorphism.TypePropertyName) {
+      if (name == SealedPolymorphism.TypePropertyName) {
+        // a second one is refused rather than written on as an ordinary property: which of the two
+        // the value was read as would otherwise depend on nothing but their order
+        if (typeName != null) {
+          ctxt.reportInputMismatch(classOf[AnyRef],
+            s"Duplicate ${SealedPolymorphism.TypePropertyName} property: '$typeName' then '${p.getValueAsString}'")
+        }
         typeName = p.getValueAsString
       } else {
         buffer.writeName(name)
@@ -26,7 +32,9 @@ private object TaggedObject {
       }
     }
     buffer.writeEndObject()
-    (typeName, buffer.asParserOnFirstToken(ctxt))
+    // the source parser is handed over so that what is read from the buffer still reports where in
+    // the input it came from - databind's own AsPropertyTypeDeserializer buffers the same way
+    (typeName, buffer.asParserOnFirstToken(ctxt, p))
   }
 
   def failed(baseClass: Class[_], typeName: String): Nothing =
