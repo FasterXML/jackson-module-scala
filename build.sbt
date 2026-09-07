@@ -194,5 +194,11 @@ mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.deser.EnumDeserializerModule.scala3EnumInfo"),
   ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.deser.EnumDeserializerModule.tools$jackson$module$scala$Scala3EnumSupportState$_setter_$scala3EnumInfo_="),
   ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.ser.EnumSerializerModule.scala3EnumInfo"),
-  ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.ser.EnumSerializerModule.tools$jackson$module$scala$Scala3EnumSupportState$_setter_$scala3EnumInfo_=")
+  ProblemFilters.exclude[InheritedNewAbstractMethodProblem]("tools.jackson.module.scala.ser.EnumSerializerModule.tools$jackson$module$scala$Scala3EnumSupportState$_setter_$scala3EnumInfo_="),
+  // What each class captured by deriving ScalaTypeInfo is remembered on the module instance rather
+  // than in a singleton, for the same reason the enum cache above is. A trait that grows state grows
+  // the accessors the implementing class has to provide, so anyone extending this trait has to
+  // recompile - the field itself is private to the introspect package and cannot be called.
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule._derivedTypeInfo"),
+  ProblemFilters.exclude[ReversedMissingMethodProblem]("tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule._derivedTypeInfo_=")
 )

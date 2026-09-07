@@ -291,6 +291,11 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   private[introspect] var _scalaTypeCache: LookupCache[String, Boolean] =
     _lookupCacheFactory.createLookupCache(16, _scalaTypeCacheSize)
 
+  // What each class captured by deriving ScalaTypeInfo. Belongs to this module instance like the
+  // caches above it, so a module built through ScalaModule.Builder remembers what it has read
+  // independently of every other module.
+  private[introspect] var _derivedTypeInfo: DerivedTypeInfo = new DerivedTypeInfo(_lookupCacheFactory)
+
   /**
    * jackson-module-scala does not always properly handle deserialization of Options or Collections wrapping
    * Scala primitives (eg Int, Long, Boolean).
@@ -344,7 +349,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * A registration made by hand is deliberate, and is left alone.
    */
   private[introspect] def registerDerivedReferencedValueTypes(clazz: Class[_]): Unit = {
-    DerivedTypeInfo.erasedTypeArguments(clazz).foreach { case (fieldName, referencedType) =>
+    _derivedTypeInfo.erasedTypeArguments(clazz).foreach { case (fieldName, referencedType) =>
       if (getRegisteredReferencedValueType(clazz, fieldName).isEmpty) {
         registerReferencedValueType(clazz, fieldName, referencedType)
       }
@@ -390,6 +395,7 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
     _lookupCacheFactory = lookupCacheFactory
     recreateDescriptorCache()
     recreateScalaTypeCache()
+    recreateDerivedTypeInfo()
   }
 
   /**
@@ -449,6 +455,10 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
   private def recreateScalaTypeCache(): Unit = {
     _scalaTypeCache.clear()
     _scalaTypeCache = _lookupCacheFactory.createLookupCache(16, _scalaTypeCacheSize)
+  }
+
+  private def recreateDerivedTypeInfo(): Unit = {
+    _derivedTypeInfo = new DerivedTypeInfo(_lookupCacheFactory)
   }
 
 }

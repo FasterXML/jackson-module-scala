@@ -1,7 +1,7 @@
 package tools.jackson.module.scala.introspect
 
 import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.scala.ScalaModule
+import tools.jackson.module.scala.{DefaultLookupCacheFactory, ScalaModule}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -21,6 +21,20 @@ class ScalaAnnotationIntrospectorStateSpec extends AnyWordSpec with Matchers {
         theSameInstanceAs(second.scalaAnnotationIntrospectorModule)
       first.scalaAnnotationIntrospectorModule should not be
         theSameInstanceAs(ScalaAnnotationIntrospectorModule)
+    }
+    "give each builder its own record of what classes derived" in {
+      val first = ScalaModule.builder()
+      val second = ScalaModule.builder()
+      first.scalaAnnotationIntrospectorModule._derivedTypeInfo should not be
+        theSameInstanceAs(second.scalaAnnotationIntrospectorModule._derivedTypeInfo)
+      first.scalaAnnotationIntrospectorModule._derivedTypeInfo should not be
+        theSameInstanceAs(ScalaAnnotationIntrospectorModule._derivedTypeInfo)
+    }
+    "rebuild that record when the lookup cache factory is replaced" in {
+      val module = ScalaAnnotationIntrospectorModule.newStandaloneInstance()
+      val before = module._derivedTypeInfo
+      module.setLookupCacheFactory(DefaultLookupCacheFactory)
+      module._derivedTypeInfo should not be theSameInstanceAs(before)
     }
     "keep a referenced value type registration to the builder it was made on" in {
       val builder = ScalaModule.builder().addAllBuiltinModules()
