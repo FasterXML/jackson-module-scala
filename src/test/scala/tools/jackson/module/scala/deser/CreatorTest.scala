@@ -58,6 +58,37 @@ object Wrapped {
   def of(value: String): Wrapped = new Wrapped(value)
 }
 
+// A property-based creator on a companion, with the parameter names the compiler recorded.
+class FullName private (val full: String)
+object FullName {
+  @JsonCreator(mode = Mode.PROPERTIES)
+  def build(first: String, last: String): FullName = new FullName(s"$first $last")
+}
+
+// The same, with names given by @JsonProperty on the companion method's parameters.
+class RenamedFullName private (val full: String)
+object RenamedFullName {
+  @JsonCreator(mode = Mode.PROPERTIES)
+  def build(@JsonProperty("first_name") first: String, @JsonProperty("last_name") last: String): RenamedFullName =
+    new RenamedFullName(s"$first $last")
+}
+
+// A case class whose companion apply is the creator, rather than the constructor Jackson would
+// otherwise choose - it takes more than the constructor does, and can tell the difference.
+case class Scaled private (n: Int)
+object Scaled {
+  @JsonCreator
+  def apply(n: Int, scale: Int): Scaled = new Scaled(n * scale)
+}
+
+// A companion creator whose parameter has a default in the primary constructor at the same index;
+// that default belongs to the constructor and must not be applied to the factory's parameter.
+case class Labelled(label: String = "default label", n: Int)
+object Labelled {
+  @JsonCreator(mode = Mode.PROPERTIES)
+  def build(text: String, n: Int): Labelled = Labelled(text.toUpperCase, n)
+}
+
 object CreatorTest
 {
   class CreatorTestBean(val a: String, var b: String)
@@ -241,6 +272,26 @@ class CreatorTest extends DeserializationFixture {
     val json = f.writeValueAsString(orig)
     json shouldBe "\"x\""
     f.readValue(json, classOf[Wrapped]) shouldEqual orig
+  }
+
+  it should "use a property-based companion creator" in { f =>
+    f.readValue("""{"first":"ann","last":"lee"}""", classOf[FullName]).full shouldBe "ann lee"
+  }
+
+  it should "honor JsonProperty on the parameters of a companion creator" in { f =>
+    f.readValue("""{"first_name":"ann","last_name":"lee"}""", classOf[RenamedFullName]).full shouldBe "ann lee"
+  }
+
+  it should "use the annotated companion apply of a case class over its constructor" in { f =>
+    // the synthetic apply is private with the constructor on Scala 3, so the result is not built here
+    f.readValue("""{"n":3,"scale":4}""", classOf[Scaled]).n shouldBe 12
+  }
+
+  it should "not apply a constructor default to a companion creator parameter" in { f =>
+    f.readValue("""{"text":"given","n":1}""", classOf[Labelled]) shouldEqual Labelled("GIVEN", 1)
+    // the factory's text has no default; the constructor's label does not stand in for it
+    val thrown = the[Exception] thrownBy f.readValue("""{"n":1}""", classOf[Labelled])
+    thrown.getClass.getName should startWith("tools.jackson.databind")
   }
 
   it should "support default values" in { f =>
