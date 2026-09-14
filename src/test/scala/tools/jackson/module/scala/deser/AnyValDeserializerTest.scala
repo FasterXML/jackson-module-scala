@@ -31,7 +31,7 @@ class AnyValDeserializerTest extends DeserializerTest {
     mapper.readValue("""{"underlying":42}""", classOf[BigIntAnyVal]) shouldEqual expected
     mapper.readValue("""{"value":42}""", classOf[BigIntAnyValHolder]) shouldEqual BigIntAnyValHolder(expected)
     // see https://github.com/FasterXML/jackson-module-scala/pull/675
-    // mapper.readValue("""{"value":{"underlying":42}}""", classOf[BigIntOptionAnyValHolder]) shouldEqual
-      // BigIntOptionAnyValHolder(Some(expected))
+    mapper.readValue("""{"value":{"underlying":42}}""", classOf[BigIntOptionAnyValHolder]) shouldEqual
+      BigIntOptionAnyValHolder(Some(expected))
   }
 }

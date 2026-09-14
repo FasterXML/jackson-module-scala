@@ -90,7 +90,9 @@ Compile / unmanagedSourceDirectories ++= {
 
 Test / unmanagedSourceDirectories ++= {
   if (scalaReleaseVersion.value > 2) {
+    // as for main: a test that needs only the 2.13 collections library is written once, in scala-2.13
     Seq(
+      (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-2.13",
       (LocalRootProject / baseDirectory).value / "src" / "test" / "scala-3"
     )
   } else {
