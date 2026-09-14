@@ -1,3 +1,12 @@
+# Version: 2.22.3 (release not yet planned)
+
+## Fixes
+
+* [[gh-pr-842]](https://github.com/FasterXML/jackson-module-scala/pull/842) Avoid class initialization in Class.forName calls.
+* [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
+* [[gh-pr-844]](https://github.com/FasterXML/jackson-module-scala/pull/844) Fix Iterator serializer isEmpty.
+* [[gh-pr-845]](https://github.com/FasterXML/jackson-module-scala/pull/845) Fix Iterator serializer with WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED.
+
 # Version: 2.22.2
 
 There are no new fixes in this release; it serves to track the 2.22.2 release
