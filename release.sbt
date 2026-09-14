@@ -1,4 +1,4 @@
-import com.typesafe.sbt.osgi.OsgiKeys
+import com.github.sbt.osgi.OsgiKeys
 
 // OSGI bundles
 lazy val jacksonOsgiSettings = osgiSettings ++ Seq(
