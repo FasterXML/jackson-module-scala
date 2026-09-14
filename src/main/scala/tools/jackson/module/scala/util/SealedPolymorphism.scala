@@ -94,8 +94,7 @@ private[scala] object SealedPolymorphism {
   private[scala] def moduleInstance(clazz: Class[_]): Option[AnyRef] =
     Try(clazz.getField(ModuleFieldName).get(None.orNull)).toOption.map(_.asInstanceOf[AnyRef])
 
-  private[scala] def loaderFor(clazz: Class[_]): ClassLoader =
-    Option(clazz.getClassLoader).getOrElse(ClassLoader.getSystemClassLoader)
+  private[scala] def loaderFor(clazz: Class[_]): ClassLoader = ClassW.loaderFor(clazz)
 }
 
 /**

@@ -3,7 +3,7 @@ package tools.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty, JsonValue}
 import com.fasterxml.jackson.annotation.JsonCreator.Mode
 import tools.jackson.core.`type`.TypeReference
-import tools.jackson.databind.{DeserializationFeature, JsonNode, MapperFeature, ObjectMapper}
+import tools.jackson.databind.{DatabindException, DeserializationFeature, JsonNode, MapperFeature, ObjectMapper}
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.node.IntNode
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
@@ -87,6 +87,68 @@ case class Labelled(label: String = "default label", n: Int)
 object Labelled {
   @JsonCreator(mode = Mode.PROPERTIES)
   def build(text: String, n: Int): Labelled = Labelled(text.toUpperCase, n)
+}
+
+// A creator with one parameter and no mode, named like a property of the class and not.
+class NamedLikeProperty private (val value: String)
+object NamedLikeProperty {
+  @JsonCreator def of(value: String): NamedLikeProperty = new NamedLikeProperty(value + "!")
+}
+class NotNamedLikeProperty private (val value: String)
+object NotNamedLikeProperty {
+  @JsonCreator def of(text: String): NotNamedLikeProperty = new NotNamedLikeProperty(text + "!")
+}
+
+// Companion creators on classes that are not top level. Scala 2 emits no static forwarders for
+// these, so the annotation is not where Jackson looks for it; the module calls the method itself.
+object CreatorTestNested {
+  class Tagged private (val value: String)
+  object Tagged {
+    @JsonCreator(mode = Mode.DELEGATING)
+    def of(value: String): Tagged = new Tagged(value + "!")
+  }
+
+  class FullName private (val full: String)
+  object FullName {
+    @JsonCreator(mode = Mode.PROPERTIES)
+    def build(first: String, last: String): FullName = new FullName(s"$first $last")
+  }
+
+  class RenamedFullName private (val full: String)
+  object RenamedFullName {
+    @JsonCreator(mode = Mode.PROPERTIES)
+    def build(@JsonProperty("first_name") first: String, @JsonProperty("last_name") last: String): RenamedFullName =
+      new RenamedFullName(s"$first $last")
+  }
+
+  case class Scaled private (n: Int)
+  object Scaled {
+    @JsonCreator
+    def apply(n: Int, scale: Int): Scaled = new Scaled(n * scale)
+  }
+
+  class NamedLikeProperty private (val value: String)
+  object NamedLikeProperty {
+    @JsonCreator def of(value: String): NamedLikeProperty = new NamedLikeProperty(value + "!")
+  }
+
+  class NotNamedLikeProperty private (val value: String)
+  object NotNamedLikeProperty {
+    @JsonCreator def of(text: String): NotNamedLikeProperty = new NotNamedLikeProperty(text + "!")
+  }
+
+  case class Point(x: Int, y: Int)
+  class Located private (val point: Point)
+  object Located {
+    @JsonCreator(mode = Mode.PROPERTIES)
+    def at(point: Point, ignored: Option[String]): Located = new Located(point)
+  }
+
+  class Failing private ()
+  object Failing {
+    @JsonCreator(mode = Mode.DELEGATING)
+    def of(value: String): Failing = throw new IllegalStateException("refused " + value)
+  }
 }
 
 object CreatorTest
@@ -292,6 +354,37 @@ class CreatorTest extends DeserializationFixture {
     // the factory's text has no default; the constructor's label does not stand in for it
     val thrown = the[Exception] thrownBy f.readValue("""{"n":1}""", classOf[Labelled])
     thrown.getClass.getName should startWith("tools.jackson.databind")
+  }
+
+  it should "treat a companion creator with one parameter named like a property as property-based" in { f =>
+    f.readValue("""{"value":"x"}""", classOf[NamedLikeProperty]).value shouldBe "x!"
+    f.readValue("""{"value":"x"}""", classOf[CreatorTestNested.NamedLikeProperty]).value shouldBe "x!"
+  }
+
+  it should "treat a companion creator with one parameter not named like a property as delegating" in { f =>
+    f.readValue("\"x\"", classOf[NotNamedLikeProperty]).value shouldBe "x!"
+    f.readValue("\"x\"", classOf[CreatorTestNested.NotNamedLikeProperty]).value shouldBe "x!"
+  }
+
+  it should "use a delegating companion creator of a class that is not top level" in { f =>
+    f.readValue("\"x\"", classOf[CreatorTestNested.Tagged]).value shouldBe "x!"
+  }
+
+  it should "use a property-based companion creator of a class that is not top level" in { f =>
+    f.readValue("""{"first":"ann","last":"lee"}""", classOf[CreatorTestNested.FullName]).full shouldBe "ann lee"
+    f.readValue("""{"first_name":"ann","last_name":"lee"}""", classOf[CreatorTestNested.RenamedFullName]).full shouldBe "ann lee"
+    f.readValue("""{"n":3,"scale":4}""", classOf[CreatorTestNested.Scaled]).n shouldBe 12
+  }
+
+  it should "read structured parameters of a companion creator of a class that is not top level" in { f =>
+    val located = f.readValue("""{"point":{"x":1,"y":2},"ignored":"no"}""", classOf[CreatorTestNested.Located])
+    located.point shouldBe CreatorTestNested.Point(1, 2)
+  }
+
+  it should "report what a companion creator of a class that is not top level threw" in { f =>
+    val thrown = the[DatabindException] thrownBy f.readValue("\"x\"", classOf[CreatorTestNested.Failing])
+    thrown.getCause shouldBe an[IllegalStateException]
+    thrown.getCause.getMessage shouldBe "refused x"
   }
 
   it should "support default values" in { f =>

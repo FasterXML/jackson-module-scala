@@ -6,7 +6,7 @@ import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind._
 import tools.jackson.databind.deser.{ContextualKeyDeserializer, Deserializers, KeyDeserializers}
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
-import tools.jackson.module.scala.util.EnumResolver
+import tools.jackson.module.scala.util.{ClassW, EnumResolver}
 import tools.jackson.module.scala.{JacksonModule => JacksonScalaModule}
 
 import scala.util.control.NonFatal
@@ -57,7 +57,7 @@ private class EnumerationDeserializer(theType: JavaType) extends ValueDeserializ
         // the mapper's loader first: this module's own is the wrong one wherever the application's
         // classes are loaded by a child loader, which is where this used to fail to find them
         val loader = Option(ctxt.getTypeFactory.getClassLoader).getOrElse(getClass.getClassLoader)
-        Class.forName(enumClassName + "$", false, loader)
+        ClassW.companionClassNamed(enumClassName, loader)
           .getField("MODULE$").get(None.orNull).asInstanceOf[Enumeration]
       } catch {
         case NonFatal(e) =>
