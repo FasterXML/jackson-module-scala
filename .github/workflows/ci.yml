@@ -34,7 +34,7 @@ jobs:
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 17
@@ -42,7 +42,7 @@ jobs:
 
       - name: Setup Java (zulu@21)
         if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 21
@@ -50,7 +50,7 @@ jobs:
 
       - name: Setup Java (zulu@25)
         if: matrix.java == 'zulu@25'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 25
@@ -91,7 +91,7 @@ jobs:
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 17
@@ -99,7 +99,7 @@ jobs:
 
       - name: Setup Java (zulu@21)
         if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 21
@@ -107,7 +107,7 @@ jobs:
 
       - name: Setup Java (zulu@25)
         if: matrix.java == 'zulu@25'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 25
