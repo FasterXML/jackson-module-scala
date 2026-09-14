@@ -28,13 +28,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 17
@@ -42,7 +42,7 @@ jobs:
 
       - name: Setup Java (zulu@21)
         if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 21
@@ -50,7 +50,7 @@ jobs:
 
       - name: Setup Java (zulu@25)
         if: matrix.java == 'zulu@25'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 25
@@ -60,9 +60,9 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Check that workflows are up to date
-        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' githubWorkflowCheck
+        run: sbt -J-Xmx2G '++ ${{ matrix.scala }}; githubWorkflowCheck'
 
-      - run: sbt -J-Xmx2G '++ ${{ matrix.scala }}' test mimaReportBinaryIssues
+      - run: sbt -J-Xmx2G '++ ${{ matrix.scala }}; test; mimaReportBinaryIssues'
 
       - name: Compress target directories
         run: tar cf targets.tar target project/target
@@ -85,13 +85,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 17
@@ -99,7 +99,7 @@ jobs:
 
       - name: Setup Java (zulu@21)
         if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 21
@@ -107,7 +107,7 @@ jobs:
 
       - name: Setup Java (zulu@25)
         if: matrix.java == 'zulu@25'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 25
