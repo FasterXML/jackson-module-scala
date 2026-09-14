@@ -1,6 +1,7 @@
 package tools.jackson.module.scala.introspect
 
 import tools.jackson.databind.util.LookupCache
+import tools.jackson.module.scala.util.ClassW
 import tools.jackson.module.scala.{LookupCacheFactory, ScalaTypeInfo}
 
 import scala.util.Try
@@ -46,12 +47,11 @@ private[introspect] class DerivedTypeInfo(lookupCacheFactory: LookupCacheFactory
   }
 
   private def readErasedTypeArguments(clazz: Class[_]): Seq[(String, Class[_])] = {
-    Try {
-      val loader = Option(clazz.getClassLoader).getOrElse(ClassLoader.getSystemClassLoader)
-      val companion = Class.forName(clazz.getName + "$", false, loader)
-      val instance = companion.getField("MODULE$").get(None.orNull)
-      val derived = companion.getMethod(MethodName).invoke(instance).asInstanceOf[ScalaTypeInfo[_]]
-      derived.erasedTypeArguments.map { case (field, argument) => (field, argument: Class[_]) }
+    ClassW.companionOf(clazz).flatMap { instance =>
+      Try {
+        val derived = instance.getClass.getMethod(MethodName).invoke(instance).asInstanceOf[ScalaTypeInfo[_]]
+        derived.erasedTypeArguments.map { case (field, argument) => (field, argument: Class[_]) }
+      }.toOption
     }.getOrElse(Seq.empty)
   }
 }

@@ -1,5 +1,7 @@
 package tools.jackson.module.scala.introspect
 
+import tools.jackson.module.scala.util.ClassW
+
 import java.lang.reflect.{Constructor, Field, Method, Modifier, Parameter}
 import scala.util.Try
 
@@ -29,11 +31,9 @@ private[introspect] object JavaParameterIntrospector {
   def companionMethod(mtd: Method): Option[Method] = {
     if (!Modifier.isStatic(mtd.getModifiers)) None
     else {
-      val owner = mtd.getDeclaringClass
-      Try {
-        val companion = Class.forName(owner.getName + "$", false, owner.getClassLoader)
-        companion.getMethod(mtd.getName, mtd.getParameterTypes: _*)
-      }.toOption.filterNot(m => Modifier.isStatic(m.getModifiers))
+      ClassW.companionClassOf(mtd.getDeclaringClass)
+        .flatMap(companion => Try(companion.getMethod(mtd.getName, mtd.getParameterTypes: _*)).toOption)
+        .filterNot(m => Modifier.isStatic(m.getModifiers))
     }
   }
 }

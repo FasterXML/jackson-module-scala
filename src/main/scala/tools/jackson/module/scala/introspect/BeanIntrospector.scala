@@ -26,7 +26,6 @@ package tools.jackson.module.scala.introspect
 import com.fasterxml.jackson.annotation.JsonProperty
 import tools.jackson.module.scala.util.ClassW
 
-import java.lang.invoke.MethodHandles
 import java.lang.reflect.{Constructor, Field, Method, Modifier}
 import scala.annotation.tailrec
 import scala.reflect.NameTransformer
@@ -38,7 +37,6 @@ import scala.reflect.NameTransformer
 
 object BeanIntrospector {
 
-  private val publicLookup = MethodHandles.publicLookup
 
   def apply[T <: AnyRef](cls: Class[_]) = {
 
@@ -72,16 +70,7 @@ object BeanIntrospector {
       })
     }
 
-    def findCompanionObject(c: Class[_]): Option[AnyRef] = {
-      try {
-        val companionObjectClass = c.getClassLoader.loadClass(c.getName + "$")
-        val varHandle = publicLookup.findStaticVarHandle(
-          companionObjectClass, "MODULE$", companionObjectClass)
-        Some(varHandle.get())
-      } catch {
-        case _: Exception => None
-      }
-    }
+    def findCompanionObject(c: Class[_]): Option[AnyRef] = ClassW.companionOf(c)
 
     val hierarchy: Seq[Class[_]] = {
       @tailrec

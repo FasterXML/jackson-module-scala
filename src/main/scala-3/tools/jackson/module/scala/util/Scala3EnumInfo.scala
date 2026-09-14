@@ -85,7 +85,7 @@ private[scala] object Scala3EnumInfo {
         } else if (field.getType.getName.endsWith("$")) {
           // parameterized case - the field holds the companion of the generated case class
           val caseClassName = field.getType.getName.dropRight(1)
-          Try(Class.forName(caseClassName, false, loaderFor(rootClass))).toOption
+          Try(Class.forName(caseClassName, false, ClassW.loaderFor(rootClass))).toOption
             .filter(rootClass.isAssignableFrom)
             .map(caseClass => EnumCase(name, caseClass, None))
         } else None
@@ -94,15 +94,8 @@ private[scala] object Scala3EnumInfo {
     }
   }
 
-  private def companionOf(clazz: Class[_]): Option[AnyRef] = {
-    Try {
-      val companionClass = Class.forName(clazz.getName + "$", false, loaderFor(clazz))
-      companionClass.getField(ModuleFieldName).get(None.orNull)
-    }.toOption
-  }
+  private def companionOf(clazz: Class[_]): Option[AnyRef] = ClassW.companionOf(clazz)
 
-  private def loaderFor(clazz: Class[_]): ClassLoader =
-    Option(clazz.getClassLoader).getOrElse(ClassLoader.getSystemClassLoader)
 }
 
 /**

@@ -142,12 +142,19 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   }
 
   override def findCreatorAnnotation(mapperConfig: MapperConfig[_], a: Annotated): JsonCreator.Mode = {
-    if (hasCreatorAnnotation(a)) {
-      Option(findCreatorBinding(a)) match {
-        case Some(mode) => mode
-        case _ => JsonCreator.Mode.DEFAULT
-      }
-    } else None.orNull
+    a match {
+      // A companion method without a forwarder is stood in for by modifyValueInstantiator. A Scala
+      // private constructor is public to the JVM, so unless the constructors are ruled out here
+      // Jackson would still take one up as an implicit creator beside it.
+      case ac: AnnotatedConstructor if isScala(ac) && CompanionCreator.hidden(ac.getDeclaringClass).isDefined =>
+        JsonCreator.Mode.DISABLED
+      case _ if hasCreatorAnnotation(a) =>
+        Option(findCreatorBinding(a)) match {
+          case Some(mode) => mode
+          case _ => JsonCreator.Mode.DEFAULT
+        }
+      case _ => None.orNull
+    }
   }
 
   private def findCreatorBinding(a: Annotated): JsonCreator.Mode = {
@@ -164,7 +171,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   override def modifyValueInstantiator(deserializationConfig: DeserializationConfig, beanDesc: BeanDescription.Supplier,
                                        defaultInstantiator: ValueInstantiator): ValueInstantiator = {
     if (scalaAnnotationIntrospectorModule.isMaybeScalaBeanType(beanDesc.getBeanClass)) {
-      _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
+      val instantiator = _descriptorFor(beanDesc.getBeanClass).map { descriptor =>
         if (scalaAnnotationIntrospectorModule.overrideMap.contains(beanDesc.getBeanClass.getName) || descriptor.properties.exists(_.param.exists(_.defaultValue.isDefined))) {
           defaultInstantiator match {
             case std: StdValueInstantiator =>
@@ -175,6 +182,16 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
         } else defaultInstantiator
       }.getOrElse(defaultInstantiator)
 
+      // a creator on the companion that Jackson could not see is called from here instead
+      CompanionCreator.hidden(beanDesc.getBeanClass) match {
+        case Some(method) =>
+          instantiator match {
+            case std: StdValueInstantiator => new CompanionCreatorInstantiator(std, deserializationConfig, beanDesc, method)
+            case other =>
+              throw new IllegalArgumentException("Cannot customise a non StdValueInstantiator: " + other.getClass)
+          }
+        case _ => instantiator
+      }
     } else defaultInstantiator
   }
 

@@ -66,7 +66,7 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
     }
 
   private def findByName(baseClass: Class[_], root: Class[_], typeName: String): Option[Subtype] = {
-    val loader = loaderFor(baseClass)
+    val loader = ClassW.loaderFor(baseClass)
     // anchored on the root, so a property declared as an intermediate type still resolves the names
     // that were written for the hierarchy as a whole
     candidateNames(root.getName, typeName).iterator
@@ -130,12 +130,12 @@ private[scala] class SubtypeLookup(polymorphism: SealedPolymorphism) {
   }
 
   private def readDerivedTable(root: Class[_]): Option[Seq[Subtype]] = {
-    Try {
-      val companion = Class.forName(root.getName + "$", false, loaderFor(root))
-      val module = companion.getField("MODULE$").get(None.orNull)
-      val derived = companion.getMethod(DerivedMethodName).invoke(module).asInstanceOf[SealedSubtypes[_]]
-      derived.subtypes.map { case (clazz, singleton) => Subtype(clazz, singleton) }
-    }.toOption
+    ClassW.companionOf(root).flatMap { module =>
+      Try {
+        val derived = module.getClass.getMethod(DerivedMethodName).invoke(module).asInstanceOf[SealedSubtypes[_]]
+        derived.subtypes.map { case (clazz, singleton) => Subtype(clazz, singleton) }
+      }.toOption
+    }
   }
 
   private val DerivedMethodName = "derived$" + classOf[SealedSubtypes[_]].getSimpleName
