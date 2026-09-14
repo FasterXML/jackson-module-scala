@@ -48,6 +48,14 @@ private class ScalaMapSerializer(converter: Converter[AnyRef, _],
                                       property: BeanProperty): StdConvertingSerializer =
     new ScalaMapSerializer(converter, delegateType, delegateSerializer, property)
 
+  private val rootTypeSerializers = RootTypeSerializers.forMaps()
+
+  override def serialize(value: AnyRef, gen: JsonGenerator, ctxt: SerializationContext): Unit = {
+    val typeSer = rootTypeSerializers.rootTypeSerializer(gen, ctxt, value)
+    if (typeSer == null) super.serialize(value, gen, ctxt)
+    else serializeWithType(value, gen, ctxt, typeSer)
+  }
+
   override def serializeWithType(value: AnyRef,
                                  gen: JsonGenerator,
                                  ctxt: SerializationContext,

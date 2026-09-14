@@ -70,19 +70,23 @@ private class OptionDeserializer(fullType: JavaType,
   }
 
   override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer): Option[AnyRef] = {
-    val t = jp.currentToken()
-    if (t == JsonToken.VALUE_NULL) {
-      getNullValue(ctxt)
-    } else {
-      valueTypeDeserializer match {
-        case Some(vtd) => Option(vtd.deserializeTypedFromAny(jp, ctxt))
-        case _ => {
-          typeDeserializer.deserializeTypedFromAny(jp, ctxt) match {
-            case Some(any) => referenceValue(any)
-            case any => referenceValue(any)
+    jp.currentToken() match {
+      case JsonToken.VALUE_NULL => getNullValue(ctxt)
+      case JsonToken.START_ARRAY | JsonToken.START_OBJECT | JsonToken.PROPERTY_NAME =>
+        valueTypeDeserializer match {
+          case Some(vtd) => Option(vtd.deserializeTypedFromAny(jp, ctxt))
+          case _ => {
+            typeDeserializer.deserializeTypedFromAny(jp, ctxt) match {
+              case Some(any) => referenceValue(any)
+              case any => referenceValue(any)
+            }
           }
         }
-      }
+      case _ =>
+        // a type id is only ever wrapped around a structured value; a scalar is a natural value that
+        // carries none, as databind's UntypedObjectDeserializer also takes it to be
+        val deser = valueDeserializer.getOrElse(ctxt.findContextualValueDeserializer(fullType.getContentType, beanProperty.orNull))
+        Option(deser.deserialize(jp, ctxt))
     }
   }
 
