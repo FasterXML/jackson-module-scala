@@ -24,6 +24,15 @@ This patch release tracks Jackson 2.22. The 2.22 series has full support for
 Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 There are no new fixes in this release.
 
+# Version: 2.21.7 (release not yet planned)
+
+## Fixes
+
+* [[gh-pr-842]](https://github.com/FasterXML/jackson-module-scala/pull/842) Avoid class initialization in Class.forName calls.
+* [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
+* [[gh-pr-844]](https://github.com/FasterXML/jackson-module-scala/pull/844) Fix Iterator serializer isEmpty.
+* [[gh-pr-845]](https://github.com/FasterXML/jackson-module-scala/pull/845) Fix Iterator serializer with WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED.
+
 # Version: 2.21.6
 
 There are no new fixes in this release; it serves to track the 2.21.6 release
@@ -113,6 +122,12 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 * [[gh-pr-706]](https://github.com/FasterXML/jackson-module-scala/pull/706) Upgrade paranamer dependency to 2.8.3
 * [[gh-pr-713]](https://github.com/FasterXML/jackson-module-scala/pull/713) Add ScalaModule.builder() to over another way to customise the Scala module
 * [[gh-722]](https://github.com/FasterXML/jackson-module-scala/issues/722) Collection deserializer should create empty collection instead of null (when input is null)
+
+# Version: 2.18.11 (release not yet planned)
+
+## Fixes
+
+* [[gh-pr-842]](https://github.com/FasterXML/jackson-module-scala/pull/842) Avoid class initialization in Class.forName calls.
 
 # Version: 2.18.10
 
