@@ -154,7 +154,7 @@ ThisBuild / githubWorkflowBuildSbtStepPreamble := Seq("++ ${{ matrix.scala }}!")
 ThisBuild / githubWorkflowGeneratedCI ~= { jobs =>
   jobs.map(job => if (job.id == "publish") job.copy(scalas = List(scala213Version)) else job)
 }
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"), JavaSpec(Zulu, "25"))
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"), JavaSpec(Zulu, "25"), JavaSpec(Zulu, "26"))
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
 ThisBuild / githubWorkflowTargetBranches := Seq("3.x", "3.2", "3.1", "3.0")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
