@@ -1,5 +1,11 @@
 Check VERSION.md for jackson-module-scala 2.x release information. This file tracks jackson-module-scala 3.x.
 
+# 3.3.0 (release not yet planned)
+
+This patch release tracks Jackson 3.3.0. The 3.3 series has full support for Scala 2.12, 2.13 and 3.
+
+* [[gh-716]](https://github.com/FasterXML/jackson-module-scala/issues/716) Improve support for JsonCreator annotations.
+
 # 3.2.2
 
 There are no new fixes in this release; it serves to track the 3.2.2 release
