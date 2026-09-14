@@ -23,8 +23,13 @@ private trait IterableSerializer
   override def hasSingleElement(value: collection.Iterable[Any]): Boolean =
     value.size == 1
 
+  private val rootTypeSerializers = RootTypeSerializers.forIterables()
+
   override def serialize(value: collection.Iterable[Any], gen: JsonGenerator, serializationContext: SerializationContext): Unit = {
-    if (serializationContext.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
+    val typeSer = rootTypeSerializers.rootTypeSerializer(gen, serializationContext, value)
+    if (typeSer != null) {
+      serializeWithType(value, gen, serializationContext, typeSer)
+    } else if (serializationContext.isEnabled(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED) && hasSingleElement(value)) {
       collectionSerializer.serializeContents(value, gen, serializationContext)
     } else {
       gen.writeStartArray(value)

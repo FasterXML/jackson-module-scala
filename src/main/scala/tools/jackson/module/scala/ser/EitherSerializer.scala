@@ -49,7 +49,12 @@ private class EitherSerializer(left: EitherDetails,
   protected[this] def createContextualDetails(prov: SerializationContext,
                                               prop: BeanProperty,
                                               details: EitherDetails): EitherDetails = {
-    val vts = details.valueTypeSerializer.optMap(_.forProperty(prov, prop))
+    // the content is typed as its own declared type would be, not as the Either is: the type serializer
+    // the factory passes in as "content" is for the Either itself, since the Either is modelled as
+    // a reference to itself
+    val vts = details.typ.flatMap { t =>
+      Option(if (prop == null) prov.findTypeSerializer(t) else prov.findPropertyTypeSerializer(t, prop.getMember))
+    }
     val serializer1 = for (
       prop <- Option(prop);
       member <- Option(prop.getMember);
@@ -96,37 +101,36 @@ private class EitherSerializer(left: EitherDetails,
   }
 
   override def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
-    serialize(value, jgen, serializationContext, None)
+    jgen.writeStartObject(value)
+    serializeContents(value, jgen, serializationContext)
+    jgen.writeEndObject()
   }
 
-  def serialize(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, serializationContext: SerializationContext, vts: Option[TypeSerializer]): Unit = {
+  // the "l" or "r" property: the content is typed by its own type serializer, if it has one
+  private def serializeContents(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
     val (field, content, details) = value match {
       case Left(c) => ("l", c, left)
       case Right(c) => ("r", c, right)
     }
-    jgen.writeStartObject()
     jgen.writeName(field)
     if (content == null) {
       serializationContext.defaultSerializeNullValue(jgen)
     } else {
       val ser = details.valueSerializer.getOrElse(findCachedSerializer(serializationContext, content.getClass))
-      vts.orElse(details.valueTypeSerializer) match {
+      details.valueTypeSerializer match {
         case Some(vts) => ser.serializeWithType(content, jgen, serializationContext, vts)
         case None => ser.serialize(content, jgen, serializationContext)
       }
     }
-    jgen.writeEndObject()
   }
 
   override def serializeWithType(value: Either[AnyRef, AnyRef], jgen: JsonGenerator, serializationContext: SerializationContext, typeSer: TypeSerializer): Unit = {
-    if (value == null) {
-      serializationContext.defaultSerializeNullValue(jgen)
-    } else {
-      // Otherwise apply type-prefix/suffix, then std serialize:
-      typeSer.writeTypePrefix(jgen, serializationContext, typeSer.typeId(value, JsonToken.START_OBJECT))
-      serialize(value, jgen, serializationContext, Some(typeSer))
-      typeSer.writeTypeSuffix(jgen, serializationContext, typeSer.typeId(value, JsonToken.END_OBJECT))
-    }
+    // the type prefix opens the object (or the wrapper around it) and the suffix closes what the
+    // prefix opened, so only the contents are written in between
+    val typeIdDef = typeSer.writeTypePrefix(jgen, serializationContext, typeSer.typeId(value, JsonToken.START_OBJECT))
+    jgen.assignCurrentValue(value)
+    serializeContents(value, jgen, serializationContext)
+    typeSer.writeTypeSuffix(jgen, serializationContext, typeIdDef)
   }
 
   protected[this] def findCachedSerializer(prov: SerializationContext, typ: Class[_]): ValueSerializer[AnyRef] = {
@@ -160,13 +164,12 @@ private class EitherSerializerResolver(config: ScalaModule.Config) extends Seria
       val leftType = javaType.containedType(0)
       val rightType = javaType.containedType(1)
 
-      val typeSer = Option(contentTypeSerializer).orElse(Option(javaType.getTypeHandler.asInstanceOf[TypeSerializer]))
       val valSer = Option(contentValueSerializer).orElse(Option(javaType.getValueHandler.asInstanceOf[ValueSerializer[AnyRef]]))
 
-      val left = EitherDetails(Option(leftType), typeSer, valSer)
-      val right = EitherDetails(Option(rightType), typeSer, valSer)
+      val left = EitherDetails(Option(leftType), None, valSer)
+      val right = EitherDetails(Option(rightType), None, valSer)
 
-      new EitherSerializer(left.withHandlers(typeSer, valSer), right.withHandlers(typeSer, valSer), None)
+      new EitherSerializer(left.withHandlers(None, valSer), right.withHandlers(None, valSer), None)
     }
   }
 }

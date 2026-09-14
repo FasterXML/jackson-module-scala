@@ -53,8 +53,10 @@ private trait IteratorSerializer
     jgen.writeEndArray()
   }
 
+  // called by AsArraySerializerBase.serializeWithType after the type prefix has already opened the
+  // array, so this must write only the elements, not another array around them
   override def serializeContents(value: collection.Iterator[Any], gen: JsonGenerator, serializationContext: SerializationContext): Unit = {
-    serialize(value, gen, serializationContext)
+    iteratorSerializer.serializeContents(value, gen, serializationContext)
   }
 
   override def withResolved(property: BeanProperty, vts: TypeSerializer, elementSerializer: ValueSerializer[_],

@@ -23,7 +23,10 @@ private class EitherDeserializer(javaType: JavaType,
       val containedType = javaType.containedType(param)
 
       val paramDeserializer = Option( ctxt.findContextualValueDeserializer(containedType, property) )
-      val typeDeserializer = Option(property).flatMap(p => Option(ctxt.findPropertyTypeDeserializer(containedType, p.getMember)) )
+      val typeDeserializer = Option(property) match {
+        case Some(p) => Option(ctxt.findPropertyTypeDeserializer(containedType, p.getMember))
+        case None => Option(ctxt.findTypeDeserializer(containedType))
+      }
 
       ElementDeserializerConfig(paramDeserializer, typeDeserializer)
     }
@@ -58,8 +61,10 @@ private class EitherDeserializer(javaType: JavaType,
 
   private def deserializeEither(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] = {
     jp.currentToken() match {
-      case JsonToken.START_OBJECT =>
-        val key = jp.nextName()
+      // a type deserializer that has read an As.PROPERTY type id hands over the parser already inside
+      // the object, at the next property name
+      case JsonToken.START_OBJECT | JsonToken.PROPERTY_NAME =>
+        val key = if (jp.currentToken() == JsonToken.PROPERTY_NAME) jp.currentName() else jp.nextName()
         val `type` = jp.nextToken()
 
         val result = key match {
@@ -96,8 +101,9 @@ private class EitherDeserializer(javaType: JavaType,
 
   override def deserialize(jp: JsonParser, ctxt: DeserializationContext): Either[AnyRef, AnyRef] =
     deserializeEither(jp, ctxt)
+  // the type id names Left or Right, and the deserializer resolved for it reads the value itself
   override def deserializeWithType(jp: JsonParser, ctxt: DeserializationContext, typeDeserializer: TypeDeserializer): Either[AnyRef, AnyRef] =
-    deserializeEither(jp, ctxt)
+    typeDeserializer.deserializeTypedFromAny(jp, ctxt).asInstanceOf[Either[AnyRef, AnyRef]]
 }
 
 private object EitherDeserializer {

@@ -5,6 +5,7 @@ import tools.jackson.core.JsonGenerator
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind._
 import tools.jackson.databind.ser.Serializers
+import tools.jackson.databind.ser.std.StdScalarSerializer
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.util.DurationConverters
 import tools.jackson.module.scala.{JacksonModule, ScalaModule}
@@ -19,7 +20,7 @@ private object FiniteDurationSerializerShared {
 
 // The Java duration is handed to databind rather than written here, so a duration is formatted by
 // whatever the mapper's DateTimeFeature settings say - as a timestamp, or as an ISO-8601 period.
-private object FiniteDurationSerializer extends ValueSerializer[FiniteDuration] {
+private object FiniteDurationSerializer extends StdScalarSerializer[FiniteDuration](FiniteDurationSerializerShared.FiniteDurationClass) {
   override def serialize(value: FiniteDuration, jgen: JsonGenerator, serializationContext: SerializationContext): Unit = {
     serializationContext.writeValue(jgen, DurationConverters.toJava(value))
   }
