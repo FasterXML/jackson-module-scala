@@ -41,6 +41,10 @@ There are a few differences from Scala 2 support.
 * It is expected that most use cases should work ok with Scala 3
   * Known issues with using jackson-module-scala with Scala 3 are tracked at https://github.com/FasterXML/jackson-module-scala/labels/scala3
   * There has been limited testing of using Scala 3 classes with Scala 2 jackson-module-scala or Scala 2 classes with Scala 3 jackson-module-scala
+* Scala 3 emits no generic signature for a local or anonymous class ([scala/scala3#6349](https://github.com/scala/scala3/issues/6349)),
+  so a `Map[String, Base]` member of `new { ... }` or of a class declared inside a method looks like a raw `Map` to Jackson.
+  Values still serialize, but anything that depends on the declared value type - such as `@JsonTypeInfo` on `Base` - is not
+  applied. Name the type with `@JsonSerialize(contentAs = classOf[Base])`, or declare the class at the top level or inside an object.
 
 # Usage
 
