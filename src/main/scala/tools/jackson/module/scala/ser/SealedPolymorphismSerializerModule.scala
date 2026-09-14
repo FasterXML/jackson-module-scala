@@ -22,8 +22,9 @@ private class SealedPolymorphismSerializerModifier(config: ScalaModule.Config, p
     if (polymorphism.isSupported(rawClass, config) && !polymorphism.isBaseType(rawClass, config)) {
       // refuse to write a value that could not be read back
       polymorphism.unreachableReason(rawClass, config).foreach(reason => throw new IllegalArgumentException(reason))
-      val typeName = polymorphism.typeNameFor(rawClass, polymorphism.rootOf(rawClass, config))
-      new TypeTaggedSerializer(SealedPolymorphism.TypePropertyName, typeName,
+      val root = polymorphism.rootOf(rawClass, config)
+      val typeName = polymorphism.typeNameFor(rawClass, root)
+      new TypeTaggedSerializer(SealedPolymorphism.TypePropertyName, typeName, root,
         serializer.asInstanceOf[ValueSerializer[AnyRef]])
     } else serializer
   }
