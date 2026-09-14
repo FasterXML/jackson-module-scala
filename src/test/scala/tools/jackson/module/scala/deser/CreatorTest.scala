@@ -1,6 +1,6 @@
 package tools.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty, JsonValue}
 import com.fasterxml.jackson.annotation.JsonCreator.Mode
 import tools.jackson.core.`type`.TypeReference
 import tools.jackson.databind.{DeserializationFeature, JsonNode, MapperFeature, ObjectMapper}
@@ -8,6 +8,8 @@ import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.node.IntNode
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 import tools.jackson.module.scala.{DefaultScalaModule, ScalaModule}
+
+import scala.annotation.meta.getter
 
 class PositiveLong private (val value: Long) {
   override def toString() = s"PositiveLong($value)"
@@ -31,6 +33,29 @@ object ConflictingJsonCreator {
   def apply(value: Long): ConflictingJsonCreator = new ConflictingJsonCreator(value)
   @JsonCreator(mode = Mode.DELEGATING)
   def apply(value: String): ConflictingJsonCreator = new ConflictingJsonCreator(value.toLong)
+}
+
+// A delegating creator on a companion whose effect can be told apart from the constructor's.
+// Top level: scalac emits no static forwarders for the companion of a class nested in an object, so
+// Jackson would never see the annotation on Scala 2.
+class Tagged private (val value: String)
+object Tagged {
+  @JsonCreator(mode = Mode.DELEGATING)
+  def of(value: String): Tagged = new Tagged(value + "!")
+}
+
+// A value written as a scalar by @JsonValue and read back through a delegating companion creator.
+// The annotation has to reach the getter, not the constructor parameter it is written on.
+class Wrapped private (@(JsonValue @getter) val value: String) {
+  override def equals(o: Any): Boolean = o match {
+    case w: Wrapped => value == w.value
+    case _ => false
+  }
+  override def hashCode(): Int = value.hashCode
+}
+object Wrapped {
+  @JsonCreator(mode = Mode.DELEGATING)
+  def of(value: String): Wrapped = new Wrapped(value)
 }
 
 object CreatorTest
@@ -72,6 +97,25 @@ object CreatorTest
     def this(script: String) = {
       this(script, -1)
     }
+  }
+
+  // the primary constructor is opted out, so the secondary one is the creator even though the JSON
+  // has values for every primary parameter
+  case class DisabledPrimary @JsonCreator(mode = Mode.DISABLED)(a: String, b: Int) {
+    @JsonCreator
+    def this(a: String) = this(a, 99)
+  }
+
+  case class SecondaryWithDefault(a: String, b: Int, c: String) {
+    @JsonCreator
+    def this(a: String, c: String = "from default") = this(a, 7, c)
+  }
+
+  case class RenamedCreatorParams @JsonCreator()(@JsonProperty("first_name") firstName: String, age: Int)
+
+  class RenamedSecondaryParam(val a: String, val b: Int) {
+    @JsonCreator
+    def this(@JsonProperty("aa") a: String) = this(a, 1)
   }
 
   case class Struct1(name: String, classifier: String = "my_default_string") {
@@ -161,6 +205,42 @@ class CreatorTest extends DeserializationFixture {
     bean shouldBe """{"script":"abc","dummy":42}"""
     val roundTrip = f.readValue(bean, classOf[MultipleConstructorsAnn])
     roundTrip shouldEqual orig
+  }
+
+  it should "use the secondary constructor when the primary is a disabled creator" in { f =>
+    f.readValue("""{"a":"x"}""", classOf[DisabledPrimary]) shouldEqual DisabledPrimary("x", 99)
+    // b is not read from the JSON: the constructor that takes it is not a creator
+    f.readValue("""{"a":"x","b":5}""", classOf[DisabledPrimary]) shouldEqual DisabledPrimary("x", 99)
+  }
+
+  it should "apply a default value of a secondary constructor parameter" in { f =>
+    f.readValue("""{"a":"x"}""", classOf[SecondaryWithDefault]) shouldEqual SecondaryWithDefault("x", 7, "from default")
+    f.readValue("""{"a":"x","c":"given"}""", classOf[SecondaryWithDefault]) shouldEqual SecondaryWithDefault("x", 7, "given")
+  }
+
+  it should "honor JsonProperty on a primary constructor creator parameter" in { f =>
+    val orig = RenamedCreatorParams("x", 3)
+    val json = f.writeValueAsString(orig)
+    json shouldBe """{"first_name":"x","age":3}"""
+    f.readValue(json, classOf[RenamedCreatorParams]) shouldEqual orig
+  }
+
+  it should "honor JsonProperty on a secondary constructor creator parameter" in { f =>
+    val bean = f.readValue("""{"aa":"x"}""", classOf[RenamedSecondaryParam])
+    bean.a shouldBe "x"
+    bean.b shouldBe 1
+  }
+
+  it should "use a delegating companion creator when reading a scalar" in { f =>
+    // the creator, not the private constructor: it leaves a mark
+    f.readValue("\"x\"", classOf[Tagged]).value shouldBe "x!"
+  }
+
+  it should "round trip a JsonValue through a delegating companion creator" in { f =>
+    val orig = Wrapped.of("x")
+    val json = f.writeValueAsString(orig)
+    json shouldBe "\"x\""
+    f.readValue(json, classOf[Wrapped]) shouldEqual orig
   }
 
   it should "support default values" in { f =>
