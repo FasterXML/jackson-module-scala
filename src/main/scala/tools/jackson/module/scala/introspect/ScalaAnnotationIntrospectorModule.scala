@@ -15,7 +15,7 @@ import tools.jackson.module.scala.{DefaultLookupCacheFactory, JacksonModule, Loo
 import tools.jackson.module.scala.util.Implicits._
 
 import java.lang.annotation.Annotation
-import java.lang.reflect.{Method, Modifier}
+import java.lang.reflect.{Method, Modifier, ParameterizedType}
 import scala.collection.concurrent.TrieMap
 import scala.collection.mutable.{Map => MutableMap}
 
@@ -99,6 +99,36 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
             .map(_.value).filter(_.nonEmpty)
         }
       case _ => None
+    }
+  }
+
+  /**
+   * The type of a property whose setter the JVM knows only in erased form.
+   *
+   * A `var` a class takes from a trait is implemented by accessors Scala 3 emits after erasure, so
+   * on the class they carry no generic signature: the setter takes a raw `Map` where the field is a
+   * `Map[Weekday.Value, String]` (scala/scala3#6350; 3.9 signs the getter but still not the setter).
+   * Jackson types a property by its setter, so the type arguments would be lost and the values read
+   * as whatever the JSON suggests. The field keeps the full type, so it is answered from there.
+   */
+  override def refineDeserializationType(mapperConfig: MapperConfig[_], a: Annotated, baseType: JavaType): JavaType = {
+    a match {
+      case am: AnnotatedMethod if am.getParameterCount == 1 && isErased(mapperConfig, am.getAnnotated.getGenericParameterTypes()(0), baseType) && isScala(am) =>
+        fieldTypeFor(mapperConfig, am).filter(_.getRawClass == baseType.getRawClass).getOrElse(baseType)
+      case _ => baseType
+    }
+  }
+
+  // a generic class the JVM presents without its type arguments, and that nothing ahead of this
+  // introspector (a @JsonDeserialize, say) has refined since: the type is still what the raw class gives
+  private def isErased(mapperConfig: MapperConfig[_], jvmType: java.lang.reflect.Type, baseType: JavaType): Boolean = jvmType match {
+    case cls: Class[_] => cls.getTypeParameters.nonEmpty && mapperConfig.constructType(cls) == baseType
+    case _ => false
+  }
+
+  private def fieldTypeFor(mapperConfig: MapperConfig[_], am: AnnotatedMethod): Option[JavaType] = {
+    propertyFor(am).flatMap(_.field).map(_.getGenericType).collect {
+      case pt: ParameterizedType => mapperConfig.getTypeFactory.constructType(pt)
     }
   }
 

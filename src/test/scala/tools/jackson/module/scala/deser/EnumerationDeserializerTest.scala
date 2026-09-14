@@ -37,10 +37,17 @@ object EnumerationDeserializerTest  {
   }
 
   class HolderImpl extends BeanPropertyEnumMapHolder
+
+  trait EnumMapHolderTrait {
+    @JsonScalaEnumeration(classOf[WeekdayType])
+    var weekdayMap: Map[Weekday.Value, String] = Map.empty
+  }
+
+  class EnumMapHolderTraitImpl extends EnumMapHolderTrait
 }
 
-// see EnumerationScala2DeserializerTest for tests that only work in Scala2
 class EnumerationDeserializerTest extends DeserializerTest {
+  import EnumerationDeserializerTest._
 
   lazy val module: DefaultScalaModule.type = DefaultScalaModule
 
@@ -48,6 +55,14 @@ class EnumerationDeserializerTest extends DeserializerTest {
     val expectedDay = Weekday.Fri
     val result = deserialize(fridayEnumJson, classOf[EnumContainer])
     result.day should be (expectedDay)
+  }
+
+  //TODO fix test (works in v2.18.0)
+  it should "deserialize a set of weekdays" ignore {
+    val container = new EnumSetContainer
+    val json = newMapper.writeValueAsString(container)
+    val result = deserialize(json, classOf[EnumSetContainer])
+    result.days shouldEqual container.days
   }
 
   //ignored because JsonScalaEnumeration causes issues when used on sets (and probably other collections)
@@ -62,6 +77,19 @@ class EnumerationDeserializerTest extends DeserializerTest {
     val expectedDay = InnerWeekday.Fri
     val result = deserialize(fridayInnerEnumJson, classOf[EnumContainer])
     result.day should be (expectedDay)
+  }
+
+  it should "locate the annotation on BeanProperty fields" in {
+    val weekdayMapJson = """{"weekdayMap":{"Mon":"Boo","Fri":"Hooray!"}}"""
+    val result = deserialize(weekdayMapJson, classOf[HolderImpl])
+    result.weekdayMap should contain key Weekday.Mon
+  }
+
+  // the class implements the trait's var with a setter Scala 3 emits without a generic signature (#535)
+  it should "deserialize a map keyed by an annotated Enumeration through a var taken from a trait" in {
+    val weekdayMapJson = """{"weekdayMap":{"Mon":"Boo","Fri":"Hooray!"}}"""
+    val result = deserialize(weekdayMapJson, classOf[EnumMapHolderTraitImpl])
+    result.weekdayMap shouldEqual Map(Weekday.Mon -> "Boo", Weekday.Fri -> "Hooray!")
   }
 
   it should "deserialize an annotated Enumeration value (JsonScalaEnumeration)" in {
