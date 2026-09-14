@@ -1,7 +1,9 @@
 package tools.jackson.module.scala.deser
 
 import CaseObjectDeserializerTest.{Foo, Holder, TestObject}
-import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.{JsonAutoDetect, JsonTypeInfo}
+import tools.jackson.databind.DefaultTyping
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.introspect.VisibilityChecker
 import tools.jackson.databind.json.JsonMapper
@@ -16,6 +18,17 @@ object CaseObjectDeserializerTest {
   }
 
   case class Holder(obj: TestObject.type, after: Int)
+
+  // a case object with properties of its own, inherited from a base whose type id is written as a
+  // property: after reading the id the type deserializer hands over the parser inside the object
+  @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY)
+  sealed abstract class Shape(val sides: Int, val meta: Map[String, Int])
+  case object Point extends Shape(0, Map("dim" -> 0))
+  case class Drawing(shape: Shape, after: Int)
+
+  sealed abstract class Untagged(val sides: Int)
+  case object Dot extends Untagged(0)
+  case class Sketch(shape: Untagged, after: Int)
 }
 
 class CaseObjectDeserializerTest extends DeserializerTest {
@@ -109,4 +122,26 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     assert(deserialized != original)
   }
 
+
+  it should "deserialize a case object with properties whose type id is a property" in {
+    import CaseObjectDeserializerTest.{Drawing, Point}
+    val mapper = newMapper
+    val json = mapper.writeValueAsString(Drawing(Point, 1))
+    json shouldEqual """{"shape":{"@class":"tools.jackson.module.scala.deser.CaseObjectDeserializerTest$Point$","sides":0,"meta":{"dim":0}},"after":1}"""
+    val deserialized = mapper.readValue(json, classOf[Drawing])
+    deserialized shouldEqual Drawing(Point, 1)
+    assert(deserialized.shape eq Point)
+  }
+
+  it should "deserialize a case object with properties under default typing with the type id as a property" in {
+    import CaseObjectDeserializerTest.{Dot, Sketch}
+    val ptv = BasicPolymorphicTypeValidator.builder().allowIfBaseType(classOf[Any]).build()
+    val mapper = newBuilder.activateDefaultTyping(ptv, DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY).build()
+    val json = mapper.writeValueAsString(Sketch(Dot, 1))
+    val deserialized = mapper.readValue(json, classOf[Sketch])
+    withClue(json) {
+      deserialized shouldEqual Sketch(Dot, 1)
+      assert(deserialized.shape eq Dot)
+    }
+  }
 }
