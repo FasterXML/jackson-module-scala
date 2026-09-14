@@ -1,6 +1,6 @@
 package tools.jackson.module.scala.introspect
 
-import com.fasterxml.jackson.annotation.{JsonCreator, JsonPropertyOrder}
+import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty, JsonPropertyOrder}
 import tools.jackson.core.Version
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind.`type`.{CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
@@ -15,6 +15,7 @@ import tools.jackson.module.scala.{DefaultLookupCacheFactory, JacksonModule, Loo
 import tools.jackson.module.scala.util.Implicits._
 
 import java.lang.annotation.Annotation
+import java.lang.reflect.{Method, Modifier}
 import scala.collection.concurrent.TrieMap
 import scala.collection.mutable.{Map => MutableMap}
 
@@ -64,17 +65,40 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
   }
 
   override def findNameForDeserialization(mapperConfig: MapperConfig[_], ann: Annotated): PropertyName = {
-    Option(mapperConfig.getPropertyNamingStrategy) match {
-      case Some(_) => None.orNull
-      case _ => {
-        val modifiedName = ann match {
-          case af: AnnotatedField if af.getName.contains("$") => fieldName(af)
-          //case am: AnnotatedMethod if am.getName.contains("$") => methodName(am)
-          case ap: AnnotatedParameter if ap.getName.contains("$") => paramName(ap)
-          case _ => None
+    // an explicit name is not subject to the naming strategy, so it is answered before that is checked
+    val explicitName = ann match {
+      case ap: AnnotatedParameter => companionParameterName(ap)
+      case _ => None
+    }
+    explicitName.map(new PropertyName(_)).getOrElse {
+      Option(mapperConfig.getPropertyNamingStrategy) match {
+        case Some(_) => None.orNull
+        case _ => {
+          val modifiedName = ann match {
+            case af: AnnotatedField if af.getName.contains("$") => fieldName(af)
+            //case am: AnnotatedMethod if am.getName.contains("$") => methodName(am)
+            case ap: AnnotatedParameter if ap.getName.contains("$") => paramName(ap)
+            case _ => None
+          }
+          modifiedName.map(new PropertyName(_)).orNull
         }
-        modifiedName.map(new PropertyName(_)).orNull
       }
+    }
+  }
+
+  /**
+   * The name a `@JsonProperty` gives a parameter of a companion object method, found when Jackson
+   * asks about the parameter of the static forwarder that stands in for it. A forwarder compiled by
+   * Scala 3 carries none of the parameter annotations, so they are read from the companion's method.
+   */
+  private def companionParameterName(ap: AnnotatedParameter): Option[String] = {
+    ap.getOwner.getAnnotated match {
+      case forwarder: Method if ap.getIndex < forwarder.getParameterCount && isScala(ap) =>
+        JavaParameterIntrospector.companionMethod(forwarder).flatMap { method =>
+          Option(method.getParameters()(ap.getIndex).getAnnotation(classOf[JsonProperty]))
+            .map(_.value).filter(_.nonEmpty)
+        }
+      case _ => None
     }
   }
 
@@ -104,7 +128,15 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
         // Ignore this annotation if it is Mode.DISABLED.
         def isDisabled() = ac.getAnnotated.getAnnotations.collect(jsonCreators).exists(_.mode() == JsonCreator.Mode.DISABLED)
 
-        annotatedFound && annotatedConstructor().forall(_ == ac.getAnnotated) && !isDisabled()
+        // A @JsonCreator on a companion object method reaches Jackson on the static forwarder scalac
+        // emits for it on the class. That names the creator; the constructor is then not one, or it
+        // would take precedence and the factory would be passed over without a word.
+        def annotatedFactory() = ac.getDeclaringClass.getDeclaredMethods.exists { method =>
+          Modifier.isStatic(method.getModifiers) &&
+            method.getAnnotations.collect(jsonCreators).exists(_.mode() != JsonCreator.Mode.DISABLED)
+        }
+
+        annotatedFound && annotatedConstructor().forall(_ == ac.getAnnotated) && !isDisabled() && !annotatedFactory()
       case _ => false
     }
   }
@@ -217,8 +249,14 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
       val overrides = scalaAnnotationIntrospectorModule.overrideMap.get(descriptor.beanType.getName).map(_.overrides.toMap).getOrElse(Map.empty)
       val applyDefaultValues = deserializationConfig.isEnabled(MapperFeature.APPLY_DEFAULT_VALUES)
       val args = delegate.getFromObjectArguments(deserializationConfig)
+      // the descriptor describes constructor parameters; a factory's line up with them by index only
+      // by coincidence, so its arguments are left as they are
+      val creatorIsConstructor = delegate.getWithArgsCreator match {
+        case null => true
+        case creator => creator.isInstanceOf[AnnotatedConstructor]
+      }
       Option(args) match {
-        case Some(array) if (applyDefaultValues || overrides.nonEmpty) => {
+        case Some(array) if creatorIsConstructor && (applyDefaultValues || overrides.nonEmpty) => {
           array.map {
             case creator: CreatorProperty => {
               // Locate the constructor param that matches it
