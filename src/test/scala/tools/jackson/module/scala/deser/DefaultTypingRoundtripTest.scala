@@ -5,6 +5,8 @@ import tools.jackson.core.`type`.TypeReference
 import tools.jackson.databind.DefaultTyping
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator
+// qualified: this package has fixtures of its own by some of these names
+import tools.jackson.module.scala.poly
 import tools.jackson.module.scala.ser.EnumerationSerializerTest.{AnnotationHolder, WeekdayType}
 import tools.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration, Weekday}
 
@@ -84,6 +86,16 @@ class DefaultTypingRoundtripTest extends DeserializerTest {
     json should endWith(""",[1,2]]}""")
   }
 
+  it should "write a SealedPolymorphismSupport value under its type id without also tagging it" in {
+    val mapper = mapperWith(DefaultTyping.OBJECT_AND_NON_CONCRETE, JsonTypeInfo.As.PROPERTY)
+    mapper.writeValueAsString(poly.Owner("n", poly.Dog("d"))) shouldEqual
+      """{"name":"n","pet":{"@class":"tools.jackson.module.scala.poly.Dog","name":"d"}}"""
+    mapper.writeValueAsString(poly.Owner("n", poly.Unknown)) shouldEqual
+      """{"name":"n","pet":{"@class":"tools.jackson.module.scala.poly.Unknown$"}}"""
+    // and the tag as before where no type id is in play
+    newMapper.writeValueAsString(poly.Owner("n", poly.Dog("d"))) shouldEqual """{"name":"n","pet":{"@type":"Dog","name":"d"}}"""
+  }
+
   it should "write a root-level Scala collection with the type id its abstract type gets, without writerFor" in {
     val mapper = mapperWith(DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY)
     mapper.writeValueAsString(Map("a" -> "b")) shouldEqual """{"@class":"scala.collection.immutable.Map$Map1","a":"b"}"""
@@ -139,6 +151,17 @@ class DefaultTypingRoundtripTest extends DeserializerTest {
       roundtrip(mapper, HasOptionAny(Some(List(1))), classOf[HasOptionAny])
       roundtrip(mapper, HasOptionAny(Some(Map("k" -> "v"))), classOf[HasOptionAny])
       roundtrip(mapper, HasOptionAny(None), classOf[HasOptionAny])
+    }
+
+    it should s"roundtrip SealedPolymorphismSupport hierarchies with default typing $typing/$as" in {
+      roundtrip(mapper, poly.Owner("n", poly.Dog("d")), classOf[poly.Owner])
+      roundtrip(mapper, poly.Owner("n", poly.Unknown), classOf[poly.Owner])
+      roundtrip(mapper, poly.Shelter(Seq(poly.Dog("d"), poly.Bird("b", canFly = true), poly.Unknown)), classOf[poly.Shelter])
+      roundtrip(mapper, poly.Drawing(poly.Rect(1.0, 2.0)), classOf[poly.Drawing])
+      roundtrip(mapper, poly.Drawing(poly.Point), classOf[poly.Drawing])
+      val root: poly.Animal = poly.Dog("d")
+      mapper.readValue(mapper.writeValueAsString(root), classOf[poly.Animal]) shouldEqual root
+      mapper.readValue(mapper.writeValueAsString(poly.Unknown), classOf[poly.Animal]) shouldEqual poly.Unknown
     }
 
     it should s"roundtrip root-level Scala collections without writerFor with default typing $typing/$as" in {

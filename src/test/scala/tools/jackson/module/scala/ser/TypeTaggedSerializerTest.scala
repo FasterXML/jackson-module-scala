@@ -20,7 +20,7 @@ class TypeTaggedSerializerTest extends BaseSpec {
   // serializer. Whether a case object is such a type depends on the standard library it was built
   // against, so the delegate is chosen here rather than left to introspection.
   it should "write only the tag when Jackson found nothing to write for the type" in {
-    val tagged = new TypeTaggedSerializer("@type", "Lone",
+    val tagged = new TypeTaggedSerializer("@type", "Lone", Lone.getClass,
       new UnknownSerializer(Lone.getClass).asInstanceOf[ValueSerializer[AnyRef]])
     val module = new SimpleModule().addSerializer(Lone.getClass.asInstanceOf[Class[Lone.type]], tagged)
     val mapper = JsonMapper.builder()

@@ -188,6 +188,8 @@ git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
 mimaBinaryIssueFilters ++= Seq(
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.EitherSerializer.serialize"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.TupleSerializer.this"),
+  ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.TypeTaggedSerializer.this"),
+  ProblemFilters.exclude[MissingClassProblem]("tools.jackson.module.scala.ser.EnumSerializer$"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.IterableSerializer.withResolved"),
   ProblemFilters.exclude[ReversedMissingMethodProblem]("tools.jackson.module.scala.ser.IterableSerializer.tools$jackson$module$scala$ser$IterableSerializer$*"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.ResolvedIterableSerializer.withResolved"),
