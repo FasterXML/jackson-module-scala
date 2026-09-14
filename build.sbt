@@ -142,6 +142,18 @@ Compile / resourceGenerators += Def.task {
 Test / parallelExecution := false
 
 ThisBuild / githubWorkflowSbtCommand := "sbt -J-Xmx2G"
+// The Scala 3 artifact is built and published with the 3.3 LTS line, which is what
+// crossScalaVersions says. CI also builds and tests with the latest Scala 3, which is kept
+// out of crossScalaVersions so that a release does not try to publish a second `_3` artifact.
+// A version that is not in crossScalaVersions has to be forced, hence the `!`.
+val extraScalaVersionsForCI = Seq("3.9.0")
+ThisBuild / githubWorkflowScalaVersions := (ThisBuild / crossScalaVersions).value ++ extraScalaVersionsForCI
+ThisBuild / githubWorkflowBuildSbtStepPreamble := Seq("++ ${{ matrix.scala }}!")
+// Forcing also sets ThisBuild / scalaVersion, which is where the publish job takes its one Scala
+// version from, so the workflow the check step regenerates would differ from job to job. Pin it.
+ThisBuild / githubWorkflowGeneratedCI ~= { jobs =>
+  jobs.map(job => if (job.id == "publish") job.copy(scalas = List(scala213Version)) else job)
+}
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "17"), JavaSpec(Zulu, "21"), JavaSpec(Zulu, "25"))
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")))
 ThisBuild / githubWorkflowTargetBranches := Seq("3.x", "3.2", "3.1", "3.0")
