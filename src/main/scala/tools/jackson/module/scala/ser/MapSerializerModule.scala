@@ -6,7 +6,7 @@ import tools.jackson.databind._
 import tools.jackson.databind.`type`.{MapLikeType, TypeFactory}
 import tools.jackson.databind.jsontype.TypeSerializer
 import tools.jackson.databind.ser.Serializers
-import tools.jackson.databind.ser.std.StdDelegatingSerializer
+import tools.jackson.databind.ser.std.StdConvertingSerializer
 import tools.jackson.databind.util.StdConverter
 import tools.jackson.module.scala.JacksonModule.InitializerBuilder
 import tools.jackson.module.scala.ScalaModule
@@ -44,7 +44,7 @@ private class MapSerializerResolver(config: ScalaModule.Config) extends Serializ
     val rawClass = mapLikeType.getRawClass
 
     if (!BASE_CLASS.isAssignableFrom(rawClass) || JACKSONSERIALIZABLE_CLASS.isAssignableFrom(rawClass)) None.orNull
-    else new StdDelegatingSerializer(new MapConverter(mapLikeType, serializationConfig))
+    else new StdConvertingSerializer(new MapConverter(mapLikeType, serializationConfig))
   }
 
 }
