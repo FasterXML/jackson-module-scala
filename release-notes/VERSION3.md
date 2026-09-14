@@ -3,7 +3,6 @@ Check VERSION.md for jackson-module-scala 2.x release information. This file tra
 # 3.3.0 (release not yet planned)
 
 This patch release tracks Jackson 3.3.0. The 3.3 series has full support for Scala 2.12, 2.13 and 3.
-It also includes the fixes in 3.2.3.
 
 * [[gh-716]](https://github.com/FasterXML/jackson-module-scala/issues/716) Improve support for JsonCreator annotations.
 * [[gh-831]](https://github.com/FasterXML/jackson-module-scala/issues/831) Support parameterized cases in Scala 3 enums.
@@ -34,6 +33,13 @@ of the upstream Jackson projects.
 
 This patch release tracks Jackson 3.2.0. The 3.2 series has full support for Scala 2.12, 2.13 and 3.
 There are no new fixes in this release.
+
+# 3.1.7 (release not yet planned)
+
+* [[gh-pr-842]](https://github.com/FasterXML/jackson-module-scala/pull/842) Avoid class initialization in Class.forName calls.
+* [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
+* [[gh-pr-844]](https://github.com/FasterXML/jackson-module-scala/pull/844) Fix Iterator serializer isEmpty.
+* [[gh-pr-845]](https://github.com/FasterXML/jackson-module-scala/pull/845) Fix Iterator serializer with WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED.
 
 # 3.1.6
 
