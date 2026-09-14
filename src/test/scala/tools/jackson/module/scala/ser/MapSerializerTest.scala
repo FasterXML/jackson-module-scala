@@ -52,7 +52,6 @@ object MapSerializerTest {
   case class MapValueBaseWrapper(map: Map[String, MapValueBase])
 }
 
-//see also MapScala2SerializerTest for tests that only pass with Scala2
 class MapSerializerTest extends SerializerTest {
   import MapSerializerTest._
   lazy val module: JacksonModule = DefaultScalaModule
@@ -102,6 +101,18 @@ class MapSerializerTest extends SerializerTest {
 
   it should "correctly serialize type information" in {
     val wrapper = MapValueBaseWrapper(Map("Double" -> MapValueDouble(1.0), "String" -> MapValueString("word")))
+    serialize(wrapper) should be ("""{"map":{"Double":{"type":"MapValueDouble","value":1.0},"String":{"type":"MapValueString","value":"word"}}}""")
+  }
+
+  // Scala 3 emits no generic signature for a local or anonymous class (scala/scala3#6349), so to
+  // Jackson this `map` is a raw Map and the value type that carries the @JsonTypeInfo is not in
+  // sight. Naming it with contentAs is the way to get the type information written, on either
+  // Scala; without the annotation only Scala 2 writes it.
+  it should "serialize type information for a map in an anonymous class given its value type" in {
+    val wrapper = new {
+      @JsonSerialize(contentAs = classOf[MapValueBase])
+      val map = Map[String, MapValueBase]("Double" -> MapValueDouble(1.0), "String" -> MapValueString("word"))
+    }
     serialize(wrapper) should be ("""{"map":{"Double":{"type":"MapValueDouble","value":1.0},"String":{"type":"MapValueString","value":"word"}}}""")
   }
 
