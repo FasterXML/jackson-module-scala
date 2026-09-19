@@ -38,19 +38,30 @@ object ScalaTypeInfo {
     val target = TypeRepr.of[T].dealias.typeSymbol
     val params = target.primaryConstructor.paramSymss.flatten.filterNot(_.isTypeParam)
 
+    val optionSymbol = TypeRepr.of[Option[?]].typeSymbol
+    val iterableOnceSymbol = TypeRepr.of[IterableOnce[?]].typeSymbol
+    val mapSymbol = TypeRepr.of[scala.collection.Map[?, ?]].typeSymbol
+
+    // The containers whose content type the module can put back: the same three the type modifier
+    // upgrades. Anything else that takes type arguments - a tuple, an `Either`, a generic case class -
+    // is left alone: the module would replace the whole of it with the primitive found inside, and a
+    // field that merely loses a type argument would become one that cannot be read at all.
+    def isContainer(tpe: TypeRepr): Boolean =
+      tpe.derivesFrom(optionSymbol) || tpe.derivesFrom(iterableOnceSymbol) || tpe.derivesFrom(mapSymbol)
+
     // Walk to the innermost content type, which is the one the module replaces: for a Map that is
     // the value, so `Map[String, Long]` is reached and `Map[Long, String]` is deliberately not -
     // there the primitive is the key, and naming it would replace the value type instead and turn a
     // field that merely loses its key type into one that cannot be read at all.
     def contentLeaf(tpe: TypeRepr): TypeRepr = tpe.dealias match {
-      case AppliedType(_, args) if args.nonEmpty => contentLeaf(args.last)
+      case applied @ AppliedType(_, args) if args.nonEmpty && isContainer(applied) => contentLeaf(args.last)
       case leaf => leaf
     }
 
     // only a primitive is lost: a reference type argument survives in the generic signature, and
     // Jackson reads it from there without any help
     def erasedArgument(tpe: TypeRepr): Option[TypeRepr] = tpe.dealias match {
-      case AppliedType(_, _) => Some(contentLeaf(tpe)).filter(isPrimitive)
+      case applied @ AppliedType(_, _) if isContainer(applied) => Some(contentLeaf(tpe)).filter(isPrimitive)
       case _ => None
     }
 
