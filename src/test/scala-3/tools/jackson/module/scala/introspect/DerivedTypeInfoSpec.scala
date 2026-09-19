@@ -14,6 +14,12 @@ sealed trait MarkedBase derives ScalaTypeInfo
 case class Marked(aLong: Option[Long]) extends MarkedBase
 case class Unmarked(aLong: Option[Long])
 
+case class Made private (aLong: Option[Long]) derives ScalaTypeInfo
+object Made {
+  @com.fasterxml.jackson.annotation.JsonCreator
+  def make(aLong: Option[Long], plain: String): Made = Made(aLong)
+}
+
 // a hierarchy two deep, marked at the top, with an unrelated derived companion in between
 sealed trait Outer derives ScalaTypeInfo
 sealed trait Inner extends Outer
@@ -33,6 +39,11 @@ class DerivedTypeInfoSpec extends AnyWordSpec with Matchers {
       derivedTypeInfo.erasedFields(classOf[Leaf]).map(_._1) shouldEqual Seq("aLong")
       // the base describes only its own implementations
       derivedTypeInfo.erasedFields(classOf[Unmarked]) shouldBe empty
+    }
+    "read the creator parameters a class captured" in {
+      derivedTypeInfo.erasedCreatorParameters(classOf[Made]) shouldEqual Seq(
+        DerivedCreatorParameter("make", 2, 0) -> DerivedTypeShape(classOf[Option[?]], Seq(DerivedTypeShape(classOf[Long], Seq.empty))))
+      derivedTypeInfo.erasedCreatorParameters(classOf[DerivedFields]) shouldBe empty
     }
     "answer with an empty table for a class that derived nothing" in {
       derivedTypeInfo.erasedFields(classOf[PlainFields]) shouldBe empty

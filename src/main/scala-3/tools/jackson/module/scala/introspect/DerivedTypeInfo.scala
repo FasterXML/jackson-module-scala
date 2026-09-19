@@ -27,43 +27,54 @@ private[introspect] class DerivedTypeInfo(lookupCacheFactory: LookupCacheFactory
   // classloader (hot redeploy, OSGi, script engines) is not retained indefinitely. Keyed by Class
   // rather than by class name because the table holds Class instances - two same-named classes from
   // different classloaders must not share an entry. A pure memo, so an evicted entry is read again.
-  private val cache: LookupCache[Class[_], Seq[(String, DerivedTypeShape)]] =
+  private val cache: LookupCache[Class[_], Derived] =
     lookupCacheFactory.createLookupCache(16, CacheSize)
 
   /**
-   * What `clazz` captured by deriving [[ScalaTypeInfo]], directly or through an enum or sealed base
-   * that derived it, or an empty table where nothing did.
+   * What `clazz` captured by deriving [[ScalaTypeInfo]] for its fields, directly or through an enum
+   * or sealed base that derived it, or an empty table where nothing did.
    *
-   * Asked once per bean descriptor built, so asked again for every class whose descriptor has since
-   * been evicted - the descriptor cache holds 100 by default - and answered the same way every time.
+   * Asked for every member of every Scala class Jackson types, and answered the same way every time.
    * The answer is therefore remembered, because reading it is not free: the great majority of classes
    * have no companion at all, and finding that out costs a `Class.forName` that ends in a
    * `ClassNotFoundException`, stack trace and all - once for the class and once for each ancestor.
    */
-  def erasedFields(clazz: Class[_]): Seq[(String, DerivedTypeShape)] = {
+  def erasedFields(clazz: Class[_]): Seq[(String, DerivedTypeShape)] = derived(clazz).fields
+
+  /** The same, for the parameters of the `@JsonCreator` methods on the companion of `clazz`. */
+  def erasedCreatorParameters(clazz: Class[_]): Seq[(DerivedCreatorParameter, DerivedTypeShape)] = derived(clazz).creatorParameters
+
+  private def derived(clazz: Class[_]): Derived = {
     Option(cache.get(clazz)) match {
-      case Some(fields) => fields
+      case Some(found) => found
       case _ =>
-        val fields = readErasedFields(clazz)
-        Option(cache.putIfAbsent(clazz, fields)).getOrElse(fields)
+        val read = readDerived(clazz)
+        Option(cache.putIfAbsent(clazz, read)).getOrElse(read)
     }
   }
 
-  private def readErasedFields(clazz: Class[_]): Seq[(String, DerivedTypeShape)] = {
+  private def readDerived(clazz: Class[_]): Derived = {
     // the class's own companion first, then the base a hierarchy was marked at: the first trace found
     // is the one that describes the class, and nothing above it is looked at
-    (clazz +: ancestors(clazz)).iterator.flatMap(derivedOn).nextOption().getOrElse(Seq.empty)
-      .collect { case (declaring, field, shape) if declaring == clazz => (field, toShape(shape)) }
+    (clazz +: ancestors(clazz)).iterator.flatMap(derivedOn).nextOption() match {
+      case Some(info) =>
+        Derived(
+          info.erasedFields.collect { case (declaring, field, shape) if declaring == clazz => (field, toShape(shape)) },
+          info.erasedCreatorParameters.collect { case (parameter, shape) if parameter.rawClass == clazz =>
+            (DerivedCreatorParameter(parameter.method, parameter.arity, parameter.index), toShape(shape))
+          })
+      case _ => Derived(Seq.empty, Seq.empty)
+    }
   }
 
   // A generic class derives a method that takes an instance for each type parameter. What is
   // captured does not depend on them - a field that mentions one is not described at all - so the
   // method is called with nothing for each.
-  private def derivedOn(clazz: Class[_]): Option[Seq[(Class[?], String, ScalaTypeInfo.TypeShape)]] = {
+  private def derivedOn(clazz: Class[_]): Option[ScalaTypeInfo[_]] = {
     ClassW.companionOf(clazz).flatMap { instance =>
       instance.getClass.getMethods.find(_.getName == MethodName).flatMap { method =>
         val arguments = Array.fill[AnyRef](method.getParameterCount)(None.orNull)
-        Try(method.invoke(instance, arguments*).asInstanceOf[ScalaTypeInfo[_]].erasedFields).toOption
+        Try(method.invoke(instance, arguments*).asInstanceOf[ScalaTypeInfo[_]]).toOption
       }
     }
   }
@@ -91,4 +102,8 @@ private[introspect] class DerivedTypeInfo(lookupCacheFactory: LookupCacheFactory
 private[introspect] object DerivedTypeInfo {
   private val MethodName = "derived$" + classOf[ScalaTypeInfo[_]].getSimpleName
   private val CacheSize = 1000
+
+  /** What one class captured: its fields, and the parameters of its companion's creators. */
+  private final case class Derived(fields: Seq[(String, DerivedTypeShape)],
+                                   creatorParameters: Seq[(DerivedCreatorParameter, DerivedTypeShape)])
 }

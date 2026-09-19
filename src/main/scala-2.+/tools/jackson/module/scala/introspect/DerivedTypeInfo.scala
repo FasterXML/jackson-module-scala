@@ -11,4 +11,5 @@ import tools.jackson.module.scala.LookupCacheFactory
  */
 private[introspect] class DerivedTypeInfo(lookupCacheFactory: LookupCacheFactory) {
   def erasedFields(clazz: Class[_]): Seq[(String, DerivedTypeShape)] = Seq.empty
+  def erasedCreatorParameters(clazz: Class[_]): Seq[(DerivedCreatorParameter, DerivedTypeShape)] = Seq.empty
 }

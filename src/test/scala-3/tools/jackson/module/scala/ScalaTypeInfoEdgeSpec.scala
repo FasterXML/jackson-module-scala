@@ -1,7 +1,7 @@
 package tools.jackson.module.scala
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonCreator.Mode
+import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty}
 import tools.jackson.databind.MapperFeature
 import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.databind.json.JsonMapper
@@ -37,16 +37,22 @@ object Ids {
 case class Outside(id: Option[Ids.UserId]) derives ScalaTypeInfo
 case class OutsidePlain(id: Option[Ids.UserId])
 
-// read through a companion creator: its parameters are the factory's, not the constructor's
-case class Built private (aLong: Option[Long]) derives ScalaTypeInfo
+// read through a companion creator: its parameters are the factory's, not the constructor's, and
+// are described from the factory - by position, under whatever name @JsonProperty gives them
+case class Built private (label: String, count: Option[Long]) derives ScalaTypeInfo
 object Built {
   @JsonCreator(mode = Mode.PROPERTIES)
-  def build(aLong: Option[Long]): Built = Built(aLong)
+  def build(text: String, @JsonProperty("n") aLong: Option[Long], byId: Map[Long, String]): Built =
+    Built(text.toUpperCase + byId.keys.sum, aLong)
 }
-case class BuiltPlain private (aLong: Option[Long])
-object BuiltPlain {
+
+// creators told apart by how many parameters they take
+case class Overloaded private (value: Option[Long]) derives ScalaTypeInfo
+object Overloaded {
+  @JsonCreator(mode = Mode.DELEGATING)
+  def apply(value: Long): Overloaded = new Overloaded(Some(value))
   @JsonCreator(mode = Mode.PROPERTIES)
-  def build(aLong: Option[Long]): BuiltPlain = BuiltPlain(aLong)
+  def apply(value: Option[Long], scale: Int): Overloaded = new Overloaded(value.map(_ * scale))
 }
 
 class ScalaTypeInfoEdgeSpec extends AnyWordSpec with Matchers {
@@ -97,12 +103,19 @@ class ScalaTypeInfoEdgeSpec extends AnyWordSpec with Matchers {
       derived shouldEqual plain
       derived shouldEqual Left("ClassCastException")
     }
-    "not reach a companion creator's parameters, and read it as without the derives" in {
-      fieldsOf[Built] shouldEqual Set("aLong")
-      val derived = outcome("""{"aLong":2}""", classOf[Built], _.aLong.map(_ + 1L))
-      val plain = outcome("""{"aLong":2}""", classOf[BuiltPlain], _.aLong.map(_ + 1L))
-      derived shouldEqual plain
-      derived shouldEqual Left("ClassCastException")
+    "describe the parameters of a companion creator" in {
+      val captured = summon[ScalaTypeInfo[Built]].erasedCreatorParameters.map(_._1)
+      captured shouldEqual Seq(
+        ScalaTypeInfo.CreatorParameter(classOf[Built], "build", 3, 1),
+        ScalaTypeInfo.CreatorParameter(classOf[Built], "build", 3, 2))
+      val read = mapper.readValue("""{"text":"x","n":2,"byId":{"3":"a"}}""", classOf[Built])
+      read.label shouldEqual "X3"
+      read.count.map(_ + 1L) shouldEqual Some(3L)
+    }
+    "tell overloaded companion creators apart by their arity" in {
+      val captured = summon[ScalaTypeInfo[Overloaded]].erasedCreatorParameters.map(_._1)
+      captured shouldEqual Seq(ScalaTypeInfo.CreatorParameter(classOf[Overloaded], "apply", 2, 0))
+      mapper.readValue("""{"value":2,"scale":3}""", classOf[Overloaded]).value.map(_ + 1L) shouldEqual Some(7L)
     }
     // a class declared inside a method takes the enclosing instance as a hidden constructor argument,
     // which Jackson cannot supply, so it cannot be read at all - the derives neither helps nor hinders.
