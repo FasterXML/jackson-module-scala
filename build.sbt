@@ -186,9 +186,6 @@ enablePlugins(SiteScaladocPlugin)
 git.remoteRepo := "git@github.com:FasterXML/jackson-module-scala.git"
 
 mimaBinaryIssueFilters ++= Seq(
-  // private to the introspect package: both gained the type a class captured by deriving ScalaTypeInfo
-  ProblemFilters.exclude[Problem]("tools.jackson.module.scala.introspect.ClassHolder*"),
-  ProblemFilters.exclude[Problem]("tools.jackson.module.scala.introspect.WrappedCreatorProperty*"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.EitherSerializer.serialize"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.TupleSerializer.this"),
   ProblemFilters.exclude[DirectMissingMethodProblem]("tools.jackson.module.scala.ser.TypeTaggedSerializer.this"),
