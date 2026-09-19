@@ -116,18 +116,29 @@ and unboxing it as a `Long` later fails. Serialization is unaffected. The
 [FAQ](https://github.com/FasterXML/jackson-module-scala/wiki/FAQ#deserializing-optionint-seqint-and-other-primitive-challenges)
 covers the problem in more depth. There are three ways to name the erased type:
 
-* Scala 3: derive `ScalaTypeInfo` on the class. The type argument is captured at compile time and
-  nothing needs to be registered with the mapper:
+* Scala 3: derive `ScalaTypeInfo` on the class. The full type of each affected field is captured at
+  compile time and nothing needs to be registered with the mapper:
   ```scala
-  case class Erased(aLong: Option[Long], longs: Seq[Long]) derives ScalaTypeInfo
+  case class Erased(aLong: Option[Long], byId: Map[Long, String], pairs: Seq[(String, Long)]) derives ScalaTypeInfo
   ```
-  It captures the innermost content type where that is a Scala primitive - `Option[Long]`, `Seq[Int]`,
-  `Option[Option[Long]]`, `Map[String, Long]` - and nothing for `Option[String]`, which needs no help.
-  `Map[Long, String]` is not captured: only the value side of a `Map` can be overridden.
+  A primitive is put back wherever it sits - the content of an `Option` or a collection, the key or the
+  value of a `Map`, a slot of a tuple or an `Either`, the argument of a generic case class, or any nesting
+  of those. Nothing is captured for `Option[String]`, which needs no help, or for a field that mentions a
+  type parameter of the class, which Jackson resolves from the type it is asked to read. Only constructor
+  parameters are described; a `var` set after construction needs the annotation below.
+
+  Derive it on an `enum` or on the base of a `sealed` hierarchy and one clause covers every case or
+  implementation - a `derives` cannot be written on an enum case:
+  ```scala
+  enum Shape derives ScalaTypeInfo:
+    case Circle(radius: Option[Long])
+    case Dot
+  ```
 * Annotate the field (any Scala version):
   ```scala
   case class OptionLong(@JsonDeserialize(contentAs = classOf[Long]) valueLong: Option[Long])
   ```
+  A `@JsonDeserialize` on a field takes precedence over anything `ScalaTypeInfo` derived for it.
 * Register the type programmatically (any Scala version), for a class you cannot annotate:
   ```scala
   ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
