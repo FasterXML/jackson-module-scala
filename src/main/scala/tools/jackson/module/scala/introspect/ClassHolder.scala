@@ -10,15 +10,10 @@ import scala.collection.mutable.{Map => MutableMap}
  */
 private[introspect] final case class DerivedTypeShape(rawClass: Class[_], typeArguments: Seq[DerivedTypeShape])
 
-/**
- * What is known about one field beyond its JVM signature. `valueClass` is a content type registered
- * by hand with `registerReferencedValueType`; `derivedType` is the whole type as captured by deriving
- * `ScalaTypeInfo`. Where both are set the hand registration is the one applied.
- */
-private[introspect] case class ClassHolder(valueClass: Option[Class[_]] = None,
-                                           derivedType: Option[DerivedTypeShape] = None)
+/** A content type registered by hand with `registerReferencedValueType`. */
+private[introspect] case class ClassHolder(valueClass: Option[Class[_]] = None)
 
-// The map is concurrent because a registration is no longer only something an application makes at
-// startup: introspecting a class registers what it derived, on whatever thread got there first.
-// Declared as the general type so that what this holds stays an implementation detail.
+// Concurrent so that a registration made while a mapper is already in use on another thread is
+// neither lost nor read mid-resize. Declared as the general type so that what this holds stays an
+// implementation detail.
 private[introspect] case class ClassOverrides(overrides: MutableMap[String, ClassHolder] = TrieMap.empty)

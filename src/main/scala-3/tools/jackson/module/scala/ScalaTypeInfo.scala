@@ -28,18 +28,18 @@ import scala.quoted.*
  *   case Dot
  * }}}
  *
- * What is captured describes the constructor parameters only. A `var` set after construction is
- * typed by its setter, which this does not reach; annotate one with `@JsonDeserialize` instead. A
- * parameter whose type mentions a type parameter of the class (`case class Box[T](v: Option[T])`) is
- * left to Jackson, which knows the argument from the type it was asked to read.
+ * Constructor parameters and public `var`s are described. A member whose type mentions a type
+ * parameter of the class (`case class Box[T](v: Option[T])`) is left to Jackson, which knows the
+ * argument from the type it was asked to read. A `@JsonDeserialize` on a member takes precedence
+ * over what was derived for it.
  *
  * @since 3.3.0
  */
 trait ScalaTypeInfo[T] {
   /**
-   * The full type of every constructor parameter that loses a primitive to erasure, keyed by the
-   * class declaring the parameter and its name. Deliberately not public: it describes what the module
-   * puts back, and that is the module's to change.
+   * The full type of every constructor parameter and public `var` that loses a primitive to erasure,
+   * keyed by the class declaring the member and its name. Deliberately not public: it describes what
+   * the module puts back, and that is the module's to change.
    */
   private[scala] def erasedFields: Seq[(Class[?], String, ScalaTypeInfo.TypeShape)]
 }
@@ -132,12 +132,18 @@ object ScalaTypeInfo {
     val entries = described(root).flatMap { symbol =>
       val clazz = Literal(ClassOfConstant(symbol.typeRef)).asExprOf[Class[?]]
       val params = symbol.primaryConstructor.paramSymss.flatten.filterNot(_.isTypeParam)
-      params.flatMap { param =>
-        val paramType = symbol.typeRef.memberType(param).dealias
+      // a var the class exposes is a property Jackson sets after construction, typed by its setter,
+      // which loses the same thing the constructor parameter would have
+      val vars = symbol.fieldMembers.filter { field =>
+        field.flags.is(Flags.Mutable) && !field.flags.is(Flags.Private) && !field.flags.is(Flags.Protected) &&
+          !field.flags.is(Flags.Lazy) && !params.exists(_.name == field.name)
+      }
+      (params ++ vars).flatMap { member =>
+        val memberType = symbol.typeRef.memberType(member).dealias
         // only a field that actually loses a primitive is described: a top-level primitive is a
         // primitive on the JVM too, and a reference type argument survives in the signature
-        shape(paramType, nested = false).collect { case (typeShape, true) =>
-          val name = Expr(param.name)
+        shape(memberType, nested = false).collect { case (typeShape, true) =>
+          val name = Expr(member.name)
           '{ ($clazz, $name, $typeShape) }
         }
       }

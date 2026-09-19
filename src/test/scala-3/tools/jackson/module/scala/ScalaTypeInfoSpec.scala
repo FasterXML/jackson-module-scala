@@ -48,6 +48,26 @@ case object Raft extends Vehicle
 
 case class Garage(vehicles: Seq[Vehicle])
 
+// a var is set after construction, through a setter, and is described all the same
+class Mutable(val plain: String) derives ScalaTypeInfo {
+  var aLong: Option[Long] = None
+  var byId: Map[Long, String] = Map.empty
+  var aStr: Option[String] = None
+  private var hidden: Option[Long] = None
+  def hiddenValue: Option[Long] = hidden
+}
+
+// a var taken from a trait: Scala 3 emits its setter on the class after erasure (scala/scala3#6350)
+trait HasCount { var count: Option[Long] }
+class Counted extends HasCount derives ScalaTypeInfo {
+  var count: Option[Long] = None
+}
+
+// a var annotated by hand is left to the annotation
+class MutableAnnotated derives ScalaTypeInfo {
+  @JsonDeserialize(contentAs = classOf[Int]) var aLong: Option[Long] = None
+}
+
 class ScalaTypeInfoSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
 
   private val json = """{"aLong":2,"anInt":1,"aStr":"x","longs":[3],"plain":"p"}"""
@@ -141,6 +161,23 @@ class ScalaTypeInfoSpec extends AnyWordSpec with Matchers with BeforeAndAfterEac
       // what is read, so the value is looked at without unboxing it
       val read = mapper.readValue("""{"aLong":2}""", classOf[Annotated])
       val held = classOf[Annotated].getMethod("aLong").invoke(read).asInstanceOf[Option[Any]]
+      held.map(_.getClass) shouldEqual Some(classOf[java.lang.Integer])
+    }
+    "describe a var as it describes a constructor parameter" in {
+      fieldsOf[Mutable].keySet shouldEqual Set("aLong", "byId")
+      val read = mapper.readValue("""{"plain":"p","aLong":2,"byId":{"3":"x"},"aStr":"s","hidden":4}""", classOf[Mutable])
+      read.plain shouldEqual "p"
+      read.aLong.map(_ + 1L) shouldEqual Some(3L)
+      read.byId.map { case (k, _) => k + 1L } shouldEqual Seq(4L)
+      read.aStr shouldEqual Some("s")
+    }
+    "describe a var taken from a trait" in {
+      fieldsOf[Counted].keySet shouldEqual Set("count")
+      mapper.readValue("""{"count":2}""", classOf[Counted]).count.map(_ + 1L) shouldEqual Some(3L)
+    }
+    "leave a var that carries a @JsonDeserialize alone" in {
+      val read = mapper.readValue("""{"aLong":2}""", classOf[MutableAnnotated])
+      val held = classOf[MutableAnnotated].getMethod("aLong").invoke(read).asInstanceOf[Option[Any]]
       held.map(_.getClass) shouldEqual Some(classOf[java.lang.Integer])
     }
     "cover every case of an enum from one derives on the enum" in {

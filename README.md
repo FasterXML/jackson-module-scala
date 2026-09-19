@@ -123,9 +123,9 @@ covers the problem in more depth. There are three ways to name the erased type:
   ```
   A primitive is put back wherever it sits - the content of an `Option` or a collection, the key or the
   value of a `Map`, a slot of a tuple or an `Either`, the argument of a generic case class, or any nesting
-  of those. Nothing is captured for `Option[String]`, which needs no help, or for a field that mentions a
-  type parameter of the class, which Jackson resolves from the type it is asked to read. Only constructor
-  parameters are described; a `var` set after construction needs the annotation below.
+  of those, and for a public `var` as much as for a constructor parameter. Nothing is captured for
+  `Option[String]`, which needs no help, or for a member that mentions a type parameter of the class,
+  which Jackson resolves from the type it is asked to read.
 
   Derive it on an `enum` or on the base of a `sealed` hierarchy and one clause covers every case or
   implementation - a `derives` cannot be written on an enum case:
