@@ -10,5 +10,5 @@ import tools.jackson.module.scala.LookupCacheFactory
  * that the introspector builds this the same way whichever compiler it was built with.
  */
 private[introspect] class DerivedTypeInfo(lookupCacheFactory: LookupCacheFactory) {
-  def erasedTypeArguments(clazz: Class[_]): Seq[(String, Class[_])] = Seq.empty
+  def erasedFields(clazz: Class[_]): Seq[(String, DerivedTypeShape)] = Seq.empty
 }
