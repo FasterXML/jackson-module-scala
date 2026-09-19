@@ -14,6 +14,7 @@ This patch release tracks Jackson 3.3.0. The 3.3 series has full support for Sca
 * [[gh-pr-883]](https://github.com/FasterXML/jackson-module-scala/pull/883) ScalaTypeInfo captures the whole field type: Map keys, tuples, Either, generic case classes, and one `derives` on an enum or sealed base covers every case (Scala 3).
 * [[gh-pr-884]](https://github.com/FasterXML/jackson-module-scala/pull/884) ScalaTypeInfo is applied through `refineDeserializationType` and covers public `var`s (Scala 3).
 * [[gh-pr-886]](https://github.com/FasterXML/jackson-module-scala/pull/886) ScalaTypeInfo describes the parameters of `@JsonCreator` companion methods (Scala 3).
+* [[gh-pr-887]](https://github.com/FasterXML/jackson-module-scala/pull/887) A Jackson mix-in that derives ScalaTypeInfo describes a class that cannot be changed (Scala 3).
 
 # 3.2.3 (release not yet planned)
 

@@ -135,11 +135,25 @@ covers the problem in more depth. There are three ways to name the erased type:
     case Circle(radius: Option[Long])
     case Dot
   ```
+  A class you cannot change is described by a Jackson mix-in that derives it. A trait extending the
+  class describes the class's own members, so none is repeated; for a `final` class, which no trait
+  can extend, a class with members of the same names (not necessarily all of them) does the same:
+  ```scala
+  trait ErasedMixin extends Erased derives ScalaTypeInfo
+  JsonMapper.builder().addModule(DefaultScalaModule).addMixIn(classOf[Erased], classOf[ErasedMixin])
+  ```
 * Annotate the field (any Scala version):
   ```scala
   case class OptionLong(@JsonDeserialize(contentAs = classOf[Long]) valueLong: Option[Long])
   ```
-  A `@JsonDeserialize` on a field takes precedence over anything `ScalaTypeInfo` derived for it.
+  A `@JsonDeserialize` on a field takes precedence over anything `ScalaTypeInfo` derived for it. For a
+  class you cannot change, put the annotation on a mix-in instead:
+  ```scala
+  trait OptionLongMixin {
+    @JsonDeserialize(contentAs = classOf[Long]) def valueLong: Option[Long]
+  }
+  JsonMapper.builder().addModule(DefaultScalaModule).addMixIn(classOf[OptionLong], classOf[OptionLongMixin])
+  ```
 * Register the type programmatically (any Scala version), for a class you cannot annotate:
   ```scala
   ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
