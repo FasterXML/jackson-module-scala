@@ -15,6 +15,16 @@ case class ErasedPrecedence(aLong: Option[Long]) derives ScalaTypeInfo
 case class Layered(twice: Option[Option[Long]], inSeq: Option[Seq[Long]], ofOption: Seq[Option[Long]],
                    mapValue: Map[String, Long], mapKey: Map[Long, String]) derives ScalaTypeInfo
 
+case class Generic[T](value: T)
+
+// a primitive inside something the module cannot rebuild - a tuple, an Either, a generic class, an
+// array - is not a content type it can put back, so nothing is captured and the field reads exactly
+// as it does without the derives
+case class Wrapped(tupled: Seq[(String, Long)], either: Option[Either[String, Long]],
+                   generic: Option[Generic[Long]], array: Option[Array[Long]], bare: (String, Long)) derives ScalaTypeInfo
+case class WrappedPlain(tupled: Seq[(String, Long)], either: Option[Either[String, Long]],
+                        generic: Option[Generic[Long]], array: Option[Array[Long]], bare: (String, Long))
+
 class ScalaTypeInfoSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
 
   private val json = """{"aLong":2,"anInt":1,"aStr":"x","longs":[3],"plain":"p"}"""
@@ -74,6 +84,21 @@ class ScalaTypeInfoSpec extends AnyWordSpec with Matchers with BeforeAndAfterEac
       mapper.readValue("""{"aLong":2}""", classOf[ErasedPrecedence])
       ScalaAnnotationIntrospectorModule
         .getRegisteredReferencedValueType(classOf[ErasedPrecedence], "aLong") shouldEqual Some(classOf[Int])
+    }
+    "capture nothing for a primitive inside a type that is not a container" in {
+      summon[ScalaTypeInfo[Wrapped]].erasedTypeArguments shouldBe empty
+    }
+    "read a field it captured nothing for exactly as it is read without the derives" in {
+      val json = """{"tupled":[["a",3]],"either":{"r":3},"generic":{"value":3},"array":[3],"bare":["b",4]}"""
+      val derived = mapper.readValue(json, classOf[Wrapped])
+      val plain = mapper.readValue(json, classOf[WrappedPlain])
+      derived.tupled shouldEqual plain.tupled
+      derived.either shouldEqual plain.either
+      derived.generic shouldEqual plain.generic
+      derived.array.map(_.toSeq) shouldEqual plain.array.map(_.toSeq)
+      derived.bare shouldEqual plain.bare
+      // the array keeps its element type in the signature, so it is read as longs either way
+      derived.array.map(_.map(_ + 1L).toSeq) shouldEqual Some(Seq(4L))
     }
   }
 }
