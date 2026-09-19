@@ -33,6 +33,11 @@ import scala.quoted.*
  * argument from the type it was asked to read. A `@JsonDeserialize` on a member takes precedence
  * over what was derived for it.
  *
+ * Two things are out of reach. An opaque type is seen through only where it is derived inside the
+ * scope that defines it; elsewhere `Option[UserId]` is not described, and reads as it would without
+ * the derives. A class read through a `@JsonCreator` on its companion is typed by the factory's
+ * parameters, which this does not describe.
+ *
  * @since 3.3.0
  */
 trait ScalaTypeInfo[T] {
