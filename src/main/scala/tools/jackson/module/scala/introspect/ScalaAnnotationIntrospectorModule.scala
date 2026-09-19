@@ -3,7 +3,8 @@ package tools.jackson.module.scala.introspect
 import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty, JsonPropertyOrder}
 import tools.jackson.core.Version
 import tools.jackson.databind.JacksonModule.SetupContext
-import tools.jackson.databind.`type`.{CollectionLikeType, MapLikeType, ReferenceType, SimpleType}
+import tools.jackson.databind.`type`.{CollectionLikeType, MapLikeType, ReferenceType, SimpleType, TypeFactory}
+import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.databind.cfg.MapperConfig
 import tools.jackson.databind.deser._
 import tools.jackson.databind.deser.std.StdValueInstantiator
@@ -344,7 +345,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     private def applyOverrides(creator: CreatorProperty, propertyName: String,
                                overrides: Map[String, ClassHolder]): CreatorProperty = {
       overrides.get(propertyName) match {
-        case Some(refHolder) => WrappedCreatorProperty(creator, refHolder)
+        case Some(refHolder) => WrappedCreatorProperty(creator, refHolder, deserializationConfig.getTypeFactory)
         case _ => creator
       }
     }
@@ -440,12 +441,18 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
    * Registers what `clazz` captured by deriving `ScalaTypeInfo`, so that a type argument the JVM
    * erased does not have to be supplied by hand. Called the first time a class is introspected.
    *
-   * A registration made by hand is deliberate, and is left alone.
+   * A registration made by hand is deliberate, and is left alone: the derived type is recorded
+   * beside it, but a hand-registered value class is the one applied.
    */
   private[introspect] def registerDerivedReferencedValueTypes(clazz: Class[_]): Unit = {
-    _derivedTypeInfo.erasedTypeArguments(clazz).foreach { case (fieldName, referencedType) =>
-      if (getRegisteredReferencedValueType(clazz, fieldName).isEmpty) {
-        registerReferencedValueType(clazz, fieldName, referencedType)
+    val fields = _derivedTypeInfo.erasedFields(clazz)
+    if (fields.nonEmpty) {
+      val overrides = overrideMap.getOrElseUpdate(clazz.getName, ClassOverrides()).overrides
+      fields.foreach { case (fieldName, shape) =>
+        overrides.get(fieldName) match {
+          case Some(holder) => overrides.put(fieldName, holder.copy(derivedType = Some(shape)))
+          case _ => overrides.put(fieldName, ClassHolder(derivedType = Some(shape)))
+        }
       }
     }
   }
@@ -566,7 +573,8 @@ object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModu
     = new ScalaAnnotationIntrospectorModule {}
 }
 
-private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ClassHolder)
+private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refHolder: ClassHolder,
+                                          typeFactory: TypeFactory)
   extends CreatorProperty(creatorProperty, creatorProperty.getFullName) {
 
   override def getType(): JavaType = {
@@ -577,8 +585,24 @@ private case class WrappedCreatorProperty(creatorProperty: CreatorProperty, refH
         updateCollectionType(ct, refHolder.valueClass.get)
       case mt: MapLikeType if refHolder.valueClass.isDefined =>
         updateMapType(mt, refHolder.valueClass.get)
+      case declared if derivedType.exists(_.getRawClass == declared.getRawClass) =>
+        derivedType.get
       case other => other
     }
+  }
+
+  // The whole type as the compiler saw it, built by the factory so that the module's own type
+  // modifier shapes it exactly as it would have shaped the signature had nothing been erased. Not
+  // built where a @JsonDeserialize is on the field: that is deliberate - a content type, a key type,
+  // a deserializer - and says more than a derived type does, so it is left to say it alone. Applied
+  // only where the property is still what was declared, so anything else that has already changed
+  // the property is respected too.
+  private lazy val derivedType: Option[JavaType] =
+    refHolder.derivedType.filter(_ => getAnnotation(classOf[JsonDeserialize]) == null).map(constructType)
+
+  private def constructType(shape: DerivedTypeShape): JavaType = {
+    if (shape.typeArguments.isEmpty) typeFactory.constructType(shape.rawClass)
+    else typeFactory.constructParametricType(shape.rawClass, shape.typeArguments.map(constructType): _*)
   }
 
   private def updateReferenceType(rt: ReferenceType, newRefClass: Class[_]): ReferenceType = {
