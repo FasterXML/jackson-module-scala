@@ -45,6 +45,10 @@ There are a few differences from Scala 2 support.
   so a `Map[String, Base]` member of `new { ... }` or of a class declared inside a method looks like a raw `Map` to Jackson.
   Values still serialize, but anything that depends on the declared value type - such as `@JsonTypeInfo` on `Base` - is not
   applied. Name the type with `@JsonSerialize(contentAs = classOf[Base])`, or declare the class at the top level or inside an object.
+* Scala 3 `enum`s are supported out of the box, and `derives ScalaTypeInfo` / `derives SealedSubtypes` replace the
+  registrations Scala 2 needs for type-erased fields and sealed hierarchies - see
+  [Type-erased fields](#type-erased-fields-optionlong-seqint-mapstring-long) and
+  [Scala 3 enums and sealed hierarchies](#scala-3-enums-and-sealed-hierarchies) below.
 
 # Usage
 
@@ -102,6 +106,65 @@ val myMap = mapper.readValue(src, new TypeReference[Map[String,Tuple2[Int,Int]]]
 ```
 
 Consult the [Scaladoc](https://fasterxml.github.io/jackson-module-scala/latest/api/) for further details.
+
+## Type-erased fields (`Option[Long]`, `Seq[Int]`, `Map[String, Long]`)
+
+The JVM keeps a reference type argument in the generic signature - `Option[String]` is still
+`Option<String>` at runtime - but a Scala primitive is erased to `Object`, so `Option[Long]` and
+`Option[Int]` look the same to Jackson. On deserialization a small JSON number is read as an `Integer`,
+and unboxing it as a `Long` later fails. Serialization is unaffected. The
+[FAQ](https://github.com/FasterXML/jackson-module-scala/wiki/FAQ#deserializing-optionint-seqint-and-other-primitive-challenges)
+covers the problem in more depth. There are three ways to name the erased type:
+
+* Scala 3: derive `ScalaTypeInfo` on the class. The type argument is captured at compile time and
+  nothing needs to be registered with the mapper:
+  ```scala
+  case class Erased(aLong: Option[Long], longs: Seq[Long]) derives ScalaTypeInfo
+  ```
+  It captures the innermost content type where that is a Scala primitive - `Option[Long]`, `Seq[Int]`,
+  `Option[Option[Long]]`, `Map[String, Long]` - and nothing for `Option[String]`, which needs no help.
+  `Map[Long, String]` is not captured: only the value side of a `Map` can be overridden.
+* Annotate the field (any Scala version):
+  ```scala
+  case class OptionLong(@JsonDeserialize(contentAs = classOf[Long]) valueLong: Option[Long])
+  ```
+* Register the type programmatically (any Scala version), for a class you cannot annotate:
+  ```scala
+  ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
+  ```
+  A registration made this way takes precedence over one derived through `ScalaTypeInfo`.
+  `clearRegisteredReferencedTypes()` removes them again. A module built with `ScalaModule.builder()`
+  keeps its own registrations, separate from the `ScalaAnnotationIntrospectorModule` object.
+
+## Scala 3 enums and sealed hierarchies
+
+A Scala 3 `enum` is supported by `DefaultScalaModule` without further configuration. A simple case is
+written as its name (`"Red"`); an enum with parameterized cases tags each value with `@type`:
+```scala
+enum Color(val rgb: Int):
+  case Red extends Color(0xFF0000)
+  case Mix(mix: Int) extends Color(mix)
+
+// Color.Red      -> "Red"
+// Color.Mix(4491519) -> {"@type":"Mix","mix":4491519,"rgb":4491519}
+```
+An enum annotated with `@JsonTypeInfo` is left to the standard Jackson handling.
+
+A `sealed` hierarchy can be marked for automatic polymorphic handling - a `@type` property naming
+the implementation, without `@JsonTypeInfo` and `@JsonSubTypes` - in either of two equivalent ways:
+```scala
+sealed trait Animal extends SealedPolymorphismSupport   // any Scala version; needs scala-reflect on Scala 2
+sealed trait Animal derives SealedSubtypes              // Scala 3; implementations captured at compile time
+case class Dog(name: String) extends Animal
+case object Unknown extends Animal
+
+// Dog("rex") -> {"@type":"Dog","name":"rex"}
+// Unknown    -> {"@type":"Unknown"}
+```
+The `@type` value is the implementation's simple name; an implementation declared inside some other
+object keeps that object in its name (`{"@type":"Kept.Tame",...}`). `scala-reflect` is an optional
+dependency of this module, needed only by Scala 2 applications that use `SealedPolymorphismSupport`.
+See the Scaladoc of `SealedPolymorphismSupport` and `SealedSubtypes` for the naming and lookup rules.
 
 ## Sbt
 
