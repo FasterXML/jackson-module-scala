@@ -105,7 +105,8 @@ class ScalaTypeInfoEdgeSpec extends AnyWordSpec with Matchers {
       derived shouldEqual Left("ClassCastException")
     }
     // a class declared inside a method takes the enclosing instance as a hidden constructor argument,
-    // which Jackson cannot supply, so it cannot be read at all - the derives neither helps nor hinders
+    // which Jackson cannot supply, so it cannot be read at all - the derives neither helps nor hinders.
+    // Which exception says so depends on how the compiler version shaped that constructor.
     "read a class declared inside a method as without the derives" in {
       case class Local(aLong: Option[Long]) derives ScalaTypeInfo
       case class LocalPlain(aLong: Option[Long])
@@ -113,7 +114,7 @@ class ScalaTypeInfoEdgeSpec extends AnyWordSpec with Matchers {
       val derived = outcome("""{"aLong":2}""", classOf[Local], _.aLong.map(_ + 1L))
       val plain = outcome("""{"aLong":2}""", classOf[LocalPlain], _.aLong.map(_ + 1L))
       derived shouldEqual plain
-      derived shouldEqual Left("ValueInstantiationException")
+      derived shouldBe a[Left[?, ?]]
     }
   }
 }
