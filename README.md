@@ -123,7 +123,8 @@ covers the problem in more depth. There are three ways to name the erased type:
   ```
   A primitive is put back wherever it sits - the content of an `Option` or a collection, the key or the
   value of a `Map`, a slot of a tuple or an `Either`, the argument of a generic case class, or any nesting
-  of those, and for a public `var` as much as for a constructor parameter. Nothing is captured for
+  of those, and for a public `var` or a `@JsonCreator` companion method's parameter as much as for a
+  constructor parameter. Nothing is captured for
   `Option[String]`, which needs no help, or for a member that mentions a type parameter of the class,
   which Jackson resolves from the type it is asked to read.
 

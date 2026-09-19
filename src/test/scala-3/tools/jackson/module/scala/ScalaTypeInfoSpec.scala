@@ -141,7 +141,7 @@ class ScalaTypeInfoSpec extends AnyWordSpec with Matchers with BeforeAndAfterEac
     }
     "leave a field that mentions a type parameter of the class to Jackson" in {
       // a generic class derives a method that wants an instance for T, so it is summoned with one
-      given ScalaTypeInfo[String] = ScalaTypeInfo.derivedFrom(Seq.empty)
+      given ScalaTypeInfo[String] = ScalaTypeInfo.derivedFrom(Seq.empty, Seq.empty)
       fieldsOf[Parameterised[String]].keySet shouldEqual Set("aLong")
       val read = mapper.readValue("""{"value":"x","keyed":{"a":2},"aLong":2}""", classOf[Parameterised[String]])
       read.value shouldEqual Some("x")

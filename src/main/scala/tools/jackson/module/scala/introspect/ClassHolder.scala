@@ -10,6 +10,13 @@ import scala.collection.mutable.{Map => MutableMap}
  */
 private[introspect] final case class DerivedTypeShape(rawClass: Class[_], typeArguments: Seq[DerivedTypeShape])
 
+/**
+ * A parameter of a `@JsonCreator` companion method, as a class captured it: the method's name, how
+ * many parameters it takes and which of them this is. Mirrors `ScalaTypeInfo.CreatorParameter`
+ * for the same reason.
+ */
+private[introspect] final case class DerivedCreatorParameter(method: String, arity: Int, index: Int)
+
 /** A content type registered by hand with `registerReferencedValueType`. */
 private[introspect] case class ClassHolder(valueClass: Option[Class[_]] = None)
 

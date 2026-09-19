@@ -33,10 +33,12 @@ import scala.quoted.*
  * argument from the type it was asked to read. A `@JsonDeserialize` on a member takes precedence
  * over what was derived for it.
  *
- * Two things are out of reach. An opaque type is seen through only where it is derived inside the
+ * A class read through a `@JsonCreator` on its companion is typed by the factory's parameters, so
+ * those are described too, for every annotated companion method.
+ *
+ * One thing is out of reach: an opaque type is seen through only where it is derived inside the
  * scope that defines it; elsewhere `Option[UserId]` is not described, and reads as it would without
- * the derives. A class read through a `@JsonCreator` on its companion is typed by the factory's
- * parameters, which this does not describe.
+ * the derives.
  *
  * @since 3.3.0
  */
@@ -47,6 +49,12 @@ trait ScalaTypeInfo[T] {
    * the module puts back, and that is the module's to change.
    */
   private[scala] def erasedFields: Seq[(Class[?], String, ScalaTypeInfo.TypeShape)]
+
+  /**
+   * The full type of every parameter of a `@JsonCreator` companion method that loses a primitive to
+   * erasure, keyed by the method and the parameter's position. Not public for the same reason.
+   */
+  private[scala] def erasedCreatorParameters: Seq[(ScalaTypeInfo.CreatorParameter, ScalaTypeInfo.TypeShape)]
 }
 
 object ScalaTypeInfo {
@@ -62,11 +70,21 @@ object ScalaTypeInfo {
   final case class TypeShape(rawClass: Class[?], typeArguments: Seq[TypeShape])
 
   /**
+   * A parameter of a `@JsonCreator` companion method: the class the method creates, the method's
+   * name, how many parameters it takes and which of them this is. Jackson sees the method as a
+   * static one on the class, and asks about its parameters by position. Public for the same reason
+   * as [[TypeShape]]; nothing else should construct one.
+   */
+  final case class CreatorParameter(rawClass: Class[?], method: String, arity: Int, index: Int)
+
+  /**
    * Called by what `derived` generates, for the same reason [[TypeShape]] is public. Nothing else
    * should call it.
    */
-  def derivedFrom[T](erased: Seq[(Class[?], String, TypeShape)]): ScalaTypeInfo[T] = new ScalaTypeInfo[T] {
-    override private[scala] def erasedFields: Seq[(Class[?], String, TypeShape)] = erased
+  def derivedFrom[T](fields: Seq[(Class[?], String, TypeShape)],
+                     creatorParameters: Seq[(CreatorParameter, TypeShape)]): ScalaTypeInfo[T] = new ScalaTypeInfo[T] {
+    override private[scala] def erasedFields: Seq[(Class[?], String, TypeShape)] = fields
+    override private[scala] def erasedCreatorParameters: Seq[(CreatorParameter, TypeShape)] = creatorParameters
   }
 
   inline def derived[T]: ScalaTypeInfo[T] = ${ derivedImpl[T] }
@@ -134,6 +152,34 @@ object ScalaTypeInfo {
         }
     }
 
+    val jsonCreator = Symbol.requiredClass("com.fasterxml.jackson.annotation.JsonCreator")
+
+    // the parameter types of a method, every parameter list flattened as the JVM flattens them
+    def parameterTypes(tpe: TypeRepr): List[TypeRepr] = tpe match {
+      case MethodType(_, types, result) => types ++ parameterTypes(result)
+      case PolyType(_, _, result) => parameterTypes(result)
+      case _ => Nil
+    }
+
+    val creatorEntries = described(root).flatMap { symbol =>
+      val companion = symbol.companionModule
+      if (!companion.exists) Nil
+      else {
+        val clazz = Literal(ClassOfConstant(symbol.typeRef)).asExprOf[Class[?]]
+        companion.moduleClass.declaredMethods.filter(_.hasAnnotation(jsonCreator)).flatMap { method =>
+          val types = parameterTypes(companion.moduleClass.typeRef.memberType(method))
+          val name = Expr(method.name)
+          val arity = Expr(types.length)
+          types.zipWithIndex.flatMap { (paramType, position) =>
+            shape(paramType.dealias, nested = false).collect { case (typeShape, true) =>
+              val index = Expr(position)
+              '{ (CreatorParameter($clazz, $name, $arity, $index), $typeShape) }
+            }
+          }
+        }
+      }
+    }
+
     val entries = described(root).flatMap { symbol =>
       val clazz = Literal(ClassOfConstant(symbol.typeRef)).asExprOf[Class[?]]
       val params = symbol.primaryConstructor.paramSymss.flatten.filterNot(_.isTypeParam)
@@ -154,6 +200,6 @@ object ScalaTypeInfo {
       }
     }
 
-    '{ ScalaTypeInfo.derivedFrom[T](Seq(${ Varargs(entries) }*)) }
+    '{ ScalaTypeInfo.derivedFrom[T](Seq(${ Varargs(entries) }*), Seq(${ Varargs(creatorEntries) }*)) }
   }
 }
