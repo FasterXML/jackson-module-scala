@@ -36,6 +36,17 @@ import scala.quoted.*
  * A class read through a `@JsonCreator` on its companion is typed by the factory's parameters, so
  * those are described too, for every annotated companion method.
  *
+ * A class that cannot be changed is described by a Jackson mix-in that derives this, registered on
+ * the mapper as a mix-in carrying a `@JsonDeserialize` would be. A trait that extends the class
+ * describes the class's own members, so nothing is repeated; where the class is final, a class
+ * with members of the same names describes them instead. Like the annotations of a mix-in, what
+ * it captured is preferred to what the class itself derived.
+ *
+ * {{{
+ * trait ForeignMixin extends Foreign derives ScalaTypeInfo
+ * JsonMapper.builder().addModule(DefaultScalaModule).addMixIn(classOf[Foreign], classOf[ForeignMixin])
+ * }}}
+ *
  * One thing is out of reach: an opaque type is seen through only where it is derived inside the
  * scope that defines it; elsewhere `Option[UserId]` is not described, and reads as it would without
  * the derives.
@@ -114,6 +125,18 @@ object ScalaTypeInfo {
       itself ++ below
     }
 
+    // What the type extends, outside the standard library. A mix-in written as a trait that extends
+    // the class it stands in for describes that class's members without repeating them.
+    def extended(symbol: Symbol): List[Symbol] =
+      symbol.typeRef.baseClasses.filter { parent =>
+        parent != symbol && parent.isClassDef &&
+          !parent.fullName.startsWith("scala.") && !parent.fullName.startsWith("java.")
+      }
+
+    // every class this derives describes: the type, every case or implementation below it, and
+    // what it extends
+    val subjects = (described(root) ++ extended(root)).distinct
+
     def leaf(tpe: TypeRepr): Expr[TypeShape] =
       '{ TypeShape(${ Literal(ClassOfConstant(tpe)).asExprOf[Class[?]] }, Seq.empty) }
 
@@ -161,7 +184,7 @@ object ScalaTypeInfo {
       case _ => Nil
     }
 
-    val creatorEntries = described(root).flatMap { symbol =>
+    val creatorEntries = subjects.flatMap { symbol =>
       val companion = symbol.companionModule
       if (!companion.exists) Nil
       else {
@@ -180,7 +203,7 @@ object ScalaTypeInfo {
       }
     }
 
-    val entries = described(root).flatMap { symbol =>
+    val entries = subjects.flatMap { symbol =>
       val clazz = Literal(ClassOfConstant(symbol.typeRef)).asExprOf[Class[?]]
       val params = symbol.primaryConstructor.paramSymss.flatten.filterNot(_.isTypeParam)
       // a var the class exposes is a property Jackson sets after construction, typed by its setter,

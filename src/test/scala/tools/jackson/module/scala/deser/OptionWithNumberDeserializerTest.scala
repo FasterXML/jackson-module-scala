@@ -14,6 +14,11 @@ object OptionWithNumberDeserializerTest {
   case class OptionJavaLong(valueLong: Option[java.lang.Long])
   case class OptionBigInt(value: Option[BigInt])
   case class WrappedOptionLong(text: String, wrappedLong: OptionLong)
+
+  // the annotation put on a class that cannot be changed, through a mix-in
+  trait OptionLongMixin {
+    @JsonDeserialize(contentAs = classOf[Long]) def valueLong: Option[Long]
+  }
 }
 
 class OptionWithNumberDeserializerTest extends DeserializerTest {
@@ -35,6 +40,13 @@ class OptionWithNumberDeserializerTest extends DeserializerTest {
     val v1 = deserialize("""{"valueLong":151}""", classOf[AnnotatedOptionPrimitiveLong])
     v1 shouldBe AnnotatedOptionPrimitiveLong(Some(151L))
     v1.valueLong.get shouldBe 151L
+    useOptionLong(v1.valueLong) shouldBe 302L
+  }
+
+  it should "deserialize OptionLong when a mix-in carries the annotation" in {
+    val mapper = newBuilder.addMixIn(classOf[OptionLong], classOf[OptionLongMixin]).build()
+    val v1 = mapper.readValue("""{"valueLong":151}""", classOf[OptionLong])
+    v1 shouldBe OptionLong(Some(151L))
     useOptionLong(v1.valueLong) shouldBe 302L
   }
 

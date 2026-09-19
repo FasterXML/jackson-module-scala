@@ -145,27 +145,28 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
     if (baseType != declaredType(m) || m.hasAnnotation(classOf[JsonDeserialize])) None
     else {
       val derivedTypeInfo = scalaAnnotationIntrospectorModule._derivedTypeInfo
+      // A class that cannot be changed is described by a mix-in that derives ScalaTypeInfo, as one
+      // carrying a @JsonDeserialize would describe it. Mix-ins belong to one mapper's config, never
+      // to this module, so the mix-in is looked up every time rather than remembered.
+      val declaring = m.getDeclaringClass
+      val mixin = Option(mapperConfig.findMixInClassFor(declaring))
       val shape = m match {
         // a companion creator reaches Jackson as a static method on the class, whose parameters
         // are known by position
         case ap: AnnotatedParameter if ap.getOwner.isInstanceOf[AnnotatedMethod] =>
           val owner = ap.getOwner.asInstanceOf[AnnotatedMethod]
-          derivedTypeInfo.erasedCreatorParameters(ap.getDeclaringClass).collectFirst {
+          derivedTypeInfo.erasedCreatorParameters(declaring, mixin).collectFirst {
             case (DerivedCreatorParameter(method, arity, index), shape)
               if method == owner.getName && arity == owner.getParameterCount && index == ap.getIndex => shape
           }
         case _ =>
-          val fields = derivedTypeInfo.erasedFields(m.getDeclaringClass)
-          if (fields.isEmpty) None
-          else {
-            val name = m match {
-              case ap: AnnotatedParameter => paramName(ap)
-              case af: AnnotatedField => fieldName(af)
-              case am: AnnotatedMethod => methodName(am)
-              case _ => None
-            }
-            name.flatMap(n => fields.find(_._1 == n)).map(_._2)
+          val name = m match {
+            case ap: AnnotatedParameter => paramName(ap)
+            case af: AnnotatedField => fieldName(af)
+            case am: AnnotatedMethod => methodName(am)
+            case _ => None
           }
+          name.flatMap(n => derivedTypeInfo.erasedFields(declaring, mixin).find(_._1 == n)).map(_._2)
       }
       shape.map(constructType(mapperConfig, _)).filter(_.getRawClass == baseType.getRawClass)
     }
