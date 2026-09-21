@@ -6,6 +6,7 @@
 * [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
 * [[gh-pr-844]](https://github.com/FasterXML/jackson-module-scala/pull/844) Fix Iterator serializer isEmpty.
 * [[gh-pr-845]](https://github.com/FasterXML/jackson-module-scala/pull/845) Fix Iterator serializer with WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED.
+* [[gh-pr-891]](https://github.com/FasterXML/jackson-module-scala/pull/891) Fix the handle of null inputs in TupleDeserializer.
 
 # Version: 2.22.2
 
@@ -32,6 +33,7 @@ There are no new fixes in this release.
 * [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
 * [[gh-pr-844]](https://github.com/FasterXML/jackson-module-scala/pull/844) Fix Iterator serializer isEmpty.
 * [[gh-pr-845]](https://github.com/FasterXML/jackson-module-scala/pull/845) Fix Iterator serializer with WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED.
+* [[gh-pr-891]](https://github.com/FasterXML/jackson-module-scala/pull/891) Fix the handle of null inputs in TupleDeserializer.
 
 # Version: 2.21.6
 
@@ -123,7 +125,7 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 * [[gh-pr-713]](https://github.com/FasterXML/jackson-module-scala/pull/713) Add ScalaModule.builder() to over another way to customise the Scala module
 * [[gh-722]](https://github.com/FasterXML/jackson-module-scala/issues/722) Collection deserializer should create empty collection instead of null (when input is null)
 
-# Version: 2.18.11 (release not yet planned)
+# Version: 2.18.11
 
 ## Fixes
 
