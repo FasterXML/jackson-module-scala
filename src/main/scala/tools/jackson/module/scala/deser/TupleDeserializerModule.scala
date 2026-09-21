@@ -46,11 +46,14 @@ private class TupleDeserializer(javaType: JavaType,
     // Ok: must point to START_ARRAY (or equivalent)
     if (jp.isExpectedStartArrayToken) {
       val params = (valueDeserializers zip typeDeserializers) map { case (deser, typeDeser) =>
-        jp.nextToken
-        if (typeDeser == null)
-          deser.deserialize(jp, ctxt)
-        else
-          deser.deserializeWithType(jp, ctxt, typeDeser)
+        jp.nextToken match {
+          // a null element goes through the element deserializer's null value, as it does in
+          // Jackson's own array and collection deserializers, so (Int, String) reads [1,null]
+          // as it was written and FAIL_ON_NULL_FOR_PRIMITIVES still applies to the Int
+          case JsonToken.VALUE_NULL => deser.getNullValue(ctxt)
+          case _ if typeDeser == null => deser.deserialize(jp, ctxt)
+          case _ => deser.deserializeWithType(jp, ctxt, typeDeser)
+        }
       }
 
       val t = jp.nextToken

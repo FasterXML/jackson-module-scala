@@ -161,6 +161,18 @@ class ClassTagExtensionsTest extends JacksonTest {
     result should equal(genericInt)
   }
 
+  // a TypeReference erases these type arguments to Object; the ClassTag keeps the primitive class
+  it should "read a generic class with a primitive type argument as that primitive" in {
+    mapper.readValue[GenericTestClass[Boolean]]("""{"t":true}""") shouldEqual GenericTestClass(true)
+    mapper.readValue[GenericTestClass[Byte]]("""{"t":1}""").productElement(0).getClass shouldEqual classOf[java.lang.Byte]
+    mapper.readValue[GenericTestClass[Short]]("""{"t":2}""").productElement(0).getClass shouldEqual classOf[java.lang.Short]
+    mapper.readValue[GenericTestClass[Char]]("""{"t":"中"}""") shouldEqual GenericTestClass('中')
+    mapper.readValue[GenericTestClass[Int]]("""{"t":3}""").productElement(0).getClass shouldEqual classOf[java.lang.Integer]
+    mapper.readValue[GenericTestClass[Long]]("""{"t":4}""").productElement(0).getClass shouldEqual classOf[java.lang.Long]
+    mapper.readValue[GenericTestClass[Float]]("""{"t":1.5}""").productElement(0).getClass shouldEqual classOf[java.lang.Float]
+    mapper.readValue[GenericTestClass[Double]]("""{"t":2.5}""") shouldEqual GenericTestClass(2.5)
+  }
+
   it should "read values as Array from a JSON array" in {
     val result = mapper.readValue[Array[GenericTestClass[Int]]](toplevelArrayJson)
     result should equal(listGenericInt.toArray)
@@ -200,6 +212,13 @@ class ClassTagExtensionsTest extends JacksonTest {
   it should "fail to read a Map from JSON with invalid types" in {
     an [InvalidFormatException] should be thrownBy {
       mapper.readValue[Map[String, Int]](genericTwoFieldJson)
+    }
+  }
+
+  it should "read a Map with Int keys and reject a key that is not a number" in {
+    mapper.readValue[Map[Int, String]]("""{"1":"a","2":"b"}""") shouldEqual Map(1 -> "a", 2 -> "b")
+    an [InvalidFormatException] should be thrownBy {
+      mapper.readValue[Map[Int, String]]("""{"x":"a"}""")
     }
   }
 

@@ -31,6 +31,14 @@ class UnsortedMapDeserializerTest extends DeserializerTest with OptionValues {
     result should equal (mapScala)
   }
 
+  it should "deserialize an object with lists of options as values" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val value = Map("a" -> List(Some(1), None), "b" -> Nil)
+    val json = mapper.writeValueAsString(value)
+    json shouldEqual """{"a":[1,null],"b":[]}"""
+    mapper.readValue(json, new TypeReference[Map[String, List[Option[Int]]]] {}) shouldEqual value
+  }
+
   it should "deserialize an object into an immutable Map" in {
     val typeRef = new TypeReference[immutable.Map[String, String]] {}
     val result = deserialize(mapJson, typeRef)

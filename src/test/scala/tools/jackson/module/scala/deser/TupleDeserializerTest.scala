@@ -3,7 +3,9 @@ package tools.jackson.module.scala.deser
 import com.fasterxml.jackson.annotation.JsonTypeInfo.{As, Id}
 import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 import tools.jackson.core.`type`.TypeReference
-import tools.jackson.module.scala.{DefaultScalaModule, JacksonModule}
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.exc.MismatchedInputException
+import tools.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule, JacksonModule}
 import tools.jackson.module.scala.ser.TupleSerializerTest.OptionalTupleHolder
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "type")
@@ -100,5 +102,59 @@ class TupleDeserializerTest extends DeserializerTest {
     val json = newMapper.writeValueAsString(value)
     val result = deserialize(json, classOf[OptionalTupleHolder2])
     result shouldEqual value
+  }
+
+  it should "reject an array with more elements than the tuple has" in {
+    intercept[MismatchedInputException] {
+      deserialize("""[1,"a",2]""", new TypeReference[(Int, String)] {})
+    }
+  }
+
+  it should "reject an array with fewer elements than the tuple has" in {
+    intercept[MismatchedInputException] {
+      deserialize("""[1]""", new TypeReference[(Int, String)] {})
+    }
+    intercept[MismatchedInputException] {
+      deserialize("[]", new TypeReference[Tuple1[Int]] {})
+    }
+  }
+
+  it should "reject an object where a tuple is expected" in {
+    intercept[MismatchedInputException] {
+      deserialize("""{"_1":1}""", new TypeReference[(Int, String)] {})
+    }
+  }
+
+  it should "deserialize null to a null tuple" in {
+    deserialize("null", new TypeReference[(Int, String)] {}) shouldBe null
+  }
+
+  it should "deserialize a null element" in {
+    // the shape the serializer writes for (1, null)
+    deserialize("""[1,null]""", new TypeReference[(Int, String)] {}) shouldEqual ((1, null))
+    deserialize("""[1,null]""", new TypeReference[(Int, Option[String])] {}) shouldEqual ((1, None))
+  }
+
+  it should "apply FAIL_ON_NULL_FOR_PRIMITIVES to a null element in a primitive position" in {
+    // a ClassTag keeps the Int slot primitive, where a TypeReference would erase it to Object
+    val strict = newMapper :: ClassTagExtensions
+    intercept[MismatchedInputException] {
+      strict.readValue[(Int, String)]("""[null,"a"]""")
+    }
+    val lenient = newBuilder.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).build() :: ClassTagExtensions
+    lenient.readValue[(Int, String)]("""[null,"a"]""") shouldEqual ((0, "a"))
+  }
+
+  it should "deserialize nested tuples" in {
+    val value = ((1, "z"), List(("a", Some(1)), ("b", None)))
+    val json = serialize(value)
+    json shouldEqual """[[1,"z"],[["a",1],["b",null]]]"""
+    deserialize(json, new TypeReference[((Int, String), List[(String, Option[Int])])] {}) shouldEqual value
+  }
+
+  it should "round trip tuples of the specialized primitive kinds" in {
+    deserialize(serialize((1, 2)), new TypeReference[(Int, Int)] {}) shouldEqual ((1, 2))
+    deserialize(serialize((1L, 2.5)), new TypeReference[(Long, Double)] {}) shouldEqual ((1L, 2.5))
+    deserialize(serialize((true, false)), new TypeReference[(Boolean, Boolean)] {}) shouldEqual ((true, false))
   }
 }
