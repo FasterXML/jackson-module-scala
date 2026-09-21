@@ -261,6 +261,11 @@ class OptionSerializerTest extends SerializerTest {
     serialize(Some(null), newMapper) should be("null")
   }
 
+  it should "serialize Some(None) to null" in {
+    // so a nested option that reads back as None was written this way
+    serialize(OptionGeneric[Option[Int]](Some(None)), newMapper) should be("""{"data":null}""")
+  }
+
   private def newMapperWithPropertyInclusion(includeValue: JsonInclude.Value): ObjectMapper = {
     val builder = newBuilder.changeDefaultPropertyInclusion(_ => includeValue)
     builder.build()

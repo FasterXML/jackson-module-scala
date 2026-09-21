@@ -46,6 +46,11 @@ class UnsortedSetDeserializerTest extends DeserializerTest {
     result should equal(setScala)
   }
 
+  it should "keep insertion order and drop duplicates in a LinkedHashSet" in {
+    val result = deserialize("[3,1,2,1]", new TypeReference[mutable.LinkedHashSet[Int]] {})
+    result.toList should equal(List(3, 1, 2))
+  }
+
   it should "deserialize an object with variable value types into a variable UnsortedSet" in {
     val result = deserialize(variantSetJson, classOf[Set[Any]])
     result should equal(variantSetScala)
