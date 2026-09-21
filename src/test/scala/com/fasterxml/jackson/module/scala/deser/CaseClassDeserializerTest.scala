@@ -2,7 +2,8 @@ package com.fasterxml.jackson
 package module.scala
 package deser
 
-import com.fasterxml.jackson.annotation.{JsonProperty, JsonSetter, Nulls}
+import com.fasterxml.jackson.annotation.{JsonIgnore, JsonProperty, JsonSetter, Nulls}
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.{DeserializationFeature, JsonMappingException, ObjectMapper, ObjectReader, PropertyNamingStrategies}
 import com.fasterxml.jackson.module.scala.ser.{ClassWithOnlyUnitField, ClassWithUnitField}
@@ -11,6 +12,33 @@ import java.time.LocalDateTime
 
 object CaseClassDeserializerTest {
   class Bean(var prop: String)
+
+  case class Node(value: Int, next: Option[Node])
+
+  // one parameter of every primitive kind, plus the reference kinds a missing property leaves null
+  case class MissingValues(byte: Byte, short: Short, int: Int, long: Long, float: Float, double: Double,
+                           boolean: Boolean, char: Char, boxed: java.lang.Integer, big: BigInt, decimal: BigDecimal,
+                           text: String, child: Node, @JsonIgnore ignored: Int, explicit: Int = 9)
+
+  // past the 22-parameter limit of Product/Function; only the last parameter has a default
+  case class Wide(f1: Int, f2: Int, f3: Int, f4: Int, f5: Int, f6: Int, f7: Int, f8: Int, f9: Int, f10: Int,
+                  f11: Int, f12: Int, f13: Int, f14: Int, f15: Int, f16: Int, f17: Int, f18: Int, f19: Int,
+                  f20: Int, f21: Int, f22: Int, f23: Int, f24: Int = 24)
+
+  trait NamedValue {
+    val name: String
+  }
+  case class InheritedValue(name: String) extends NamedValue
+
+  // a secondary constructor and a companion apply that both take a single `value`
+  case class AmbiguousConstructor(value: Int) {
+    def this(value: String) = this(value.toInt)
+  }
+  object AmbiguousConstructor {
+    def apply(value: String): AmbiguousConstructor = new AmbiguousConstructor(value)
+  }
+
+  case class Box[T](value: T)
 
   case class Time(hour: String, minute: String)
 
@@ -295,5 +323,47 @@ class CaseClassDeserializerTest extends DeserializerTest {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     mapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
     mapper.readValue(input, classOf[SecurityProfile]) shouldEqual SecurityProfile(true, 1069, false)
+  }
+
+  it should "use the type default for every kind of missing constructor parameter" in {
+    val expected = MissingValues(0, 0, 0, 0L, 0f, 0d, false, 0.toChar, null, null, null, null, null, 0, 9)
+    deserialize("{}", classOf[MissingValues]) shouldEqual expected
+    val lenient = newBuilder.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build()
+    lenient.readValue("""{"unknown":"中"}""", classOf[MissingValues]) shouldEqual expected
+  }
+
+  it should "deserialize a recursive case class with missing fields" in {
+    deserialize("{}", classOf[Node]) shouldEqual Node(0, None)
+    deserialize("""{"value":1}""", classOf[Node]) shouldEqual Node(1, None)
+    deserialize("""{"value":1,"next":{"value":2,"next":null}}""", classOf[Node]) shouldEqual Node(1, Some(Node(2, None)))
+  }
+
+  it should "deserialize a case class with more than 22 parameters" in {
+    val wide = Wide(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
+    val json = serialize(wide)
+    json should include(""""f24":24""")
+    deserialize(json, classOf[Wide]) shouldEqual wide
+    deserialize(json.replace(""","f24":24""", ""), classOf[Wide]) shouldEqual wide
+    val sparse = deserialize("""{"f1":1}""", classOf[Wide])
+    sparse.f1 shouldEqual 1
+    sparse.f2 shouldEqual 0
+    sparse.f23 shouldEqual 0
+    sparse.f24 shouldEqual 24
+  }
+
+  it should "deserialize a case class that implements a trait val" in {
+    serialize(InheritedValue("中")) shouldEqual """{"name":"中"}"""
+    deserialize("""{"name":"中"}""", classOf[InheritedValue]) shouldEqual InheritedValue("中")
+  }
+
+  it should "use the primary constructor when a secondary constructor and a companion apply share its parameter name" in {
+    deserialize("""{"value":1}""", classOf[AmbiguousConstructor]) shouldEqual AmbiguousConstructor(1)
+  }
+
+  it should "deserialize nested generic case classes" in {
+    val nested = new TypeReference[Box[Box[Option[Int]]]] {}
+    deserialize("""{"value":{"value":1}}""", nested) shouldEqual Box(Box(Some(1)))
+    deserialize("""{"value":{"value":null}}""", nested) shouldEqual Box(Box(None))
+    serialize(Box(Box(Some(1): Option[Int]))) shouldEqual """{"value":{"value":1}}"""
   }
 }

@@ -356,6 +356,11 @@ class OptionSerializerTest extends SerializerTest {
   it should "serialize Some(null) to null" in {
     serialize(Some(null), newMapper) should be("null")
   }
+
+  it should "serialize Some(None) to null" in {
+    // so a nested option that reads back as None was written this way
+    serialize(OptionGeneric[Option[Int]](Some(None)), newMapper) should be("""{"data":null}""")
+  }
 }
 
 class NonNullOption {
