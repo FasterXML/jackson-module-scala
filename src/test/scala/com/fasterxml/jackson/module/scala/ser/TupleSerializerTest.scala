@@ -32,4 +32,25 @@ class TupleSerializerTest extends SerializerTest {
     val result = serialize(OptionalTupleHolder(None, None), mapper)
     result should be("""{"tuple":[null,null]}""")
   }
+
+  it should "serialize a Tuple1" in {
+    serialize(Tuple1("a")) should be ("""["a"]""")
+  }
+
+  it should "serialize a null element as null" in {
+    serialize((1, null): (Int, String)) should be ("[1,null]")
+  }
+
+  it should "serialize nested tuples" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    serialize(((1, "z"), List(("a", 1), ("b", 2))), mapper) should be ("""[[1,"z"],[["a",1],["b",2]]]""")
+  }
+
+  // Scala 2 instantiates (Int, Int) as the Tuple2$mcII$sp subclass and so on; the serializer
+  // must be resolved for those runtime classes as it is for the plain Tuple2
+  it should "serialize the specialized Tuple2 kinds" in {
+    serialize((1, 2)) should be ("[1,2]")
+    serialize((1L, 2.5)) should be ("[1,2.5]")
+    serialize((true, '中')) should be ("""[true,"中"]""")
+  }
 }
