@@ -9,6 +9,9 @@ object AnyValSerializerTest {
   case class BigIntAnyVal(underlying: BigInt) extends AnyVal
   case class BigIntAnyValHolder(value: BigIntAnyVal)
   case class BigIntOptionAnyValHolder(value: Option[BigIntAnyVal])
+
+  case class TypedLabel[T](value: T) extends AnyVal
+  case class TypedLabels(one: TypedLabel[String], many: List[TypedLabel[Int]])
 }
 
 class AnyValSerializerTest extends BaseFixture {
@@ -28,6 +31,12 @@ class AnyValSerializerTest extends BaseFixture {
     mapper.writeValueAsString(BigIntAnyValHolder(value)) shouldBe """{"value":42}"""
     // see https://github.com/FasterXML/jackson-module-scala/pull/675
     mapper.writeValueAsString(BigIntOptionAnyValHolder(Some(value))) shouldBe """{"value":{"underlying":42}}"""
+  }
+
+  it should "serialize a generic AnyVal as its underlying type in a field and boxed in a collection" in { mapper =>
+    // the field is erased to String, while each List element is a boxed TypedLabel instance
+    val value = TypedLabels(TypedLabel("x"), List(TypedLabel(1), TypedLabel(2)))
+    mapper.writeValueAsString(value) shouldBe """{"one":"x","many":[{"value":1},{"value":2}]}"""
   }
 
 }

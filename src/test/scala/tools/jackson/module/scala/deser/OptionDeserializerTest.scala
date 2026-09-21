@@ -12,6 +12,7 @@ import scala.annotation.meta.field
 
 object OptionDeserializerTest {
   case class UnavailableField(foo: Option[String])
+  case class Optionals(a: Option[Int], b: Option[String] = None, c: Option[Option[Int]] = None)
   case class JavaOptionalWrapper(o: java.util.Optional[String])
   case class OptionWrapper(o: Option[String])
 
@@ -160,5 +161,17 @@ class OptionDeserializerTest extends DeserializerTest {
     } finally {
       ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
     }
+  }
+
+  it should "deserialize omitted, null and nested options" in {
+    val mapper = newMapper
+    mapper.readValue("{}", classOf[Optionals]) shouldEqual Optionals(None)
+    mapper.readValue("""{"a":null}""", classOf[Optionals]) shouldEqual Optionals(None)
+    mapper.readValue("""{"a":1,"b":"x","c":2}""", classOf[Optionals]) shouldEqual Optionals(Some(1), Some("x"), Some(Some(2)))
+    // a null for the nested option is the outer None, not Some(None)
+    mapper.readValue("""{"a":1,"c":null}""", classOf[Optionals]) shouldEqual Optionals(Some(1), None, None)
+    val nested = new TypeReference[Option[Option[Int]]] {}
+    mapper.readValue("3", nested) shouldEqual Some(Some(3))
+    mapper.readValue("null", nested) shouldEqual None
   }
 }
