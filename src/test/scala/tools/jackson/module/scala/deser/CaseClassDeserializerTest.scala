@@ -334,17 +334,29 @@ class CaseClassDeserializerTest extends DeserializerTest {
     mapper.readValue(input, classOf[SecurityProfile]) shouldEqual SecurityProfile(true, 1069, false)
   }
 
+  // Jackson 3.1 hands a missing primitive creator property to FAIL_ON_NULL_FOR_PRIMITIVES, which is
+  // on by default; 3.2 gives it the type default outright
   it should "use the type default for every kind of missing constructor parameter" in {
+    intercept[MismatchedInputException] {
+      deserialize("{}", classOf[MissingValues])
+    }
     val expected = MissingValues(0, 0, 0, 0L, 0f, 0d, false, 0.toChar, null, null, null, null, null, 0, 9)
-    deserialize("{}", classOf[MissingValues]) shouldEqual expected
-    val lenient = newBuilder.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build()
+    val lenient = newBuilder
+      .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+      .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+      .build()
+    lenient.readValue("{}", classOf[MissingValues]) shouldEqual expected
     lenient.readValue("""{"unknown":"中"}""", classOf[MissingValues]) shouldEqual expected
   }
 
   it should "deserialize a recursive case class with missing fields" in {
-    deserialize("{}", classOf[Node]) shouldEqual Node(0, None)
+    intercept[MismatchedInputException] {
+      deserialize("{}", classOf[Node])
+    }
     deserialize("""{"value":1}""", classOf[Node]) shouldEqual Node(1, None)
     deserialize("""{"value":1,"next":{"value":2,"next":null}}""", classOf[Node]) shouldEqual Node(1, Some(Node(2, None)))
+    val lenient = newBuilder.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).build()
+    lenient.readValue("{}", classOf[Node]) shouldEqual Node(0, None)
   }
 
   it should "deserialize a case class with more than 22 parameters" in {
@@ -353,7 +365,11 @@ class CaseClassDeserializerTest extends DeserializerTest {
     json should include(""""f24":24""")
     deserialize(json, classOf[Wide]) shouldEqual wide
     deserialize(json.replace(""","f24":24""", ""), classOf[Wide]) shouldEqual wide
-    val sparse = deserialize("""{"f1":1}""", classOf[Wide])
+    intercept[MismatchedInputException] {
+      deserialize("""{"f1":1}""", classOf[Wide])
+    }
+    val lenient = newBuilder.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES).build()
+    val sparse = lenient.readValue("""{"f1":1}""", classOf[Wide])
     sparse.f1 shouldEqual 1
     sparse.f2 shouldEqual 0
     sparse.f23 shouldEqual 0
