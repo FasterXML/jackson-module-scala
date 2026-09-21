@@ -18,6 +18,7 @@ This patch release tracks Jackson 3.3.0. The 3.3 series has full support for Sca
 * [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
 * [[gh-pr-844]](https://github.com/FasterXML/jackson-module-scala/pull/844) Fix Iterator serializer isEmpty.
 * [[gh-pr-845]](https://github.com/FasterXML/jackson-module-scala/pull/845) Fix Iterator serializer with WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED.
+* [[gh-pr-891]](https://github.com/FasterXML/jackson-module-scala/pull/891) Fix the handle of null inputs in TupleDeserializer.
 
 # 3.2.2
 
@@ -40,6 +41,7 @@ There are no new fixes in this release.
 * [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
 * [[gh-pr-844]](https://github.com/FasterXML/jackson-module-scala/pull/844) Fix Iterator serializer isEmpty.
 * [[gh-pr-845]](https://github.com/FasterXML/jackson-module-scala/pull/845) Fix Iterator serializer with WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED.
+* [[gh-pr-891]](https://github.com/FasterXML/jackson-module-scala/pull/891) Fix the handle of null inputs in TupleDeserializer.
 
 # 3.1.6
 
