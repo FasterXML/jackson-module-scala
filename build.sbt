@@ -23,7 +23,7 @@ ThisBuild / publishTo := {
 
 // resolvers += Resolver.sonatypeCentralSnapshots
 
-ThisBuild / version := "2.18.11-SNAPSHOT"
+// ThisBuild / version := "2.18.12-SNAPSHOT"
 val jacksonCoreVersion = "2.18.11"
 val jacksonNonCoreVersion = jacksonCoreVersion
 
