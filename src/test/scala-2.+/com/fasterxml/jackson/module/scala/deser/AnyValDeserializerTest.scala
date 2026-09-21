@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.scala.deser
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JacksonModule}
 
 import scala.util.Properties.versionNumberString
@@ -11,6 +12,9 @@ object AnyValDeserializerTest {
   case class BigIntAnyVal(underlying: BigInt) extends AnyVal
   case class BigIntAnyValHolder(value: BigIntAnyVal)
   case class BigIntOptionAnyValHolder(value: Option[BigIntAnyVal])
+
+  case class TypedLabel[T](value: T) extends AnyVal
+  case class TypedLabels(one: TypedLabel[String], many: List[TypedLabel[Int]])
 }
 
 class AnyValDeserializerTest extends DeserializerTest {
@@ -36,6 +40,16 @@ class AnyValDeserializerTest extends DeserializerTest {
       // see https://github.com/FasterXML/jackson-module-scala/pull/675
       mapper.readValue("""{"value":{"underlying":42}}""", classOf[BigIntOptionAnyValHolder]) shouldEqual
         BigIntOptionAnyValHolder(Some(expected))
+    }
+  }
+
+  it should "deserialize a generic AnyVal as its underlying type in a field and boxed in a collection" in {
+    val mapper = newMapper
+    val expected = TypedLabels(TypedLabel("x"), List(TypedLabel(1), TypedLabel(2)))
+    mapper.readValue("""{"one":"x","many":[{"value":1},{"value":2}]}""", classOf[TypedLabels]) shouldEqual expected
+    if (!versionNumberString.startsWith("2.11")) {
+      // as for the Option case above, 2.11 resolves the value class through a type reference as its underlying type
+      mapper.readValue("""{"value":"x"}""", new TypeReference[TypedLabel[String]] {}) shouldEqual TypedLabel("x")
     }
   }
 }

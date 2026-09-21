@@ -244,6 +244,18 @@ class SeqDeserializerTest extends DeserializerTest {
     mapper.readValue(s, new TypeReference[List[B]] {}) shouldEqual data
   }
 
+  it should "keep null elements in a List" in {
+    val mapper = JsonMapper.builder().addModule(DefaultScalaModule).build()
+    val result = mapper.readValue("""["a",null,"b"]""", new TypeReference[List[String]] {})
+    result shouldEqual List("a", null, "b")
+    mapper.writeValueAsString(result) shouldEqual """["a",null,"b"]"""
+  }
+
+  it should "deserialize nested lists including empty ones" in {
+    val result = deserialize("[[1],[],[2,3]]", new TypeReference[List[List[Int]]] {})
+    result shouldEqual List(List(1), Nil, List(2, 3))
+  }
+
   it should "handle AS_NULL" in {
     val mapper = new ObjectMapper
     mapper.registerModule(new DefaultScalaModule)
