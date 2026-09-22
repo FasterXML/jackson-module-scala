@@ -313,8 +313,10 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
         case Some(result) => Some(result)
         case _ => {
           val introspector = BeanIntrospector(clz)
-          Option(scalaAnnotationIntrospectorModule._descriptorCache.putIfAbsent(key, introspector)).getOrElse(introspector)
-          Some(introspector)
+          // the descriptor the cache holds, which is another thread's where one got there first -
+          // so that two threads meeting a class at once go on with the same one, as they do for
+          // the scala-type cache above
+          Some(Option(scalaAnnotationIntrospectorModule._descriptorCache.putIfAbsent(key, introspector)).getOrElse(introspector))
         }
       }
     } else {
