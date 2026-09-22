@@ -1,6 +1,7 @@
 package tools.jackson.module.scala.introspect
 
 import tools.jackson.databind.json.JsonMapper
+import tools.jackson.databind.util.LookupCache
 import tools.jackson.module.scala.{DefaultLookupCacheFactory, ScalaModule}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -9,11 +10,33 @@ import java.util.concurrent.{CountDownLatch, Executors, TimeUnit}
 
 case class IntrospectorStateHolder(valueLong: Option[Long])
 
+case class DescriptorRaceHolder(value: Int)
+
+object ScalaAnnotationIntrospectorStateSpec {
+
+  /**
+   * A descriptor cache as the thread that loses a race sees it: nothing is there when it looks, and
+   * by the time it stores what it built another thread has already stored its own, which is what
+   * `putIfAbsent` hands back.
+   */
+  class LostRaceCache[K, V](winners: LookupCache[K, V]) extends LookupCache[K, V] {
+    override def get(key: K): V = None.orNull.asInstanceOf[V]
+    override def putIfAbsent(key: K, value: V): V = winners.get(key)
+    override def put(key: K, value: V): V = winners.put(key, value)
+    override def clear(): Unit = winners.clear()
+    override def size: Int = winners.size
+    override def snapshot(): LookupCache[K, V] = ???
+    override def emptyCopy(): LookupCache[K, V] = ???
+  }
+}
+
 /**
  * The introspector's caches and its registered referenced value types belong to a module instance,
  * so a mapper built from its own ScalaModule does not share them with every other mapper.
  */
 class ScalaAnnotationIntrospectorStateSpec extends AnyWordSpec with Matchers {
+
+  import ScalaAnnotationIntrospectorStateSpec._
 
   "ScalaAnnotationIntrospectorModule" should {
     "give each builder its own introspector instance" in {
@@ -129,6 +152,25 @@ class ScalaAnnotationIntrospectorStateSpec extends AnyWordSpec with Matchers {
       builder.removeModule(ScalaAnnotationIntrospectorModule)
       builder.hasModule(ScalaAnnotationIntrospectorModule) shouldEqual false
     }
+    // two threads meeting a class for the first time both introspect it; only one of the two
+    // descriptors they build reaches the cache, and both threads have to go on with that one
+    "describe a class with the descriptor that won the race to the cache" in {
+      val builder = ScalaModule.builder().addAllBuiltinModules()
+      val module = builder.scalaAnnotationIntrospectorModule
+      val key = classOf[DescriptorRaceHolder].getName
+      // what the thread that got there first stored: the same class, described under another name
+      val winner = {
+        val built = BeanIntrospector(classOf[DescriptorRaceHolder])
+        built.copy(properties = built.properties.map(_.copy(name = "won")))
+      }
+      val winners = DefaultLookupCacheFactory.createLookupCache[String, BeanDescriptor](16, 100)
+      winners.put(key, winner)
+      module._descriptorCache = new LostRaceCache(winners)
+
+      val mapper = JsonMapper.builder().addModule(builder.build()).build()
+      mapper.writeValueAsString(DescriptorRaceHolder(1)) shouldEqual """{"won":1}"""
+    }
+
     "read a case class through a module built by the builder" in {
       val mapper = JsonMapper.builder().addModule(ScalaModule.builder().addAllBuiltinModules().build()).build()
       val value = IntrospectorStateHolder(Some(3L))
