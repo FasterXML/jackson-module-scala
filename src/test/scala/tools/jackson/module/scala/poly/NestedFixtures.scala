@@ -45,3 +45,24 @@ case class PlainOuterA(inner: AnnInner) extends PlainOuter
 case object PlainOuterB extends PlainOuter
 
 case class PlainOuterHolder(outer: PlainOuter)
+
+// an object nested inside another object, which unlike a top level object has no class carrying
+// static forwarders - so the JVM reports it as the enclosing class by its module class, whose name
+// ends in the `$` that separates it from what it encloses
+object Deep {
+  object Group {
+    sealed trait Base extends SealedPolymorphismSupport
+    case class Leaf(x: Int) extends Base
+    case object Lone extends Base
+  }
+
+  // the base is declared in the outer object and the implementations in a nested one, so the name
+  // of each keeps the nested object - a boundary that really does have to become a dot
+  sealed trait Split extends SealedPolymorphismSupport
+  object Held {
+    case class Leaf(x: Int) extends Split
+  }
+}
+
+case class DeepHolder(base: Deep.Group.Base)
+case class SplitHolder(split: Deep.Split)

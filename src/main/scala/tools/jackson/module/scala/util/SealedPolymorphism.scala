@@ -193,12 +193,19 @@ private[scala] class SealedPolymorphism {
    * Only those are nesting, and only those become a dot. Scala puts `$` in a name of its own making
    * too - `case class ::` is compiled to `$colon$colon` - and the enclosing chain is what tells the
    * two apart, since such a class has no enclosing class at all.
+   *
+   * The boundary is measured from the name of the enclosing class, which for an object is reported
+   * two ways: a top level object is reported by the class carrying its static forwarders, whose
+   * name is the object's, while an object nested in another object has no such class and is
+   * reported by its module class, whose name carries the trailing `$` that separates the object
+   * from what it encloses. Dropping that `$` makes both measure the same thing.
    */
   private def nestingBoundaries(clazz: Class[_]): Seq[Int] = {
     val boundaries = Seq.newBuilder[Int]
     var enclosing = clazz.getEnclosingClass
     while (enclosing != null) {
-      boundaries += enclosing.getName.length
+      val enclosingName = enclosing.getName
+      boundaries += (if (enclosingName.endsWith("$")) enclosingName.length - 1 else enclosingName.length)
       enclosing = enclosing.getEnclosingClass
     }
     boundaries.result()
