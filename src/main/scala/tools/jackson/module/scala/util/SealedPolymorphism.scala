@@ -29,7 +29,14 @@ private[scala] object SealedPolymorphism {
 
   final case class Subtype(clazz: Class[_], singleton: Option[AnyRef])
 
-  private[scala] final case class SubtypeKey(baseClass: Class[_], typeName: String)
+  /**
+   * What a resolved `@type` name is remembered under. The root is part of it because a name is
+   * derived relative to the root and resolved against it, and which type is the root is a property
+   * of the mapper rather than of the classes: a mix-in can mark a type part way down a hierarchy,
+   * so two mappers sharing this module - which every mapper registering `DefaultScalaModule` does -
+   * can ask the same question of the same base class and be owed different answers.
+   */
+  private[scala] final case class SubtypeKey(baseClass: Class[_], root: Class[_], typeName: String)
 
   private[scala] def incompleteMessage(root: Class[_]): String =
     s"${root.getName} carries @JsonTypeInfo(use = Id.NAME) but nothing tells Jackson what the names are, so a " +
@@ -296,7 +303,7 @@ private[scala] class SealedPolymorphism {
   def resolve(baseClass: Class[_], root: Class[_], typeName: String): Option[Subtype] = {
     if (!isPlainName(typeName)) None
     else {
-      val key = SubtypeKey(baseClass, typeName)
+      val key = SubtypeKey(baseClass, root, typeName)
       val cache = _cache
       Option(cache.get(key)) match {
         case Some(subtype) => subtype
