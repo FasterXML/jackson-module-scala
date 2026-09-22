@@ -12,7 +12,7 @@ This patch release tracks Jackson 3.3.0. The 3.3 series has full support for Sca
 * [[gh-pr-848]](https://github.com/FasterXML/jackson-module-scala/pull/848) Add DurationModule.
 * [[gh-pr-851]](https://github.com/FasterXML/jackson-module-scala/pull/851) Fix Scala 3 class detection with child classloaders.
 
-# 3.2.3 (release not yet planned)
+# 3.2.3
 
 * [[gh-pr-842]](https://github.com/FasterXML/jackson-module-scala/pull/842) Avoid class initialization in Class.forName calls.
 * [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
@@ -35,7 +35,7 @@ of the upstream Jackson projects.
 This patch release tracks Jackson 3.2.0. The 3.2 series has full support for Scala 2.12, 2.13 and 3.
 There are no new fixes in this release.
 
-# 3.1.7 (release not yet planned)
+# 3.1.7
 
 * [[gh-pr-842]](https://github.com/FasterXML/jackson-module-scala/pull/842) Avoid class initialization in Class.forName calls.
 * [[gh-pr-843]](https://github.com/FasterXML/jackson-module-scala/pull/843) Fix case object deserialization consuming extra tokens.
