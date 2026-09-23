@@ -1,7 +1,7 @@
 package tools.jackson.module.scala.deser
 
 import CaseObjectDeserializerTest.{Foo, Holder, TestObject}
-import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.{JsonAutoDetect, JsonTypeInfo}
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.introspect.VisibilityChecker
 import tools.jackson.databind.json.JsonMapper
@@ -16,6 +16,13 @@ object CaseObjectDeserializerTest {
   }
 
   case class Holder(obj: TestObject.type, after: Int)
+
+  // a case object with properties of its own, inherited from a base whose type id is written as a
+  // property: after reading the id the type deserializer hands over the parser inside the object
+  @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY)
+  sealed abstract class Shape(val sides: Int, val meta: Map[String, Int])
+  case object Point extends Shape(0, Map("dim" -> 0))
+  case class Drawing(shape: Shape, after: Int)
 }
 
 class CaseObjectDeserializerTest extends DeserializerTest {
@@ -109,4 +116,24 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     assert(deserialized != original)
   }
 
+  "An ObjectMapper with DefaultScalaModule and an As.PROPERTY type id" should "deserialize a case object with properties whose type id is a property" in {
+    import CaseObjectDeserializerTest.{Drawing, Point}
+    val mapper = newMapper
+    val json = mapper.writeValueAsString(Drawing(Point, 1))
+    json shouldEqual """{"shape":{"@class":"tools.jackson.module.scala.deser.CaseObjectDeserializerTest$Point$","sides":0,"meta":{"dim":0}},"after":1}"""
+    val deserialized = mapper.readValue(json, classOf[Drawing])
+    deserialized shouldEqual Drawing(Point, 1)
+    assert(deserialized.shape eq Point)
+  }
+
+  it should "deserialize a case object with properties whose type id is a property but not the first one" in {
+    // https://github.com/FasterXML/jackson-module-scala/issues/899
+    // the properties ahead of the type id are buffered and replayed, a different route into the deserializer
+    import CaseObjectDeserializerTest.{Drawing, Point}
+    val mapper = newMapper
+    val json = """{"shape":{"sides":0,"meta":{"dim":0},"@class":"tools.jackson.module.scala.deser.CaseObjectDeserializerTest$Point$"},"after":1}"""
+    val deserialized = mapper.readValue(json, classOf[Drawing])
+    deserialized shouldEqual Drawing(Point, 1)
+    assert(deserialized.shape eq Point)
+  }
 }
