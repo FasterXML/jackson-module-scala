@@ -235,11 +235,32 @@ class CaseClassSerializerTest extends SerializerTest {
     val mapper = newBuilder
       .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
       .build()
-    ScalaAnnotationIntrospectorModule.setCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder(false)
+    serialize(ClassWithUnorderedFields(), mapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
+  }
+
+  it should "sort properties of the case class (SORT_CREATOR_PROPERTIES_FIRST disabled)" in {
+    val mapper = newBuilder
+      .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+      .disable(MapperFeature.SORT_CREATOR_PROPERTIES_FIRST)
+      .build()
+    serialize(ClassWithUnorderedFields(), mapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
+  }
+
+  it should "use declared order of the case class params by default" in {
+    serialize(ClassWithUnorderedFields(), newMapper) shouldEqual """{"f3":3,"f2":2,"f0":0,"f1":1}"""
+  }
+
+  it should "use declared order of the case class params if forced" in {
+    val mapper = newBuilder
+      .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+      .build()
+    ScalaAnnotationIntrospectorModule.setCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder(true)
     try {
-      serialize(ClassWithUnorderedFields(), mapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
+      serialize(ClassWithUnorderedFields(), mapper) shouldEqual """{"f3":3,"f2":2,"f0":0,"f1":1}"""
+      // JsonPropertyOrder still wins
+      serialize(AnnotatedClassWithUnorderedFields(), mapper) shouldEqual """{"f0":0,"f1":1,"f2":2,"f3":3}"""
     } finally {
-      ScalaAnnotationIntrospectorModule.setCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder(true)
+      ScalaAnnotationIntrospectorModule.setCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder(false)
     }
   }
 
