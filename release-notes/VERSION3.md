@@ -35,6 +35,13 @@ of the upstream Jackson projects.
 This patch release tracks Jackson 3.2.0. The 3.2 series has full support for Scala 2.12, 2.13 and 3.
 There are no new fixes in this release.
 
+# 3.1.7.1
+
+A special release to fix a regression in 3.1.7. Only jackson-module-scala is affected and has this release.
+The 3.1.7 release of the upstream Jackson projects is unaffected.
+
+* [[gh-pr-900]](https://github.com/FasterXML/jackson-module-scala/pull/900) A case object read with an As.PROPERTY type id no longer leaves its properties behind.
+
 # 3.1.7
 
 * [[gh-pr-842]](https://github.com/FasterXML/jackson-module-scala/pull/842) Avoid class initialization in Class.forName calls.
