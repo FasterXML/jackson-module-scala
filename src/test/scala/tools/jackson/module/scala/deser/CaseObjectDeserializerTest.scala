@@ -133,6 +133,17 @@ class CaseObjectDeserializerTest extends DeserializerTest {
     assert(deserialized.shape eq Point)
   }
 
+  it should "deserialize a case object with properties whose type id is a property but not the first one" in {
+    // https://github.com/FasterXML/jackson-module-scala/issues/899
+    // the properties ahead of the type id are buffered and replayed, a different route into the deserializer
+    import CaseObjectDeserializerTest.{Drawing, Point}
+    val mapper = newMapper
+    val json = """{"shape":{"sides":0,"meta":{"dim":0},"@class":"tools.jackson.module.scala.deser.CaseObjectDeserializerTest$Point$"},"after":1}"""
+    val deserialized = mapper.readValue(json, classOf[Drawing])
+    deserialized shouldEqual Drawing(Point, 1)
+    assert(deserialized.shape eq Point)
+  }
+
   it should "deserialize a case object with properties under default typing with the type id as a property" in {
     import CaseObjectDeserializerTest.{Dot, Sketch}
     val ptv = BasicPolymorphicTypeValidator.builder().allowIfBaseType(classOf[Any]).build()
