@@ -1,4 +1,11 @@
-# Version: 2.22.3 (release not yet planned)
+# Version: 2.22.3.1
+
+A special release to fix a regression in 2.22.3. Only jackson-module-scala is affected and has this release.
+The 2.22.3 release of the upstream Jackson projects is unaffected.
+
+* [[gh-pr-900]](https://github.com/FasterXML/jackson-module-scala/pull/900) A case object read with an As.PROPERTY type id no longer leaves its properties behind.
+
+# Version: 2.22.3
 
 ## Fixes
 
@@ -25,7 +32,14 @@ This patch release tracks Jackson 2.22. The 2.22 series has full support for
 Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 There are no new fixes in this release.
 
-# Version: 2.21.7 (release not yet planned)
+# Version: 2.21.7.1
+
+A special release to fix a regression in 2.21.7. Only jackson-module-scala is affected and has this release.
+The 2.21.7 release of the upstream Jackson projects is unaffected.
+
+* [[gh-pr-900]](https://github.com/FasterXML/jackson-module-scala/pull/900) A case object read with an As.PROPERTY type id no longer leaves its properties behind.
+
+# Version: 2.21.7
 
 ## Fixes
 
