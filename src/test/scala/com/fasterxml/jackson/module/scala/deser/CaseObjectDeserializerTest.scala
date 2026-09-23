@@ -1,10 +1,11 @@
 package com.fasterxml.jackson.module.scala.deser
 
-import com.fasterxml.jackson.annotation.{JsonAutoDetect, PropertyAccessor}
+import com.fasterxml.jackson.annotation.{JsonAutoDetect, JsonTypeInfo, JsonTypeName, PropertyAccessor}
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
-import com.fasterxml.jackson.module.scala.deser.CaseObjectDeserializerTest.{Foo, Holder, TestObject}
+import com.fasterxml.jackson.module.scala.deser.CaseObjectDeserializerTest.{BookingType, Foo, Holder, TestObject, TypedHolder}
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
 object CaseObjectDeserializerTest {
@@ -15,6 +16,15 @@ object CaseObjectDeserializerTest {
   }
 
   case class Holder(obj: TestObject.type, after: Int)
+
+  @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+  sealed abstract class BookingType(val value: String)
+  object BookingType {
+    @JsonTypeName("Fee")
+    case object Fee extends BookingType("Fee")
+  }
+
+  case class TypedHolder(bookingType: BookingType, key: String, after: Int)
 }
 
 class CaseObjectDeserializerTest extends DeserializerTest {
@@ -99,6 +109,37 @@ class CaseObjectDeserializerTest extends DeserializerTest {
       reader.isAlive shouldBe false
     }
     result shouldEqual TestObject
+  }
+
+  // the subtype is registered here rather than with @JsonSubTypes: Scala 2.11 rejects classOf[Fee.type]
+  // in an annotation argument
+  private def typedMapper = newBuilder.registerSubtypes(new NamedType(BookingType.Fee.getClass)).build()
+
+  it should "consume the properties of a case object read with an As.PROPERTY type id" in {
+    // https://github.com/FasterXML/jackson-module-scala/issues/899
+    val mapper = typedMapper
+    val original = TypedHolder(BookingType.Fee, "key-1", 7)
+    val json = mapper.writeValueAsString(original)
+    json shouldEqual """{"bookingType":{"type":"Fee","value":"Fee"},"key":"key-1","after":7}"""
+    mapper.readValue(json, classOf[TypedHolder]) shouldEqual original
+  }
+
+  it should "skip nested values among the properties that follow an As.PROPERTY type id" in {
+    val mapper = typedMapper
+    val json = """{"bookingType":{"type":"Fee","x":{"y":{}},"z":[1,{"w":2}],"value":"Fee"},"key":"key-1","after":7}"""
+    mapper.readValue(json, classOf[TypedHolder]) shouldEqual TypedHolder(BookingType.Fee, "key-1", 7)
+  }
+
+  it should "read a case object whose As.PROPERTY type id is its only property" in {
+    val mapper = typedMapper
+    val json = """{"bookingType":{"type":"Fee"},"key":"key-1","after":7}"""
+    mapper.readValue(json, classOf[TypedHolder]) shouldEqual TypedHolder(BookingType.Fee, "key-1", 7)
+  }
+
+  it should "read a case object whose As.PROPERTY type id is not its first property" in {
+    val mapper = typedMapper
+    val json = """{"bookingType":{"value":"Fee","type":"Fee"},"key":"key-1","after":7}"""
+    mapper.readValue(json, classOf[TypedHolder]) shouldEqual TypedHolder(BookingType.Fee, "key-1", 7)
   }
 
   "An ObjectMapper without ScalaObjectDeserializerModule" should "deserialize a case object but create a new instance" in {
