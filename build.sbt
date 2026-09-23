@@ -67,6 +67,11 @@ mimaPreviousArtifacts := Set(organization.value %% name.value % "3.0.0")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 
+scalacOptions ++= {
+  if (scalaReleaseVersion.value == 2 && scalaMajorVersion.value == 12) Seq("-language:higherKinds")
+  else Seq.empty
+}
+
 // Temporarily disable warnings as error since SerializationFeature.WRITE_NULL_MAP_VALUES has been deprecated
 // and we use it.
 //scalacOptions in (Compile, compile) += "-Xfatal-warnings"
