@@ -1,6 +1,6 @@
 package tools.jackson.module.scala.deser
 
-import tools.jackson.core.JsonParser
+import tools.jackson.core.{JsonParser, JsonToken}
 import tools.jackson.databind.JacksonModule.SetupContext
 import tools.jackson.databind.deser.Deserializers
 import tools.jackson.databind.deser.std.StdDeserializer
@@ -18,7 +18,19 @@ private class ScalaObjectDeserializer(value: Any) extends StdDeserializer[Any](c
     // meets - and does nothing at all for a scalar, so a nested object no longer ends the value
     // early and a scalar no longer eats the tokens of whatever encloses it. Reading a scalar at the
     // root used to spin forever here: nextToken returns null at end of input, never END_OBJECT.
-    p.skipChildren()
+    //
+    // A type deserializer that has read an As.PROPERTY type id hands over the parser already inside
+    // the object, at the next property name, where skipChildren has nothing to skip: the rest of
+    // that object is consumed here instead, up to the END_OBJECT the value is left at.
+    if (p.currentToken() == JsonToken.PROPERTY_NAME) {
+      var token = p.nextToken()
+      while (token != null && token != JsonToken.END_OBJECT) {
+        p.skipChildren()
+        token = p.nextToken()
+      }
+    } else {
+      p.skipChildren()
+    }
     value
   }
 }
