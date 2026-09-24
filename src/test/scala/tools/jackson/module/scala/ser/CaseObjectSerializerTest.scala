@@ -4,9 +4,29 @@ import com.fasterxml.jackson.annotation.{JsonAutoDetect, PropertyAccessor}
 import tools.jackson.databind.introspect.VisibilityChecker
 import tools.jackson.module.scala.DefaultScalaModule
 
+import scala.collection.mutable
+
 case object CaseObjectExample {
   val field1: String = "test"
   val field2: Int = 42
+}
+
+// objects holding mutable state: what is written is the state at the time of writing
+case object MutableCaseObjectExample {
+  var count: Int = 0
+}
+
+object MutablePlainObjectExample {
+  var count: Int = 0
+}
+
+case object MutableCollectionObjectExample {
+  val names: mutable.ListBuffer[String] = mutable.ListBuffer.empty
+}
+
+case object PrivateVarObjectExample {
+  private var hidden: Int = 1
+  def peek: Int = hidden
 }
 
 class CaseObjectSerializerTest extends SerializerTest {
@@ -48,5 +68,39 @@ class CaseObjectSerializerTest extends SerializerTest {
       })
       .build()
     mapper.writeValueAsString(Foo) shouldEqual """{"field":"bar"}"""
+  }
+
+  it should "serialize the current value of a var in a case object" in {
+    try {
+      serialize(MutableCaseObjectExample) shouldEqual """{"count":0}"""
+      MutableCaseObjectExample.count = 5
+      serialize(MutableCaseObjectExample) shouldEqual """{"count":5}"""
+    } finally {
+      MutableCaseObjectExample.count = 0
+    }
+  }
+
+  it should "serialize the current value of a var in a plain object" in {
+    try {
+      serialize(MutablePlainObjectExample) shouldEqual """{"count":0}"""
+      MutablePlainObjectExample.count = 3
+      serialize(MutablePlainObjectExample) shouldEqual """{"count":3}"""
+    } finally {
+      MutablePlainObjectExample.count = 0
+    }
+  }
+
+  it should "serialize the current contents of a mutable collection in a case object" in {
+    try {
+      serialize(MutableCollectionObjectExample) shouldEqual """{"names":[]}"""
+      MutableCollectionObjectExample.names += "a"
+      serialize(MutableCollectionObjectExample) shouldEqual """{"names":["a"]}"""
+    } finally {
+      MutableCollectionObjectExample.names.clear()
+    }
+  }
+
+  it should "not serialize a private var in a case object" in {
+    serialize(PrivateVarObjectExample) shouldEqual "{}"
   }
 }
