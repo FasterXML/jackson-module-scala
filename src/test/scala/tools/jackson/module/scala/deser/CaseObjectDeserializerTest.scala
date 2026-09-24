@@ -8,6 +8,8 @@ import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.scala.{ClassTagExtensions, DefaultScalaModule}
 import tools.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
 
+import scala.collection.mutable
+
 object CaseObjectDeserializerTest {
   case object TestObject
 
@@ -16,6 +18,21 @@ object CaseObjectDeserializerTest {
   }
 
   case class Holder(obj: TestObject.type, after: Int)
+
+  // objects holding mutable state: reading one returns the singleton and leaves its state alone
+  case object Counter {
+    var count: Int = 0
+  }
+
+  object PlainCounter {
+    var count: Int = 0
+  }
+
+  case object Registry {
+    val names: mutable.ListBuffer[String] = mutable.ListBuffer.empty
+  }
+
+  case class CounterHolder(counter: Counter.type, after: Int)
 
   // a case object with properties of its own, inherited from a base whose type id is written as a
   // property: after reading the id the type deserializer hands over the parser inside the object
@@ -106,6 +123,71 @@ class CaseObjectDeserializerTest extends DeserializerTest {
       reader.isAlive shouldBe false
     }
     result shouldEqual TestObject
+  }
+
+  "An ObjectMapper with DefaultScalaModule and an object holding mutable state" should "return the case object without setting its var from the JSON" in {
+    import CaseObjectDeserializerTest.Counter
+    try {
+      Counter.count = 5
+      val deserialized = newMapper.readValue("""{"count":99}""", Counter.getClass)
+      assert(deserialized eq Counter)
+      Counter.count shouldEqual 5
+    } finally {
+      Counter.count = 0
+    }
+  }
+
+  it should "return the plain object without setting its var from the JSON" in {
+    import CaseObjectDeserializerTest.PlainCounter
+    try {
+      PlainCounter.count = 3
+      val deserialized = newMapper.readValue("""{"count":99}""", PlainCounter.getClass)
+      assert(deserialized eq PlainCounter)
+      PlainCounter.count shouldEqual 3
+    } finally {
+      PlainCounter.count = 0
+    }
+  }
+
+  it should "leave the contents of a mutable collection in the object alone" in {
+    import CaseObjectDeserializerTest.Registry
+    try {
+      Registry.names += "a"
+      val deserialized = newMapper.readValue("""{"names":["x","y"]}""", Registry.getClass)
+      assert(deserialized eq Registry)
+      Registry.names shouldEqual mutable.ListBuffer("a")
+    } finally {
+      Registry.names.clear()
+    }
+  }
+
+  it should "leave the var alone when the object is read as a property of a case class" in {
+    import CaseObjectDeserializerTest.{Counter, CounterHolder}
+    try {
+      Counter.count = 5
+      val deserialized = newMapper.readValue("""{"counter":{"count":42},"after":7}""", classOf[CounterHolder])
+      deserialized shouldEqual CounterHolder(Counter, 7)
+      assert(deserialized.counter eq Counter)
+      Counter.count shouldEqual 5
+    } finally {
+      Counter.count = 0
+    }
+  }
+
+  it should "roundtrip the case object to the singleton, whatever its state" in {
+    import CaseObjectDeserializerTest.Counter
+    try {
+      Counter.count = 5
+      val mapper = newMapper
+      val json = mapper.writeValueAsString(Counter)
+      json shouldEqual """{"count":5}"""
+      Counter.count = 6
+      val deserialized = mapper.readValue(json, Counter.getClass)
+      assert(deserialized eq Counter)
+      Counter.count shouldEqual 6
+    } finally {
+      Counter.count = 0
+    }
   }
 
   "An ObjectMapper without ScalaObjectDeserializerModule" should "deserialize a case object but create a new instance" in {
