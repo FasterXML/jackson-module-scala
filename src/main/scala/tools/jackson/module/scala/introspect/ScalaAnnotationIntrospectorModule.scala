@@ -149,7 +149,7 @@ class ScalaAnnotationIntrospectorInstance(scalaAnnotationIntrospectorModule: Sca
       // carrying a @JsonDeserialize would describe it. Mix-ins belong to one mapper's config, never
       // to this module, so the mix-in is looked up every time rather than remembered.
       val declaring = m.getDeclaringClass
-      val mixin = Option(mapperConfig.findMixInClassFor(declaring))
+      val mixin: Option[Class[_]] = Option(mapperConfig.findMixInClassFor(declaring))
       val shape = m match {
         // a companion creator reaches Jackson as a static method on the class, whose parameters
         // are known by position
