@@ -65,7 +65,15 @@ scalaMajorVersion := {
 
 mimaPreviousArtifacts := Set(organization.value %% name.value % "3.0.0")
 
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-release:17")
+
+scalacOptions ++= {
+  if (scalaVersion.value.startsWith("3.3.")) {
+    Seq("-Yfuture-lazy-vals")
+  } else {
+    Nil
+  }
+}
 
 scalacOptions ++= {
   if (scalaReleaseVersion.value == 2 && scalaMajorVersion.value == 12) Seq("-language:higherKinds")
