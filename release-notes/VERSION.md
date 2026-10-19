@@ -1,4 +1,16 @@
-# Version: 2.22.3 (release not yet planned)
+# Version: 2.22.4
+
+There are no new fixes in this release; it serves to track the 2.22.4 release
+of the upstream Jackson projects.
+
+# Version: 2.22.3.1
+
+A special release to fix a regression in 2.22.3. Only jackson-module-scala is affected and has this release.
+The 2.22.3 release of the upstream Jackson projects is unaffected.
+
+* [[gh-pr-900]](https://github.com/FasterXML/jackson-module-scala/pull/900) A case object read with an As.PROPERTY type id no longer leaves its properties behind.
+
+# Version: 2.22.3
 
 ## Fixes
 
@@ -25,7 +37,19 @@ This patch release tracks Jackson 2.22. The 2.22 series has full support for
 Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 There are no new fixes in this release.
 
-# Version: 2.21.7 (release not yet planned)
+# Version: 2.21.8
+
+There are no new fixes in this release; it serves to track the 2.21.8 release
+of the upstream Jackson projects.
+
+# Version: 2.21.7.1
+
+A special release to fix a regression in 2.21.7. Only jackson-module-scala is affected and has this release.
+The 2.21.7 release of the upstream Jackson projects is unaffected.
+
+* [[gh-pr-900]](https://github.com/FasterXML/jackson-module-scala/pull/900) A case object read with an As.PROPERTY type id no longer leaves its properties behind.
+
+# Version: 2.21.7
 
 ## Fixes
 
@@ -124,6 +148,11 @@ Scala 2.11, 2.12, 2.13 and 3.3+. Java 8 is the minimum supported Java version.
 * [[gh-pr-706]](https://github.com/FasterXML/jackson-module-scala/pull/706) Upgrade paranamer dependency to 2.8.3
 * [[gh-pr-713]](https://github.com/FasterXML/jackson-module-scala/pull/713) Add ScalaModule.builder() to over another way to customise the Scala module
 * [[gh-722]](https://github.com/FasterXML/jackson-module-scala/issues/722) Collection deserializer should create empty collection instead of null (when input is null)
+
+# Version: 2.18.12
+
+There are no new fixes in this release; it serves to track the 2.18.12 release
+of the upstream Jackson projects.
 
 # Version: 2.18.11
 
