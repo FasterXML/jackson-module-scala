@@ -16,6 +16,11 @@ This patch release tracks Jackson 3.3.0. The 3.3 series has full support for Sca
 * [[gh-pr-886]](https://github.com/FasterXML/jackson-module-scala/pull/886) ScalaTypeInfo describes the parameters of `@JsonCreator` companion methods (Scala 3).
 * [[gh-pr-887]](https://github.com/FasterXML/jackson-module-scala/pull/887) A Jackson mix-in that derives ScalaTypeInfo describes a class that cannot be changed (Scala 3).
 
+# 3.2.4
+
+There are no new fixes in this release; it serves to track the 3.2.4 release
+of the upstream Jackson projects.
+
 # 3.2.3
 
 * [[gh-pr-842]](https://github.com/FasterXML/jackson-module-scala/pull/842) Avoid class initialization in Class.forName calls.
@@ -38,6 +43,11 @@ of the upstream Jackson projects.
 
 This patch release tracks Jackson 3.2.0. The 3.2 series has full support for Scala 2.12, 2.13 and 3.
 There are no new fixes in this release.
+
+# 3.1.8
+
+There are no new fixes in this release; it serves to track the 3.1.8 release
+of the upstream Jackson projects.
 
 # 3.1.7.1
 
