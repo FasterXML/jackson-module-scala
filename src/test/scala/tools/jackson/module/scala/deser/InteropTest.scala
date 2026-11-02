@@ -15,7 +15,6 @@ case class A2(prop1: String, prop2: String) extends A
 class ADeserializer extends ValueDeserializer[A] {
   def deserialize(jp: JsonParser, c: DeserializationContext): A1 = {
     jp.skipChildren()
-    jp.nextToken()
     A1("qwer")
   }
 }
