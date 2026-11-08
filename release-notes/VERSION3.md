@@ -1,6 +1,6 @@
 Check VERSION.md for jackson-module-scala 2.x release information. This file tracks jackson-module-scala 3.x.
 
-# 3.3.0 (release not yet planned)
+# 3.3.0
 
 This patch release tracks Jackson 3.3.0. The 3.3 series has full support for Scala 2.12, 2.13 and 3.
 
