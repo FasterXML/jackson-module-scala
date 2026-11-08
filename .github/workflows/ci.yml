@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.11.12, 2.12.21, 2.13.18, 3.3.8]
+        scala: [2.11.12, 2.12.21, 2.13.18, 3.3.9]
         java: [zulu@8, zulu@11, zulu@17, zulu@21, zulu@25]
     runs-on: ${{ matrix.os }}
     steps:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Setup Java (zulu@8)
         if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 8
@@ -42,7 +42,7 @@ jobs:
 
       - name: Setup Java (zulu@11)
         if: matrix.java == 'zulu@11'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 11
@@ -50,7 +50,7 @@ jobs:
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 17
@@ -58,7 +58,7 @@ jobs:
 
       - name: Setup Java (zulu@21)
         if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 21
@@ -66,7 +66,7 @@ jobs:
 
       - name: Setup Java (zulu@25)
         if: matrix.java == 'zulu@25'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 25
@@ -81,7 +81,7 @@ jobs:
       - run: sbt -J-Xmx2G '++ ${{ matrix.scala }}; test; mimaReportBinaryIssues'
 
       - name: Compress target directories
-        run: tar cf targets.tar target project/target
+        run: tar chf targets.tar target project/target
 
       - name: Upload target directories
         uses: actions/upload-artifact@v7
@@ -107,7 +107,7 @@ jobs:
 
       - name: Setup Java (zulu@8)
         if: matrix.java == 'zulu@8'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 8
@@ -115,7 +115,7 @@ jobs:
 
       - name: Setup Java (zulu@11)
         if: matrix.java == 'zulu@11'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 11
@@ -123,7 +123,7 @@ jobs:
 
       - name: Setup Java (zulu@17)
         if: matrix.java == 'zulu@17'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 17
@@ -131,7 +131,7 @@ jobs:
 
       - name: Setup Java (zulu@21)
         if: matrix.java == 'zulu@21'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 21
@@ -139,7 +139,7 @@ jobs:
 
       - name: Setup Java (zulu@25)
         if: matrix.java == 'zulu@25'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 25
@@ -178,12 +178,12 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.3.8)
+      - name: Download target directories (3.3.9)
         uses: actions/download-artifact@v8
         with:
-          name: target-${{ matrix.os }}-3.3.8-${{ matrix.java }}
+          name: target-${{ matrix.os }}-3.3.9-${{ matrix.java }}
 
-      - name: Inflate target directories (3.3.8)
+      - name: Inflate target directories (3.3.9)
         run: |
           tar xf targets.tar
           rm targets.tar
