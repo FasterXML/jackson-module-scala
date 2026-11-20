@@ -36,7 +36,10 @@ object ScalaAnnotationIntrospector extends NopAnnotationIntrospector with ValueI
     }
   }
 
-  // For Scala, we want to use the declared order of the fields in the class
+  // In Jackson 2, MapperFeature.SORT_PROPERTIES_ALPHABETICALLY defaults to false, so case class params
+  // are already serialized in declared order. This override is opt-in (see
+  // ScalaAnnotationIntrospectorModule.setCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder) for
+  // users who enable alphabetical sorting but still want Scala classes to use declared order.
   override def findSerializationSortAlphabetically(ann: Annotated): java.lang.Boolean = {
     ann match {
       case ac: AnnotatedClass if
@@ -471,20 +474,27 @@ trait ScalaAnnotationIntrospectorModule extends JacksonModule {
 }
 
 object ScalaAnnotationIntrospectorModule extends ScalaAnnotationIntrospectorModule {
-  private var caseClassDefaultOrderBasedOnDeclaredParamOrder = true
+  private var caseClassDefaultOrderBasedOnDeclaredParamOrder = false
 
   /**
-   * @return Whether to default the serialization order of Case Class params to the defined order in the class.
-   *         This should be set to false if you want to enable <code>MapperFeature.SORT_PROPERTIES_ALPHABETICALLY</code>.
-   *         This is not needed in Jackson 3.
+   * @return Whether to force the serialization order of Case Class params to the declared order in the class,
+   *         even if <code>MapperFeature.SORT_PROPERTIES_ALPHABETICALLY</code> is enabled.
+   *         The default is false (since 2.23.0; it was true in 2.20.1 to 2.22.x). With the default,
+   *         <code>MapperFeature.SORT_PROPERTIES_ALPHABETICALLY</code> is respected for Scala classes and,
+   *         as that feature is disabled by default in Jackson 2, case class params are serialized in declared
+   *         order unless the user enables it. This is not needed in Jackson 3.
    * @since 2.20.1
    */
   def isCaseClassDefaultSerializationOrderBasedOnDeclaredParamOrder: Boolean =
     caseClassDefaultOrderBasedOnDeclaredParamOrder
 
   /**
-   * @param flag Whether to default the serialization order of Case Class params to the defined order in the class.
-   *             This should be set to false if you want to enable <code>MapperFeature.SORT_PROPERTIES_ALPHABETICALLY</code>.
+   * @param flag Whether to force the serialization order of Case Class params to the declared order in the class,
+   *             even if <code>MapperFeature.SORT_PROPERTIES_ALPHABETICALLY</code> is enabled.
+   *             Set this to true if you enable <code>MapperFeature.SORT_PROPERTIES_ALPHABETICALLY</code>
+   *             (e.g. for Java beans) but still want Scala classes serialized in declared order.
+   *             Classes annotated with <code>@JsonPropertyOrder</code> are unaffected.
+   *             The default is false (since 2.23.0; it was true in 2.20.1 to 2.22.x).
    *             This is not needed in Jackson 3.
    * @since 2.20.1
    */
